@@ -3,24 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Martina · Cuentos para dormir</title>
+  <title>Martina · Cuentos de Ajedrez para Dormir</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Acompaña a Martina, una valiente ajedrecista de 9 años, en sus mágicos cuentos para dormir donde el ajedrez cobra vida. Aprende tácticas y estrategias reales.">
+  <meta name="keywords" content="ajedrez, cuentos infantiles, ajedrez para niños, cuentos para dormir, Judith Polgar, Mikhail Tal, Martina, aprender ajedrez">
+  <meta name="author" content="Papá de Martina">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Martina · Cuentos de Ajedrez para Dormir">
+  <meta property="og:description" content="Acompaña a Martina, una valiente ajedrecista de 9 años, en sus mágicos cuentos para dormir donde el ajedrez cobra vida.">
+  <meta property="og:image" content="assets/img/martina_full_body_1778904544807.png">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Martina · Cuentos de Ajedrez para Dormir">
+  <meta name="twitter:description" content="Mágicos cuentos infantiles donde el ajedrez cobra vida.">
+  <meta name="twitter:image" content="assets/img/martina_full_body_1778904544807.png">
+
   <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♕</text></svg>">
+  <link rel="icon" type="image/png" href="assets/img/martina_profile_1778904530237.png">
 </head>
 <body>
 
-<header class="site-header">
-  <div class="header-content">
-    <span class="header-piece">♕</span>
-    <div class="site-title">Martina</div>
-    <p class="site-tagline">Cuentos para dormir — donde el ajedrez es magia</p>
+<header class="site-header-compact">
+  <div class="header-content-compact">
+    <div class="site-title-compact">
+      <span class="header-piece-compact">♕</span> Martina
+    </div>
+    <nav class="nav-bar-compact">
+      <a href="index.html" class="nav-link active">Inicio</a>
+      <a href="#cuentos" class="nav-link">Cuentos</a>
+      <a href="acerca-de.html" class="nav-link">Acerca de</a>
+    </nav>
   </div>
 </header>
-
-<nav class="nav-bar">
-  <a href="index.html" class="nav-link">Inicio</a>
-  <a href="cuentos/01-el-primer-movimiento.html" class="nav-link">Cuentos</a>
-</nav>
 
 <main>
 
@@ -28,119 +47,58 @@
     <div class="hero-image-container">
       <img src="assets/img/martina_full_body_1778904544807.png" alt="Martina, la campeona de ajedrez">
     </div>
-    <h1>Bienvenida, Martina</h1>
-    <p class="hero-subtitle">Cada noche, un reino te espera al otro lado del tablero.</p>
-  </section>
-
-  <section class="fade-in stagger-1">
-    <div class="card">
-      <h2 class="card-title">Sobre estos cuentos</h2>
-      <p>
-        Estos son los cuentos que papá te lee antes de dormir. Cada historia es una aventura
-        en reinos donde el ajedrez no es solo un juego: es el lenguaje del universo, la llave
-        de mundos escondidos y el reflejo de quien eres.
-      </p>
-      <p>
-        Aquí encontrarás dragones que juegan la Defensa Siciliana, reinas que sacrifican
-        material por iniciativa, y peones que sueñan con coronar. Porque así eres tú, Martina:
-        una jugadora que nunca se rinde, que prefiere el caos del ataque a la calma de las
-        tablas, y que sabe —como Judith Polgar y Mikhail Tal— que la belleza está en
-        atreverse.
-      </p>
+    <div class="hero-text">
+      <h1>Bienvenida, Martina</h1>
+      <p class="hero-subtitle">Cada noche, un reino te espera al otro lado del tablero.</p>
     </div>
   </section>
 
-  <section class="fade-in stagger-2">
-    <h2 style="margin-bottom:1rem;">Quién es Martina</h2>
-    <div class="about-grid">
+  <section id="cuentos" class="fade-in stagger-1" style="margin-top:1rem;">
+    <h2 style="margin-bottom:1.5rem; text-align: center; color: var(--rose);">🌟 Elige tu aventura 🌟</h2>
 
-      <div class="about-trait">
-        <span class="about-trait-icon">♛</span>
-        <div class="about-trait-text">
-          <h4>La jugadora</h4>
-          <p>Agresiva, caótica, teórica. Entiende el ajedrez posicional pero elige el camino del fuego. No le gusta empatar.</p>
+    <div class="story-grid">
+      <a href="cuentos/01-el-primer-movimiento.html" class="story-card">
+        <div class="story-thumbnail">
+          <img src="assets/img/mundo_magico_1778904597376.png" alt="Mundo mágico">
+        </div>
+        <div class="story-card-content">
+          <span class="card-meta">Cuento 1</span>
+          <h3 class="card-title">♟️ El Primer Movimiento</h3>
+          <p class="card-excerpt">
+            Martina despierta en un tablero infinito donde la Reina de las Sombras ha prohibido los jaques mates.
+          </p>
+          <span class="btn btn-block">Leer cuento →</span>
+        </div>
+      </a>
+
+      <a href="cuentos/02-tic-tac-jaque-mate.html" class="story-card">
+        <div class="story-thumbnail">
+          <img src="assets/img/tomas_erizo_1778905884457.png" alt="Torneo escolar">
+        </div>
+        <div class="story-card-content">
+          <span class="card-meta">Cuento 2</span>
+          <h3 class="card-title">⏱️ Tic, Tac, Jaque Mate</h3>
+          <p class="card-excerpt">
+            Primer torneo escolar. Martina enfrenta a un rival que juega a la velocidad del rayo y le enseña una lección.
+          </p>
+          <span class="btn btn-block">Leer cuento →</span>
+        </div>
+      </a>
+
+      <div class="story-card story-locked">
+        <div class="story-thumbnail locked-bg">
+          <span style="font-size: 3rem;">🔒</span>
+        </div>
+        <div class="story-card-content">
+          <span class="card-meta">Cuento 3</span>
+          <h3 class="card-title">La Clavada del Alfil</h3>
+          <p class="card-excerpt">Una nueva aventura está por llegar…</p>
         </div>
       </div>
-
-      <div class="about-trait">
-        <span class="about-trait-icon">🦁</span>
-        <div class="about-trait-text">
-          <h4>La valiente</h4>
-          <p>A los dos meses de empezar, fue a su primer campeonato nacional. Nunca se amedrenta ante rivales mayores ni más experimentados.</p>
-        </div>
-      </div>
-
-      <div class="about-trait">
-        <span class="about-trait-icon">🎭</span>
-        <div class="about-trait-text">
-          <h4>La estratega</h4>
-          <p>Imita la seguridad y actitud fría del respeto ante sus oponentes. Nunca condescendiente: todo bajo control, como si el tablero fuera su reino.</p>
-        </div>
-      </div>
-
-      <div class="about-trait">
-        <span class="about-trait-icon">✨</span>
-        <div class="about-trait-text">
-          <h4>La soñadora</h4>
-          <p>Imaginación desbordante. Cree en la magia por elección. Sus ídolos son Judith Polgar y Mikhail Tal: precisión y genio, cálculo y fantasía.</p>
-        </div>
-      </div>
-
-      <div class="about-trait">
-        <span class="about-trait-icon">⚡</span>
-        <div class="about-trait-text">
-          <h4>La líder</h4>
-          <p>Justiciera y determinada. Se lleva bien con todos, pero mantiene una seguridad sutil, como quien conoce un secreto que el mundo aún no sabe.</p>
-        </div>
-      </div>
-
-      <div class="about-trait">
-        <span class="about-trait-icon">🌙</span>
-        <div class="about-trait-text">
-          <h4>La que disfruta</h4>
-          <p>Todo lo que hace, lo goza. Determinación férrea para superar sus límites. El ajedrez es pasión, no obligación.</p>
-        </div>
-      </div>
-
     </div>
   </section>
 
-  <section class="fade-in stagger-3" style="margin-top:2rem;">
-    <h2 style="margin-bottom:1rem;">Cuentos</h2>
-
-    <a href="cuentos/01-el-primer-movimiento.html" style="text-decoration:none;color:inherit;">
-      <div class="card">
-        <span class="card-meta">Cuento 1</span>
-        <h3 class="card-title">♟️ El Primer Movimiento</h3>
-        <p class="card-excerpt">
-          Martina despierta en un tablero infinito donde dos reinos libran una guerra silenciosa.
-          La Reina de las Sombras ha prohibido los jaques mates: solo se permiten tablas.
-          Pero Martina no sabe jugar a empatar…
-        </p>
-        <span class="btn" style="margin-top:0.75rem;">Leer cuento →</span>
-      </div>
-    </a>
-
-    <a href="cuentos/02-tic-tac-jaque-mate.html" style="text-decoration:none;color:inherit;">
-      <div class="card">
-        <span class="card-meta">Cuento 2</span>
-        <h3 class="card-title">⏱️ Tic, Tac, Jaque Mate</h3>
-        <p class="card-excerpt">
-          Primer torneo escolar con reloj. Martina enfrenta a un rival que juega a la velocidad del rayo,
-          pero descubre —con ayuda de Peoncito, el reloj parlante y una señora del kiosco— 
-          que correr no es lo mismo que pensar.
-        </p>
-        <span class="btn" style="margin-top:0.75rem;">Leer cuento →</span>
-      </div>
-    </a>
-
-    <div class="card" style="opacity:0.5;">
-      <span class="card-meta">Cuento 3 — Próximamente</span>
-      <h3 class="card-title">La Clavada del Alfil Exiliado</h3>
-      <p class="card-excerpt">Una nueva aventura está por llegar…</p>
-    </div>
-
-  </section>
+  <!-- Las secciones "Sobre estos cuentos" y "Quién es Martina" ahora están en acerca-de.html -->
 
 </main>
 
