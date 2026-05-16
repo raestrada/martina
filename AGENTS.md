@@ -23,6 +23,7 @@ surrealista con humor absurdo, combinando lo mágico y lo cotidiano.
 - Entiende ajedrez posicional pero elige el ataque
 - Odia empatar: prefiere arriesgar por la victoria
 - Es muy teórica para su edad
+- AMA las tácticas: clavadas, desviaciones, sacrificios, piezas sobrecargadas. Las clavadas son su debilidad. Las colecciona como otros coleccionan cromos. Las estudia, las perfecciona, las celebra. Nunca le teme a una clavada —las busca.
 
 **Ídolos**:
 - Judith Polgar: precisión quirúrgica, ataque calculado, rompió barreras
@@ -103,6 +104,24 @@ En general, un cuento mágico → un cuento real → un cuento mágico → … P
 - Buenos remates de párrafo
 - Diálogos ágiles con personalidad
 - Descripciones sensoriales (colores, olores, texturas, sonidos del tablero)
+
+---
+
+## Evitar clichés y repeticiones (¡IMPORTANTE!)
+
+Cada cuento debe tener un conflicto ORIGINAL. No repetir patrones:
+
+- ❌ «Alguien hace algo mal → Martina lo corrige → el villano se reforma»
+- ❌ Martina como víctima que aprende una lección (ella nunca es víctima)
+- ❌ Martina odiando o temiendo una táctica de ajedrez (ella las AMA todas, especialmente las clavadas)
+- ❌ Dos cuentos seguidos donde el antagonista termina redimiéndose de la misma forma
+
+En su lugar:
+- ✅ Martina llega sabiendo, no aprendiendo desde cero
+- ✅ El conflicto puede ser un duelo, una competencia, un misterio, un rescate, una demostración
+- ✅ Martina puede ser maestra, rival, aliada, exploradora — no solo «correctora de villanos»
+- ✅ Los antagonistas pueden tener motivaciones distintas: orgullo, soledad, incomprensión, rivalidad genuina, miedo
+- ✅ A veces el antagonista no necesita «reformarse»; puede simplemente reconocer a un igual
 
 ---
 
