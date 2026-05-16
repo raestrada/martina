@@ -559,3 +559,52 @@ main {
 .stagger-1 { animation-delay: 0.1s; }
 .stagger-2 { animation-delay: 0.2s; }
 .stagger-3 { animation-delay: 0.3s; }
+
+/* === HISTORICAL EPILOGUE === */
+
+.jump-to-game {
+  display: inline-flex;
+  align-items: center;
+  background: var(--paper);
+  color: var(--magic-blue);
+  padding: 0.5rem 1rem;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  margin-top: 1rem;
+  border: 2px solid var(--magic-blue);
+  transition: all 0.3s ease;
+}
+
+.jump-to-game:hover {
+  background: var(--magic-blue);
+  color: var(--warm-white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(42, 111, 151, 0.2);
+}
+
+.historical-epilogue {
+  background: rgba(233, 196, 106, 0.15);
+  border-left: 5px solid var(--gold);
+  padding: 2rem;
+  margin: 4rem 0 2rem 0;
+  border-radius: 0 12px 12px 0;
+}
+
+.historical-epilogue h3 {
+  color: var(--magic-dark);
+  font-size: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.historical-epilogue p {
+  font-size: 1.05rem;
+  color: var(--ink);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
