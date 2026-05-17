@@ -214,13 +214,59 @@ Al crear un nuevo cuento, actualizar `index.html`:
 
 | # | Mundo | Título tentativo | Concepto principal |
 |---|-------|------------------|-------------------|
-| 1 | Mágico | El Primer Movimiento ✅ | Centro, desarrollo, sacrificio de alfil (Greco), Apertura Italiana |
-| 2 | Real | — | Manejo de reloj, nervios de torneo escolar |
-| 3 | Mágico | — | Clavada, pieza sobrecargada |
-| 4 | Real | — | Simultánea con GM, atreverse contra rivales superiores |
-| 5 | Mágico | — | Peón pasado, coronación |
-| 6 | Real | — | Torneo nacional, preparación de aperturas |
-| 7 | Mágico | — | Zugzwang, oposición en finales |
-| 8 | Real | — | Blitz, ritmo, instinto vs cálculo |
+| 1  | Mágico | El Primer Movimiento ✅ | Centro, desarrollo, sacrificio de alfil (Greco), Apertura Italiana |
+| 2  | Real   | Tic, Tac, Jaque Mate ✅ | Manejo de reloj, nervios de torneo escolar, Mate de Boden |
+| 3  | Mágico | La Clavada del Alfil Exiliado ✅ | Clavada, pieza sobrecargada, pin (Morphy Opera Game) |
+| 4  | Real   | El Caballo Salvaje ✅ | Puesto avanzado del caballo, torneo con niños therian (Smyslov vs Rudakovsky) |
+| 5  | Mágico | La Coronación de Peoncito ✅ | Peón pasado, coronación, subcoronación |
+| 6  | Real   | La Jugada Invisible ✅ | Torneo nacional, preparación de aperturas, estudio del rival, Siciliana Dragón |
+| 7  | Mágico | El Pescador y el Elegante ✅ | Zugzwang, oposición en finales (Fischer vs Spassky) |
+| 8  | Real   | El Relámpago y el Vikingo ✅ | Blitz, ritmo, instinto vs cálculo (Niemann vs Carlsen) |
+| 9  | Mágico | La Sombra que Jugaba ✅ | Sacrificio, iniciativa, ataque al rey, juego limpio vs trampas (Anderssen, La Inmortal) |
+| 10 | Real   | — | Frustración, trampas reales, resiliencia en torneo |
 
 El plan es flexible pero mantiene la alternancia mágico ↔ real.
+
+---
+
+## Filosofía del juego: frustración, trampas y resiliencia (¡IMPORTANTE!)
+
+Estos cuentos son para niños. Deben aprender que el ajedrez —y la vida— no siempre es justo. 
+Las siguientes pautas aplican especialmente a los cuentos del **mundo real**:
+
+### La frustración es parte del juego
+- ✅ Martina puede perder. Puede pasarlo mal. Puede estar triste, frustrada, enojada.
+- ✅ Lo importante no es evitar la frustración, sino aprender a manejarla.
+- ✅ Después de una derrota, Martina se levanta y vuelve al día siguiente.
+- ❌ Martina nunca se rinde, nunca abandona, nunca se victimiza.
+
+### Las trampas existen
+- ✅ En el mundo real hay rivales que hacen trampa, insultan, distraen, manipulan al árbitro.
+- ✅ A veces el tramposo gana. El sistema no siempre lo detecta. Eso es parte de la realidad.
+- ✅ Martina debe aprender a lidiar con eso sin excusas: «Perdí porque el otro hizo trampa» no es suficiente. Hay que denunciar la trampa si se puede demostrar, pero si no se puede, hay que seguir adelante.
+- ❌ Los cuentos no deben normalizar ni justificar las trampas. Siempre deben mostrar que hacer trampa está mal.
+- ❌ Martina nunca hace trampa. Jamás.
+
+### Respetar al oponente es respetar las reglas
+- ✅ Jugar limpio es la base del respeto mutuo. Sin reglas, no hay juego.
+- ✅ Confundir piedad con respeto hacia un oponente débil es no respetar el juego. Si un rival es más débil, Martina juega igual de fuerte. Jugar suave por lástima es una falta de respeto.
+- ✅ El rival merece tu mejor ajedrez, siempre. Dar menos del 100% es despreciar al oponente y al juego mismo.
+- ❌ Martina nunca es condescendiente con un rival, ni siquiera si es mucho menor o más débil.
+
+### Dar todo para ganar, pero disfrutar
+- ✅ Martina siempre juega para ganar. Arriesga si tiene un plan. Sacrifica si la posición lo pide.
+- ✅ Ganar es importante. Disfrutar TAMBIÉN es importante. Si se deja de disfrutar, el ajedrez pierde su sentido.
+- ✅ Si no intentas ganar con todo, tampoco estás respetando el juego. Las tablas rápidas sin lucha son una traición al tablero.
+- ✅ Arriesgar está bien si tienes un plan. Arriesgar sin plan no es valentía: es descuido.
+
+### Fortaleza y seguir adelante
+- ✅ «El ajedrez no se acaba cuando pierdes. Se acaba cuando dejas de luchar.»
+- ✅ Después de una derrota dolorosa, Martina vuelve al día siguiente y juega otra partida.
+- ✅ Martina aprende de cada derrota más que de cada victoria. Pero no se regodea en la derrota: la analiza, la entiende, la supera.
+- ❌ Nunca buscar excusas externas. Siempre buscar qué puede mejorar ella.
+
+### Aplicación en los cuentos
+- Los cuentos del **mundo mágico** pueden tener conflictos más simbólicos (La Sombra que representa las trampas, por ejemplo).
+- Los cuentos del **mundo real** deben mostrar situaciones concretas: un rival tramposo, un árbitro que no ve, una derrota inesperada.
+- El tono debe seguir siendo humorístico y surrealista, pero la emoción y la lección deben ser genuinas.
+- Nunca sacrificar la verdad emocional por el chiste. Si Martina pierde, duele. Y está bien que duela.
