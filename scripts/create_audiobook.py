@@ -86,6 +86,13 @@ STORY_CONFIG = {
         "default_voice": "es-CL-CatalinaNeural",
         "default_image": "martina_full_body_1778904544807.png",
         "mapping": {}
+    },
+    9: {
+        "html_file": "../cuentos/09-la-sombra-que-jugaba.html",
+        "output_video": "../assets/video/cuento_09_audiolibro.mp4",
+        "default_voice": "es-PE-AlexNeural",
+        "default_image": "mundo_magico_1778904597376.png",
+        "mapping": {}
     }
 }
 
