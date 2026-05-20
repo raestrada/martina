@@ -79,6 +79,13 @@ STORY_CONFIG = {
         "default_voice": "es-AR-TomasNeural",
         "default_image": "mundo_magico_1778904597376.png",
         "mapping": {}
+    },
+    8: {
+        "html_file": "../cuentos/08-el-relampago-y-el-vikingo.html",
+        "output_video": "../assets/video/cuento_08_audiolibro.mp4",
+        "default_voice": "es-CL-CatalinaNeural",
+        "default_image": "martina_full_body_1778904544807.png",
+        "mapping": {}
     }
 }
 
