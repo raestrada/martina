@@ -1,21 +1,22 @@
 import os
 import re
 import asyncio
-import edge_tts
+import subprocess
+import textwrap
 from bs4 import BeautifulSoup
 from PIL import Image, ImageDraw, ImageFont
-from moviepy import *
-import textwrap
+import imageio_ffmpeg
 
-# Configuración
 HTML_FILE = "../cuentos/01-el-primer-movimiento.html"
-OUTPUT_VIDEO = "../cuento_01_audiolibro.mp4"
-TEMP_DIR = "temp_audiobook"
+OUTPUT_VIDEO = "../assets/video/cuento_01_audiolibro.mp4"
+TEMP_DIR = "temp_v4"
 ASSETS_DIR = "../assets/img"
-RESOLUTION = (1920, 1080)
-FPS = 10  # Bajo FPS para renders rápidos
+PARTICLES_VIDEO = "../assets/video/magical_particles_720p.mp4"
+FFMPEG_CMD = imageio_ffmpeg.get_ffmpeg_exe()
 
-# Diccionario para mapear nuevas imágenes generadas a frases clave
+RESOLUTION = (1280, 720)
+FPS = 25
+
 NEW_IMAGES_MAPPING = {
     "El puente era una columna": "puente_rio_central_1779239550750.png",
     "caballo que practicaba saltos": "caballo_l_equivocado_1779239565440.png",
@@ -24,44 +25,82 @@ NEW_IMAGES_MAPPING = {
 }
 
 os.makedirs(TEMP_DIR, exist_ok=True)
+os.makedirs(os.path.dirname(OUTPUT_VIDEO), exist_ok=True)
 
-def create_text_image(text, filename, size=(1920, 1080)):
-    """Crea una imagen oscura con texto blanco centrado usando Pillow para no depender de ImageMagick."""
-    img = Image.new('RGB', size, color=(15, 15, 20))
+def create_transparent_text(text, filename):
+    img = Image.new('RGBA', RESOLUTION, (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
-    # Fuente por defecto, intenta cargar una fuente TrueType si está disponible
     try:
-        font = ImageFont.truetype("arial.ttf", 60)
+        # Intenta usar una fuente estándar de Windows o cae en la por defecto
+        font = ImageFont.truetype("arialbd.ttf", 36)
     except IOError:
         font = ImageFont.load_default()
-    
-    # Envolver texto
+        
     lines = textwrap.wrap(text, width=50)
+    line_height = 45
+    total_height = len(lines) * line_height
+    padding = 20
+    y_start = RESOLUTION[1] - total_height - padding * 2 - 40
     
-    # Calcular altura total
-    y_text = size[1] / 2 - (len(lines) * 80) / 2
+    # Fondo semi-transparente oscuro
+    draw.rectangle(
+        [(RESOLUTION[0]*0.1, y_start), (RESOLUTION[0]*0.9, y_start + total_height + padding*2)],
+        fill=(0, 0, 0, 200)
+    )
+    
+    y_text = y_start + padding
     for line in lines:
-        bbox = draw.textbbox((0, 0), line, font=font)
-        width = bbox[2] - bbox[0]
-        height = bbox[3] - bbox[1]
-        draw.text(((size[0] - width) / 2, y_text), line, font=font, fill=(255, 255, 255))
-        y_text += height + 20
+        try:
+            bbox = draw.textbbox((0, 0), line, font=font)
+            width = bbox[2] - bbox[0]
+        except:
+            width = 600
+        draw.text(((RESOLUTION[0] - width) / 2, y_text), line, font=font, fill=(255, 255, 255, 255))
+        y_text += line_height
         
     img.save(filename)
-    return filename
 
 async def generate_tts(text, output_file):
+    import edge_tts
     voice = "es-ES-AlvaroNeural"
     communicate = edge_tts.Communicate(text, voice)
     await communicate.save(output_file)
 
-def parse_html_to_timeline(html_path):
-    with open(html_path, "r", encoding="utf-8") as f:
+def render_clip(audio_file, bg_image, text_image, output_clip):
+    # La imagen se escala a 1080p, hace el zoom, baja a 720p y se mezcla con las partículas
+    filter_complex = (
+        "[0:v]scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,"
+        "zoompan=z='min(zoom+0.001,1.5)':d=1:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)',"
+        "scale=1280:720[bg_zoomed];"
+        "[bg_zoomed][3:v]blend=all_mode='screen':all_opacity=0.8[with_particles];"
+        "[with_particles][1:v]overlay=0:0:shortest=1[v]"
+    )
+    
+    cmd = [
+        FFMPEG_CMD, "-y", "-hide_banner", "-loglevel", "error",
+        "-loop", "1", "-framerate", str(FPS), "-i", bg_image,
+        "-loop", "1", "-framerate", str(FPS), "-i", text_image,
+        "-i", audio_file,
+        "-stream_loop", "-1", "-i", PARTICLES_VIDEO,
+        "-filter_complex", filter_complex,
+        "-map", "[v]", "-map", "2:a",
+        "-c:v", "h264_nvenc", "-preset", "p4", "-cq", "28", "-pix_fmt", "yuv420p",
+        "-c:a", "aac", "-b:a", "192k",
+        "-shortest", output_clip
+    ]
+    subprocess.run(cmd, check=True)
+
+async def main():
+    print("Analizando HTML...")
+    with open(HTML_FILE, "r", encoding="utf-8") as f:
         soup = BeautifulSoup(f.read(), "html.parser")
         
     article = soup.find("article", class_="story-body")
     timeline = []
-    current_image = None
+    
+    # Imagen por defecto muy oscura si no hay otra
+    default_image = "mundo_magico_1778904597376.png"
+    current_image = default_image
     
     for element in article.children:
         if element.name == "div" and "story-image-wrapper" in element.get("class", []):
@@ -73,100 +112,53 @@ def parse_html_to_timeline(html_path):
             if not text or "Fin del primer cuento" in text:
                 continue
             
-            # Verificar si hay una nueva imagen asociada a este texto
+            # Si el texto es de descripción u otro momento, quizás resetear a la mágica o mantener
             for key_phrase, img_name in NEW_IMAGES_MAPPING.items():
                 if key_phrase in text:
                     current_image = img_name
             
-            timeline.append({
-                "text": text,
-                "image": current_image
-            })
+            timeline.append({"text": text, "image": current_image})
             
-    return timeline
-
-def zoom_in_effect(clip, zoom_ratio=0.04):
-    """Aplica un ligero zoom Ken Burns usando resize"""
-    def effect(get_frame, t):
-        # Resize factor changes over time
-        factor = 1 + zoom_ratio * (t / clip.duration)
-        img = Image.fromarray(get_frame(t))
-        w, h = img.size
-        # Resize
-        img = img.resize((int(w * factor), int(h * factor)), Image.Resampling.LANCZOS)
-        # Crop center
-        left = (img.width - w) / 2
-        top = (img.height - h) / 2
-        right = (img.width + w) / 2
-        bottom = (img.height + h) / 2
-        img = img.crop((left, top, right, bottom))
-        return numpy.array(img)
-    return clip.transform(effect)
-
-async def main():
-    print("Analizando HTML...")
-    timeline = parse_html_to_timeline(HTML_FILE)
-    
-    video_clips = []
-    
-    print(f"Procesando {len(timeline)} fragmentos...")
+    clips_list = []
+    print(f"Generando {len(timeline)} mini-clips con Aceleración NVIDIA (V4 a 720p)...")
     
     for i, item in enumerate(timeline):
         text = item["text"]
-        img_name = item["image"]
+        bg_name = item["image"]
         
-        # 1. Generar Audio
         audio_file = os.path.join(TEMP_DIR, f"audio_{i:03d}.mp3")
-        await generate_tts(text, audio_file)
+        text_img_file = os.path.join(TEMP_DIR, f"text_{i:03d}.png")
+        bg_file = os.path.join(ASSETS_DIR, bg_name)
+        clip_file = os.path.join(TEMP_DIR, f"clip_{i:03d}.mp4")
         
-        audio_clip = AudioFileClip(audio_file)
-        duration = audio_clip.duration
-        
-        # 2. Generar o cargar Imagen
-        if img_name:
-            img_path = os.path.join(ASSETS_DIR, img_name)
-            if os.path.exists(img_path):
-                # Usar la imagen original
-                image_clip = ImageClip(img_path).with_duration(duration)
-                # Aplicar resize para que cubra la pantalla manteniendo aspect ratio
-                # En Moviepy 2.x esto es más complejo, usaremos Pillow antes si queremos, o simplemente
-                image_clip = image_clip.resized(height=RESOLUTION[1])
-                # Centrar
-                image_clip = image_clip.with_position("center")
-                
-                # Crear fondo oscuro
-                bg = ColorClip(size=RESOLUTION, color=(15, 15, 20)).with_duration(duration)
-                
-                # Componer
-                comp = CompositeVideoClip([bg, image_clip]).with_audio(audio_clip)
-                # Para simplificar y no hacer el render lento con el ken burns customizado, 
-                # pondremos el texto superpuesto abajo
-                
-                text_img = create_text_image(text, os.path.join(TEMP_DIR, f"sub_{i:03d}.png"), size=(RESOLUTION[0], 250))
-                sub_clip = ImageClip(text_img).with_duration(duration).with_position(("center", "bottom"))
-                
-                comp = CompositeVideoClip([bg, image_clip, sub_clip]).with_audio(audio_clip)
-                video_clips.append(comp)
-            else:
-                print(f"Warning: Imagen {img_path} no encontrada.")
-                img_name = None # Fallback a texto
-                
-        if not img_name:
-            # Crear pantalla de texto dinámica
-            text_img = create_text_image(text, os.path.join(TEMP_DIR, f"text_{i:03d}.png"), size=RESOLUTION)
-            image_clip = ImageClip(text_img).with_duration(duration).with_audio(audio_clip)
-            video_clips.append(image_clip)
+        if not os.path.exists(audio_file):
+            await generate_tts(text, audio_file)
             
-        print(f"Procesado fragmento {i+1}/{len(timeline)}")
+        create_transparent_text(text, text_img_file)
         
-    print("Concatenando clips...")
-    # Add crossfades (Moviepy 2.x concatenate_videoclips with method='compose' and padding)
-    # For safety and speed we will just use basic concatenation
-    final_video = concatenate_videoclips(video_clips, method="compose")
-    
-    print("Renderizando video...")
-    final_video.write_videofile(OUTPUT_VIDEO, fps=FPS, audio_codec="aac")
-    print(f"Video guardado en {OUTPUT_VIDEO}")
+        if not os.path.exists(clip_file):
+            render_clip(audio_file, bg_file, text_img_file, clip_file)
+            print(f"Renderizado clip {i+1}/{len(timeline)}")
+            
+        clips_list.append(clip_file)
+
+    print("Concatenando todo...")
+    concat_txt = os.path.join(TEMP_DIR, "concat.txt")
+    with open(concat_txt, "w", encoding="utf-8") as f:
+        for clip in clips_list:
+            # We must use forward slashes for ffmpeg concat file paths, even on Windows
+            safe_path = clip.replace('\\', '/')
+            f.write(f"file '{safe_path}'\n")
+            
+    concat_cmd = [
+        FFMPEG_CMD, "-y", "-hide_banner", "-loglevel", "error",
+        "-f", "concat", "-safe", "0",
+        "-i", concat_txt,
+        "-c", "copy",
+        OUTPUT_VIDEO
+    ]
+    subprocess.run(concat_cmd, check=True)
+    print(f"¡Audiobook V4 completado! Guardado en: {OUTPUT_VIDEO}")
 
 if __name__ == "__main__":
     asyncio.run(main())
