@@ -72,6 +72,13 @@ STORY_CONFIG = {
         "default_voice": "es-CO-SalomeNeural",
         "default_image": "martina_full_body_1778904544807.png",
         "mapping": {}
+    },
+    7: {
+        "html_file": "../cuentos/07-el-pescador-y-el-elegante.html",
+        "output_video": "../assets/video/cuento_07_audiolibro.mp4",
+        "default_voice": "es-AR-TomasNeural",
+        "default_image": "mundo_magico_1778904597376.png",
+        "mapping": {}
     }
 }
 
