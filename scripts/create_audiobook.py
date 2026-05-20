@@ -58,6 +58,13 @@ STORY_CONFIG = {
             "Martina jugó Cd5": "caballo_invencible_1778968679199.png",
             "Después de la partida": "martina_vs_equis_1778968666455.png"
         }
+    },
+    5: {
+        "html_file": "../cuentos/05-la-coronacion-de-peoncito.html",
+        "output_video": "../assets/video/cuento_05_audiolibro.mp4",
+        "default_voice": "es-MX-JorgeNeural",
+        "default_image": "peoncito_octava_fila_1779034473779.png",
+        "mapping": {}
     }
 }
 
