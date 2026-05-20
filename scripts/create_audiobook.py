@@ -65,6 +65,13 @@ STORY_CONFIG = {
         "default_voice": "es-MX-JorgeNeural",
         "default_image": "peoncito_octava_fila_1779034473779.png",
         "mapping": {}
+    },
+    6: {
+        "html_file": "../cuentos/06-la-jugada-invisible.html",
+        "output_video": "../assets/video/cuento_06_audiolibro.mp4",
+        "default_voice": "es-CO-SalomeNeural",
+        "default_image": "martina_full_body_1778904544807.png",
+        "mapping": {}
     }
 }
 
