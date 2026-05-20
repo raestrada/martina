@@ -93,6 +93,13 @@ STORY_CONFIG = {
         "default_voice": "es-PE-AlexNeural",
         "default_image": "mundo_magico_1778904597376.png",
         "mapping": {}
+    },
+    10: {
+        "html_file": "../cuentos/10-lo-que-no-se-ve-en-el-tablero.html",
+        "output_video": "../assets/video/cuento_10_audiolibro.mp4",
+        "default_voice": "es-VE-PaolaNeural",
+        "default_image": "martina_full_body_1778904544807.png",
+        "mapping": {}
     }
 }
 
