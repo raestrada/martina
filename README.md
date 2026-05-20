@@ -6,7 +6,7 @@
 <h3 align="center">Cuentos de ajedrez para dormir</h3>
 
 <p align="center">
-  <a href="https://raestrada.github.io/martina"><strong>🌐 Visitar sitio web</strong></a>
+  <a href="https://martinachess.com"><strong>🌐 Visitar sitio web</strong></a>
 </p>
 
 <p align="center">
@@ -72,7 +72,7 @@ Pero no todo es magia. Los cuentos alternan con el **mundo real** del ajedrez co
 | 12 | ☀️ Real | El Peón que Bailaba | Peón aislado, confianza, enseñar a otros |
 
 <p align="center">
-  <a href="https://raestrada.github.io/martina"><strong>📖 Leer todos los cuentos →</strong></a>
+  <a href="https://martinachess.com"><strong>📖 Leer todos los cuentos →</strong></a>
 </p>
 
 ## 💡 Lo que tu hija va a aprender
@@ -97,7 +97,7 @@ Todas las ilustraciones —39 imágenes generadas con IA— están disponibles e
 </p>
 
 <p align="center">
-  <a href="https://raestrada.github.io/martina/galeria.html"><strong>🖼️ Ver galería completa →</strong></a>
+  <a href="https://martinachess.com/galeria.html"><strong>🖼️ Ver galería completa →</strong></a>
 </p>
 
 ## 🧠 Filosofía del proyecto
