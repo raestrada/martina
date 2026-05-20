@@ -48,6 +48,16 @@ STORY_CONFIG = {
         "default_voice": "es-US-AlonsoNeural",
         "default_image": "alfil_exiliado_1778944848314.png",
         "mapping": {}
+    },
+    4: {
+        "html_file": "../cuentos/04-el-caballo-salvaje.html",
+        "output_video": "../assets/video/cuento_04_audiolibro.mp4",
+        "default_voice": "es-MX-DaliaNeural",
+        "default_image": "martina_vs_equis_1778968666455.png",
+        "mapping": {
+            "Martina jugó Cd5": "caballo_invencible_1778968679199.png",
+            "Después de la partida": "martina_vs_equis_1778968666455.png"
+        }
     }
 }
 
