@@ -191,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- LOGROS & DASHBOARD SYNCHRONIZER ---
+  function loadDashboardStats() {
     const loadProg = (key) => {
       let prog = JSON.parse(localStorage.getItem(key)) || [];
       if (prog.length < 15) {
