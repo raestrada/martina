@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Martina · Cuentos de Ajedrez para Dormir</title>
+    <link>https://martinachess.com</link>
+    <description>Cuentos infantiles ilustrados que enseñan ajedrez real. Aventuras en el Reino de las Sesenta y Cuatro Casillas donde peones llevan bigotes, reinas estornudan con el jaque mate, y cada historia esconde una partida famosa.</description>
+    <language>es</language>
+    <atom:link href="https://martinachess.com/rss.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>Cuento 1 — El Primer Movimiento</title>
+      <link>https://martinachess.com/cuentos/01-el-primer-movimiento.html</link>
+      <description>Martina despierta en un tablero infinito donde la Reina de las Sombras ha prohibido los jaques mates. Aprende centro, desarrollo y sacrificio de alfil con la Apertura Italiana (partida de Greco).</description>
+    </item>
+    <item>
+      <title>Cuento 2 — Tic, Tac, Jaque Mate</title>
+      <link>https://martinachess.com/cuentos/02-tic-tac-jaque-mate.html</link>
+      <description>Primer torneo escolar. Martina enfrenta a un rival que juega a la velocidad del rayo y descubre el manejo del reloj y el Mate de Boden.</description>
+    </item>
+    <item>
+      <title>Cuento 3 — La Clavada del Alfil Exiliado</title>
+      <link>https://martinachess.com/cuentos/03-la-clavada-del-alfil-exiliado.html</link>
+      <description>El Alfil desterrado ha vuelto con un arma secreta: congela a quien mira. Martina juega como Morphy para liberar al reino. Clavada y pieza sobrecargada.</description>
+    </item>
+    <item>
+      <title>Cuento 4 — El Caballo Salvaje</title>
+      <link>https://martinachess.com/cuentos/04-el-caballo-salvaje.html</link>
+      <description>Torneo lleno de niños therian. Martina enfrenta a Equis, un caballo salvaje cuyo galope domina el tablero. Puesto avanzado del caballo (Smyslov vs Rudakovsky).</description>
+    </item>
+    <item>
+      <title>Cuento 5 — La Coronación de Peoncito</title>
+      <link>https://martinachess.com/cuentos/05-la-coronacion-de-peoncito.html</link>
+      <description>Peoncito está a una casilla de la octava fila. Todos quieren decirle en qué convertirse. Martina le enseña que elegir es entender la posición. Peón pasado y coronación.</description>
+    </item>
+    <item>
+      <title>Cuento 6 — La Jugada Invisible</title>
+      <link>https://martinachess.com/cuentos/06-la-jugada-invisible.html</link>
+      <description>Primer torneo nacional. Martina estudia a su rival, prepara una línea secreta contra la Siciliana, y descubre que ganar empieza la noche anterior.</description>
+    </item>
+    <item>
+      <title>Cuento 7 — El Pescador y el Elegante</title>
+      <link>https://martinachess.com/cuentos/07-el-pescador-y-el-elegante.html</link>
+      <description>Dos leyendas descienden al reino. Roberto Pescador mide sillas, Boris el Sereno aplaude a su rival. Zugzwang y oposición en finales (Fischer vs Spassky).</description>
+    </item>
+    <item>
+      <title>Cuento 8 — El Relámpago y el Vikingo</title>
+      <link>https://martinachess.com/cuentos/08-el-relampago-y-el-vikingo.html</link>
+      <description>Torneo de blitz. Hans calcula 200 líneas antes del desayuno, Magnus elige entre jugo de manzana o pera. Instinto vs cálculo (Niemann vs Carlsen).</description>
+    </item>
+    <item>
+      <title>Cuento 9 — La Sombra que Jugaba</title>
+      <link>https://martinachess.com/cuentos/09-la-sombra-que-jugaba.html</link>
+      <description>Aparece una sombra que tuerce las reglas. Martina juega la Inmortal de Anderssen y gana, pero la sombra no se irá del todo. Sacrificio e iniciativa.</description>
+    </item>
+    <item>
+      <title>Cuento 10 — Lo Que No Se Ve en el Tablero</title>
+      <link>https://martinachess.com/cuentos/10-lo-que-no-se-ve-en-el-tablero.html</link>
+      <description>Pablo habla, estornuda de mentira, mueve piezas y gana. Martina pierde. Pero descubre que no es la partida lo que importa, sino volver. Frustración y resiliencia.</description>
+    </item>
+    <item>
+      <title>Cuento 11 — La Última Grieta</title>
+      <link>https://martinachess.com/cuentos/11-la-ultima-grieta.html</link>
+      <description>El Rey Blanco lleva 800 años sin moverse. Peoncito, entrenador personal, y Martina le enseñan que los reyes también atacan. Triangulación y finales de rey activo.</description>
+    </item>
+    <item>
+      <title>Cuento 12 — El Peón que Bailaba</title>
+      <link>https://martinachess.com/cuentos/12-el-peon-que-bailaba.html</link>
+      <description>Torneo de verano. Inés tiembla al tocar su primer peón. Martina le enseña que un peón aislado es un bailarín, no un defecto. Peón aislado, columnas abiertas, iniciativa.</description>
+    </item>
+  </channel>
+</rss>

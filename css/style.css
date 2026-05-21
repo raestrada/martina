@@ -839,3 +839,133 @@ main {
     max-width: 90vw;
   }
 }
+
+/* === SHARE / DIFUNDIR === */
+
+.share-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 30px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  color: var(--warm-white);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: var(--shadow);
+}
+
+.share-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.share-x  { background: #0f1419; }
+.share-fb { background: #1877f2; }
+.share-wa { background: #25d366; }
+.share-tg { background: #0088cc; }
+
+.share-copy-card {
+  background: var(--warm-white);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.share-copy-card h4 {
+  color: var(--magic-blue);
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+.share-copy-box {
+  position: relative;
+}
+
+.share-copy-box code {
+  display: block;
+  background: var(--paper);
+  border: 1px solid var(--board-dark);
+  border-radius: 10px;
+  padding: 1rem 1rem 3rem 1rem;
+  font-family: 'Quicksand', monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.btn-copy {
+  position: absolute;
+  bottom: 0.6rem;
+  right: 0.8rem;
+  font-size: 0.8rem;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+}
+
+/* Story share badge */
+.story-share {
+  text-align: center;
+  margin: 2rem 0 1rem 0;
+}
+
+.story-share p {
+  color: var(--magic-blue);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.story-share-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.story-share-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-decoration: none;
+  color: var(--warm-white);
+  transition: transform 0.2s ease;
+}
+
+.story-share-links a:hover {
+  transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+  .share-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .share-btn {
+    justify-content: center;
+  }
+
+  .story-share-links {
+    flex-direction: column;
+    align-items: center;
+  }
+}
