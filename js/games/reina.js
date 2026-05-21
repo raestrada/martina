@@ -373,7 +373,20 @@ class ReinaGame {
             
             <div class="recipe-card" style="border-top-color: var(--rose);">
               <h3 style="color: var(--rose); font-family: 'Nunito', sans-serif;">Etapa ${this.currentLevelIndex + 1}: ${level.name}</h3>
-              <p style="font-size: 0.9rem; line-height: 1.4; opacity: 0.95;">${level.description}</p>
+              <p style="font-size: 0.9rem; line-height: 1.4; opacity: 0.95; margin-bottom: 0;">${level.description}</p>
+            </div>
+
+            <!-- Panel de instrucciones sobre cómo jugar -->
+            <div class="recipe-card" style="border-top-color: var(--gold); margin-top: 1rem; background: rgba(244, 162, 97, 0.05); border-left: 4px solid var(--gold);">
+              <h4 style="color: var(--gold-light); font-family: 'Nunito', sans-serif; font-size: 0.95rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                📖 ¿Cómo jugar?
+              </h4>
+              <ul style="font-size: 0.8rem; padding-left: 1.2rem; line-height: 1.45; opacity: 0.95; display: flex; flex-direction: column; gap: 0.4rem; list-style-type: '♟️ ';">
+                <li>Mueve a <strong>Peoncito</strong> 1 casilla a tu alrededor (como un Rey).</li>
+                <li>Recoge todos los <strong>bigotes perdidos</strong> (🥸) del tablero.</li>
+                <li>Esquiva los <strong>estornudos</strong> de la Reina: las zonas 💨 son de advertencia, ¡y las ⚠️ explotarán el próximo turno!</li>
+                <li>Alcanza la <strong>caja dorada de pañuelos</strong> (🧻) para ganar el nivel.</li>
+              </ul>
             </div>
 
             <div class="moves-left-card">
@@ -445,9 +458,13 @@ class ReinaGame {
           }
         }
 
-        // Render warning highlights
+        // Render warning highlights: 2 states (danger vs breathing/wind warning)
         if (this.gameActive && warnings.includes(coord)) {
-          square.classList.add('square-sneeze-warning');
+          if (this.sneezeTimer === 1) {
+            square.classList.add('square-sneeze-warning');
+          } else {
+            square.classList.add('square-sneeze-premonition');
+          }
         }
 
         // Render mustaches
@@ -577,15 +594,10 @@ class ReinaGame {
 
   // --- RANDOMISED REINA STEP TO ALTER PATTERNS ---
   moveReinaRandomly() {
-    // Moves along rank 8 to change column/diagonals dynamically
+    // La Reina se mantiene en su trono para que los patrones de estornudo sean estratégicos y predecibles.
     const level = this.levels[this.currentLevelIndex];
-    if (Math.random() > 0.4 && level.sneezePatternType !== 'surrounding_peoncito') {
-      const cDiff = Math.random() > 0.5 ? 1 : -1;
-      let newC = this.reinaPos.c + cDiff;
-      if (newC >= 0 && newC < 8) {
-        this.reinaPos.c = newC;
-      }
-    }
+    const targetPos = this.nameToCoords(level.reinaPos);
+    this.reinaPos = targetPos;
   }
 
   // --- SNEEZE DETONATOR ENGINE ---
