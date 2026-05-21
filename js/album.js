@@ -475,16 +475,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     }
-  ];da la lección de Anderssen: ¡el ajedrez es actividad, espacio y coordinación, no solo coleccionar material!",
-      position: {
-        pieces: { 'e8': '♚', 'd7': '♟', 'e7': '♝', 'f3': '♘', 'c4': '♗', 'd6': '♗', 'e2': '♙', 'f7': '♘', 'g5': '♟' },
-        highlights: {
-          'e8': 'highlight-pin',
-          'f7': 'highlight-attacker',
-          'd6': 'highlight-attacker'
-        }
-      }
-    }
   ];
 
   // === 2. WEB AUDIO API SYNTHESIZER ===
