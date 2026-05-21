@@ -165,6 +165,86 @@ class TorretaGame {
           { type: "user", from: "b1", to: "c3", piece: "♘", desc: "Caballo c3 defendiendo e4" },
           { type: "comp", from: "g7", to: "g6", piece: "♟", desc: "Las negras preparan el Fianchetto con g6" }
         ]
+      },
+      {
+        name: "Gambito de Rey",
+        excerpt: "¡Caos romántico e impulsivo en el flanco de rey!",
+        customer: "Reina Negra",
+        avatar: "assets/img/reina_negra_1778904582825.png",
+        targetTime: 50,
+        steps: [
+          { type: "user", from: "e2", to: "e4", piece: "♙", desc: "Peón de rey a e4" },
+          { type: "comp", from: "e7", to: "e5", piece: "♟", desc: "La Reina Negra responde e5" },
+          { type: "user", from: "f2", to: "f4", piece: "♙", desc: "¡Ofrece tu peón en f4!" },
+          { type: "comp", from: "e5", to: "f4", piece: "♟", desc: "El rival acepta el Gambito" },
+          { type: "user", from: "g1", to: "f3", piece: "♘", desc: "Desarrolla tu caballo a f3" },
+          { type: "comp", from: "g7", to: "g5", piece: "♟", desc: "Las negras defienden con g5" }
+        ]
+      },
+      {
+        name: "Defensa Escocesa",
+        excerpt: "Abre el juego de inmediato con fuerza y decisión.",
+        customer: "Peoncito",
+        avatar: "assets/img/peoncito_1778904557723.png",
+        targetTime: 55,
+        steps: [
+          { type: "user", from: "e2", to: "e4", piece: "♙", desc: "Peón de rey a e4" },
+          { type: "comp", from: "e7", to: "e5", piece: "♟", desc: "El oponente responde e5" },
+          { type: "user", from: "g1", to: "f3", piece: "♘", desc: "Desarrolla tu caballo a f3" },
+          { type: "comp", from: "b8", to: "c6", piece: "♞", desc: "El rival saca su caballo a c6" },
+          { type: "user", from: "d2", to: "d4", piece: "♙", desc: "¡Golpea en d4!" },
+          { type: "comp", from: "e5", to: "d4", piece: "♟", desc: "Las negras capturan en d4" },
+          { type: "user", from: "f3", to: "d4", piece: "♘", desc: "Tu caballo recaptura en d4" }
+        ]
+      },
+      {
+        name: "Defensa Nimzoindia",
+        excerpt: "Clavada sutil y control del centro a larga distancia.",
+        customer: "Tomás el Erizo",
+        avatar: "assets/img/tomas_erizo_1778905884457.png",
+        targetTime: 65,
+        steps: [
+          { type: "user", from: "d2", to: "d4", piece: "♙", desc: "Mueve tu peón a d4" },
+          { type: "comp", from: "g8", to: "f6", piece: "♞", desc: "Las negras sacan su caballo a f6" },
+          { type: "user", from: "c2", to: "c4", piece: "♙", desc: "Avanza tu peón c4" },
+          { type: "comp", from: "e7", to: "e6", piece: "♟", desc: "El oponente abre paso con e6" },
+          { type: "user", from: "b1", to: "c3", piece: "♘", desc: "Desarrolla tu caballo de dama a c3" },
+          { type: "comp", from: "f8", to: "b4", piece: "♝", desc: "¡El rival clava tu caballo en c3!" }
+        ]
+      },
+      {
+        name: "Gambito Benko",
+        excerpt: "Un contraataque agudo sacrificando un peón de flanco.",
+        customer: "Alfil Exiliado",
+        avatar: "assets/img/alfil_exiliado_1778944848314.png",
+        targetTime: 70,
+        steps: [
+          { type: "user", from: "d2", to: "d4", piece: "♙", desc: "Inicia con peón d4" },
+          { type: "comp", from: "g8", to: "f6", piece: "♞", desc: "El caballo negro salta a f6" },
+          { type: "user", from: "c2", to: "c4", piece: "♙", desc: "Avanza tu peón a c4" },
+          { type: "comp", from: "c7", to: "c5", piece: "♟", desc: "Las negras desafían con c5" },
+          { type: "user", from: "d4", to: "d5", piece: "♙", desc: "Cierra el centro con d5" },
+          { type: "comp", from: "b7", to: "b5", piece: "♟", desc: "¡El rival ofrece b5 (Gambito Benko)!" },
+          { type: "user", from: "c4", to: "b5", piece: "♙", desc: "Acepta capturando en b5" },
+          { type: "comp", from: "a7", to: "a6", piece: "♟", desc: "Las negras atacan en a6" }
+        ]
+      },
+      {
+        name: "Ataque Indio de Rey",
+        excerpt: "Una fortaleza flexible lista para contraatacar en el flanco.",
+        customer: "Rey Blanco",
+        avatar: "assets/img/rey_blanco_entrenamiento_1779139099201.png",
+        targetTime: 75,
+        steps: [
+          { type: "user", from: "g1", to: "f3", piece: "♘", desc: "Desarrolla tu caballo a f3" },
+          { type: "comp", from: "d7", to: "d5", piece: "♟", desc: "El oponente ocupa el centro con d5" },
+          { type: "user", from: "g2", to: "g3", piece: "♙", desc: "Prepara el flanco de rey con g3" },
+          { type: "comp", from: "g8", to: "f6", piece: "♞", desc: "Las negras sacan su caballo a f6" },
+          { type: "user", from: "f1", to: "g2", piece: "♗", desc: "Fianchetto de alfil en g2" },
+          { type: "comp", from: "c7", to: "c6", piece: "♟", desc: "El rival solidifica con c6" },
+          { type: "user", from: "d2", to: "d3", piece: "♙", desc: "Soporta tu centro con d3" },
+          { type: "comp", from: "c8", to: "f5", piece: "♝", desc: "El alfil negro sale a f5" }
+        ]
       }
     ];
   }
@@ -176,7 +256,8 @@ class TorretaGame {
     if (this.selectedDifficulty === 'hard') key = 'martina_torreta_progress_hard';
     if (this.selectedDifficulty === 'martina') key = 'martina_torreta_progress_martina';
 
-    let progress = JSON.parse(localStorage.getItem(key)) || Array(10).fill(0);
+    let progress = JSON.parse(localStorage.getItem(key)) || [];
+    while (progress.length < 15) progress.push(0);
     
     let levelCardsHTML = '';
     
@@ -596,7 +677,8 @@ class TorretaGame {
     if (this.selectedDifficulty === 'hard') key = 'martina_torreta_progress_hard';
     if (this.selectedDifficulty === 'martina') key = 'martina_torreta_progress_martina';
 
-    let progress = JSON.parse(localStorage.getItem(key)) || Array(10).fill(0);
+    let progress = JSON.parse(localStorage.getItem(key)) || [];
+    while (progress.length < 15) progress.push(0);
     const oldStars = progress[this.currentRecipeIndex] || 0;
     
     let isNewHighStar = starsWon > oldStars;

@@ -191,12 +191,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- LOGROS & DASHBOARD SYNCHRONIZER ---
-  function loadDashboardStats() {
-    // Dynamic loader and migrator for progress arrays
     const loadProg = (key) => {
-      let prog = JSON.parse(localStorage.getItem(key)) || Array(10).fill(0);
-      if (prog.length < 10) {
-        while (prog.length < 10) prog.push(0);
+      let prog = JSON.parse(localStorage.getItem(key)) || [];
+      if (prog.length < 15) {
+        while (prog.length < 15) prog.push(0);
         localStorage.setItem(key, JSON.stringify(prog));
       }
       return prog;
@@ -233,35 +231,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const stickersEl = document.getElementById('dash-album-stickers');
 
     if (scoreEl) scoreEl.textContent = `${magicScore} pts`;
-    if (starsEl) starsEl.textContent = `${totalStars} / 240`;
+    if (starsEl) starsEl.textContent = `${totalStars} / 360`;
     if (packsEl) packsEl.textContent = packsCount;
-    if (stickersEl) stickersEl.textContent = `${stickersCount} / 12`;
+    if (stickersEl) stickersEl.textContent = `${stickersCount} / 24`;
 
-    // Compute Title Rank & Progress (Rebalanced for 240 stars max)
+    // Compute Title Rank & Progress (Rebalanced for 360 stars max)
     let rankTitle = "Peón Novato";
     let rankEmoji = "🐣";
     let rankProgress = 0;
 
-    if (totalStars < 30) {
+    if (totalStars < 45) {
       rankTitle = "Peón Novato";
       rankEmoji = "🐣";
-      rankProgress = (totalStars / 30) * 100;
-    } else if (totalStars < 80) {
+      rankProgress = (totalStars / 45) * 100;
+    } else if (totalStars < 120) {
       rankTitle = "Cabo de Guardia";
       rankEmoji = "🐴";
-      rankProgress = ((totalStars - 30) / 50) * 100;
-    } else if (totalStars < 140) {
+      rankProgress = ((totalStars - 45) / 75) * 100;
+    } else if (totalStars < 210) {
       rankTitle = "Defensor del Centro";
       rankEmoji = "🏰";
-      rankProgress = ((totalStars - 80) / 60) * 100;
-    } else if (totalStars < 190) {
+      rankProgress = ((totalStars - 120) / 90) * 100;
+    } else if (totalStars < 280) {
       rankTitle = "Chef de Aperturas";
       rankEmoji = "🥐";
-      rankProgress = ((totalStars - 140) / 50) * 100;
-    } else if (totalStars < 225) {
+      rankProgress = ((totalStars - 210) / 70) * 100;
+    } else if (totalStars < 340) {
       rankTitle = "Jinete del Tablero";
       rankEmoji = "⚡";
-      rankProgress = ((totalStars - 190) / 35) * 100;
+      rankProgress = ((totalStars - 280) / 60) * 100;
     } else {
       rankTitle = "Gran Maestro Mágico";
       rankEmoji = "👑";
@@ -277,14 +275,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (barEl) barEl.style.width = `${rankProgress}%`;
     if (textEl) textEl.textContent = `${Math.round(rankProgress)}%`;
 
-    // Badges list definition (Rebalanced for 240 stars)
+    // Badges list definition (Rebalanced for 360 stars / 24 stickers)
     const badges = [
       { id: "primer_paso", name: "Primer Paso", desc: "Consigue tu 1ª estrella", emoji: "👣", unlocked: totalStars >= 1 },
-      { id: "cocinero_real", name: "Chef Real", desc: "60★ en las Empanadas", emoji: "👨‍🍳", unlocked: torretaStars >= 60 },
-      { id: "jinete_l", name: "Jinete de la L", desc: "60★ en el Laberinto", emoji: "🎠", unlocked: caballoStars >= 60 },
-      { id: "coleccionista", name: "Coleccionista", desc: "Colecciona 5 cromos", emoji: "📖", unlocked: stickersCount >= 5 },
-      { id: "ataque_caotico", name: "Táctico Caótico", desc: "Logra 130★ totales", emoji: "⚡", unlocked: totalStars >= 130 },
-      { id: "maestro_supremo", name: "Inmortal", desc: "Logra 220★ totales", emoji: "👑", unlocked: totalStars >= 220 }
+      { id: "cocinero_real", name: "Chef Real", desc: "90★ en las Empanadas", emoji: "👨‍🍳", unlocked: torretaStars >= 90 },
+      { id: "jinete_l", name: "Jinete de la L", desc: "90★ en el Laberinto", emoji: "🎠", unlocked: caballoStars >= 90 },
+      { id: "coleccionista", name: "Coleccionista", desc: "Colecciona 10 cromos", emoji: "📖", unlocked: stickersCount >= 10 },
+      { id: "ataque_caotico", name: "Táctico Caótico", desc: "Logra 200★ totales", emoji: "⚡", unlocked: totalStars >= 200 },
+      { id: "maestro_supremo", name: "Inmortal", desc: "Logra 330★ totales", emoji: "👑", unlocked: totalStars >= 330 }
     ];
 
     const badgesRow = document.getElementById('badges-row');

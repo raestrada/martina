@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const STICKERS = [
     {
       id: 1,
+      category: "clavadas",
       name: "Clavada Absoluta",
       rarity: "normal",
       badge: "Común",
@@ -26,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       id: 2,
+      category: "clavadas",
       name: "Clavada Relativa",
       rarity: "normal",
       badge: "Común",
@@ -45,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       id: 3,
+      category: "clavadas",
       name: "Clavada Cruzada",
       rarity: "epic",
       badge: "Épico",
@@ -66,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       id: 4,
+      category: "clavadas",
       name: "La Ópera de Morphy",
       rarity: "epic",
       badge: "Épico",
@@ -85,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       id: 5,
+      category: "clavadas",
       name: "El Estilo Polgar",
       rarity: "epic",
       badge: "Épico",
@@ -104,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       id: 6,
+      category: "clavadas",
       name: "Alfil Exiliado",
       rarity: "legendary",
       badge: "Legendario",
@@ -123,6 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       id: 7,
+      category: "ataque",
       name: "El Bosque de Tal",
       rarity: "epic",
       badge: "Épico",
@@ -142,6 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       id: 8,
+      category: "ataque",
       name: "Pieza Sobrecargada",
       rarity: "normal",
       badge: "Común",
@@ -161,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       id: 9,
+      category: "ataque",
       name: "Clavada de Contragolpe",
       rarity: "normal",
       badge: "Común",
@@ -180,6 +189,67 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       id: 10,
+      category: "ataque",
+      name: "La Inmortal",
+      rarity: "legendary",
+      badge: "Legendario",
+      icon: "🧙‍♂️💀",
+      silhouette: "♔",
+      quote: "«Sacrifiqué mis torres y mi Dama... ¡pero a cambio conjuré el jaque mate más hermoso de la eternidad!»",
+      description: "Rinde homenaje a 'La Inmortal' (Londres, 1851), donde Adolf Anderssen entregó casi todo su ejército para tejer una red de mate insólita. Demuestra que en ajedrez, el valor de las piezas es relativo al mate.",
+      tip: "Recuerda la lección de Anderssen: ¡el ajedrez es actividad, espacio y coordinación, no solo coleccionar material!",
+      position: {
+        pieces: { 'e8': '♚', 'd7': '♟', 'e7': '♝', 'f3': '♘', 'c4': '♗', 'd6': '♗', 'e2': '♙', 'f7': '♘', 'g5': '♟' },
+        highlights: {
+          'e8': 'highlight-pin',
+          'f7': 'highlight-attacker',
+          'd6': 'highlight-attacker'
+        }
+      }
+    },
+    {
+      id: 11,
+      category: "ataque",
+      name: "Clavada en Rayos X",
+      rarity: "epic",
+      badge: "Épico",
+      icon: "⚡💀",
+      silhouette: "♛",
+      quote: "«¡Puedo ver a través de tu escudo! Tu rey está en mi línea de fuego aunque pongas un muro.»",
+      description: "Un ataque misterioso que atraviesa una pieza enemiga para clavar o amenazar la pieza que está detrás, ¡como si Martina tuviera superpoderes de rayos X en el Reino de las Casillas!",
+      tip: "Las torres y damas son ideales para ataques de rayos X a través de defensores enemigos alineados.",
+      position: {
+        pieces: { 'e8': '♚', 'e5': '♜', 'e1': '♖' },
+        highlights: {
+          'e5': 'highlight-pin',
+          'e8': 'highlight-pin',
+          'e1': 'highlight-attacker'
+        }
+      }
+    },
+    {
+      id: 12,
+      category: "ataque",
+      name: "Ataque a la Descubierta",
+      rarity: "normal",
+      badge: "Común",
+      icon: "🏃‍♂️🔥",
+      silhouette: "♘",
+      quote: "«¡Sorpresa! Me muevo para dejar pasar el rayo láser de mi torre y atacar al mismo tiempo.»",
+      description: "Mueves una pieza quitándola del camino, ¡y de pronto se abre la cortina y otra de tus piezas lanza un ataque devastador al rey! Es el colmo de la sorpresa táctica.",
+      tip: "Busca alinear tu alfil o torre con el rey enemigo antes de que la pieza intermedia salte con jaque.",
+      position: {
+        pieces: { 'h8': '♚', 'g7': '♟', 'd4': '♗', 'c5': '♘', 'f6': '♞' },
+        highlights: {
+          'c5': 'highlight-attacker',
+          'h8': 'highlight-pin',
+          'd4': 'highlight-attacker'
+        }
+      }
+    },
+    {
+      id: 13,
+      category: "defensas",
       name: "Gambito de Dama",
       rarity: "epic",
       badge: "Épico",
@@ -197,7 +267,103 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     },
     {
-      id: 11,
+      id: 14,
+      category: "defensas",
+      name: "Defensa Siciliana Dragón",
+      rarity: "epic",
+      badge: "Épico",
+      icon: "🐉🔥",
+      silhouette: "♝",
+      quote: "«¡Despierta al dragón en g7! Que su aliento de fuego barra todo el flanco de dama.»",
+      description: "La defensa favorita de Martina contra e4. Las negras colocan su alfil en g7 (el alfil dragón) para dominar la gran diagonal diagonal con fuego y contraatacar en el flanco de dama con garras de dragón.",
+      tip: "Enroca corto rápido y usa la columna c abierta para lanzar tus torres al ataque del enroque blanco.",
+      position: {
+        pieces: { 'g8': '♚', 'f7': '♟', 'g6': '♟', 'h7': '♟', 'g7': '♝', 'c8': '♗', 'c6': '♞', 'e4': '♙', 'd4': '♙' },
+        highlights: {
+          'g7': 'highlight-attacker',
+          'c6': 'highlight-pin'
+        }
+      }
+    },
+    {
+      id: 15,
+      category: "defensas",
+      name: "Gambito de Rey",
+      rarity: "normal",
+      badge: "Común",
+      icon: "⚔️♟",
+      silhouette: "♙",
+      quote: "«¿Quieres mi peón de f4? Tómalo, pero prepárate para un huracán de ataques al rey.»",
+      description: "Una apertura romántica y caótica que Martina adora por su locura. Se ofrece el peón de f4 en la segunda jugada para desviar al peón negro, abrir la columna f y atacar al rey enemigo de inmediato.",
+      tip: "Si aceptas el gambito de rey con negras, prepárate para devolver material a cambio de un rápido desarrollo.",
+      position: {
+        pieces: { 'e8': '♚', 'e5': '♟', 'f4': '♙', 'e4': '♙', 'g1': '♘', 'd8': '♛' },
+        highlights: {
+          'f4': 'highlight-attacker',
+          'e5': 'highlight-pin'
+        }
+      }
+    },
+    {
+      id: 16,
+      category: "defensas",
+      name: "Apertura Italiana",
+      rarity: "normal",
+      badge: "Común",
+      icon: "🍕🍕",
+      silhouette: "♝",
+      quote: "«Una empanada italiana recién salida de la casilla c3 para sazonar el ataque en f7.»",
+      description: "Con 1.e4 e5 2.Cf3 Cc6 3.Ac4, Torreta coloca su alfil en la diagonal activa c4 apuntando directamente al punto débil f7 de las negras. ¡Es la favorita de Martina para aprender táctica!",
+      tip: "El punto f7 solo está defendido por el rey negro, lo que lo hace el blanco perfecto para sacrificios rápidos de alfil o caballo.",
+      position: {
+        pieces: { 'e8': '♚', 'c5': '♝', 'c4': '♗', 'f7': '♟', 'e1': '♔', 'e5': '♟', 'e4': '♙' },
+        highlights: {
+          'c4': 'highlight-attacker',
+          'f7': 'highlight-pin'
+        }
+      }
+    },
+    {
+      id: 17,
+      category: "defensas",
+      name: "Defensa Nimzoindia",
+      rarity: "epic",
+      badge: "Épico",
+      icon: "🐘🏰",
+      silhouette: "♞",
+      quote: "«Te clavo el caballo en c3 antes de que pueda saltar al centro. ¡Control mental absoluto!»",
+      description: "Una defensa hipermoderna elegante. En lugar de ocupar el centro con peones, las negras clavan el caballo blanco de c3 con su alfil en b4 para controlar indirectamente la casilla clave e4.",
+      tip: "Úsala para doblar los peones blancos en la columna c y luego presionar esas debilidades con tus piezas menores.",
+      position: {
+        pieces: { 'e8': '♚', 'b4': '♝', 'c3': '♘', 'd4': '♙', 'e1': '♔' },
+        highlights: {
+          'b4': 'highlight-attacker',
+          'c3': 'highlight-pin'
+        }
+      }
+    },
+    {
+      id: 18,
+      category: "defensas",
+      name: "El Escudo de Enroque",
+      rarity: "legendary",
+      badge: "Legendario",
+      icon: "🏰🛡️",
+      silhouette: "♔",
+      quote: "«¡Mi rey duerme tranquilo en su castillo de g1 mientras yo siembro el caos afuera!»",
+      description: "La máxima fortaleza de tu rey. El enroque corto o largo protege al monarca detrás de una muralla de tres peones y una torre activa. ¡Martina sabe que un rey seguro ataca mejor!",
+      tip: "No muevas tus peones de enroque sin una buena razón; cada movimiento de peón debilita la seguridad de tu rey.",
+      position: {
+        pieces: { 'g1': '♔', 'f2': '♙', 'g2': '♙', 'h2': '♙', 'f1': '♖', 'e8': '♚' },
+        highlights: {
+          'g1': 'highlight-pin',
+          'f1': 'highlight-pin'
+        }
+      }
+    },
+    {
+      id: 19,
+      category: "finales",
       name: "Clavada del Pasillo",
       rarity: "normal",
       badge: "Común",
@@ -215,15 +381,101 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     },
     {
-      id: 12,
-      name: "La Inmortal",
+      id: 20,
+      category: "finales",
+      name: "El Zugzwang de Peoncito",
+      rarity: "normal",
+      badge: "Común",
+      icon: "🐌⏳",
+      silhouette: "♙",
+      quote: "«Cualquier paso que des es un paso hacia el abismo. ¡Te toca mover!»",
+      description: "La parálisis total en finales. Ocurre cuando a tu oponente le toca mover, pero cualquier jugada legal que haga destruirá su propia posición. ¡Peoncito adora ver al enemigo inmovilizado!",
+      tip: "El zugzwang es el arma secreta más potente en los finales de reyes y peones. ¡Planifica con paciencia y precisión!",
+      position: {
+        pieces: { 'f6': '♚', 'f4': '♔', 'f5': '♙', 'e5': '♟' },
+        highlights: {
+          'f6': 'highlight-pin',
+          'f4': 'highlight-attacker'
+        }
+      }
+    },
+    {
+      id: 21,
+      category: "finales",
+      name: "Oposición de Spassky",
+      rarity: "epic",
+      badge: "Épico",
+      icon: "👥↔️",
+      silhouette: "♔",
+      quote: "«Cara a cara, paso a paso, mi rey no te dejará avanzar ni una sola casilla.»",
+      description: "Una danza geométrica de reyes. Ocurre cuando los dos reyes están separados por una sola casilla vacía, y el que tiene que mover pierde terreno. Martina la dominó estudiando el final Spassky-Fischer de 1972.",
+      tip: "Mantén la oposición para obligar al rey enemigo a apartarse y abrir paso a tu propio rey o peón pasado.",
+      position: {
+        pieces: { 'd6': '♚', 'd4': '♔', 'd5': '♙' },
+        highlights: {
+          'd6': 'highlight-pin',
+          'd4': 'highlight-attacker'
+        }
+      }
+    },
+    {
+      id: 22,
+      category: "finales",
+      name: "Triangulación Mágica",
+      rarity: "normal",
+      badge: "Común",
+      icon: "🔺🪄",
+      silhouette: "♔",
+      quote: "«Doy un rodeo en triángulo: d4, c4, d5... ¡y ahora la jugada incómoda te toca a ti!»",
+      description: "Una maniobra de rey en forma de triángulo para perder un tiempo deliberadamente y transferir el turno al oponente, forzándolo a caer en zugzwang en el final.",
+      tip: "Úsala cuando necesites que el oponente mueva primero para romper su defensa de peones y ganar la oposición.",
+      position: {
+        pieces: { 'e6': '♚', 'd4': '♔', 'd5': '♙', 'e5': '♟' },
+        highlights: {
+          'd4': 'highlight-attacker',
+          'e6': 'highlight-pin'
+        }
+      }
+    },
+    {
+      id: 23,
+      category: "finales",
+      name: "Regla del Cuadrado",
+      rarity: "epic",
+      badge: "Épico",
+      icon: "📐⬜",
+      silhouette: "♙",
+      quote: "«No necesito calcular jugada por jugada. Mi peón está fuera de tu cuadrado. ¡Soy Dama!»",
+      description: "Un truco mental para calcular al instante si un rey enemigo puede atrapar a tu peón pasado antes de coronar. Dibuja un cuadrado imaginario; si el rey no puede entrar en él, el peón ganará la carrera.",
+      tip: "Si el rey enemigo no puede pisar el cuadrado imaginario del peón en su turno, ¡el peón coronará sin ayuda de tu rey!",
+      position: {
+        pieces: { 'a4': '♙', 'f6': '♚', 'e1': '♔' },
+        highlights: {
+          'a4': 'highlight-attacker',
+          'f6': 'highlight-pin'
+        }
+      }
+    },
+    {
+      id: 24,
+      category: "finales",
+      name: "Subcoronación Absurda",
       rarity: "legendary",
       badge: "Legendario",
-      icon: "🧙‍♂️💀",
-      silhouette: "♔",
-      quote: "«Sacrifiqué mis torres y mi Dama... ¡pero a cambio conjuré el jaque mate más hermoso de la eternidad!»",
-      description: "Rinde homenaje a 'La Inmortal' (Londres, 1851), donde Adolf Anderssen entregó casi todo su ejército para tejer una red de mate insólita. Demuestra que en ajedrez, el valor de las piezas es relativo al mate.",
-      tip: "Recuerda la lección de Anderssen: ¡el ajedrez es actividad, espacio y coordinación, no solo coleccionar material!",
+      icon: "🦄🐴",
+      silhouette: "♘",
+      quote: "«¿Quién quiere una Dama aburrida cuando puedes coronar un caballo mágico que da jaque doble?»",
+      description: "Coronar un peón no siempre significa pedir una Dama. A veces, pedir un Caballo o una Torre es la única jugada mágica para dar jaque mate inmediato o evitar un ahogado táctico.",
+      tip: "Revisa siempre si una subcoronación a caballo o torre puede salvarte de un ahogado o dar un jaque doble decisivo.",
+      position: {
+        pieces: { 'h8': '♚', 'g8': '♜', 'h7': '♙', 'f6': '♔', 'h6': '♟' },
+        highlights: {
+          'h7': 'highlight-attacker',
+          'h8': 'highlight-pin'
+        }
+      }
+    }
+  ];da la lección de Anderssen: ¡el ajedrez es actividad, espacio y coordinación, no solo coleccionar material!",
       position: {
         pieces: { 'e8': '♚', 'd7': '♟', 'e7': '♝', 'f3': '♘', 'c4': '♗', 'd6': '♗', 'e2': '♙', 'f7': '♘', 'g5': '♟' },
         highlights: {
@@ -972,13 +1224,34 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // === 11. ALBUM GRID RENDERER ===
+  let activeCategory = "all";
+
+  function setupTabFilters() {
+    const tabsContainer = document.getElementById('albumTabs');
+    if (!tabsContainer) return;
+    
+    const tabButtons = tabsContainer.querySelectorAll('.tab-btn');
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeCategory = btn.getAttribute('data-category');
+        renderAlbumGrid();
+      });
+    });
+  }
+
   function renderAlbumGrid() {
     const albumGrid = document.getElementById('albumGrid');
     if (!albumGrid) return;
     
     albumGrid.innerHTML = '';
     
-    STICKERS.forEach((sticker) => {
+    const filteredStickers = activeCategory === "all" 
+      ? STICKERS 
+      : STICKERS.filter(s => s.category === activeCategory);
+    
+    filteredStickers.forEach((sticker) => {
       const isUnlocked = unlockedList.includes(sticker.id);
       const slot = document.createElement('div');
       slot.className = `sticker-slot ${isUnlocked ? 'unlocked' : ''}`;
@@ -1029,6 +1302,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadStateFromStorage();
   updateHeaderStats();
   checkAlbumCompletion();
+  setupTabFilters();
   renderAlbumGrid();
   setupPackZone();
   initTrivia();

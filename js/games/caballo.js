@@ -125,6 +125,61 @@ class CaballoGame {
         lava: [],
         trophy: 'd7',
         startPos: { r: 7, c: 4 } // e1
+      },
+      {
+        name: "Río de Diamantes",
+        description: "Recoge las zanahorias flotantes en las orillas del Gran Río Central. ¡Cuidado con las corrientes de lava!",
+        moves: 18,
+        carrots: ['b2', 'g2', 'c7', 'f7', 'd4', 'e5'],
+        obstacles: ['d3', 'e3', 'd6', 'e6', 'c4', 'f5'],
+        lava: ['d3', 'e3', 'd6', 'e6', 'c4', 'f5'],
+        ice: [],
+        trophy: 'd8',
+        startPos: { r: 7, c: 1 } // b1
+      },
+      {
+        name: "La Prisión del Enroque",
+        description: "El rey enemigo ha fortificado el enroque corto. Salta los muros helados para reclamar tu premio.",
+        moves: 16,
+        carrots: ['f7', 'h7', 'g6', 'f8', 'h8'],
+        obstacles: ['f6', 'g7', 'h6', 'e7', 'e8'],
+        ice: ['f6', 'g7', 'h6', 'e7', 'e8'],
+        lava: [],
+        trophy: 'g8',
+        startPos: { r: 7, c: 1 } // b1
+      },
+      {
+        name: "El Desfiladero Glacial",
+        description: "Deslízate por un desfiladero estrecho rodeado de glaciares traicioneros. ¡Un paso en falso y te congelarás!",
+        moves: 18,
+        carrots: ['a2', 'b4', 'c6', 'd8', 'f8', 'g6', 'h4'],
+        obstacles: ['b3', 'c4', 'd5', 'e6', 'f7', 'a6', 'h6', 'e4', 'd4'],
+        ice: ['b3', 'c4', 'd5', 'e6', 'f7', 'a6', 'h6', 'e4', 'd4'],
+        lava: [],
+        trophy: 'f3',
+        startPos: { r: 7, c: 0 } // a1
+      },
+      {
+        name: "La Danza del Fianchetto",
+        description: "Realiza una danza geométrica perfecta alrededor de las diagonales del alfil dragón. ¡La lava fluye en g2 y b7!",
+        moves: 20,
+        carrots: ['a3', 'c3', 'f3', 'h3', 'a6', 'c6', 'f6', 'h6'],
+        obstacles: ['b2', 'g2', 'b7', 'g7', 'd4', 'e4', 'd5', 'e5'],
+        ice: [],
+        lava: ['b2', 'g2', 'b7', 'g7'],
+        trophy: 'd7',
+        startPos: { r: 7, c: 4 } // e1
+      },
+      {
+        name: "La Gran Muralla del Reino",
+        description: "¡La muralla de peones bloquea el norte! Salta la barrera con total determinación y corona en la cima.",
+        moves: 22,
+        carrots: ['a4', 'b4', 'c4', 'd4', 'e4', 'f4', 'g4', 'h4'],
+        obstacles: ['a5', 'b5', 'c5', 'd5', 'e5', 'f5', 'g5', 'h5'],
+        ice: [],
+        lava: [],
+        trophy: 'e8',
+        startPos: { r: 7, c: 1 } // b1
       }
     ];
   }
@@ -136,7 +191,8 @@ class CaballoGame {
     if (this.selectedDifficulty === 'hard') key = 'martina_caballo_progress_hard';
     if (this.selectedDifficulty === 'martina') key = 'martina_caballo_progress_martina';
 
-    let progress = JSON.parse(localStorage.getItem(key)) || Array(10).fill(0);
+    let progress = JSON.parse(localStorage.getItem(key)) || [];
+    while (progress.length < 15) progress.push(0);
     
     let levelCardsHTML = '';
     
@@ -513,7 +569,8 @@ class CaballoGame {
     if (this.selectedDifficulty === 'hard') key = 'martina_caballo_progress_hard';
     if (this.selectedDifficulty === 'martina') key = 'martina_caballo_progress_martina';
 
-    let progress = JSON.parse(localStorage.getItem(key)) || Array(10).fill(0);
+    let progress = JSON.parse(localStorage.getItem(key)) || [];
+    while (progress.length < 15) progress.push(0);
     const oldStars = progress[this.currentLevelIndex] || 0;
     
     let isNewHighStar = starsWon > oldStars;
