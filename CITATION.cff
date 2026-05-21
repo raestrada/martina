@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+title: Martina · Cuentos de Ajedrez para Dormir
+message: >-
+  Si usas estos cuentos o su código en tu trabajo,
+  por favor cítalos.
+type: software
+authors:
+  - given-names: Rodrigo
+    family-names: Estrada
+    alias: Papá de Martina
+repository-code: 'https://github.com/raestrada/martina'
+url: 'https://martinachess.com'
+abstract: >-
+  Colección de 12 cuentos infantiles ilustrados que enseñan ajedrez real
+  a través de aventuras surrealistas en el Reino de las Sesenta y Cuatro
+  Casillas. Sitio web estático con galería, juegos y sistema de logros.
+keywords:
+  - ajedrez
+  - cuentos infantiles
+  - chess
+  - bedtime stories
+  - educación
+  - español
+license: MIT
