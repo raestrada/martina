@@ -1,47 +1,28 @@
 // === JUEGO: LAS EMPANADAS DE TORRETA ===
-// Minijuego interactivo de preparación de aperturas de ajedrez.
+// Minijuego interactivo de preparación de aperturas de ajedrez en la casilla c3.
+// Cuenta con 10 niveles de dificultad progresiva, selector de niveles, estrellas y guardado persistente.
 
 class TorretaGame {
   constructor(container) {
     this.container = container;
-    this.score = 0;
-    this.timeLeft = 45;
     this.gameActive = false;
     this.timerInterval = null;
-    
+    this.currentRecipeIndex = 0;
+    this.currentStepIndex = 0;
+    this.selectedSquare = null;
+    this.boardState = {};
+    this.selectedDifficulty = localStorage.getItem('martina_torreta_difficulty') || 'medium';
+
     this.recipes = [
       {
-        name: "Apertura Italiana",
-        excerpt: "Con tomate y albahaca, ¡el clásico del reino!",
-        customer: "Peoncito",
-        avatar: "assets/img/peoncito_1778904557723.png",
-        steps: [
-          { type: "user", from: "e2", to: "e4", piece: "♙", desc: "Mueve tu Peón de Rey a e4" },
-          { type: "comp", from: "e7", to: "e5", piece: "♟", desc: "La máquina responde e5" },
-          { type: "user", from: "g1", to: "f3", piece: "♘", desc: "Desarrolla tu Caballo a f3" },
-          { type: "comp", from: "b8", to: "c6", piece: "♞", desc: "La máquina defiende con Cc6" },
-          { type: "user", from: "f1", to: "c4", piece: "♗", desc: "Saca tu Alfil de casillas claras a c4" }
-        ]
-      },
-      {
         name: "Defensa Siciliana",
-        excerpt: "Picante y asimétrica, para paladares atrevidos.",
+        excerpt: "¡Picante y asimétrica, para paladares atrevidos!",
         customer: "Reina Negra",
         avatar: "assets/img/reina_negra_1778904582825.png",
+        targetTime: 40,
         steps: [
           { type: "user", from: "e2", to: "e4", piece: "♙", desc: "Mueve tu Peón de Rey a e4" },
-          { type: "comp", from: "c7", to: "c5", piece: "♟", desc: "La máquina responde c5 (Siciliana)" }
-        ]
-      },
-      {
-        name: "Gambito de Dama",
-        excerpt: "Sin dama (solo masa), ¡un sacrificio delicioso!",
-        customer: "Alfil Exiliado",
-        avatar: "assets/img/alfil_exiliado_1778944848314.png",
-        steps: [
-          { type: "user", from: "d2", to: "d4", piece: "♙", desc: "Mueve tu Peón de Dama a d4" },
-          { type: "comp", from: "d7", to: "d5", piece: "♟", desc: "La máquina responde d5" },
-          { type: "user", from: "c2", to: "c4", piece: "♙", desc: "Ofrece el Peón de c4 para desviar su centro" }
+          { type: "comp", from: "c7", to: "c5", piece: "♟", desc: "La Reina Negra responde c5 (Siciliana)" }
         ]
       },
       {
@@ -49,47 +30,249 @@ class TorretaGame {
         excerpt: "Compacta y sólida como una empanada de hojaldre.",
         customer: "Tomás el Erizo",
         avatar: "assets/img/tomas_erizo_1778905884457.png",
+        targetTime: 45,
         steps: [
           { type: "user", from: "e2", to: "e4", piece: "♙", desc: "Mueve tu Peón de Rey a e4" },
           { type: "comp", from: "e7", to: "e6", piece: "♟", desc: "La máquina responde e6 (Francesa)" },
           { type: "user", from: "d2", to: "d4", piece: "♙", desc: "Toma el control del centro con d4" },
           { type: "comp", from: "d7", to: "d5", piece: "♟", desc: "La máquina golpea el centro con d5" }
         ]
+      },
+      {
+        name: "Gambito de Dama",
+        excerpt: "Sin dama (solo masa), ¡un sacrificio delicioso!",
+        customer: "Alfil Exiliado",
+        avatar: "assets/img/alfil_exiliado_1778944848314.png",
+        targetTime: 55,
+        steps: [
+          { type: "user", from: "d2", to: "d4", piece: "♙", desc: "Mueve tu Peón de Dama a d4" },
+          { type: "comp", from: "d7", to: "d5", piece: "♟", desc: "La máquina responde d5" },
+          { type: "user", from: "c2", to: "c4", piece: "♙", desc: "Ofrece el Peón de c4 para desviar su centro" },
+          { type: "comp", from: "e7", to: "e6", piece: "♟", desc: "La máquina rechaza el gambito con e6" },
+          { type: "user", from: "b1", to: "c3", piece: "♘", desc: "Desarrolla tu Caballo de Dama a c3" },
+          { type: "comp", from: "g8", to: "f6", piece: "♞", desc: "El rival saca su Caballo a f6" }
+        ]
+      },
+      {
+        name: "Apertura Italiana",
+        excerpt: "Con tomate y albahaca, ¡el clásico del reino!",
+        customer: "Peoncito",
+        avatar: "assets/img/peoncito_1778904557723.png",
+        targetTime: 60,
+        steps: [
+          { type: "user", from: "e2", to: "e4", piece: "♙", desc: "Mueve tu Peón de Rey a e4" },
+          { type: "comp", from: "e7", to: "e5", piece: "♟", desc: "La máquina responde e5" },
+          { type: "user", from: "g1", to: "f3", piece: "♘", desc: "Desarrolla tu Caballo a f3" },
+          { type: "comp", from: "b8", to: "c6", piece: "♞", desc: "La máquina defiende con Cc6" },
+          { type: "user", from: "f1", to: "c4", piece: "♗", desc: "Saca tu Alfil de casillas claras a c4" },
+          { type: "comp", from: "g8", to: "f6", piece: "♞", desc: "El rival desafía con Cf6" }
+        ]
+      },
+      {
+        name: "Defensa Caro-Kann",
+        excerpt: "La receta ultra-sólida favorita de los jugadores de torneo.",
+        customer: "Caballo de Ŋ",
+        avatar: "assets/img/juego_caballo_l_1779376737849.png",
+        targetTime: 60,
+        steps: [
+          { type: "user", from: "e2", to: "e4", piece: "♙", desc: "Peón a e4, iniciando la batalla" },
+          { type: "comp", from: "c7", to: "c6", piece: "♟", desc: "El oponente prepara d5 jugando c6" },
+          { type: "user", from: "d2", to: "d4", piece: "♙", desc: "Ocupa el centro con d4" },
+          { type: "comp", from: "d7", to: "d5", piece: "♟", desc: "Las negras desafían con d5" },
+          { type: "user", from: "b1", to: "c3", piece: "♘", desc: "Desarrolla tu Caballo a c3 protegiendo e4" },
+          { type: "comp", from: "d5", to: "e4", piece: "♟", desc: "El rival captura en e4" }
+        ]
+      },
+      {
+        name: "Defensa Escandinava",
+        excerpt: "Un golpe inmediato al centro que exige reflejos rápidos.",
+        customer: "Reloj Parlante",
+        avatar: "assets/img/peoncito_1778904557723.png",
+        targetTime: 60,
+        steps: [
+          { type: "user", from: "e2", to: "e4", piece: "♙", desc: "Peón a e4" },
+          { type: "comp", from: "d7", to: "d5", piece: "♟", desc: "¡Desafío directo a e4 con d5!" },
+          { type: "user", from: "e4", to: "d5", piece: "♙", desc: "Captura el peón intruso en d5" },
+          { type: "comp", from: "d8", to: "d5", piece: "♛", desc: "La Dama negra recaptura en d5" },
+          { type: "user", from: "b1", to: "c3", piece: "♘", desc: "Saca tu Caballo a c3 amenazando la Dama" },
+          { type: "comp", from: "d5", to: "a5", piece: "♛", desc: "La Dama negra se retira a a5" }
+        ]
+      },
+      {
+        name: "Defensa Eslava",
+        excerpt: "¡Sólida y sabrosa, una muralla de empanada!",
+        customer: "Alfil Exiliado",
+        avatar: "assets/img/alfil_exiliado_1778944848314.png",
+        targetTime: 65,
+        steps: [
+          { type: "user", from: "d2", to: "d4", piece: "♙", desc: "Mueve tu Peón de Dama a d4" },
+          { type: "comp", from: "d7", to: "d5", piece: "♟", desc: "La máquina responde d5" },
+          { type: "user", from: "c2", to: "c4", piece: "♙", desc: "Ofrece el Peón de c4" },
+          { type: "comp", from: "c7", to: "c6", piece: "♟", desc: "La máquina se solidifica jugando c6" },
+          { type: "user", from: "g1", to: "f3", piece: "♘", desc: "Desarrolla tu Caballo a f3" },
+          { type: "comp", from: "g8", to: "f6", piece: "♞", desc: "El caballo negro salta a f6" }
+        ]
+      },
+      {
+        name: "Apertura Española (Ruy López)",
+        excerpt: "La empanada real de alta alcurnia. Ataque sutil a larga distancia.",
+        customer: "Rey Blanco",
+        avatar: "assets/img/rey_blanco_entrenamiento_1779139099201.png",
+        targetTime: 75,
+        steps: [
+          { type: "user", from: "e2", to: "e4", piece: "♙", desc: "Peón de Rey a e4" },
+          { type: "comp", from: "e7", to: "e5", piece: "♟", desc: "Las negras responden e5" },
+          { type: "user", from: "g1", to: "f3", piece: "♘", desc: "Caballo a f3" },
+          { type: "comp", from: "b8", to: "c6", piece: "♞", desc: "Caballo negro a c6" },
+          { type: "user", from: "f1", to: "b5", piece: "♗", desc: "¡Lanza tu Alfil a b5 presionando el Caballo!" },
+          { type: "comp", from: "a7", to: "a6", piece: "♟", desc: "El peón negro en a6 ahuyenta tu Alfil" },
+          { type: "user", from: "b5", to: "a4", piece: "♗", desc: "Retira tu Alfil con elegancia a a4" },
+          { type: "comp", from: "g8", to: "f6", piece: "♞", desc: "Las negras sacan su Caballo a f6" }
+        ]
+      },
+      {
+        name: "Apertura del Alfil (Ataque Greco)",
+        excerpt: "El clásico ataque táctico del sabio Gioachino Greco.",
+        customer: "Torreta",
+        avatar: "assets/img/juego_torreta_empanadas_1779376721444.png",
+        targetTime: 80,
+        steps: [
+          { type: "user", from: "e2", to: "e4", piece: "♙", desc: "Peón e4" },
+          { type: "comp", from: "e7", to: "e5", piece: "♟", desc: "Respuesta e5" },
+          { type: "user", from: "f1", to: "c4", piece: "♗", desc: "Saca tu Alfil a la diagonal activa c4" },
+          { type: "comp", from: "g8", to: "f6", piece: "♞", desc: "Caballo negro f6" },
+          { type: "user", from: "d2", to: "d4", piece: "♙", desc: "Golpea el centro con d4" },
+          { type: "comp", from: "e5", to: "d4", piece: "♟", desc: "Las negras capturan exd4" },
+          { type: "user", from: "g1", to: "f3", piece: "♘", desc: "Caballo f3 atacando d4" },
+          { type: "comp", from: "f6", to: "e4", piece: "♞", desc: "El rival captura tu peón de e4" }
+        ]
+      },
+      {
+        name: "Ataque Yugoslavo (Siciliana Dragón)",
+        excerpt: "¡Fuego extremo! Sacrificios, enroques opuestos y tormentas tácticas.",
+        customer: "Mikhail Tal (La Sombra)",
+        avatar: "assets/img/tal_sombra_1779113500853.png",
+        targetTime: 95,
+        steps: [
+          { type: "user", from: "e2", to: "e4", piece: "♙", desc: "Inicia la partida con e4" },
+          { type: "comp", from: "c7", to: "c5", piece: "♟", desc: "El dragón se defiende con c5" },
+          { type: "user", from: "g1", to: "f3", piece: "♘", desc: "Desarrolla tu Caballo a f3" },
+          { type: "comp", from: "d7", to: "d6", piece: "♟", desc: "Las negras abren diagonal con d6" },
+          { type: "user", from: "d2", to: "d4", piece: "♙", desc: "Golpea el centro con d4" },
+          { type: "comp", from: "c5", to: "d4", piece: "♟", desc: "El peón de c5 captura en d4" },
+          { type: "user", from: "f3", to: "d4", piece: "♘", desc: "Tu Caballo recaptura en d4 con orgullo" },
+          { type: "comp", from: "g8", to: "f6", piece: "♞", desc: "El caballo negro presiona e4" },
+          { type: "user", from: "b1", to: "c3", piece: "♘", desc: "Caballo c3 defendiendo e4" },
+          { type: "comp", from: "g7", to: "g6", piece: "♟", desc: "Las negras preparan el Fianchetto con g6" }
+        ]
       }
     ];
-
-    this.currentRecipeIndex = 0;
-    this.currentStepIndex = 0;
-    this.selectedSquare = null;
-    this.boardState = {}; // Coordinates mapped to pieces
   }
 
-  // --- INITIAL SCREEN ---
+  // --- INITIAL LEVEL SELECT SCREEN ---
   showWelcomeScreen() {
-    this.container.innerHTML = `
-      <div class="game-screen">
-        <div class="game-screen-img">
-          <img src="assets/img/juego_torreta_empanadas_1779376721444.png" alt="Empanadas de Torreta">
+    let key = 'martina_torreta_progress';
+    if (this.selectedDifficulty === 'easy') key = 'martina_torreta_progress_easy';
+    if (this.selectedDifficulty === 'hard') key = 'martina_torreta_progress_hard';
+    if (this.selectedDifficulty === 'martina') key = 'martina_torreta_progress_martina';
+
+    let progress = JSON.parse(localStorage.getItem(key)) || Array(10).fill(0);
+    
+    let levelCardsHTML = '';
+    
+    // Thematic star styles based on difficulty
+    let starClass = 'star-medium';
+    if (this.selectedDifficulty === 'easy') starClass = 'star-easy';
+    if (this.selectedDifficulty === 'hard') starClass = 'star-hard';
+    if (this.selectedDifficulty === 'martina') starClass = 'star-martina';
+
+    this.recipes.forEach((recipe, idx) => {
+      const stars = progress[idx] || 0;
+      const isLocked = idx > 0 && (progress[idx - 1] === 0);
+      
+      let starsHTML = '';
+      for (let s = 1; s <= 3; s++) {
+        if (s <= stars) {
+          starsHTML += `<span class="star-filled ${starClass}">★</span>`;
+        } else {
+          starsHTML += '<span class="star-empty">★</span>';
+        }
+      }
+      
+      levelCardsHTML += `
+        <div class="level-card ${isLocked ? 'locked' : ''}" data-level="${idx}">
+          <div class="level-number">Etapa ${idx + 1}</div>
+          <div class="level-card-stars">${isLocked ? '' : starsHTML}</div>
+          <div class="level-card-title">${recipe.name}</div>
+          <div class="level-card-desc">${recipe.excerpt}</div>
+          <div class="level-card-footer">
+            <span class="level-card-meta">${recipe.steps.filter(s => s.type === 'user').length} Jugadas</span>
+            ${isLocked ? '' : '<button class="level-card-play-btn">Cocinar 🥐</button>'}
+          </div>
         </div>
-        <h2>Las Empanadas de Torreta</h2>
-        <p>
-          ¡Ayuda a Torreta a atender su puesto en la casilla c3! Los personajes del reino tienen hambre. Prepárales sus pedidos de ajedrez jugando los movimientos correctos de cada apertura.
-        </p>
-        <button class="btn btn-game-screen" id="btn-start-cooking">¡Empezar a Cocinar! 🥐</button>
+      `;
+    });
+
+    this.container.innerHTML = `
+      <div class="level-select-container">
+        <div class="level-select-header">
+          <h2>🥐 Las Empanadas de Torreta 🥐</h2>
+          <p>Elige una receta del menú. ¡Cocina en la casilla c3 antes de que se agote el tiempo y desbloquea niveles!</p>
+          
+          <div class="difficulty-selector">
+            <button class="diff-tab easy ${this.selectedDifficulty === 'easy' ? 'active' : ''}" data-diff="easy">🟢 Fácil</button>
+            <button class="diff-tab medium ${this.selectedDifficulty === 'medium' ? 'active' : ''}" data-diff="medium">🟡 Medio</button>
+            <button class="diff-tab hard ${this.selectedDifficulty === 'hard' ? 'active' : ''}" data-diff="hard">🔴 Difícil</button>
+            <button class="diff-tab martina ${this.selectedDifficulty === 'martina' ? 'active' : ''}" data-diff="martina">👑 Martina</button>
+          </div>
+        </div>
+        <div class="level-grid">
+          ${levelCardsHTML}
+        </div>
       </div>
     `;
 
-    document.getElementById('btn-start-cooking').addEventListener('click', () => {
-      this.startGame();
+    // Click event for difficulty selector
+    const diffButtons = this.container.querySelectorAll('.diff-tab');
+    diffButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const diff = btn.getAttribute('data-diff');
+        this.selectedDifficulty = diff;
+        localStorage.setItem('martina_torreta_difficulty', diff);
+        window.GameAudio.playMove();
+        this.showWelcomeScreen();
+      });
+    });
+
+    // Click events
+    const cards = this.container.querySelectorAll('.level-card');
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        const idx = parseInt(card.getAttribute('data-level'));
+        const isLocked = idx > 0 && (progress[idx - 1] === 0);
+        if (!isLocked) {
+          this.currentRecipeIndex = idx;
+          this.startGame();
+        } else {
+          window.GameAudio.playError();
+        }
+      });
     });
   }
 
   // --- START GAME ---
   startGame() {
-    this.score = 0;
-    this.timeLeft = 45;
+    const currentRecipe = this.recipes[this.currentRecipeIndex];
+    
+    // Apply difficulty modifiers for timer
+    let timeMultiplier = 1.0;
+    if (this.selectedDifficulty === 'easy') timeMultiplier = 1.5;
+    if (this.selectedDifficulty === 'hard') timeMultiplier = 0.75;
+    if (this.selectedDifficulty === 'martina') timeMultiplier = 0.50;
+    
+    this.timeLeft = Math.round(currentRecipe.targetTime * timeMultiplier);
     this.gameActive = true;
-    this.currentRecipeIndex = 0;
     this.currentStepIndex = 0;
     this.selectedSquare = null;
 
@@ -97,7 +280,8 @@ class TorretaGame {
     this.initBoard();
     this.loadRecipe();
 
-    // Start clock timer
+    // Start timer interval
+    if (this.timerInterval) clearInterval(this.timerInterval);
     this.timerInterval = setInterval(() => {
       if (this.gameActive) {
         this.timeLeft--;
@@ -116,11 +300,11 @@ class TorretaGame {
       <div class="empanadas-container">
         
         <div class="empanadas-top-bar">
-          <div class="score-box">
-            <span>⭐ Pedidos:</span> <span id="score-val">0</span>
-          </div>
+          <button class="btn-close-modal" id="btn-back-to-select" style="background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: var(--warm-white);">
+            ← Menú de Recetas
+          </button>
           <div class="timer-box" id="timer-box">
-            <span>⏱️ Reloj:</span> <span id="timer-val">45s</span>
+            <span>⏱️ Reloj de Cocina:</span> <span id="timer-val">${this.timeLeft}s</span>
           </div>
         </div>
 
@@ -156,6 +340,11 @@ class TorretaGame {
 
       </div>
     `;
+
+    document.getElementById('btn-back-to-select').addEventListener('click', () => {
+      this.destroy();
+      this.showWelcomeScreen();
+    });
   }
 
   // --- CHESSBOARD LOGIC ---
@@ -164,7 +353,7 @@ class TorretaGame {
     boardDOM.innerHTML = '';
     this.boardState = {};
 
-    // Initial piece placement on board coordinates
+    // Initial piece placement
     const initialSetup = {
       // Black Pieces
       'a8': '♜', 'b8': '♞', 'c8': '♝', 'd8': '♛', 'e8': '♚', 'f8': '♝', 'g8': '♞', 'h8': '♜',
@@ -174,10 +363,9 @@ class TorretaGame {
       'a1': '♖', 'b1': '♘', 'c1': '♗', 'd1': '♕', 'e1': '♔', 'f1': '♗', 'g1': '♘', 'h1': '♖'
     };
 
-    // Fill board state
     for (let r = 8; r >= 1; r--) {
       for (let c = 0; c < 8; c++) {
-        const file = String.fromCharCode(97 + c); // a-h
+        const file = String.fromCharCode(97 + c);
         const coord = `${file}${r}`;
         this.boardState[coord] = initialSetup[coord] || null;
       }
@@ -188,7 +376,18 @@ class TorretaGame {
 
   renderBoardDOM() {
     const boardDOM = document.getElementById('chess-board-DOM');
+    if (!boardDOM) return;
     boardDOM.innerHTML = '';
+
+    // Blindfold chess in Martina Mode
+    if (this.selectedDifficulty === 'martina') {
+      boardDOM.classList.add('board-blindfold');
+    } else {
+      boardDOM.classList.remove('board-blindfold');
+    }
+
+    const currentRecipe = this.recipes[this.currentRecipeIndex];
+    const currentStep = currentRecipe ? currentRecipe.steps[this.currentStepIndex] : null;
 
     for (let r = 8; r >= 1; r--) {
       for (let c = 0; c < 8; c++) {
@@ -207,7 +406,6 @@ class TorretaGame {
           pieceEl.className = `chess-piece ${isWhite ? 'white-piece' : 'black-piece'}`;
           pieceEl.textContent = piece;
           
-          // Style piece
           pieceEl.style.fontSize = '2rem';
           pieceEl.style.color = isWhite ? '#f4a261' : '#012a4a';
           pieceEl.style.textShadow = isWhite 
@@ -220,6 +418,16 @@ class TorretaGame {
         // Highlight selected
         if (this.selectedSquare === coord) {
           square.classList.add('square-selected');
+        }
+
+        // Visual assist in Easy Mode: Highlight correct starting square and target destination
+        if (this.selectedDifficulty === 'easy' && currentStep && currentStep.type === 'user') {
+          if (coord === currentStep.from) {
+            square.classList.add('square-easy-from');
+          }
+          if (coord === currentStep.to) {
+            square.classList.add('square-easy-to');
+          }
         }
 
         square.addEventListener('click', () => this.handleSquareClick(coord));
@@ -235,14 +443,12 @@ class TorretaGame {
     const currentRecipe = this.recipes[this.currentRecipeIndex];
     const currentStep = currentRecipe.steps[this.currentStepIndex];
 
-    // If it's a computer move step, wait for machine
     if (currentStep.type === 'comp') return;
 
     const piece = this.boardState[coord];
 
-    // First click: Select piece
     if (!this.selectedSquare) {
-      if (piece && '♙♘♗♖♕♔'.includes(piece)) { // Must select user (white) piece
+      if (piece && '♙♘♗♖♕♔'.includes(piece)) {
         this.selectedSquare = coord;
         window.GameAudio.playMove();
         this.renderBoardDOM();
@@ -250,50 +456,42 @@ class TorretaGame {
       return;
     }
 
-    // Second click: Move target
     const fromCoord = this.selectedSquare;
     const toCoord = coord;
 
-    // Reset selection if clicking the same square
     if (fromCoord === toCoord) {
       this.selectedSquare = null;
       this.renderBoardDOM();
       return;
     }
 
-    // Check if correct step move
+    // Check correct move
     if (fromCoord === currentStep.from && toCoord === currentStep.to) {
-      // Success move!
       this.executeMove(fromCoord, toCoord);
       this.selectedSquare = null;
       this.currentStepIndex++;
       this.updateRecipeStepDisplay();
 
-      // Check if recipe completed
       if (this.currentStepIndex >= currentRecipe.steps.length) {
-        this.completeRecipe();
+        this.completeLevel();
       } else {
-        // Play success tone
         window.GameAudio.playMove();
         
-        // Next step is computer? Make auto-move after 500ms
+        // Auto comp move
         const nextStep = currentRecipe.steps[this.currentStepIndex];
         if (nextStep && nextStep.type === 'comp') {
           setTimeout(() => this.executeComputerMove(nextStep), 600);
         }
       }
     } else {
-      // Incorrect move!
       window.GameAudio.playError();
       this.selectedSquare = null;
       
-      // Shake the active step to notify error
       const activeStepEl = document.querySelector('.move-active');
       if (activeStepEl) {
         activeStepEl.classList.add('shake');
         setTimeout(() => activeStepEl.classList.remove('shake'), 400);
       }
-      
       this.renderBoardDOM();
     }
   }
@@ -313,19 +511,17 @@ class TorretaGame {
     this.currentStepIndex++;
     this.updateRecipeStepDisplay();
 
-    // Check if completed after computer move
     const currentRecipe = this.recipes[this.currentRecipeIndex];
     if (this.currentStepIndex >= currentRecipe.steps.length) {
-      this.completeRecipe();
+      this.completeLevel();
     }
   }
 
-  // --- RECIPE MANAGEMENT ---
+  // --- RECIPE LOADING ---
   loadRecipe() {
     this.currentStepIndex = 0;
     const recipe = this.recipes[this.currentRecipeIndex];
 
-    // Load customer card
     const customerCard = document.getElementById('customer-card');
     customerCard.innerHTML = `
       <div class="customer-avatar">
@@ -337,7 +533,6 @@ class TorretaGame {
       </div>
     `;
 
-    // Load instructions list
     document.getElementById('recipe-name').textContent = recipe.name;
     document.getElementById('recipe-excerpt').textContent = recipe.excerpt;
 
@@ -346,6 +541,7 @@ class TorretaGame {
 
   updateRecipeStepDisplay() {
     const listDOM = document.getElementById('moves-recipe-list');
+    if (!listDOM) return;
     listDOM.innerHTML = '';
 
     const recipe = this.recipes[this.currentRecipeIndex];
@@ -369,34 +565,140 @@ class TorretaGame {
     });
   }
 
-  completeRecipe() {
-    this.score++;
-    this.timeLeft += 6; // Add bonus time!
-    document.getElementById('score-val').textContent = this.score;
+  // --- COMPLETE LEVEL ---
+  completeLevel() {
+    this.gameActive = false;
+    clearInterval(this.timerInterval);
 
-    window.GameAudio.playSuccess();
+    window.GameAudio.playVictory();
 
-    // Create fireworks/success overlay briefly
-    const boardDOM = document.getElementById('chess-board-DOM');
-    boardDOM.style.boxShadow = '0 0 30px rgba(42, 157, 143, 0.8)';
-    setTimeout(() => {
-      boardDOM.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.5)';
-    }, 600);
+    const currentRecipe = this.recipes[this.currentRecipeIndex];
+    
+    // Apply difficulty modifiers for max time calculation
+    let timeMultiplier = 1.0;
+    if (this.selectedDifficulty === 'easy') timeMultiplier = 1.5;
+    if (this.selectedDifficulty === 'hard') timeMultiplier = 0.75;
+    if (this.selectedDifficulty === 'martina') timeMultiplier = 0.50;
+    
+    const maxTime = Math.round(currentRecipe.targetTime * timeMultiplier);
 
-    // Switch recipe
-    this.currentRecipeIndex = (this.currentRecipeIndex + 1) % this.recipes.length;
-    this.initBoard();
-    this.loadRecipe();
+    // Star calculation
+    let starsWon = 1;
+    if (this.timeLeft >= maxTime * 0.55) {
+      starsWon = 3;
+    } else if (this.timeLeft >= maxTime * 0.25) {
+      starsWon = 2;
+    }
+
+    // Save progress to LocalStorage based on active difficulty
+    let key = 'martina_torreta_progress';
+    if (this.selectedDifficulty === 'easy') key = 'martina_torreta_progress_easy';
+    if (this.selectedDifficulty === 'hard') key = 'martina_torreta_progress_hard';
+    if (this.selectedDifficulty === 'martina') key = 'martina_torreta_progress_martina';
+
+    let progress = JSON.parse(localStorage.getItem(key)) || Array(10).fill(0);
+    const oldStars = progress[this.currentRecipeIndex] || 0;
+    
+    let isNewHighStar = starsWon > oldStars;
+    if (isNewHighStar) {
+      progress[this.currentRecipeIndex] = starsWon;
+      localStorage.setItem(key, JSON.stringify(progress));
+    }
+
+    // Pack award: Award 1 pack if they got 3 stars on this level for the first time
+    let packAwarded = false;
+    if (starsWon === 3 && oldStars < 3) {
+      try {
+        let packs = parseInt(localStorage.getItem('martina_album_packs') || '0');
+        localStorage.setItem('martina_album_packs', (packs + 1).toString());
+        packAwarded = true;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // Update global dashboard stats immediately!
+    if (typeof window.loadDashboardStats === 'function') {
+      window.loadDashboardStats();
+    }
+
+    // Theme active stars display
+    let starClass = 'star-medium';
+    if (this.selectedDifficulty === 'easy') starClass = 'star-easy';
+    if (this.selectedDifficulty === 'hard') starClass = 'star-hard';
+    if (this.selectedDifficulty === 'martina') starClass = 'star-martina';
+
+    let starsHTML = '';
+    for (let s = 1; s <= 3; s++) {
+      starsHTML += s <= starsWon 
+        ? `<span class="star-filled ${starClass}" style="font-size: 3.5rem;">★</span>`
+        : '<span class="star-empty" style="font-size: 3.5rem;">★</span>';
+    }
+
+    let packMsgHTML = packAwarded 
+      ? `
+        <div style="background: rgba(244, 162, 97, 0.08); border: 2px dashed var(--gold); padding: 1rem; border-radius: 16px; margin-top: 1rem; color: var(--gold-light); font-weight: 700; font-size: 0.95rem;">
+          🎒 ¡PERFECTO! Has ganado 1 SOBRE DE CROMOS para tu libreta de clavadas. ¡Ve al Álbum a abrirlo!
+        </div>
+      `
+      : '';
+
+    const hasNext = this.currentRecipeIndex < this.recipes.length - 1;
+
+    this.container.innerHTML = `
+      <div class="game-screen">
+        <div class="game-screen-img">
+          <img src="${currentRecipe.avatar}" alt="Nivel Completado">
+        </div>
+        <h2>¡Apertura Cocinada! 🥐</h2>
+        <p>
+          ¡Fantástico! Has completado con éxito la receta de la **${currentRecipe.name}** con excelente tiempo.
+        </p>
+
+        <div style="margin: 1rem 0;">
+          ${starsHTML}
+        </div>
+
+        ${packMsgHTML}
+
+        <div class="game-screen-stats">
+          <div class="stat-item">
+            <span>Puntos</span>
+            <div class="stat-val">+${starsWon * 100}</div>
+          </div>
+          <div class="stat-item">
+            <span>Tiempo de Sobra</span>
+            <div class="stat-val">${this.timeLeft}s</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; width: 100%;">
+          <button class="btn btn-game-screen" id="btn-back-menu" style="background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: var(--warm-white);">
+            Ver Menú 📋
+          </button>
+          ${hasNext ? '<button class="btn btn-game-screen" id="btn-next-level">Siguiente Receta ➔</button>' : ''}
+        </div>
+      </div>
+    `;
+
+    document.getElementById('btn-back-menu').addEventListener('click', () => {
+      this.showWelcomeScreen();
+    });
+
+    if (hasNext) {
+      document.getElementById('btn-next-level').addEventListener('click', () => {
+        this.currentRecipeIndex++;
+        this.startGame();
+      });
+    }
   }
 
-  // --- TIME DISPLAY & ALERTS ---
+  // --- TIME ALERTS ---
   updateTimerDisplay() {
     const valEl = document.getElementById('timer-val');
     const boxEl = document.getElementById('timer-box');
     if (valEl) {
       valEl.textContent = `${this.timeLeft}s`;
-      
-      // Urgent alerts under 10 seconds
       if (this.timeLeft <= 10) {
         boxEl.classList.add('timer-danger');
       } else {
@@ -405,65 +707,46 @@ class TorretaGame {
     }
   }
 
-  // --- GAME OVER SCREEN ---
+  // --- GAME OVER ---
   gameOver() {
     this.gameActive = false;
     clearInterval(this.timerInterval);
 
-    window.GameAudio.playVictory(); // Play end fanfare
-
-    let packMessage = '';
-    if (this.score >= 2) {
-      try {
-        let packs = parseInt(localStorage.getItem('martina_album_packs') || '0');
-        localStorage.setItem('martina_album_packs', (packs + 1).toString());
-        packMessage = `
-          <div style="background: rgba(42, 111, 151, 0.1); border: 2px dashed var(--magic-blue); padding: 1rem; border-radius: 12px; margin-top: 1rem; color: var(--magic-dark); font-weight: 700; font-size: 0.95rem;">
-            🎒 ¡Has ganado 1 SOBRE DE CROMOS para tu álbum! Ve a la sección <strong>Álbum</strong> para abrirlo.
-          </div>
-        `;
-      } catch (e) {
-        console.error(e);
-      }
-    }
+    window.GameAudio.playError();
 
     this.container.innerHTML = `
       <div class="game-screen">
         <div class="game-screen-img">
-          <img src="assets/img/martina_estudio_empanada_1779113500853.png" alt="Torneo Finalizado">
+          <img src="assets/img/martina_estudio_empanada_1779113500853.png" alt="Empanadas Quemadas">
         </div>
-        <h2>¡Servicio Terminado! ⏱️</h2>
+        <h2>¡Empanadas Quemadas! 🔥</h2>
         <p>
-          ¡Excelente cocina! Has preparado deliciosas aperturas de ajedrez para el reino. Torreta c3 está orgullosa de tu técnica.
+          ¡El reloj llegó a cero! En el ajedrez real y en la cocina de Torreta, el manejo del tiempo es fundamental. ¡Inténtalo de nuevo!
         </p>
-        ${packMessage}
         
-        <div class="game-screen-stats">
-          <div class="stat-item">
-            <span>Pedidos</span>
-            <div class="stat-val">${this.score}</div>
-          </div>
-          <div class="stat-item">
-            <span>Elo Cocina</span>
-            <div class="stat-val">+${this.score * 12}</div>
-          </div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; width: 100%;">
+          <button class="btn btn-game-screen" id="btn-back-menu" style="background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: var(--warm-white);">
+            Ver Menú 📋
+          </button>
+          <button class="btn btn-game-screen" id="btn-retry-recipe">Reintentar Receta 🔁</button>
         </div>
-
-        <button class="btn btn-game-screen" id="btn-restart-cooking">Cocinar de Nuevo 🔁</button>
       </div>
     `;
 
-    document.getElementById('btn-restart-cooking').addEventListener('click', () => {
+    document.getElementById('btn-back-menu').addEventListener('click', () => {
+      this.showWelcomeScreen();
+    });
+
+    document.getElementById('btn-retry-recipe').addEventListener('click', () => {
       this.startGame();
     });
   }
 
-  // --- CLEAN UP TO PREVENT MEMORY LEAKS ---
+  // --- DESTROY TIMER ---
   destroy() {
     this.gameActive = false;
     clearInterval(this.timerInterval);
   }
 }
 
-// Register inside global games object
 window.MartinaGames.torreta = TorretaGame;

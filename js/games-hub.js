@@ -190,6 +190,125 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // --- LOGROS & DASHBOARD SYNCHRONIZER ---
+  function loadDashboardStats() {
+    // Dynamic loader and migrator for progress arrays
+    const loadProg = (key) => {
+      let prog = JSON.parse(localStorage.getItem(key)) || Array(10).fill(0);
+      if (prog.length < 10) {
+        while (prog.length < 10) prog.push(0);
+        localStorage.setItem(key, JSON.stringify(prog));
+      }
+      return prog;
+    };
+
+    let torretaProgEasy = loadProg('martina_torreta_progress_easy');
+    let torretaProgMedium = loadProg('martina_torreta_progress');
+    let torretaProgHard = loadProg('martina_torreta_progress_hard');
+    let torretaProgMartina = loadProg('martina_torreta_progress_martina');
+
+    let caballoProgEasy = loadProg('martina_caballo_progress_easy');
+    let caballoProgMedium = loadProg('martina_caballo_progress');
+    let caballoProgHard = loadProg('martina_caballo_progress_hard');
+    let caballoProgMartina = loadProg('martina_caballo_progress_martina');
+
+    const sumProg = (prog) => prog.reduce((sum, s) => sum + s, 0);
+
+    const torretaStars = sumProg(torretaProgEasy) + sumProg(torretaProgMedium) + sumProg(torretaProgHard) + sumProg(torretaProgMartina);
+    const caballoStars = sumProg(caballoProgEasy) + sumProg(caballoProgMedium) + sumProg(caballoProgHard) + sumProg(caballoProgMartina);
+    const totalStars = torretaStars + caballoStars;
+
+    const unlockedStickers = JSON.parse(localStorage.getItem('martina_album_unlocked')) || [];
+    const stickersCount = unlockedStickers.length;
+
+    const packsCount = parseInt(localStorage.getItem('martina_album_packs')) || 0;
+
+    // Magic Score: 100 per star + 50 per sticker
+    const magicScore = (totalStars * 100) + (stickersCount * 50);
+
+    // Update DOM if elements exist
+    const scoreEl = document.getElementById('dash-magic-score');
+    const starsEl = document.getElementById('dash-total-stars');
+    const packsEl = document.getElementById('dash-card-packs');
+    const stickersEl = document.getElementById('dash-album-stickers');
+
+    if (scoreEl) scoreEl.textContent = `${magicScore} pts`;
+    if (starsEl) starsEl.textContent = `${totalStars} / 240`;
+    if (packsEl) packsEl.textContent = packsCount;
+    if (stickersEl) stickersEl.textContent = `${stickersCount} / 12`;
+
+    // Compute Title Rank & Progress (Rebalanced for 240 stars max)
+    let rankTitle = "Peón Novato";
+    let rankEmoji = "🐣";
+    let rankProgress = 0;
+
+    if (totalStars < 30) {
+      rankTitle = "Peón Novato";
+      rankEmoji = "🐣";
+      rankProgress = (totalStars / 30) * 100;
+    } else if (totalStars < 80) {
+      rankTitle = "Cabo de Guardia";
+      rankEmoji = "🐴";
+      rankProgress = ((totalStars - 30) / 50) * 100;
+    } else if (totalStars < 140) {
+      rankTitle = "Defensor del Centro";
+      rankEmoji = "🏰";
+      rankProgress = ((totalStars - 80) / 60) * 100;
+    } else if (totalStars < 190) {
+      rankTitle = "Chef de Aperturas";
+      rankEmoji = "🥐";
+      rankProgress = ((totalStars - 140) / 50) * 100;
+    } else if (totalStars < 225) {
+      rankTitle = "Jinete del Tablero";
+      rankEmoji = "⚡";
+      rankProgress = ((totalStars - 190) / 35) * 100;
+    } else {
+      rankTitle = "Gran Maestro Mágico";
+      rankEmoji = "👑";
+      rankProgress = 100;
+    }
+
+    const rankTitleEl = document.getElementById('rank-title');
+    const rankEmojiEl = document.getElementById('rank-emoji');
+    const barEl = document.getElementById('dashboard-progress-fill');
+    const textEl = document.getElementById('dashboard-progress-text');
+
+    if (rankTitleEl) rankTitleEl.textContent = `${rankEmoji} ${rankTitle}`;
+    if (barEl) barEl.style.width = `${rankProgress}%`;
+    if (textEl) textEl.textContent = `${Math.round(rankProgress)}%`;
+
+    // Badges list definition (Rebalanced for 240 stars)
+    const badges = [
+      { id: "primer_paso", name: "Primer Paso", desc: "Consigue tu 1ª estrella", emoji: "👣", unlocked: totalStars >= 1 },
+      { id: "cocinero_real", name: "Chef Real", desc: "60★ en las Empanadas", emoji: "👨‍🍳", unlocked: torretaStars >= 60 },
+      { id: "jinete_l", name: "Jinete de la L", desc: "60★ en el Laberinto", emoji: "🎠", unlocked: caballoStars >= 60 },
+      { id: "coleccionista", name: "Coleccionista", desc: "Colecciona 5 cromos", emoji: "📖", unlocked: stickersCount >= 5 },
+      { id: "ataque_caotico", name: "Táctico Caótico", desc: "Logra 130★ totales", emoji: "⚡", unlocked: totalStars >= 130 },
+      { id: "maestro_supremo", name: "Inmortal", desc: "Logra 220★ totales", emoji: "👑", unlocked: totalStars >= 220 }
+    ];
+
+    const badgesRow = document.getElementById('badges-row');
+    if (badgesRow) {
+      badgesRow.innerHTML = '';
+      badges.forEach(badge => {
+        const badgeEl = document.createElement('div');
+        badgeEl.className = `badge-item ${badge.unlocked ? 'unlocked animate-pop' : 'locked'}`;
+        badgeEl.innerHTML = `
+          <div class="badge-icon-circle">${badge.emoji}</div>
+          <span class="badge-name">${badge.name}</span>
+          <span class="badge-desc">${badge.desc}</span>
+        `;
+        badgesRow.appendChild(badgeEl);
+      });
+    }
+  }
+
+  // Export globally so games can invoke it
+  window.loadDashboardStats = loadDashboardStats;
+
+  // Initialize stats on load
+  loadDashboardStats();
+
   // Close Game Modal
   function closeGame() {
     modal.classList.remove('open');
@@ -204,6 +323,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     sandbox.innerHTML = '';
+    // Reload dashboard in case progress was achieved
+    loadDashboardStats();
   }
 
   // Set click events for cards

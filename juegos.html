@@ -45,6 +45,61 @@
     </div>
   </section>
 
+  <!-- DASHBOARD DE LOGROS Y PROGRESO -->
+  <section class="dashboard-section fade-in stagger-1">
+    <div class="dashboard-card">
+      <div class="dashboard-stats-grid">
+        <div class="dash-stat-item">
+          <div class="dash-stat-icon">🏆</div>
+          <div class="dash-stat-details">
+            <span class="dash-stat-label">Puntaje Mágico</span>
+            <span class="dash-stat-value" id="dash-magic-score">0 pts</span>
+          </div>
+        </div>
+        <div class="dash-stat-item">
+          <div class="dash-stat-icon">⭐</div>
+          <div class="dash-stat-details">
+            <span class="dash-stat-label">Estrellas Totales</span>
+            <span class="dash-stat-value" id="dash-total-stars">0 / 240</span>
+          </div>
+        </div>
+        <div class="dash-stat-item">
+          <div class="dash-stat-icon">🎒</div>
+          <div class="dash-stat-details">
+            <span class="dash-stat-label">Sobres en Mochila</span>
+            <span class="dash-stat-value" id="dash-card-packs">0</span>
+          </div>
+        </div>
+        <div class="dash-stat-item">
+          <div class="dash-stat-icon">📖</div>
+          <div class="dash-stat-details">
+            <span class="dash-stat-label">Álbum de Clavadas</span>
+            <span class="dash-stat-value" id="dash-album-stickers">0 / 12</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-rank-row">
+        <div class="rank-badge-wrapper">
+          <span class="rank-emoji" id="rank-emoji">🐣</span>
+          <span class="rank-title" id="rank-title">Cargando Rango...</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="dashboard-progress-fill" style="width: 0%;"></div>
+        </div>
+        <span class="progress-text" id="dashboard-progress-text">0%</span>
+      </div>
+
+      <!-- INSIGNIAS DESBLOQUEADAS -->
+      <div class="badges-showcase">
+        <h4 class="showcase-title">🏅 Tus Insignias de Ajedrez</h4>
+        <div class="badges-row" id="badges-row">
+          <!-- Las medallas se inyectarán con JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="juegos-seccion" class="fade-in stagger-1" style="margin-top:2rem;">
     <h2 style="margin-bottom:2rem; text-align: center; color: var(--rose);">🏆 Selecciona un Desafío 🏆</h2>
 
