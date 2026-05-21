@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Álbum de Clavadas de Martina — Cuentos de Ajedrez</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Entra en el mágico mundo de Martina y colecciona los cromos tácticos de clavadas. Abre sobres, resuelve acertijos del Alfil Exiliado y completa tu álbum.">
+  <meta name="keywords" content="ajedrez, cuentos infantiles, clavada ajedrez, tácticas ajedrez, aprender ajedrez niños, Paul Morphy, Judit Polgar, Martina">
+  <meta name="author" content="Papá de Martina">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="El Álbum de Clavadas de Martina — Cuentos de Ajedrez">
+  <meta property="og:description" content="Colecciona los cromos de clavadas mágicas, abre sobres y completa el álbum de Martina.">
+  <meta property="og:image" content="assets/img/alfil_exiliado_1778944848314.png">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/album.css">
+  <link rel="icon" type="image/png" href="assets/img/martina_profile_1778904530237.png">
+</head>
+<body>
+
+<header class="site-header-compact">
+  <div class="header-content-compact">
+    <div class="site-title-compact">
+      <span class="header-piece-compact">♕</span> <a href="index.html" style="color: inherit; font-weight: inherit;">Martina</a>
+    </div>
+    <nav class="nav-bar-compact">
+      <a href="index.html" class="nav-link">Inicio</a>
+      <a href="juegos.html" class="nav-link">Juegos</a>
+      <a href="album.html" class="nav-link active">Álbum</a>
+      <a href="acerca-de.html" class="nav-link">Acerca de</a>
+      <a href="galeria.html" class="nav-link">Galería</a>
+    </nav>
+  </div>
+</header>
+
+<main class="album-container">
+
+  <!-- Header Banner -->
+  <section class="album-header fade-in">
+    <div class="album-title">
+      <span>📖</span>
+      <h1>El Álbum de Clavadas</h1>
+    </div>
+    <p class="album-subtitle">«Un peón sin bigote es invisible. ¡Pero una pieza clavada es puro arte y estilo!»</p>
+    <p style="margin-top: 1rem; max-width: 700px; margin-left: auto; margin-right: auto; font-weight: 500; font-size: 0.95rem; opacity: 0.9;">
+      A Martina le fascinan las clavadas tácticas y las colecciona en su cuaderno de sueños como si fueran cromos. 
+      Resuelve los acertijos del Alfil Exiliado, juega en los minijuegos o pide sobres diarios para abrir paquetes mágicos, 
+      completar las ranuras y unirte al legendario <strong>Club de la Clavada</strong>.
+    </p>
+  </section>
+
+  <!-- Complete Album Congratulations Banner -->
+  <section id="congratsBanner" class="congrats-banner">
+    <div class="congrats-icon">🏆</div>
+    <h2 class="congrats-title">¡Álbum Completado con Éxito!</h2>
+    <p class="congrats-desc">
+      ¡Felicitaciones! Has completado el Álbum de Clavadas de Martina. Eres oficialmente un maestro de las clavadas tácticas 
+      y has liberado todas las piezas inmovilizadas en el Reino de las Sesenta y Cuatro Casillas.
+    </p>
+    <div style="background: rgba(255,255,255,0.9); padding: 1.5rem; border-radius: var(--radius); max-width: 500px; margin: 0 auto; border: 2px dashed var(--rose);">
+      <p style="font-weight: 800; font-size: 1.1rem; color: var(--magic-dark); margin-bottom: 0.5rem; font-family: 'Nunito', sans-serif;">📜 Diploma del Club de la Clavada 📜</p>
+      <p style="font-size: 0.9rem; margin-bottom: 1rem; font-style: italic;">
+        "Certificamos que el portador ha dominado la clavada absoluta, relativa y cruzada, ganándose la admiración de Judith Polgar, Mijaíl Tal y el mismísimo Alfil Exiliado."
+      </p>
+      <button class="btn" onclick="window.print()" style="font-size: 0.85rem; padding: 0.4rem 1.2rem;">🖨️ Imprimir Diploma</button>
+    </div>
+  </section>
+
+  <!-- Stats and Collector Stats -->
+  <section class="collector-panel fade-in stagger-1">
+    <div class="stats-card">
+      <div class="stats-val" id="statsProgress">0 / 12</div>
+      <div class="stats-lbl">Cromos Pegados</div>
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+    
+    <div class="stats-card" style="border-bottom-color: var(--rose);">
+      <div class="stats-val" id="statsPacks">1</div>
+      <div class="stats-lbl">Sobres Disponibles</div>
+    </div>
+
+    <div class="stats-card" style="border-bottom-color: var(--sage);">
+      <button class="btn btn-block" id="claimPackBtn" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+        🎁 Regalo de Torreta
+      </button>
+      <div class="stats-lbl" id="claimCooldownText" style="font-size: 0.8rem; margin-top: 0.4rem;">¡Disponible ahora!</div>
+    </div>
+  </section>
+
+  <!-- Pack Zone and Trivia Row -->
+  <div style="display: grid; grid-template-columns: 1fr; gap: 2rem; margin-bottom: 3rem;" class="fade-in stagger-2">
+    <!-- Active Pack Area -->
+    <section class="pack-zone" id="packZone">
+      <h2 style="color: white; font-family: 'Nunito', sans-serif; font-size: 1.5rem; margin-bottom: 0.5rem;">🎒 Zona de Aperturas</h2>
+      <p style="font-size: 0.95rem; opacity: 0.9;">¡Tienes sobres mágicos listos para ser abiertos en tu mochila!</p>
+      
+      <div class="pack-wrapper">
+        <div class="pack-visual" id="packVisual">
+          <div class="pack-art">🎒</div>
+          <div class="pack-title-text">Clavadas Pack</div>
+        </div>
+        <div class="pack-count" id="packCountBadge">1 Sobre</div>
+        <button class="btn" id="openPackBtn" style="background: var(--gold); color: var(--magic-dark); font-weight: 800;">
+          ✂️ Rasgar y Abrir Sobre
+        </button>
+      </div>
+    </section>
+
+    <!-- Daily Trivia Acertijo -->
+    <section class="trivia-section" id="triviaSection">
+      <div class="trivia-header">
+        <span style="font-size: 1.8rem;">🧙‍♂️</span>
+        <h2 class="trivia-title">El Acertijo Diario del Alfil Exiliado</h2>
+      </div>
+      <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 0.8rem;">
+        Responde correctamente el acertijo del día sobre ajedrez y clavadas para ganarte un sobre extra de cromos mágicos. ¡Hay un nuevo desafío cada día!
+      </p>
+      <div id="triviaQuestionBox">
+        <p class="trivia-question" id="triviaQuestionText">Cargando acertijo táctico...</p>
+        <div class="trivia-options" id="triviaOptionsContainer">
+          <!-- Options will be generated dynamically -->
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- The Sticker Album Grid -->
+  <h2 style="margin-bottom: 1.5rem; text-align: center; color: var(--magic-dark); font-family: 'Nunito', sans-serif;" class="fade-in stagger-3">📖 Tu Cuaderno de Colección</h2>
+  
+  <section class="album-grid fade-in stagger-3" id="albumGrid">
+    <!-- Slots will be injected dynamically -->
+  </section>
+
+</main>
+
+<!-- === MODAL: APERTURA DE SOBRES === -->
+<div class="album-modal" id="packModal">
+  <div class="modal-card" style="max-width: 600px; background: linear-gradient(180deg, var(--pack-blue) 0%, var(--magic-dark) 100%); color: white; border-color: var(--pack-gold);">
+    <span class="modal-close" id="closePackModalBtn" style="color: white;">&times;</span>
+    <h2 style="text-align: center; color: var(--pack-gold); font-family: 'Nunito', sans-serif; font-size: 1.8rem; margin-bottom: 1.5rem;" id="modalPackTitle">Sobres Mágicos de Martina</h2>
+    
+    <div class="pack-open-container">
+      <!-- Pack Envelop to Tear -->
+      <div class="foil-wrapper" id="foilPackWrapper">
+        <div class="foil-pack-half foil-top">
+          <div class="foil-crimp"></div>
+          <span class="foil-art">🎒</span>
+        </div>
+        <div class="foil-pack-half foil-bottom">
+          <div class="foil-crimp"></div>
+          <span class="foil-art">🎒</span>
+        </div>
+      </div>
+
+      <div class="reveal-instruction" id="revealInstruction">¡Haz clic en el sobre para rasgarlo y liberar los cromos!</div>
+
+      <!-- The Cards deck -->
+      <div class="cards-deck" id="cardsDeck">
+        <!-- 3 Cards will be dynamically generated here -->
+      </div>
+
+      <button class="paste-action-btn" id="pasteStickersBtn">✨ Pegar Cromos en el Álbum</button>
+    </div>
+  </div>
+</div>
+
+<!-- === MODAL: DETALLES DE CROMO === -->
+<div class="album-modal" id="detailModal">
+  <div class="modal-card">
+    <span class="modal-close" id="closeDetailModalBtn">&times;</span>
+    
+    <div class="detail-header">
+      <div class="detail-icon" id="detailIcon">♟️</div>
+      <div class="detail-meta">
+        <span class="detail-rarity" id="detailRarity">CROMO COMÚN</span>
+        <h2 class="detail-title" id="detailTitle">La Clavada Absoluta</h2>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <!-- Visor de Tablero de Ajedrez -->
+      <div class="detail-board-container">
+        <div class="album-chess-board" id="detailChessBoard"></div>
+      </div>
+      
+      <!-- Detalle Educativo -->
+      <div class="detail-text">
+        <p class="detail-quote" id="detailQuote">"¡Esta pieza no se mueve ni por orden del juez!"</p>
+        <p class="detail-info" id="detailInfo">
+          Aquí se describe la clavada, cómo funciona táctica y estratégicamente, y qué podemos aprender para nuestras partidas.
+        </p>
+        <div style="background: rgba(42, 111, 151, 0.06); padding: 0.8rem; border-radius: 10px; border-left: 4px solid var(--magic-blue); margin-top: 0.5rem;">
+          <p style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.2rem; color: var(--magic-dark);">💡 Consejo de Martina:</p>
+          <p style="font-size: 0.8rem; line-height: 1.4;" id="detailTip">Ataca siempre a la pieza clavada con más peones o piezas menores para ganar material.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <a href="https://github.com/raestrada/martina" target="_blank" rel="noopener noreferrer" class="github-link" aria-label="GitHub">
+    <svg viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    Ver en GitHub
+  </a>
+  <p>Historias originales para Martina, por papá.<br>«El ajedrez es un cuento de hadas de la mente» — Mikhail Tal</p>
+  <p style="font-size: 0.8rem; margin-top: 1rem; color: var(--board-dark); line-height: 1.4;">
+    Esta obra (cuentos e ilustraciones) está bajo una <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.es" target="_blank" rel="license noopener noreferrer" style="color: inherit; text-decoration: underline;">Licencia Creative Commons Atribución-NoComercial 4.0 Internacional</a>.<br>
+    El código de la web es de código abierto (MIT). <strong>Prohibida la monetización o uso comercial del contenido sin permiso explícito del autor.</strong>
+  </p>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/album.js"></script>
+</body>
+</html>

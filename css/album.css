@@ -1,0 +1,1097 @@
+/* === ÁLBUM DE CLAVADAS DE MARTINA · ESTILOS EXCLUSIVOS === */
+
+:root {
+  --album-bronze: #cd7f32;
+  --album-silver: #c0c0c0;
+  --album-gold: #ffd700;
+  --album-sparkle: rgba(255, 215, 0, 0.4);
+  --pack-blue: #1d3557;
+  --pack-gold: #ffd700;
+}
+
+/* Page Layout */
+.album-container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.album-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  background: white;
+  padding: 2.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 3px solid var(--gold);
+  position: relative;
+  overflow: hidden;
+}
+
+.album-header::before {
+  content: '🔒';
+  position: absolute;
+  font-size: 8rem;
+  opacity: 0.03;
+  right: -2rem;
+  bottom: -2rem;
+  transform: rotate(-15deg);
+}
+
+.album-title {
+  color: var(--magic-dark);
+  font-size: 2.4rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.album-title span {
+  font-size: 2.8rem;
+}
+
+.album-subtitle {
+  color: var(--rose);
+  font-size: 1.1rem;
+  font-style: italic;
+  font-weight: 600;
+}
+
+/* Collector Stats */
+.collector-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.stats-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.3s ease;
+  border-bottom: 4px solid var(--magic-blue);
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+}
+
+.stats-val {
+  font-size: 2.5rem;
+  font-weight: 800;
+  font-family: 'Nunito', sans-serif;
+  color: var(--magic-dark);
+}
+
+.stats-lbl {
+  font-size: 0.95rem;
+  color: var(--ink);
+  opacity: 0.8;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+/* Progress bar */
+.progress-container {
+  width: 100%;
+  background: var(--board-light);
+  height: 14px;
+  border-radius: 10px;
+  margin-top: 0.8rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--magic-blue), var(--sage));
+  width: 0%;
+  transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border-radius: 10px;
+}
+
+/* Pack Opening Area */
+.pack-zone {
+  background: linear-gradient(135deg, var(--pack-blue), var(--magic-dark));
+  border-radius: var(--radius);
+  padding: 2.5rem;
+  text-align: center;
+  color: white;
+  box-shadow: var(--shadow-hover);
+  margin-bottom: 3rem;
+  position: relative;
+  overflow: hidden;
+  border: 4px solid var(--pack-gold);
+}
+
+.pack-zone::after {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, var(--album-sparkle) 0%, transparent 70%);
+  top: -50px;
+  right: -50px;
+  pointer-events: none;
+}
+
+.pack-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+}
+
+.pack-count {
+  font-size: 1.2rem;
+  font-weight: 700;
+  background: var(--rose);
+  padding: 0.4rem 1.2rem;
+  border-radius: 50px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Foil envelope item styling */
+.pack-visual {
+  width: 130px;
+  height: 190px;
+  background: linear-gradient(145deg, #e63946, #b5179e);
+  border-radius: 12px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.3), 0 0 15px rgba(255, 215, 0, 0.3);
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 3px solid var(--pack-gold);
+  overflow: hidden;
+}
+
+.pack-visual::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transform: translateX(-100%);
+}
+
+.pack-visual:hover {
+  transform: translateY(-8px) scale(1.03) rotate(2deg);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 25px rgba(255, 215, 0, 0.5);
+}
+
+.pack-visual:hover::before {
+  animation: shine-pack 1.5s infinite;
+}
+
+@keyframes shine-pack {
+  100% { transform: translateX(100%); }
+}
+
+.pack-art {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  animation: wiggle 3s infinite ease-in-out;
+}
+
+.pack-title-text {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Album Grid */
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+/* Sticker Card Slot (Locked State) */
+.sticker-slot {
+  background: white;
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  border: 2px dashed var(--board-dark);
+  min-height: 380px;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+}
+
+.sticker-slot.unlocked {
+  border: 3px solid var(--gold-light);
+  box-shadow: 0 10px 25px rgba(244, 162, 97, 0.15);
+  background: linear-gradient(180deg, white 0%, #fffcf5 100%);
+}
+
+.sticker-slot:not(.unlocked):hover {
+  border-color: var(--magic-blue);
+  transform: translateY(-2px);
+}
+
+/* Sticker frame container */
+.sticker-frame {
+  width: 100%;
+  aspect-ratio: 0.75;
+  background: #f8f9fa;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.06);
+  margin-bottom: 1.2rem;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.04);
+}
+
+/* Gray scale silhouette */
+.silhouette {
+  font-size: 6rem;
+  opacity: 0.15;
+  filter: grayscale(100%);
+  user-select: none;
+}
+
+/* Actual Sticker element styling */
+.sticker {
+  width: 90%;
+  height: 90%;
+  border-radius: 8px;
+  background: var(--warm-white);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+  transform: rotate(var(--rotation, 0deg));
+}
+
+.sticker:hover {
+  transform: scale(1.05) rotate(0deg) !important;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.18), 0 0 15px rgba(255, 215, 0, 0.3);
+  z-index: 10;
+}
+
+/* Glare & Gloss Effect */
+.sticker::after {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.4) 100%);
+  top: -50%;
+  left: -50%;
+  transform: rotate(30deg);
+  pointer-events: none;
+  opacity: 0.6;
+  transition: transform 0.5s ease;
+}
+
+.sticker:hover::after {
+  transform: rotate(30deg) translate(20%, 20%);
+}
+
+/* Specific Rarity styles */
+.sticker-rarity-normal {
+  border-top: 6px solid var(--magic-blue);
+}
+
+.sticker-rarity-epic {
+  border-top: 6px solid #8e44ad;
+  background: linear-gradient(185deg, white 75%, #f6ebff 100%);
+}
+
+.sticker-rarity-legendary {
+  border: 2px solid var(--pack-gold);
+  border-top: 8px solid var(--pack-gold);
+  background: linear-gradient(185deg, white 75%, #fffde6 100%);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.15), 0 0 10px rgba(255, 215, 0, 0.1);
+}
+
+.sticker-rarity-legendary::before {
+  content: '✨';
+  position: absolute;
+  font-size: 0.8rem;
+  top: 4px;
+  right: 6px;
+  animation: pulse 1.5s infinite alternate;
+}
+
+/* Sticker Internal Styles */
+.sticker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  padding-bottom: 0.3rem;
+}
+
+.sticker-id {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--magic-blue);
+  background: rgba(42, 111, 151, 0.1);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.sticker-badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #8e44ad;
+}
+
+.sticker-rarity-legendary .sticker-badge {
+  color: #d4af37;
+}
+
+.sticker-art {
+  font-size: 4rem;
+  text-align: center;
+  margin: 0.8rem 0;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
+}
+
+.sticker-title {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--magic-dark);
+  text-align: center;
+}
+
+.sticker-slot-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--magic-dark);
+  margin-top: 0.5rem;
+}
+
+.sticker-slot-desc {
+  font-size: 0.85rem;
+  color: var(--ink);
+  opacity: 0.7;
+  text-align: center;
+  margin-top: 0.3rem;
+  margin-bottom: 0.8rem;
+}
+
+.sticker-status-btn {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  padding: 0.4rem 1.2rem;
+  font-size: 0.85rem;
+  border-radius: 50px;
+  background: var(--board-dark);
+  color: white;
+  width: 90%;
+  border: none;
+  cursor: default;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.unlocked .sticker-status-btn {
+  background: var(--magic-blue);
+  cursor: pointer;
+}
+
+.unlocked .sticker-status-btn:hover {
+  background: var(--magic-dark);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* --- OVERLAY MODALS (Full Screen Pack Opening & Details) --- */
+.album-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(1, 42, 74, 0.85);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  overflow-y: auto; /* Enable outer scrolling if the whole layout is tall */
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.album-modal.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-card {
+  background: white;
+  border-radius: var(--radius);
+  max-width: 650px;
+  width: 95%;
+  padding: 2.5rem;
+  position: relative;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+  transform: translateY(30px);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 4px solid var(--gold);
+  max-height: 90vh; /* Do not exceed viewport height */
+  overflow-y: auto; /* Scrollable inside the card */
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* Custom premium scrollbar inside modal card */
+.modal-card::-webkit-scrollbar {
+  width: 8px;
+}
+.modal-card::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+.modal-card::-webkit-scrollbar-thumb {
+  background: var(--magic-blue);
+  border-radius: 10px;
+}
+.modal-card::-webkit-scrollbar-thumb:hover {
+  background: var(--magic-dark);
+}
+
+.album-modal.active .modal-card {
+  transform: translateY(0);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1.2rem;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--board-dark);
+  transition: color 0.2s ease;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: var(--rose);
+}
+
+/* Detail Modal Styles */
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid var(--board-light);
+  padding-bottom: 1rem;
+}
+
+.detail-icon {
+  font-size: 3.5rem;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.15));
+}
+
+.detail-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-rarity {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--rose);
+}
+
+.detail-title {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 1.6rem;
+  color: var(--magic-dark);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+@media(min-width: 550px) {
+  .detail-grid {
+    grid-template-columns: 240px 1fr;
+  }
+}
+
+.detail-board-container {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  border: 3px solid var(--magic-dark);
+}
+
+.detail-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.detail-quote {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--magic-blue);
+  border-left: 4px solid var(--rose);
+  padding-left: 0.8rem;
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.detail-info {
+  font-size: 0.95rem;
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+/* --- DECK & PACK OPENING ANIMATIONS --- */
+.pack-open-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+/* Foil Envelope that Rips Open */
+.foil-wrapper {
+  width: 200px;
+  height: 290px;
+  position: relative;
+  perspective: 1000px;
+  cursor: pointer;
+  transition: height 0.8s cubic-bezier(0.85, 0, 0.15, 1), opacity 0.8s ease, margin 0.8s ease;
+}
+
+.foil-wrapper.ripped {
+  height: 0 !important;
+  opacity: 0;
+  pointer-events: none;
+  margin: 0 !important;
+}
+
+.foil-pack-half {
+  position: absolute;
+  width: 100%;
+  height: 50%;
+  left: 0;
+  background: linear-gradient(135deg, #b5179e, #7209b7);
+  border: 4px solid var(--pack-gold);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 50;
+  transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1);
+}
+
+.foil-top {
+  top: 0;
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  align-items: flex-end;
+  transform-origin: top center;
+}
+
+.foil-bottom {
+  bottom: 0;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  align-items: flex-start;
+  transform-origin: bottom center;
+}
+
+.foil-art {
+  font-size: 4rem;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+}
+
+.foil-top .foil-art {
+  transform: translateY(2rem);
+}
+
+.foil-bottom .foil-art {
+  transform: translateY(-2rem);
+}
+
+/* Ripped Animation State */
+.foil-wrapper.ripped .foil-top {
+  transform: translateY(-150px) rotateX(-90deg);
+  opacity: 0;
+}
+
+.foil-wrapper.ripped .foil-bottom {
+  transform: translateY(150px) rotateX(90deg);
+  opacity: 0;
+}
+
+/* Foil crimped edges */
+.foil-crimp {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  background: repeating-linear-gradient(90deg, #b5179e, #b5179e 2px, #ffd700 2px, #ffd700 4px);
+  z-index: 60;
+}
+
+.foil-top .foil-crimp { top: 0; }
+.foil-bottom .foil-crimp { bottom: 0; }
+
+/* The Cards Deck that emerges */
+.cards-deck {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; /* Let cards wrap gracefully on narrow/short screens */
+  gap: 1.2rem;
+  width: 100%;
+  margin-top: 1.5rem;
+  opacity: 0;
+  transform: scale(0.8);
+  pointer-events: none;
+  transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.foil-wrapper.ripped ~ .cards-deck {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: all;
+  margin-top: 1rem;
+}
+
+/* 3D Flip Card */
+.flip-card {
+  background-color: transparent;
+  width: 120px;
+  height: 170px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+  border-radius: 8px;
+}
+
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Card Back */
+.flip-card-front {
+  background: linear-gradient(135deg, var(--magic-blue) 0%, var(--magic-dark) 100%);
+  color: white;
+  border: 3px solid var(--gold-light);
+}
+
+.flip-card-front::after {
+  content: '♕';
+  font-size: 3rem;
+  opacity: 0.2;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.card-hint {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+  position: absolute;
+  bottom: 10px;
+  color: var(--gold-light);
+}
+
+/* Card Front (Actual Sticker) */
+.flip-card-back {
+  background-color: white;
+  color: black;
+  transform: rotateY(180deg);
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: 0.5rem;
+}
+
+.flip-card-back .sticker {
+  width: 100%;
+  height: 100%;
+  padding: 0.5rem;
+  box-shadow: none;
+  --rotation: 0deg !important;
+}
+
+.flip-card-back .sticker-art {
+  font-size: 2.8rem;
+  margin: 0.2rem 0;
+}
+
+.flip-card-back .sticker-title {
+  font-size: 0.85rem;
+}
+
+/* Instructions */
+.reveal-instruction {
+  font-weight: 700;
+  color: var(--gold-light);
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  text-align: center;
+  transition: opacity 0.3s ease;
+}
+
+.paste-action-btn {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  background: var(--rose);
+  color: white;
+  padding: 0.8rem 2rem;
+  border-radius: 50px;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(231, 111, 81, 0.2);
+  margin-top: 1.5rem;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  opacity: 0;
+  transform: scale(0.9);
+  pointer-events: none;
+  display: none;
+}
+
+.paste-action-btn.active {
+  display: block;
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: all;
+  animation: pulse 1s infinite alternate;
+}
+
+.paste-action-btn:hover {
+  background: #d45d3f;
+  transform: scale(1.05);
+  box-shadow: 0 12px 25px rgba(231, 111, 81, 0.3);
+}
+
+/* Daily Trivia Riddle Section */
+.trivia-section {
+  background: white;
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  margin-bottom: 3rem;
+  border-left: 6px solid var(--sage);
+}
+
+.trivia-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.trivia-title {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: var(--magic-dark);
+}
+
+.trivia-question {
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  font-size: 1.05rem;
+}
+
+.trivia-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.8rem;
+}
+
+@media(min-width: 600px) {
+  .trivia-options {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.trivia-btn {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  background: #f8f9fa;
+  border: 2px solid var(--board-light);
+  border-radius: 12px;
+  padding: 0.8rem 1.2rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.trivia-btn:hover:not(:disabled) {
+  background: rgba(42, 157, 143, 0.08);
+  border-color: var(--sage);
+  transform: translateX(3px);
+}
+
+.trivia-btn.correct {
+  background: #d4edda;
+  border-color: #28a745;
+  color: #155724;
+}
+
+.trivia-btn.incorrect {
+  background: #f8d7da;
+  border-color: #dc3545;
+  color: #721c24;
+}
+
+/* Congratulations Banner */
+.congrats-banner {
+  background: linear-gradient(135deg, #fff275, #ff8c00);
+  border-radius: var(--radius);
+  padding: 2.5rem;
+  text-align: center;
+  color: var(--magic-dark);
+  box-shadow: 0 15px 35px rgba(255, 140, 0, 0.2);
+  margin-bottom: 3.5rem;
+  display: none;
+  animation: scale-up 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 4px solid var(--pack-gold);
+}
+
+.congrats-banner.active {
+  display: block;
+}
+
+.congrats-icon {
+  font-size: 4.5rem;
+  margin-bottom: 1rem;
+  animation: bounce 2s infinite;
+}
+
+.congrats-title {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.congrats-desc {
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+@keyframes wiggle-intense {
+  0%, 100% { transform: rotate(-8deg) scale(1); }
+  50% { transform: rotate(8deg) scale(1.05); }
+}
+
+@keyframes wiggle-subtle {
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 111, 81, 0.4); }
+  100% { transform: scale(1.03); box-shadow: 0 0 15px 5px rgba(231, 111, 81, 0.1); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes scale-up {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.wiggle-action {
+  animation: wiggle-intense 0.3s infinite alternate;
+}
+
+/* Dynamic chessboard rendering */
+.album-chess-board {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  width: 100%;
+  height: 100%;
+  background: var(--magic-dark);
+}
+
+.album-chess-square {
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.3rem;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.album-chess-piece {
+  z-index: 5;
+  user-select: none;
+  font-weight: normal;
+  /* Simulating Segoe UI baseline adjustment for details board */
+  transform: translateY(-5%);
+}
+
+.album-chess-square.light {
+  background-color: var(--board-light);
+}
+
+.album-chess-square.dark {
+  background-color: var(--board-dark);
+}
+
+.album-chess-square.highlight-pin {
+  background-color: rgba(231, 111, 81, 0.4) !important;
+}
+
+.album-chess-square.highlight-attacker {
+  background-color: rgba(42, 111, 151, 0.4) !important;
+}
+
+/* === RESPONSIVE LAYOUTS FOR SMALL SCREENS & SHORT VIEWPORTS === */
+@media (max-width: 600px), (max-height: 720px) {
+  .modal-card {
+    padding: 1.5rem;
+    width: 95%;
+  }
+  
+  .modal-card h2 {
+    font-size: 1.4rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .foil-wrapper {
+    width: 140px;
+    height: 200px;
+    margin: 0 auto;
+  }
+  
+  .foil-art {
+    font-size: 2.8rem;
+  }
+  
+  .foil-top .foil-art {
+    transform: translateY(1.2rem);
+  }
+  
+  .foil-bottom .foil-art {
+    transform: translateY(-1.2rem);
+  }
+  
+  .flip-card {
+    width: 90px;
+    height: 130px;
+  }
+  
+  .flip-card-front::after {
+    font-size: 1.8rem;
+  }
+  
+  .flip-card-back {
+    padding: 0.25rem;
+  }
+  
+  .flip-card-back .sticker-art {
+    font-size: 2rem;
+    margin: 0.1rem 0;
+  }
+  
+  .flip-card-back .sticker-title {
+    font-size: 0.7rem;
+  }
+  
+  .flip-card-back .sticker-id {
+    font-size: 0.65rem;
+    padding: 0.05rem 0.25rem;
+  }
+  
+  .reveal-instruction {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  
+  .paste-action-btn {
+    font-size: 0.95rem;
+    padding: 0.6rem 1.5rem;
+  }
+}

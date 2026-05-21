@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Tablero de Juegos — Martina · Cuentos de Ajedrez</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Diviértete con los juegos interactivos 100% JS de Martina. Practica aperturas de ajedrez, domina los saltos del caballo y pon a prueba tu táctica.">
+  <meta name="keywords" content="ajedrez, juegos de ajedrez, ajedrez para niños, aprender ajedrez, minijuegos ajedrez, Martina, caballo ajedrez, aperturas ajedrez">
+  <meta name="author" content="Papá de Martina">
+  <meta name="robots" content="index, follow">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/games.css">
+  <link rel="icon" type="image/png" href="assets/img/martina_profile_1778904530237.png">
+</head>
+<body>
+
+<header class="site-header-compact">
+  <div class="header-content-compact">
+    <div class="site-title-compact">
+      <span class="header-piece-compact">♕</span> <a href="index.html">Martina</a>
+    </div>
+    <nav class="nav-bar-compact">
+      <a href="index.html" class="nav-link">Inicio</a>
+      <a href="index.html#cuentos" class="nav-link">Cuentos</a>
+      <a href="juegos.html" class="nav-link active">Juegos</a>
+      <a href="album.html" class="nav-link">Álbum</a>
+      <a href="acerca-de.html" class="nav-link">Acerca de</a>
+      <a href="galeria.html" class="nav-link">Galería</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero fade-in">
+    <div class="hero-image-container games-banner-container">
+      <img src="assets/img/juegos_banner_principal_1779376644977.png" alt="Tablero Mágico de Juegos de Martina">
+    </div>
+    <div class="hero-text">
+      <h1>Tablero de Juegos</h1>
+      <p class="hero-subtitle">Pon a prueba tu instinto de ataque, tu velocidad con el reloj y tus saltos tácticos. ¡Diviértete y aprende ajedrez real!</p>
+    </div>
+  </section>
+
+  <section id="juegos-seccion" class="fade-in stagger-1" style="margin-top:2rem;">
+    <h2 style="margin-bottom:2rem; text-align: center; color: var(--rose);">🏆 Selecciona un Desafío 🏆</h2>
+
+    <div class="story-grid">
+      
+      <!-- Minijuego 1: Las Empanadas de Torreta -->
+      <div class="story-card game-card" data-game="torreta">
+        <div class="story-thumbnail">
+          <img src="assets/img/juego_torreta_empanadas_1779376721444.png" alt="Empanadas de Torreta">
+        </div>
+        <div class="story-card-content">
+          <span class="card-meta btn-orange">Cocina & Memoria</span>
+          <h3 class="card-title">🥐 Las Empanadas de Torreta</h3>
+          <p class="card-excerpt">
+            Prepara deliciosas recetas en la casilla c3 realizando las primeras jugadas de aperturas famosas en el reloj. ¡Cuidado con quemarlas!
+          </p>
+          <button class="btn btn-block btn-start-game">Cocinar Aperturas →</button>
+        </div>
+      </div>
+
+      <!-- Minijuego 2: El Laberinto del Caballo de Ŋ -->
+      <div class="story-card game-card" data-game="caballo">
+        <div class="story-thumbnail">
+          <img src="assets/img/juego_caballo_l_1779376737849.png" alt="Caballo de Ŋ">
+        </div>
+        <div class="story-card-content">
+          <span class="card-meta btn-green">Táctica & Coordinación</span>
+          <h3 class="card-title">🐴 El Laberinto del Caballo de Ŋ</h3>
+          <p class="card-excerpt">
+            Guía al caballo en su entrenamiento especial de saltos en L. Atrapa ricas zanahorias y esquiva las trampas heladas del tablero.
+          </p>
+          <button class="btn btn-block btn-start-game">Saltar en L →</button>
+        </div>
+      </div>
+
+      <!-- Minijuego 3: El Álbum de Clavadas (Unlocked) -->
+      <div class="story-card game-card-link" onclick="window.location.href='album.html'" style="cursor: pointer;">
+        <div class="story-thumbnail">
+          <img src="assets/img/alfil_exiliado_1778944848314.png" alt="Alfil Exiliado">
+        </div>
+        <div class="story-card-content">
+          <span class="card-meta btn-blue" style="background: var(--magic-blue); color: white;">Colección & Táctica</span>
+          <h3 class="card-title">📖 Álbum de Clavadas</h3>
+          <p class="card-excerpt">
+            ¡Colecciona los 12 cromos de clavadas mágicas! Resuelve acertijos tácticos, abre sobres y pégalos en tu libreta de sueños.
+          </p>
+          <button class="btn btn-block" style="background: var(--gold); color: var(--magic-dark); font-weight: 800;">Abrir Álbum →</button>
+        </div>
+      </div>
+
+      <!-- Minijuego 4: El Estornudo de la Reina Negra (Locked) -->
+      <div class="story-card story-locked">
+        <div class="story-thumbnail locked-bg">
+          <img src="assets/img/reina_estornudo_1779239591968.png" alt="Reina Negra Estornudando" class="locked-image">
+          <span class="locked-icon">🔒</span>
+        </div>
+        <div class="story-card-content">
+          <span class="card-meta" style="background: var(--board-dark)">Acción & Reflejos</span>
+          <h3 class="card-title">🔒 ¡Cuidado con el Estornudo!</h3>
+          <p class="card-excerpt">Ayuda a Peoncito a deslizarse con elegancia por el tablero y escapar de los temibles estornudos de la Reina.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- MODAL DE PANTALLA COMPLETA PARA EL JUEGO -->
+<div id="game-modal" class="game-modal">
+  <div class="game-modal-content">
+    <header class="game-modal-header">
+      <div class="game-modal-title">
+        <span class="game-modal-icon">🎮</span> <span id="active-game-title">Juego</span>
+      </div>
+      <button class="btn-close-modal" id="btn-close-modal" aria-label="Cerrar juego">
+        Salir al Tablero ✕
+      </button>
+    </header>
+    
+    <div class="game-modal-body">
+      <!-- El script del minijuego inyectará su estructura HTML aquí -->
+      <div id="game-sandbox"></div>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <a href="https://github.com/raestrada/martina" target="_blank" rel="noopener noreferrer" class="github-link" aria-label="GitHub">
+    <svg viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    Ver en GitHub
+  </a>
+  <p>Historias y juegos originales para Martina, por papá.<br>«El ajedrez es un cuento de hadas de la mente» — Mikhail Tal</p>
+  <p style="font-size: 0.8rem; margin-top: 1rem; color: var(--board-dark); line-height: 1.4;">
+    Esta obra está bajo una <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.es" target="_blank" rel="license noopener noreferrer" style="color: inherit; text-decoration: underline;">Licencia Creative Commons Atribución-NoComercial 4.0 Internacional</a>.<br>
+    El código es de código abierto (MIT). Prohibida la monetización comercial sin permiso.
+  </p>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/games-hub.js"></script>
+</body>
+</html>

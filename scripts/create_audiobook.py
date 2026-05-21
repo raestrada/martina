@@ -107,6 +107,13 @@ STORY_CONFIG = {
         "default_voice": "es-CO-GonzaloNeural",
         "default_image": "mundo_magico_1778904597376.png",
         "mapping": {}
+    },
+    12: {
+        "html_file": "../cuentos/12-el-peon-que-bailaba.html",
+        "output_video": "../assets/video/cuento_12_audiolibro.mp4",
+        "default_voice": "es-EC-AndreaNeural",
+        "default_image": "martina_full_body_1778904544807.png",
+        "mapping": {}
     }
 }
 
