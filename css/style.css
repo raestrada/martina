@@ -969,3 +969,21 @@ main {
     align-items: center;
   }
 }
+
+/* === DISQUS === */
+#disqus_thread {
+  max-width: 800px;
+  margin: 3rem auto 2rem;
+  padding: 1.5rem;
+  background: var(--warm-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+@media (max-width: 600px) {
+  #disqus_thread {
+    margin: 2rem 0.5rem 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+  }
+}

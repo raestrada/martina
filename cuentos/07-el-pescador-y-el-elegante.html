@@ -661,6 +661,21 @@
       <a href="../index.html" class="btn">← Volver al inicio</a>
     </div>
 
+    <div id="disqus_thread"></div>
+    <script>
+      var disqus_config = function () {
+        this.page.url = window.location.href;
+        this.page.identifier = window.location.pathname;
+      };
+      (function() {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://martinachess.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+      })();
+    </script>
+    <noscript>Por favor activa JavaScript para ver los <a href="https://disqus.com/?ref_noscript">comentarios de Disqus.</a></noscript>
+
   </article>
 
 </main>
