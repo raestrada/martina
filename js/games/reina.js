@@ -699,7 +699,7 @@ class ReinaGame {
   // --- VICTORY RESOLUTION ---
   victory() {
     this.gameActive = false;
-    window.GameAudio.playWin();
+    window.GameAudio.playVictory();
 
     // Reward stars based on remaining lives
     let starsWon = 1;
