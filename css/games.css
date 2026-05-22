@@ -1227,3 +1227,189 @@
   100% { transform: scale(1.8) rotate(180deg); opacity: 0; }
 }
 
+/* === JUEGO: MARTINA CONTRA SU SOMBRA === */
+.square-martina {
+  font-size: 2.2rem;
+  color: #c77dff; /* bright magenta/purple */
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  animation: floatPawn 1.5s infinite alternate;
+}
+
+.square-martina::after {
+  content: '👓';
+  font-size: 0.9rem;
+  position: absolute;
+  bottom: 2px;
+  z-index: 6;
+}
+
+.square-sombra {
+  font-size: 2.2rem;
+  color: #3c096c; /* deep purple shadow */
+  opacity: 0.85;
+  filter: drop-shadow(0 0 10px #7b2cbf);
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  animation: floatShadow 1.5s infinite alternate;
+}
+
+.square-sombra::after {
+  content: '👥';
+  font-size: 0.8rem;
+  position: absolute;
+  bottom: 2px;
+  opacity: 0.7;
+  z-index: 6;
+}
+
+@keyframes floatShadow {
+  from { transform: translateY(0) scale(1); filter: drop-shadow(0 0 8px #7b2cbf); }
+  to { transform: translateY(-3px) scale(0.95); filter: drop-shadow(0 0 16px #9d4edd); }
+}
+
+.square-sombra-beam {
+  background-color: rgba(157, 78, 221, 0.25) !important;
+  position: relative;
+  box-shadow: inset 0 0 12px rgba(157, 78, 221, 0.4);
+  animation: beamPulse 1s infinite alternate;
+}
+
+@keyframes beamPulse {
+  from { background-color: rgba(157, 78, 221, 0.18); }
+  to { background-color: rgba(157, 78, 221, 0.35); }
+}
+
+.square-sombra-beam::before {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 100%;
+  background: rgba(224, 170, 255, 0.5);
+  filter: blur(1px);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.square-martina-pinned {
+  animation: pinShake 0.4s infinite alternate;
+  box-shadow: inset 0 0 18px rgba(230, 57, 70, 0.8), 0 0 12px rgba(230, 57, 70, 0.6) !important;
+}
+
+.square-martina-pinned::after {
+  content: '⛓️';
+  font-size: 1.4rem;
+  position: absolute;
+  z-index: 7;
+  animation: scaleChains 0.5s ease-in-out;
+}
+
+@keyframes pinShake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(0px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  55% { transform: translate(-1px, 2px) rotate(-1deg); }
+  70% { transform: translate(-2px, 1px) rotate(0deg); }
+  85% { transform: translate(1px, -1px) rotate(-1deg); }
+  100% { transform: translate(1px, 1px) rotate(0deg); }
+}
+
+@keyframes scaleChains {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.square-peoncito-rescued::after {
+  content: '♙';
+  color: #fff;
+  font-size: 2rem;
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000;
+  position: absolute;
+  z-index: 4;
+  animation: floatPawn 1.2s infinite alternate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.square-peoncito-rescued-bigote::after {
+  content: '🥸';
+  font-size: 0.9rem;
+  position: absolute;
+  bottom: 2px;
+  z-index: 5;
+}
+
+.square-mirror-portal::after {
+  content: '🪞';
+  font-size: 1.6rem;
+  position: absolute;
+  z-index: 4;
+  animation: mirrorPulse 1.5s infinite alternate ease-in-out;
+}
+
+@keyframes mirrorPulse {
+  from { transform: scale(1); filter: drop-shadow(0 0 4px #e0aaff); }
+  to { transform: scale(1.15); filter: drop-shadow(0 0 12px #9d4edd); }
+}
+
+.square-sombra-guide::after {
+  content: '🟣';
+  font-size: 0.75rem;
+  opacity: 0.45;
+  position: absolute;
+  z-index: 3;
+  animation: pulseGuide 1s infinite alternate;
+}
+
+@keyframes pulseGuide {
+  from { opacity: 0.3; transform: scale(0.9); }
+  to { opacity: 0.6; transform: scale(1.1); }
+}
+
+.square-peoncito-placed {
+  font-size: 2rem;
+  color: #fff;
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000;
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.square-peoncito-placed::after {
+  content: '🛡️';
+  font-size: 0.95rem;
+  position: absolute;
+  bottom: 2px;
+  z-index: 5;
+}
+
+.board-blindfold .chess-square:not(.square-obstacle):not(.square-lava):not(.square-ice) {
+  background-color: #121212 !important; /* Pitch black mode */
+}
+
+.board-blindfold .chess-square::before {
+  opacity: 0 !important; /* Hide labels */
+}
+
+
