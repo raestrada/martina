@@ -27,6 +27,20 @@ STORY_CONFIG = {
             "sacrificó su alfil": "sacrificio_greco_1779239578282.png",
             "ACHÍS": "reina_estornudo_1779239591968.png"
         }
+    },
+    2: {
+        "html_file": "../cuentos/02-tic-tac-jaque-mate.html",
+        "output_video": "../assets/video/cuento_02_tiktok.mp4",
+        "default_voice": "es-ES-ElviraNeural",
+        "default_image": "tictac_reloj_1778905871501.png",
+        "mapping": {
+            "La noche antes del torneo": "martina_reloj_noche_1779250555984.png",
+            "El gimnasio del colegio olía": "torneo_escolar_ajedrez_1779250574888.png",
+            "El rival de la primera ronda se llamaba Tomás": "tomas_erizo_1778905884457.png",
+            "En ese momento, Martina vio algo en la casilla e4": "peoncito_e4_1779250596021.png",
+            "Y estrelló su alfil en a3": "mate_de_boden_1779250613804.png",
+            "La señora que atendía llevaba un delantal": "kiosquera_torreta_1778905896331.png"
+        }
     }
 }
 
