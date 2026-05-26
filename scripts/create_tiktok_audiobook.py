@@ -41,6 +41,17 @@ STORY_CONFIG = {
             "Y estrelló su alfil en a3": "mate_de_boden_1779250613804.png",
             "La señora que atendía llevaba un delantal": "kiosquera_torreta_1778905896331.png"
         }
+    },
+    3: {
+        "html_file": "../cuentos/03-la-clavada-del-alfil-exiliado.html",
+        "output_video": "../assets/video/cuento_03_tiktok.mp4",
+        "default_voice": "es-US-AlonsoNeural",
+        "default_image": "alfil_exiliado_1778944848314.png",
+        "mapping": {
+            "Si hay algo que Martina ama": "alfil_exiliado_1778944848314.png",
+            "sacrificando la torre": "martina_torre_sacrificio_v2_1778945194932.png",
+            "Club de la Clavada": "club_clavada_fiesta_1778945037841.png"
+        }
     }
 }
 
