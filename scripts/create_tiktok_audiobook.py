@@ -52,6 +52,16 @@ STORY_CONFIG = {
             "sacrificando la torre": "martina_torre_sacrificio_v2_1778945194932.png",
             "Club de la Clavada": "club_clavada_fiesta_1778945037841.png"
         }
+    },
+    4: {
+        "html_file": "../cuentos/04-el-caballo-salvaje.html",
+        "output_video": "../assets/video/cuento_04_tiktok.mp4",
+        "default_voice": "es-MX-DaliaNeural",
+        "default_image": "martina_vs_equis_1778968666455.png",
+        "mapping": {
+            "Martina jugó Cd5": "caballo_invencible_1778968679199.png",
+            "Después de la partida": "martina_vs_equis_1778968666455.png"
+        }
     }
 }
 
