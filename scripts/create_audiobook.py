@@ -114,6 +114,20 @@ STORY_CONFIG = {
         "default_voice": "es-EC-AndreaNeural",
         "default_image": "martina_full_body_1778904544807.png",
         "mapping": {}
+    },
+    13: {
+        "html_file": "../cuentos/13-lo-que-estaba-escrito.html",
+        "output_video": "../assets/video/cuento_13_audiolibro.mp4",
+        "default_voice": "es-ES-AlvaroNeural",
+        "default_image": "martina_sombra_1779972341205.png",
+        "mapping": {}
+    },
+    14: {
+        "html_file": "../cuentos/14-hielo-que-quema.html",
+        "output_video": "../assets/video/cuento_14_audiolibro.mp4",
+        "default_voice": "es-ES-ElviraNeural",
+        "default_image": "martina_vs_leon_1780000000000.png",
+        "mapping": {}
     }
 }
 
