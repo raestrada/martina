@@ -11,7 +11,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/cuentos-12-rose?style=flat-square&color=e76f51" alt="12 cuentos">
-  <img src="https://img.shields.io/badge/ilustraciones-39-gold?style=flat-square&color=f4a261" alt="39 ilustraciones">
+  <img src="https://img.shields.io/badge/ilustraciones-44-gold?style=flat-square&color=f4a261" alt="44 ilustraciones">
   <img src="https://img.shields.io/badge/licencia%20código-MIT-blue?style=flat-square" alt="MIT">
   <img src="https://img.shields.io/badge/licencia%20contenido-CC%20BY--NC%204.0-green?style=flat-square" alt="CC BY-NC 4.0">
 </p>
@@ -89,7 +89,7 @@ Pero al terminar los 12 cuentos, sabrá:
 
 ## 🎨 Galería
 
-Todas las ilustraciones —39 imágenes generadas con IA— están disponibles en la galería del sitio. Cada una retrata un momento clave de algún cuento: desde Peoncito mirando con orgullo la octava fila hasta la Sombra aceptando chocolate caliente en el castillo del Rey Blanco.
+Todas las ilustraciones —44 imágenes generadas con IA— están disponibles en la galería del sitio. Cada una retrata un momento clave de algún cuento: desde Peoncito mirando con orgullo la octava fila hasta la Sombra aceptando chocolate caliente en el castillo del Rey Blanco.
 
 <p align="center">
   <img src="assets/img/alfil_exiliado_1778944848314.png" alt="Alfil Exiliado" width="45%">
