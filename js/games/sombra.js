@@ -89,7 +89,7 @@ class SombraGame {
         startPos: "b2",
         sombraStartPos: "g7",
         peoncitos: ["d3", "e6"],
-        obstacles: ["c2", "f7", "c7", "f2"],
+        obstacles: ["c2", "f7", "c7", "f2", "d4"],
         lava: ["b4", "g5"],
         ice: [],
         exit: "h2",
@@ -113,7 +113,7 @@ class SombraGame {
         startPos: "b2",
         sombraStartPos: "g7",
         peoncitos: ["d5"],
-        obstacles: ["c4", "f5"],
+        obstacles: ["c4", "f5", "d4"],
         lava: [],
         ice: [],
         exit: "h2",
@@ -173,7 +173,7 @@ class SombraGame {
         startPos: "a1",
         sombraStartPos: "h8",
         peoncitos: ["b4"],
-        obstacles: [],
+        obstacles: ["d4"],
         lava: [],
         ice: [],
         exit: "g5",
@@ -647,7 +647,25 @@ class SombraGame {
     const sombraCoord = this.coordsToName(this.sombraPos.r, this.sombraPos.c);
 
     // Adjacent legal steps (King movement)
-    const legalMoves = this.getLegalSteps(this.martinaPos.r, this.martinaPos.c);
+    let legalMoves = this.getLegalSteps(this.martinaPos.r, this.martinaPos.c);
+
+    // Filter by pin constraint (collinearity)
+    if (this.isMartinaPinned && this.pinLine) {
+      legalMoves = legalMoves.filter(coord => {
+        const targetPos = this.nameToCoords(coord);
+        const dr = targetPos.r - this.martinaPos.r;
+        const dc = targetPos.c - this.martinaPos.c;
+        return dr * this.pinLine.dc === dc * this.pinLine.dr;
+      });
+    }
+
+    // Filter by obstacle, placed shield and lava blocking
+    legalMoves = legalMoves.filter(coord => {
+      // Exclude obstacles, placed shields, and lava (which is lethal, especially with 1 life in Martina difficulty!)
+      return !level.obstacles.includes(coord) && 
+             !this.placedPeoncitos.includes(coord) &&
+             !level.lava.includes(coord);
+    });
 
     // Calculate highlight placement squares if placement mode is active
     let placeableSquares = [];
