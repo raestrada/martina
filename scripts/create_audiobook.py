@@ -128,6 +128,20 @@ STORY_CONFIG = {
         "default_voice": "es-ES-ElviraNeural",
         "default_image": "martina_vs_leon_1780000000000.png",
         "mapping": {}
+    },
+    15: {
+        "html_file": "../cuentos/15-el-ultimo-capitulo.html",
+        "output_video": "../assets/video/cuento_15_audiolibro.mp4",
+        "default_voice": "es-MX-JorgeNeural",
+        "default_image": "martina_sombra_split_1780000000000.png",
+        "mapping": {}
+    },
+    16: {
+        "html_file": "../cuentos/16-fuego-contra-todos.html",
+        "output_video": "../assets/video/cuento_16_audiolibro.mp4",
+        "default_voice": "es-CO-SalomeNeural",
+        "default_image": "martina_vs_leon_victory_1780000000000.png",
+        "mapping": {}
     }
 }
 
