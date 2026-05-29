@@ -191,7 +191,7 @@ window.ChessDuel = class ChessDuel {
   }
 
   // --- GENERATE PSEUDO-LEGAL MOVES ---
-  generateMoves(r, c) {
+  generateMoves(r, c, skipCastling) {
     const piece = this.getPiece(r, c);
     if (!piece) return [];
     const moves = [];
@@ -235,8 +235,8 @@ window.ChessDuel = class ChessDuel {
       case 'q': slide(1,0);slide(-1,0);slide(0,1);slide(0,-1);slide(1,1);slide(1,-1);slide(-1,1);slide(-1,-1); break;
       case 'k':
         for (const [dr,dc] of [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]) add(r+dr,c+dc);
-        // Castling
-        if (color === 'w' && r === 7 && c === 4) {
+        // Castling (skip when called from isSquareAttacked to avoid recursion)
+        if (!skipCastling && color === 'w' && r === 7 && c === 4) {
           // Kingside
           if (this.getPiece(7,7)==='R' && !this.getPiece(7,5) && !this.getPiece(7,6)
               && !this.isSquareAttacked(7,4,'b') && !this.isSquareAttacked(7,5,'b') && !this.isSquareAttacked(7,6,'b')) {
@@ -248,7 +248,7 @@ window.ChessDuel = class ChessDuel {
             moves.push({ r:7, c:2, castle: 'queenside' });
           }
         }
-        if (color === 'b' && r === 0 && c === 4) {
+        if (!skipCastling && color === 'b' && r === 0 && c === 4) {
           if (this.getPiece(0,7)==='r' && !this.getPiece(0,5) && !this.getPiece(0,6)
               && !this.isSquareAttacked(0,4,'w') && !this.isSquareAttacked(0,5,'w') && !this.isSquareAttacked(0,6,'w')) {
             moves.push({ r:0, c:6, castle: 'kingside' });
@@ -271,8 +271,8 @@ window.ChessDuel = class ChessDuel {
         if (!piece) continue;
         const pCol = piece === piece.toUpperCase() ? 'w' : 'b';
         if (pCol !== byColor) continue;
-        const moves = this.generateMoves(rr, cc);
-        if (moves.some(m => m.r === r && m.c === c && !m.castle)) return true;
+        const moves = this.generateMoves(rr, cc, true);
+        if (moves.some(m => m.r === r && m.c === c)) return true;
       }
     }
     return false;
