@@ -446,7 +446,13 @@ class CaballoGame {
 
         // Highlight legal knight destinations
         if (legalMoves.includes(coord) && !currentLevel.obstacles.includes(coord)) {
-          square.classList.add('square-path');
+          const hasCarrot = currentLevel.carrots.includes(coord) && !this.carrotsCollected.includes(coord);
+          const isActiveTrophy = this.trophyActive && currentLevel.trophy === coord;
+
+          // Evita dibujar el círculo verde de camino sobre zanahorias o la copa para prevenir colisiones de CSS!
+          if (!hasCarrot && !isActiveTrophy) {
+            square.classList.add('square-path');
+          }
           square.addEventListener('click', () => this.moveHorseTo(coord));
         }
 
