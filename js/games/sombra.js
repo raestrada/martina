@@ -732,7 +732,10 @@ class SombraGame {
         // Render placed shields (Peoncitos acting as blocks)
         if (this.placedPeoncitos.includes(coord)) {
           square.classList.add('square-peoncito-placed');
-          square.textContent = '♙';
+          const peonEl = document.createElement('div');
+          peonEl.className = 'square-peoncito';
+          peonEl.innerHTML = this.getPeoncitoSVG();
+          square.appendChild(peonEl);
         }
 
         // Render Exit Mirror Portal
@@ -744,7 +747,7 @@ class SombraGame {
         if (coord === martinaCoord) {
           const martinaEl = document.createElement('div');
           martinaEl.className = 'square-martina';
-          martinaEl.textContent = '♕';
+          martinaEl.innerHTML = this.getMartinaSVG();
           
           if (this.isMartinaPinned) {
             square.classList.add('square-martina-pinned');
@@ -756,7 +759,7 @@ class SombraGame {
         if (coord === sombraCoord) {
           const sombraEl = document.createElement('div');
           sombraEl.className = 'square-sombra';
-          sombraEl.textContent = '♛';
+          sombraEl.innerHTML = this.getSombraSVG();
           square.appendChild(sombraEl);
         }
 
@@ -1080,6 +1083,77 @@ class SombraGame {
 
   destroy() {
     this.gameActive = false;
+  }
+
+  getMartinaSVG() {
+    return `
+    <svg viewBox="0 0 100 100" style="width: 85%; height: 85%;">
+      <defs>
+        <filter id="glow-martina" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+      </defs>
+      <!-- Base -->
+      <path d="M25,82 L75,82 L70,72 L30,72 Z" fill="#b5179e" stroke="#f72585" stroke-width="2" />
+      <path d="M35,72 L65,72 L60,40 L40,40 Z" fill="#7209b7" stroke="#f72585" stroke-width="2" />
+      <!-- Head / Hair -->
+      <circle cx="50" cy="36" r="14" fill="#f72585" />
+      <!-- Glasses -->
+      <rect x="39" y="32" width="9" height="7" rx="2.2" fill="none" stroke="#ffffff" stroke-width="2.5" />
+      <rect x="52" y="32" width="9" height="7" rx="2.2" fill="none" stroke="#ffffff" stroke-width="2.5" />
+      <line x1="48" y1="36" x2="52" y2="36" stroke="#ffffff" stroke-width="2.5" />
+      <!-- Crown -->
+      <path d="M38,22 L42,11 L50,18 L58,11 L62,22 Z" fill="#ffb703" stroke="#ffffff" stroke-width="1.5" />
+      <circle cx="42" cy="11" r="2" fill="#ffffff" />
+      <circle cx="50" cy="18" r="2" fill="#ffffff" />
+      <circle cx="58" cy="11" r="2" fill="#ffffff" />
+    </svg>`;
+  }
+
+  getSombraSVG() {
+    return `
+    <svg viewBox="0 0 100 100" style="width: 85%; height: 85%;">
+      <defs>
+        <filter id="glow-sombra" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+      </defs>
+      <!-- Base -->
+      <path d="M25,82 L75,82 L70,72 L30,72 Z" fill="#1b1c30" stroke="#7209b7" stroke-width="2" />
+      <path d="M35,72 L65,72 L60,40 L40,40 Z" fill="#10111a" stroke="#7209b7" stroke-width="2" />
+      <!-- Head / Hair -->
+      <circle cx="50" cy="36" r="14" fill="#3f37c9" opacity="0.85" />
+      <!-- Glowing Eyes -->
+      <circle cx="43" cy="36" r="3.2" fill="#4cc9f0" filter="url(#glow-sombra)" />
+      <circle cx="57" cy="36" r="3.2" fill="#4cc9f0" filter="url(#glow-sombra)" />
+      <!-- Broken Shadow Crown -->
+      <path d="M38,22 L42,13 L50,20 L58,9 L62,22 Z" fill="#480ca8" stroke="#4cc9f0" stroke-width="1.5" />
+    </svg>`;
+  }
+
+  getPeoncitoSVG() {
+    return `
+    <svg viewBox="0 0 100 100" style="width: 80%; height: 80%;">
+      <defs>
+        <linearGradient id="peoncito-shield" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ffffff" />
+          <stop offset="50%" stop-color="#a5f3fc" />
+          <stop offset="100%" stop-color="#06b6d4" />
+        </linearGradient>
+      </defs>
+      <!-- Base -->
+      <path d="M25,82 L75,82 L70,72 L30,72 Z" fill="url(#peoncito-shield)" stroke="#0891b2" stroke-width="2" />
+      <!-- Body -->
+      <path d="M35,72 L65,72 L58,45 L42,45 Z" fill="url(#peoncito-shield)" stroke="#0891b2" stroke-width="2" />
+      <!-- Collar -->
+      <ellipse cx="50" cy="46" rx="9" ry="2.5" fill="#f43f5e" />
+      <!-- Head -->
+      <circle cx="50" cy="34" r="13" fill="url(#peoncito-shield)" stroke="#0891b2" stroke-width="2" />
+      <!-- Bigote -->
+      <path d="M36,41 Q45,42 50,38 Q55,42 64,41 Q66,35 58,35 Q50,37 50,36 Q50,37 42,35 Q34,35 36,41 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1" />
+    </svg>`;
   }
 }
 

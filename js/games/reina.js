@@ -479,7 +479,7 @@ class ReinaGame {
         if (coord === peoncitoCoord) {
           const peonEl = document.createElement('div');
           peonEl.className = 'square-peoncito';
-          peonEl.textContent = '♙';
+          peonEl.innerHTML = this.getPeoncitoSVG();
           square.appendChild(peonEl);
         }
 
@@ -487,7 +487,7 @@ class ReinaGame {
         if (coord === reinaCoord) {
           const reinaEl = document.createElement('div');
           reinaEl.className = 'square-reina';
-          reinaEl.textContent = '♛';
+          reinaEl.innerHTML = this.getReinaSVG();
           square.appendChild(reinaEl);
         }
 
@@ -953,6 +953,56 @@ class ReinaGame {
 
   destroy() {
     this.gameActive = false;
+  }
+
+  getPeoncitoSVG() {
+    return `
+    <svg viewBox="0 0 100 100" style="width: 85%; height: 85%;">
+      <defs>
+        <linearGradient id="peoncito-crystal" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ffffff" />
+          <stop offset="50%" stop-color="#93c5fd" />
+          <stop offset="100%" stop-color="#3b82f6" />
+        </linearGradient>
+      </defs>
+      <!-- Base -->
+      <path d="M25,82 L75,82 L70,72 L30,72 Z" fill="url(#peoncito-crystal)" stroke="#1d4ed8" stroke-width="2" />
+      <!-- Body -->
+      <path d="M35,72 L65,72 L58,45 L42,45 Z" fill="url(#peoncito-crystal)" stroke="#1d4ed8" stroke-width="2" />
+      <!-- Collar -->
+      <ellipse cx="50" cy="46" rx="9" ry="2.5" fill="#ef4444" />
+      <!-- Head -->
+      <circle cx="50" cy="34" r="13" fill="url(#peoncito-crystal)" stroke="#1d4ed8" stroke-width="2" />
+      <!-- Fake Mustache (Iconic!) -->
+      <path d="M36,41 Q45,42 50,38 Q55,42 64,41 Q66,35 58,35 Q50,37 50,36 Q50,37 42,35 Q34,35 36,41 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1" />
+    </svg>`;
+  }
+
+  getReinaSVG() {
+    return `
+    <svg viewBox="0 0 100 100" style="width: 88%; height: 88%;">
+      <defs>
+        <linearGradient id="reina-body" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#312e81" />
+          <stop offset="100%" stop-color="#0f172a" />
+        </linearGradient>
+      </defs>
+      <!-- Base -->
+      <path d="M22,86 L78,86 L74,76 L26,76 Z" fill="url(#reina-body)" stroke="#818cf8" stroke-width="2.5" />
+      <!-- Body -->
+      <path d="M30,76 L70,76 L64,36 L36,36 Z" fill="url(#reina-body)" stroke="#818cf8" stroke-width="2.5" />
+      <!-- Head -->
+      <circle cx="50" cy="30" r="15" fill="#1e1b4b" stroke="#818cf8" stroke-width="2" />
+      <!-- Tissue Cape (Allergy details) -->
+      <path d="M33,45 Q50,56 67,45 Q70,68 50,73 Q30,68 33,45 Z" fill="#f8fafc" opacity="0.9" stroke="#cbd5e1" stroke-width="1.5" />
+      <!-- Crown of folded tissues! -->
+      <path d="M32,18 L38,6 L44,14 L50,4 L56,14 L62,6 L68,18 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" />
+      <circle cx="38" cy="5" r="2" fill="#f87171" />
+      <circle cx="50" cy="3" r="2" fill="#f87171" />
+      <circle cx="62" cy="5" r="2" fill="#f87171" />
+      <!-- Red blushing nose -->
+      <circle cx="50" cy="32" r="3.5" fill="#ef4444" opacity="0.8" />
+    </svg>`;
   }
 }
 

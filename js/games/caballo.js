@@ -437,10 +437,7 @@ class CaballoGame {
         if (coord === horseCoord) {
           const horseEl = document.createElement('div');
           horseEl.className = 'chess-piece white-piece';
-          horseEl.textContent = '♘';
-          horseEl.style.fontSize = '2.2rem';
-          horseEl.style.color = '#f4a261';
-          horseEl.style.textShadow = '1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000';
+          horseEl.innerHTML = this.getCaballoSVG();
           square.appendChild(horseEl);
         }
 
@@ -718,6 +715,29 @@ class CaballoGame {
 
   destroy() {
     this.gameActive = false;
+  }
+
+  getCaballoSVG() {
+    return `
+    <svg viewBox="0 0 100 100" style="width: 85%; height: 85%; animation: floatPawn 1.5s infinite alternate;">
+      <defs>
+        <linearGradient id="caballo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#f4a261" />
+          <stop offset="100%" stop-color="#e76f51" />
+        </linearGradient>
+      </defs>
+      <!-- Base -->
+      <path d="M25,82 L75,82 L70,72 L30,72 Z" fill="url(#caballo-grad)" stroke="#264653" stroke-width="2.5" />
+      <!-- Body -->
+      <path d="M30,72 Q28,52 40,38 Q38,28 33,26 Q43,26 53,33 Q63,38 68,52 Q70,67 63,72 Z" fill="url(#caballo-grad)" stroke="#264653" stroke-width="2" />
+      <!-- Mane (flowing hair/fire) -->
+      <path d="M32,67 Q20,52 35,39 Q30,32 42,29 Q36,22 48,19 Q52,9 60,22 Q58,32 55,39 Z" fill="#e9c46a" opacity="0.9" />
+      <!-- Glowing eye -->
+      <circle cx="53" cy="42" r="3" fill="#ffffff" />
+      <circle cx="53" cy="42" r="1.5" fill="#264653" />
+      <!-- Cute cheek/mouth -->
+      <path d="M60,53 Q64,51 60,49" fill="none" stroke="#264653" stroke-width="2" />
+    </svg>`;
   }
 }
 
