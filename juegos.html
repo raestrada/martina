@@ -52,6 +52,7 @@
     <div class="hero-text">
       <h1>Tablero de Juegos</h1>
       <p class="hero-subtitle">Pon a prueba tu instinto de ataque, tu velocidad con el reloj y tus saltos tácticos. ¡Diviértete y aprende ajedrez real!</p>
+      <a href="#juegos-seccion" onclick="event.preventDefault();document.getElementById('juegos-seccion').scrollIntoView({behavior:'smooth'});" class="btn" style="display:inline-block;margin-top:1rem;background:var(--rose);color:#fff;font-weight:800;padding:0.6rem 1.8rem;border-radius:20px;text-decoration:none;animation:bounce 2s infinite ease-in-out;">🎮 Ir a los Juegos ↓</a>
     </div>
   </section>
 
@@ -259,6 +260,7 @@
 
 <script src="js/games/assets_b64.js"></script>
 <script src="js/games/mario-data.js"></script>
+<script>if(!window.location.hash)window.scrollTo(0,0);</script>
 <script src="js/main.js"></script>
 <script src="js/games-hub.js"></script>
 </body>
