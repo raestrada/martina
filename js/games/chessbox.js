@@ -112,31 +112,32 @@ class ChessBoxGame {
 
     let melody = [];
     let bass = [];
-    let tempo = 115; // 115ms per step — driving 8th-note punk-rock pace (Inner Light groove)
+    let tempo = 175; // 175ms = 8th note at 171 BPM — exact Inner Light tempo
 
     if (type === 'boxing') {
-      // === HAJIME NO IPPO — INNER LIGHT STYLE ===
-      // Key: E minor. Chord progression: Em → Em → C → D
-      // The iconic ascending-descending guitar riff, plus soaring brass chorus
+      // === HAJIME NO IPPO — INNER LIGHT (exact MIDI transcription) ===
+      // Key: C minor. 171 BPM. Iconic guitar riff + soaring chorus.
+      // MIDI notes: C4(60)=261.63 D#3(51)=155.56 A#3(58)=233.08 G3(55)=196.00 G4(67)=392.00
+      const C4 = 261.63, Eb3 = 155.56, Bb3 = 233.08, G3 = 196.00, G4 = 392.00;
       melody = [
-        // Bar 1: Em — THE iconic Inner Light ascending riff!
-        329.63, 392.00, 440.00, 493.88, 440.00, 392.00, 329.63, 293.66,
-        // Bar 2: Em — Extended ascent then descent
-        329.63, 392.00, 440.00, 493.88, 523.25, 493.88, 440.00, 392.00,
-        // Bar 3: C — Lift to the light
-        261.63, 329.63, 392.00, 523.25, 440.00, 392.00, 329.63, 293.66,
-        // Bar 4: D — Building back to the riff
-        293.66, 369.99, 440.00, 587.33, 493.88, 440.00, 392.00, 329.63
+        // Bar 1: Cm — The iconic Inner Light riff! (MIDI Track 0)
+        C4, C4, C4, Eb3, C4, C4, C4, C4,
+        // Bar 2: Cm — continues with Bb inflection
+        C4, C4, Bb3, Bb3, C4, C4, C4, C4,
+        // Bar 3: G — the lift (MIDI Track 0 bars 4-5)
+        G3, G3, G3, G3, G3, G3, Bb3, C4,
+        // Bar 4: Cm — return to the riff, with soaring G4 climax (MIDI Track 0)
+        C4, C4, C4, Eb3, G4, C4, Bb3, Bb3
       ];
+      const C2 = 65.41, G2 = 98.00;
       bass = [
-        // Em — relentless driving root
-        82.41, 82.41, 82.41, 82.41, 82.41, 82.41, 82.41, 82.41,
-        // Em
-        82.41, 82.41, 82.41, 82.41, 82.41, 82.41, 82.41, 82.41,
-        // C
-        65.41, 65.41, 65.41, 65.41, 65.41, 65.41, 65.41, 65.41,
-        // D
-        73.42, 73.42, 73.42, 73.42, 73.42, 73.42, 73.42, 73.42
+        // Cm — driving bass
+        C2, C2, C2, C2, C2, C2, C2, C2,
+        C2, C2, C2, C2, C2, C2, C2, C2,
+        // G
+        G2, G2, G2, G2, G2, G2, G2, G2,
+        // Cm
+        C2, C2, C2, C2, C2, C2, C2, C2
       ];
     } else {
       // Chess tension music: Slow, ominous A-minor drone with woodblock ticking
@@ -359,7 +360,7 @@ class ChessBoxGame {
             // played with 3 detuned sawtooth waves to simulate heavy double-tracked guitars!
             const freqs = [leadFreq, leadFreq * 1.4983, leadFreq * 2.0];
             const detunes = [-12, 0, 12];
-            const volumes = [0.028, 0.022, 0.018]; // LOUD driving rhythm guitars (Inner Light energy)
+            const volumes = [0.022, 0.017, 0.013]; // rhythm guitars (support role under brass lead)
             
             freqs.forEach((f, idx) => {
               const osc = audioCtx.createOscillator();
