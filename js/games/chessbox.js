@@ -2254,17 +2254,31 @@ class ChessBoxGame {
     // Start tension clock-ticking chess chiptune music
     this.startMusic('chess');
 
-    // Calculate damage-based visual filters & overlays (blurry vision, blood, vignette)
+    // Calculate damage-based visual filters & overlays (smoothly gradual blurry vision, blood, vignette)
     let boardStyle = "";
     let statusStyle = "";
     let vignetteOverlayHTML = "";
     let bloodDropsHTML = "";
 
-    if (this.playerHealth < 100) {
-      const damagePercent = 100 - this.playerHealth;
-      const vignetteIntensity = (damagePercent / 100) * 0.70;
-      const vignetteBlur = 20 + (damagePercent / 100) * 35;
+    // Threshold changed to 80% to keep first rounds pristine and damage scaling highly gradual!
+    if (this.playerHealth < 80) {
+      const damageFactor = (80 - this.playerHealth) / 80; // starts at 0 (at 80% health) and scales to 1.0 (at 0% health)
       
+      // 1. Gradual Blur: Subtle at first, severely blurred only when critical
+      const blurPx = (damageFactor * 1.8).toFixed(2);
+      boardStyle = `filter: blur(${blurPx}px); transition: filter 0.3s; pointer-events: auto;`;
+
+      // 2. Chromatic Aberration & Double Vision Text Shadow
+      const offsetPx = (damageFactor * 2.5).toFixed(2);
+      const isCritical = this.playerHealth < 35;
+      statusStyle = `
+        text-shadow: ${offsetPx}px 0 1px rgba(239,68,68,0.65), -${offsetPx}px 0 1px rgba(56,189,248,0.65);
+        ${isCritical ? 'font-weight: 900; animation: shakeHeavy 0.5s infinite;' : ''}
+      `;
+
+      // 3. Gradual Red Vignette
+      const vignetteIntensity = (damageFactor * 0.70).toFixed(2);
+      const vignetteBlur = Math.round(20 + damageFactor * 35);
       vignetteOverlayHTML = `
         <div id="chess-damage-vignette" style="
           position: absolute;
@@ -2272,38 +2286,30 @@ class ChessBoxGame {
           pointer-events: none;
           z-index: 100;
           box-shadow: inset 0 0 ${vignetteBlur}px rgba(239, 68, 68, ${vignetteIntensity});
-          ${this.playerHealth < 45 ? 'animation: pulseVignette 1.2s infinite alternate;' : ''}
+          ${isCritical ? 'animation: pulseVignette 1.2s infinite alternate;' : ''}
           transition: all 0.5s ease;
           border-radius: 20px;
         "></div>
       `;
 
-      if (this.playerHealth < 45) {
-        // Severe damage: heavy blur, chromatic aberration double vision
-        boardStyle = "filter: blur(1.8px); transition: filter 0.3s; pointer-events: auto;";
-        statusStyle = "text-shadow: 2.5px 0 1px rgba(239,68,68,0.75), -2.5px 0 1px rgba(56,189,248,0.75); font-weight: 900; animation: shakeHeavy 0.5s infinite;";
-      } else if (this.playerHealth < 75) {
-        // Mild damage: slight blur, subtle double vision
-        boardStyle = "filter: blur(0.8px); transition: filter 0.3s; pointer-events: auto;";
-        statusStyle = "text-shadow: 1.2px 0 0.5px rgba(239,68,68,0.5), -1.2px 0 0.5px rgba(56,189,248,0.5);";
-      }
-
-      if (this.playerHealth < 65) {
+      // 4. Immersive Corner Blood Splatters only appear under 50% health (heavy punishment), scaling their opacity!
+      if (this.playerHealth < 50) {
+        const bloodOpacity = ((50 - this.playerHealth) / 50 * 0.80 + 0.10).toFixed(2);
         bloodDropsHTML = `
           <!-- Immersive Corner Blood Splatters -->
           <svg style="position: absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index: 101;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450">
             <!-- Top Left splatter -->
-            <path d="M 0 0 L 80 0 C 70 30, 60 50, 30 65 C 15 72, 8 85, 0 100 Z" fill="#991b1b" opacity="0.8" />
-            <circle cx="100" cy="30" r="5" fill="#991b1b" opacity="0.75" />
-            <circle cx="65" cy="85" r="4" fill="#991b1b" opacity="0.75" />
-            <circle cx="30" cy="115" r="3" fill="#991b1b" opacity="0.7" />
-            <circle cx="15" cy="140" r="2" fill="#991b1b" opacity="0.75" />
+            <path d="M 0 0 L 80 0 C 70 30, 60 50, 30 65 C 15 72, 8 85, 0 100 Z" fill="#991b1b" opacity="${bloodOpacity}" />
+            <circle cx="100" cy="30" r="5" fill="#991b1b" opacity="${(bloodOpacity * 0.9).toFixed(2)}" />
+            <circle cx="65" cy="85" r="4" fill="#991b1b" opacity="${(bloodOpacity * 0.9).toFixed(2)}" />
+            <circle cx="30" cy="115" r="3" fill="#991b1b" opacity="${(bloodOpacity * 0.8).toFixed(2)}" />
+            <circle cx="15" cy="140" r="2" fill="#991b1b" opacity="${(bloodOpacity * 0.9).toFixed(2)}" />
             
             <!-- Bottom Right splatter -->
-            <path d="M 800 450 L 720 450 C 730 420, 740 400, 770 385 C 785 378, 792 365, 800 350 Z" fill="#991b1b" opacity="0.8" />
-            <circle cx="700" cy="420" r="5" fill="#991b1b" opacity="0.75" />
-            <circle cx="735" cy="365" r="4" fill="#991b1b" opacity="0.75" />
-            <circle cx="770" cy="335" r="3" fill="#991b1b" opacity="0.7" />
+            <path d="M 800 450 L 720 450 C 730 420, 740 400, 770 385 C 785 378, 792 365, 800 350 Z" fill="#991b1b" opacity="${bloodOpacity}" />
+            <circle cx="700" cy="420" r="5" fill="#991b1b" opacity="${(bloodOpacity * 0.9).toFixed(2)}" />
+            <circle cx="735" cy="365" r="4" fill="#991b1b" opacity="${(bloodOpacity * 0.9).toFixed(2)}" />
+            <circle cx="770" cy="335" r="3" fill="#991b1b" opacity="${(bloodOpacity * 0.8).toFixed(2)}" />
           </svg>
         `;
       }
