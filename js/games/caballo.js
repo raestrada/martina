@@ -437,7 +437,23 @@ class CaballoGame {
         if (coord === horseCoord) {
           const horseEl = document.createElement('div');
           horseEl.className = 'chess-piece white-piece';
-          horseEl.innerHTML = this.getCaballoSVG();
+          horseEl.style.width = '80%';
+          horseEl.style.height = '80%';
+          horseEl.style.display = 'flex';
+          horseEl.style.alignItems = 'center';
+          horseEl.style.justifyContent = 'center';
+          horseEl.style.position = 'relative';
+          horseEl.innerHTML = `
+            <svg viewBox="0 0 45 45" style="width: 100%; height: 100%; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.4));">
+              <g fill="none" fill-rule="evenodd" stroke="#1e293b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" style="fill:#ff9f1c; stroke:#1e293b;"/>
+                <path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,6.5 16.5,10 16.5,10 L 18.5,10 C 18.5,10 19.28,8.008 21,7 C 22,7 22,10 22,10" style="fill:#ff9f1c; stroke:#1e293b;"/>
+                <path d="M 9.5 25.5 A 0.5 0.5 0 1 1 8.5,25.5 A 0.5 0.5 0 1 1 9.5 25.5 z" style="fill:#1e293b; stroke:#1e293b;"/>
+                <path d="M 15 15.5 A 0.5 1.5 0 1 1 14,15.5 A 0.5 1.5 0 1 1 15 15.5 z" transform="matrix(0.866,0.5,-0.5,0.866,9.693,-5.173)" style="fill:#1e293b; stroke:#1e293b;"/>
+              </g>
+            </svg>
+            <div style="position: absolute; font-size: 0.75rem; top: -1px; left: 1px; pointer-events: none;">🔥</div>
+          `;
           square.appendChild(horseEl);
         }
 
@@ -715,27 +731,6 @@ class CaballoGame {
 
   destroy() {
     this.gameActive = false;
-  }
-
-  getCaballoSVG() {
-    return `
-    <svg viewBox="0 0 45 45" style="width: 88%; height: 88%; animation: floatPawn 1.5s infinite alternate;">
-      <defs>
-        <linearGradient id="caballo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#f4a261" />
-          <stop offset="100%" stop-color="#e76f51" />
-        </linearGradient>
-      </defs>
-      <g fill="url(#caballo-grad)" stroke="#264653" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M 22,10 C 32.5,11 38.5,18 38,28 C 37.5,30 37,31.5 35.5,31.5 C 34,31.5 34,29 34,29 C 31,31.5 31,34.5 33.5,37 C 33.5,37 31,38.5 28.5,37.5 C 26,36.5 24.5,34.5 24.5,34.5 C 24.5,34.5 21,37.5 17.5,36 C 14.5,34.5 16.5,31 16.5,31 C 12.5,31.5 11,28.5 11,28.5 C 11,28.5 13.5,25.5 15,26.5 C 16.5,27.5 18,25 18,25 C 18,25 14,24 13.5,19 C 13,14 17.5,12.5 17.5,12.5 C 17.5,12.5 18,8.5 22,10 Z" />
-        <path d="M 9.5,38.5 L 35.5,38.5 C 35.5,38.5 37,38.5 37,40 C 37,41.5 35.5,41.5 35.5,41.5 L 9.5,41.5 C 9.5,41.5 8,41.5 8,40 C 8,38.5 9.5,38.5 9.5,38.5 Z" />
-        <path d="M 11.5,30 C 15,29 17,29 21,31" />
-        <path d="M 20.5,21.5 C 23.5,21.5 24,24.5 24,24.5 C 24,24.5 20,24.5 18,26.5" />
-        <!-- Fire mane accent detail in golden yellow -->
-        <path d="M 12.5,19 C 11.5,15 14.5,13.5 15.5,13.5 Q 16.5,9.5 20,10.5 M 11,25 C 10,21 12,19.5 13,19.5" fill="none" stroke="#e9c46a" stroke-width="1.8" />
-        <circle cx="15" cy="15" r="1.5" fill="#e9c46a" stroke="none" />
-      </g>
-    </svg>`;
   }
 }
 

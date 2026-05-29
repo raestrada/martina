@@ -479,7 +479,18 @@ class ReinaGame {
         if (coord === peoncitoCoord) {
           const peonEl = document.createElement('div');
           peonEl.className = 'square-peoncito';
-          peonEl.innerHTML = this.getPeoncitoSVG();
+          peonEl.style.width = '75%';
+          peonEl.style.height = '75%';
+          peonEl.style.display = 'flex';
+          peonEl.style.alignItems = 'center';
+          peonEl.style.justifyContent = 'center';
+          peonEl.style.position = 'relative';
+          peonEl.innerHTML = `
+            <svg viewBox="0 0 45 45" style="width: 100%; height: 100%; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45));">
+              <path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-3 1.06-7.41 5.55-7.41 13.47h23c0-7.92-4.41-12.41-7.41-13.47 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" fill="#38bdf8" stroke="#1e293b" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            <div style="position: absolute; font-size: 0.8rem; bottom: -2px; pointer-events: none;">🥸</div>
+          `;
           square.appendChild(peonEl);
         }
 
@@ -487,7 +498,29 @@ class ReinaGame {
         if (coord === reinaCoord) {
           const reinaEl = document.createElement('div');
           reinaEl.className = 'square-reina';
-          reinaEl.innerHTML = this.getReinaSVG();
+          reinaEl.style.width = '80%';
+          reinaEl.style.height = '80%';
+          reinaEl.style.display = 'flex';
+          reinaEl.style.alignItems = 'center';
+          reinaEl.style.justifyContent = 'center';
+          reinaEl.style.position = 'relative';
+          reinaEl.innerHTML = `
+            <svg viewBox="0 0 45 45" style="width: 100%; height: 100%; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));">
+              <g fill="#312e81" fill-rule="evenodd" stroke="#1e293b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <g fill="#312e81" stroke="none">
+                  <circle cx="6" cy="12" r="2.75"/>
+                  <circle cx="14" cy="9" r="2.75"/>
+                  <circle cx="22.5" cy="8" r="2.75"/>
+                  <circle cx="31" cy="9" r="2.75"/>
+                  <circle cx="39" cy="12" r="2.75"/>
+                </g>
+                <path d="M9 26c8.5-1.5 21-1.5 27 0l2.5-12.5L31 25l-.3-14.1-5.2 13.6-3-14.5-3 14.5-5.2-13.6L14 25 6.5 13.5 9 26zM9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z" stroke-linecap="butt" style="fill:#312e81; stroke:#1e293b;"/>
+                <path d="M11 38.5a35 35 1 0 0 23 0" fill="none" stroke-linecap="butt" style="stroke:#1e293b;"/>
+                <path d="M11 29a35 35 1 0 1 23 0M12.5 31.5h20M11.5 34.5a35 35 1 0 0 22 0M10.5 37.5a35 35 1 0 0 24 0" fill="none" stroke="#fff" style="stroke:#fff;"/>
+              </g>
+            </svg>
+            <div style="position: absolute; font-size: 0.75rem; top: 0px; pointer-events: none;">🧻</div>
+          `;
           square.appendChild(reinaEl);
         }
 
@@ -953,56 +986,6 @@ class ReinaGame {
 
   destroy() {
     this.gameActive = false;
-  }
-
-  getPeoncitoSVG() {
-    return `
-    <svg viewBox="0 0 45 45" style="width: 85%; height: 85%;">
-      <defs>
-        <linearGradient id="peoncito-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#ffffff" />
-          <stop offset="60%" stop-color="#93c5fd" />
-          <stop offset="100%" stop-color="#2563eb" />
-        </linearGradient>
-      </defs>
-      <g fill="url(#peoncito-grad)" stroke="#1d4ed8" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round">
-        <path d="M 22,9 C 19.79,9 18,10.79 18,13 C 18,13.89 18.29,14.71 18.78,15.38 C 16.83,16.5 15.5,18.59 15.5,21 C 15.5,23.03 16.44,24.84 17.91,26.03 C 14.91,27.09 12.5,30.03 12.5,33.5 L 31.5,33.5 C 31.5,30.03 29.09,27.09 26.09,26.03 C 27.56,24.84 28.5,23.03 28.5,21 C 28.5,18.59 27.17,16.5 25.22,15.38 C 25.71,14.71 26,13.89 26,13 C 26,10.79 24.21,9 22,9 Z" />
-        <path d="M 11.5,36.5 L 32.5,36.5 C 32.5,36.5 34,36.5 34,38 C 34,39.5 32.5,39.5 32.5,39.5 L 11.5,39.5 C 11.5,39.5 10,39.5 10,38 C 10,36.5 11.5,36.5 11.5,36.5 Z" />
-        <circle cx="22" cy="13" r="2.5" />
-      </g>
-      <!-- Crystal collar ribbon -->
-      <ellipse cx="22" cy="17" rx="3.5" ry="1" fill="#ef4444" />
-      <!-- Peoncito's BIG fake mustache! -->
-      <path d="M 16,14.5 Q 20,15.5 22,13.5 Q 24,15.5 28,14.5 Q 29,12 26,12 Q 22,13 22,12.5 Q 22,13 18,12 C 15,12 16,14.5 16,14.5 Z" fill="#1e293b" stroke="#0f172a" stroke-width="0.6" />
-    </svg>`;
-  }
-
-  getReinaSVG() {
-    return `
-    <svg viewBox="0 0 45 45" style="width: 88%; height: 88%;">
-      <defs>
-        <linearGradient id="reina-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#312e81" />
-          <stop offset="100%" stop-color="#0f172a" />
-        </linearGradient>
-      </defs>
-      <g fill="url(#reina-grad)" stroke="#818cf8" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round">
-        <path d="M 11.5,30 L 33.5,30 Q 33.5,34 30.5,36 Q 27.5,38 22.5,38 Q 17.5,38 14.5,36 Q 11.5,34 11.5,30 Z" />
-        <path d="M 11.5,30 L 11.5,24 L 33.5,24 L 33.5,30 Z" />
-        <path d="M 11.5,24 L 33.5,24 Q 33.5,14 27.5,14 Q 22.5,14 22.5,14 Q 22.5,14 17.5,14 Q 11.5,14 11.5,24 Z" />
-        <!-- Folded tissue crown shape over the standard crown peaks -->
-        <path d="M 12,24 L 9,15 L 17.5,21.5 L 22.5,12.5 L 27.5,21.5 L 36,15 L 33,24 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
-        <circle cx="9" cy="15" r="2" fill="#ef4444" stroke="none" />
-        <circle cx="17.5" cy="21.5" r="2" fill="#ef4444" stroke="none" />
-        <circle cx="22.5" cy="12.5" r="2" fill="#ef4444" stroke="none" />
-        <circle cx="27.5" cy="21.5" r="2" fill="#ef4444" stroke="none" />
-        <circle cx="36" cy="15" r="2" fill="#ef4444" stroke="none" />
-      </g>
-      <!-- Tissue cape / scarf on her neck -->
-      <path d="M 15.5,24 Q 22.5,29 29.5,24 Q 31,31 22.5,33 Q 14,31 15.5,24 Z" fill="#f1f5f9" opacity="0.9" stroke="#cbd5e1" stroke-width="1.2" />
-      <!-- Red nose -->
-      <circle cx="22.5" cy="18" r="2" fill="#ef4444" opacity="0.8" />
-    </svg>`;
   }
 }
 

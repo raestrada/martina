@@ -734,7 +734,16 @@ class SombraGame {
           square.classList.add('square-peoncito-placed');
           const peonEl = document.createElement('div');
           peonEl.className = 'square-peoncito';
-          peonEl.innerHTML = this.getPeoncitoSVG();
+          peonEl.style.width = '75%';
+          peonEl.style.height = '75%';
+          peonEl.style.display = 'flex';
+          peonEl.style.alignItems = 'center';
+          peonEl.style.justifyContent = 'center';
+          peonEl.innerHTML = `
+            <svg viewBox="0 0 45 45" style="width: 100%; height: 100%; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45));">
+              <path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-3 1.06-7.41 5.55-7.41 13.47h23c0-7.92-4.41-12.41-7.41-13.47 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" fill="#06b6d4" stroke="#1e293b" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          `;
           square.appendChild(peonEl);
         }
 
@@ -747,8 +756,23 @@ class SombraGame {
         if (coord === martinaCoord) {
           const martinaEl = document.createElement('div');
           martinaEl.className = 'square-martina';
-          martinaEl.innerHTML = this.getMartinaSVG();
-          
+          martinaEl.style.width = '80%';
+          martinaEl.style.height = '80%';
+          martinaEl.style.display = 'flex';
+          martinaEl.style.alignItems = 'center';
+          martinaEl.style.justifyContent = 'center';
+          martinaEl.style.position = 'relative';
+          martinaEl.innerHTML = `
+            <svg viewBox="0 0 45 45" style="width: 100%; height: 100%; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+              <g fill="#ff007f" fill-rule="evenodd" stroke="#1e293b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM24.5 7.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM41 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM16 8.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM33 9a2 2 0 1 1-4 0 2 2 0 1 1 4 0z" style="fill:#ff007f; stroke:#1e293b;"/>
+                <path d="M9 26c8.5-1.5 21-1.5 27 0l2-12-7 11V11l-5.5 13.5-3-15-3 15-5.5-14V25L7 14l2 12zM9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z" stroke-linecap="butt" style="fill:#ff007f; stroke:#1e293b;"/>
+                <path d="M11.5 30c3.5-1 18.5-1 22 0M12 33.5c6-1 15-1 21 0" fill="none" style="stroke:#1e293b;"/>
+              </g>
+            </svg>
+            <div style="position: absolute; font-size: 0.8rem; bottom: 2px; pointer-events: none;">👓</div>
+          `;
+
           if (this.isMartinaPinned) {
             square.classList.add('square-martina-pinned');
           }
@@ -759,7 +783,30 @@ class SombraGame {
         if (coord === sombraCoord) {
           const sombraEl = document.createElement('div');
           sombraEl.className = 'square-sombra';
-          sombraEl.innerHTML = this.getSombraSVG();
+          sombraEl.style.width = '80%';
+          sombraEl.style.height = '80%';
+          sombraEl.style.display = 'flex';
+          sombraEl.style.alignItems = 'center';
+          sombraEl.style.justifyContent = 'center';
+          sombraEl.style.position = 'relative';
+          sombraEl.innerHTML = `
+            <svg viewBox="0 0 45 45" style="width: 100%; height: 100%; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+              <g fill="#3f37c9" fill-rule="evenodd" stroke="#1e293b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <g fill="#3f37c9" stroke="none">
+                  <circle cx="6" cy="12" r="2.75"/>
+                  <circle cx="14" cy="9" r="2.75"/>
+                  <circle cx="22.5" cy="8" r="2.75"/>
+                  <circle cx="31" cy="9" r="2.75"/>
+                  <circle cx="39" cy="12" r="2.75"/>
+                </g>
+                <path d="M9 26c8.5-1.5 21-1.5 27 0l2.5-12.5L31 25l-.3-14.1-5.2 13.6-3-14.5-3 14.5-5.2-13.6L14 25 6.5 13.5 9 26zM9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z" stroke-linecap="butt" style="fill:#3f37c9; stroke:#1e293b;"/>
+                <path d="M11 38.5a35 35 1 0 0 23 0" fill="none" stroke-linecap="butt" style="stroke:#1e293b;"/>
+                <path d="M11 29a35 35 1 0 1 23 0M12.5 31.5h20M11.5 34.5a35 35 1 0 0 22 0M10.5 37.5a35 35 1 0 0 24 0" fill="none" stroke="#fff" style="stroke:#fff;"/>
+              </g>
+            </svg>
+            <div style="position: absolute; font-size: 0.8rem; bottom: 2px; pointer-events: none;">🧿</div>
+          `;
+
           square.appendChild(sombraEl);
         }
 
@@ -1083,91 +1130,6 @@ class SombraGame {
 
   destroy() {
     this.gameActive = false;
-  }
-
-  getMartinaSVG() {
-    return `
-    <svg viewBox="0 0 45 45" style="width: 88%; height: 88%;">
-      <defs>
-        <linearGradient id="martina-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#f72585" />
-          <stop offset="50%" stop-color="#b5179e" />
-          <stop offset="100%" stop-color="#7209b7" />
-        </linearGradient>
-      </defs>
-      <g fill="url(#martina-grad)" stroke="#ffffff" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round">
-        <path d="M 11.5,30 L 33.5,30 Q 33.5,34 30.5,36 Q 27.5,38 22.5,38 Q 17.5,38 14.5,36 Q 11.5,34 11.5,30 Z" />
-        <path d="M 11.5,30 L 11.5,24 L 33.5,24 L 33.5,30 Z" />
-        <path d="M 11.5,24 L 33.5,24 Q 33.5,14 27.5,14 Q 22.5,14 22.5,14 Q 22.5,14 17.5,14 Q 11.5,14 11.5,24 Z" />
-        <path d="M 12,24 L 9,15 L 17.5,21.5 L 22.5,12.5 L 27.5,21.5 L 36,15 L 33,24 Z" />
-        <circle cx="9" cy="15" r="2" />
-        <circle cx="17.5" cy="21.5" r="2" />
-        <circle cx="22.5" cy="12.5" r="2" />
-        <circle cx="27.5" cy="21.5" r="2" />
-        <circle cx="36" cy="15" r="2" />
-      </g>
-      <!-- Martina's glasses drawn on the body area of the Queen piece -->
-      <g stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="16" y="25" width="5.5" height="4.5" rx="1" />
-        <rect x="23.5" y="25" width="5.5" height="4.5" rx="1" />
-        <line x1="21.5" y1="27" x2="23.5" y2="27" />
-      </g>
-    </svg>`;
-  }
-
-  getSombraSVG() {
-    return `
-    <svg viewBox="0 0 45 45" style="width: 88%; height: 88%;">
-      <defs>
-        <linearGradient id="sombra-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#3f37c9" />
-          <stop offset="50%" stop-color="#1b1c30" />
-          <stop offset="100%" stop-color="#090a10" />
-        </linearGradient>
-        <filter id="shadow-glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="1.5" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-      </defs>
-      <g fill="url(#sombra-grad)" stroke="#4cc9f0" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round">
-        <path d="M 11.5,30 L 33.5,30 Q 33.5,34 30.5,36 Q 27.5,38 22.5,38 Q 17.5,38 14.5,36 Q 11.5,34 11.5,30 Z" />
-        <path d="M 11.5,30 L 11.5,24 L 33.5,24 L 33.5,30 Z" />
-        <path d="M 11.5,24 L 33.5,24 Q 33.5,14 27.5,14 Q 22.5,14 22.5,14 Q 22.5,14 17.5,14 Q 11.5,14 11.5,24 Z" />
-        <path d="M 12,24 L 9,15 L 17.5,21.5 L 22.5,12.5 L 27.5,21.5 L 36,15 L 33,24 Z" />
-        <circle cx="9" cy="15" r="2" />
-        <circle cx="17.5" cy="21.5" r="2" />
-        <circle cx="22.5" cy="12.5" r="2" />
-        <circle cx="27.5" cy="21.5" r="2" />
-        <circle cx="36" cy="15" r="2" />
-      </g>
-      <!-- Glowing cyan eyes -->
-      <g fill="#4cc9f0" filter="url(#shadow-glow)">
-        <circle cx="19" cy="26" r="1.5" />
-        <circle cx="26" cy="26" r="1.5" />
-      </g>
-    </svg>`;
-  }
-
-  getPeoncitoSVG() {
-    return `
-    <svg viewBox="0 0 45 45" style="width: 85%; height: 85%;">
-      <defs>
-        <linearGradient id="peoncito-shield" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#ffffff" />
-          <stop offset="50%" stop-color="#a5f3fc" />
-          <stop offset="100%" stop-color="#06b6d4" />
-        </linearGradient>
-      </defs>
-      <g fill="url(#peoncito-shield)" stroke="#0891b2" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round">
-        <path d="M 22,9 C 19.79,9 18,10.79 18,13 C 18,13.89 18.29,14.71 18.78,15.38 C 16.83,16.5 15.5,18.59 15.5,21 C 15.5,23.03 16.44,24.84 17.91,26.03 C 14.91,27.09 12.5,30.03 12.5,33.5 L 31.5,33.5 C 31.5,30.03 29.09,27.09 26.09,26.03 C 27.56,24.84 28.5,23.03 28.5,21 C 28.5,18.59 27.17,16.5 25.22,15.38 C 25.71,14.71 26,13.89 26,13 C 26,10.79 24.21,9 22,9 Z" />
-        <path d="M 11.5,36.5 L 32.5,36.5 C 32.5,36.5 34,36.5 34,38 C 34,39.5 32.5,39.5 32.5,39.5 L 11.5,39.5 C 11.5,39.5 10,39.5 10,38 C 10,36.5 11.5,36.5 11.5,36.5 Z" />
-        <circle cx="22" cy="13" r="2.5" />
-      </g>
-      <!-- Crystal collar ribbon -->
-      <ellipse cx="22" cy="17" rx="3.5" ry="1" fill="#f43f5e" />
-      <!-- Peoncito's BIG fake mustache! -->
-      <path d="M 16,14.5 Q 20,15.5 22,13.5 Q 24,15.5 28,14.5 Q 29,12 26,12 Q 22,13 22,12.5 Q 22,13 18,12 C 15,12 16,14.5 16,14.5 Z" fill="#1e293b" stroke="#0f172a" stroke-width="0.6" />
-    </svg>`;
   }
 }
 
