@@ -2169,6 +2169,7 @@ class MarioGame {
           scene.player.dashCooldown = 0;
           
           self.player = scene.player;
+          scene.lastSafeX = 80; // track last safe position for pit respawn
 
           // Damage animation helper — red flash, particles, camera shake
           scene.doDamageAnim = () => {
@@ -3127,7 +3128,7 @@ class MarioGame {
             document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
             
             if (self.lives > 0) {
-              scene.player.setPosition(scene.player.x < 950 ? 80 : 1050, 150);
+              scene.player.setPosition(scene.lastSafeX, 150);
               scene.player.body.setVelocity(0, 0);
               scene.player.invincibility = 60;
               scene.player.wasOnGround = true;
@@ -3148,6 +3149,11 @@ class MarioGame {
           }
 
           if (self.player.isSliding) return;
+
+          // Track last safe ground position for pit respawn
+          if (scene.player.body.touching.down && scene.player.y < 400) {
+            scene.lastSafeX = scene.player.x;
+          }
 
           // Keyboard + Virtual Gamepad inputs
           const moveLeft = scene.cursors.left.isDown || scene.keysWASD.left.isDown || self.touchInputs.left;
