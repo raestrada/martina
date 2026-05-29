@@ -1420,6 +1420,26 @@ class MarioGame {
                 bgCtx.moveTo(400, 260); bgCtx.lineTo(400+a*100, 450); bgCtx.stroke();
               }
               
+            } else if (biome === 'neon') {
+              // --- NEON BACKGROUND ---
+              const nGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
+              nGrad.addColorStop(0, '#050010'); nGrad.addColorStop(0.4, '#0a0020');
+              nGrad.addColorStop(0.7, '#120835'); nGrad.addColorStop(1, '#0a0025');
+              bgCtx.fillStyle = nGrad; bgCtx.fillRect(0, 0, 800, 450);
+              bgCtx.strokeStyle = 'rgba(139,92,246,0.06)'; bgCtx.lineWidth = 0.5;
+              for (let i=0;i<20;i++) {
+                bgCtx.beginPath();bgCtx.moveTo(i*40,0);bgCtx.lineTo(i*40,450);bgCtx.stroke();
+                bgCtx.beginPath();bgCtx.moveTo(0,i*22.5);bgCtx.lineTo(800,i*22.5);bgCtx.stroke();
+              }
+              const rad=Math.PI/4;
+              const diag=(x,y,a,l,c,al)=>{bgCtx.save();bgCtx.globalAlpha=al;bgCtx.strokeStyle=c;bgCtx.lineWidth=2.5;bgCtx.shadowColor=c;bgCtx.shadowBlur=15;bgCtx.beginPath();bgCtx.moveTo(x,y);bgCtx.lineTo(x+Math.cos(a)*l,y+Math.sin(a)*l);bgCtx.stroke();bgCtx.shadowBlur=0;bgCtx.restore();};
+              diag(50,60,rad,350,'#7c3aed',0.15);diag(400,30,rad,380,'#8b5cf6',0.12);
+              diag(150,200,rad,400,'#6d28d9',0.10);diag(500,150,-rad,350,'#a855f7',0.10);
+              diag(250,320,rad,300,'#7c3aed',0.08);diag(600,280,-rad,320,'#8b5cf6',0.09);
+              const frz=(px,py,tp)=>{bgCtx.fillStyle='rgba(139,92,246,0.08)';bgCtx.strokeStyle='rgba(167,139,250,0.15)';bgCtx.lineWidth=1;if(tp==='pawn'){bgCtx.beginPath();bgCtx.arc(px,py-6,5,0,Math.PI*2);bgCtx.fill();bgCtx.stroke();bgCtx.beginPath();bgCtx.moveTo(px-4,py-1);bgCtx.lineTo(px+4,py-1);bgCtx.lineTo(px+5,py+12);bgCtx.lineTo(px-5,py+12);bgCtx.closePath();bgCtx.fill();bgCtx.stroke();}else{bgCtx.beginPath();bgCtx.arc(px,py-8,5,0,Math.PI*2);bgCtx.fill();bgCtx.stroke();bgCtx.beginPath();bgCtx.moveTo(px-4,py-3);bgCtx.lineTo(px+4,py-3);bgCtx.lineTo(px+5,py+14);bgCtx.lineTo(px-5,py+14);bgCtx.closePath();bgCtx.fill();bgCtx.stroke();bgCtx.beginPath();bgCtx.moveTo(px,py-13);bgCtx.lineTo(px,py-3);bgCtx.stroke();}};
+              frz(180,150,'pawn');frz(350,100,'bishop');frz(550,180,'pawn');frz(700,130,'bishop');
+              for(let i=0;i<12;i++){const nx=Math.random()*800,ny=Math.random()*400;const ng=bgCtx.createRadialGradient(nx,ny,0,nx,ny,20);ng.addColorStop(0,'rgba(168,85,247,0.06)');ng.addColorStop(1,'transparent');bgCtx.fillStyle=ng;bgCtx.beginPath();bgCtx.arc(nx,ny,20,0,Math.PI*2);bgCtx.fill();}
+              
             } else {
               // --- GRASS BACKGROUND: Magical realm dreamscape ---
             const skyGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
@@ -2684,77 +2704,7 @@ class MarioGame {
               });
               }
               
-            } else if (biome === 'neon') {
-              // --- NEON BACKGROUND: Dark purple, glowing diagonals, frozen chess pieces ---
-              const nGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
-              nGrad.addColorStop(0, '#050010');
-              nGrad.addColorStop(0.4, '#0a0020');
-              nGrad.addColorStop(0.7, '#120835');
-              nGrad.addColorStop(1, '#0a0025');
-              bgCtx.fillStyle = nGrad;
-              bgCtx.fillRect(0, 0, 800, 450);
-              
-              // Neon purple grid
-              bgCtx.strokeStyle = 'rgba(139, 92, 246, 0.06)';
-              bgCtx.lineWidth = 0.5;
-              for (let i=0; i<20; i++) {
-                bgCtx.beginPath(); bgCtx.moveTo(i*40, 0); bgCtx.lineTo(i*40, 450); bgCtx.stroke();
-                bgCtx.beginPath(); bgCtx.moveTo(0, i*22.5); bgCtx.lineTo(800, i*22.5); bgCtx.stroke();
-              }
-              
-              // Glowing diagonal beams (a7-g1 diagonal motif)
-              const drawDiagBeam = (x, y, angle, len, color, alpha) => {
-                bgCtx.save();
-                bgCtx.globalAlpha = alpha;
-                bgCtx.strokeStyle = color;
-                bgCtx.lineWidth = 2.5;
-                bgCtx.shadowColor = color;
-                bgCtx.shadowBlur = 15;
-                bgCtx.beginPath();
-                bgCtx.moveTo(x, y);
-                bgCtx.lineTo(x+Math.cos(angle)*len, y+Math.sin(angle)*len);
-                bgCtx.stroke();
-                bgCtx.shadowBlur = 0;
-                bgCtx.restore();
-              };
-              const rad45 = Math.PI/4;
-              drawDiagBeam(50, 60, rad45, 350, '#7c3aed', 0.15);
-              drawDiagBeam(400, 30, rad45, 380, '#8b5cf6', 0.12);
-              drawDiagBeam(150, 200, rad45, 400, '#6d28d9', 0.10);
-              drawDiagBeam(500, 150, -rad45, 350, '#a855f7', 0.10);
-              drawDiagBeam(250, 320, rad45, 300, '#7c3aed', 0.08);
-              drawDiagBeam(600, 280, -rad45, 320, '#8b5cf6', 0.09);
-              
-              // Frozen piece silhouettes (pinned in place)
-              const drawFrozenPiece = (px, py, type) => {
-                bgCtx.fillStyle = 'rgba(139, 92, 246, 0.08)';
-                bgCtx.strokeStyle = 'rgba(167, 139, 250, 0.15)';
-                bgCtx.lineWidth = 1;
-                if (type==='pawn') {
-                  bgCtx.beginPath(); bgCtx.arc(px, py-6, 5, 0, Math.PI*2); bgCtx.fill(); bgCtx.stroke();
-                  bgCtx.beginPath(); bgCtx.moveTo(px-4,py-1); bgCtx.lineTo(px+4,py-1); bgCtx.lineTo(px+5,py+12); bgCtx.lineTo(px-5,py+12); bgCtx.closePath(); bgCtx.fill(); bgCtx.stroke();
-                } else if (type==='bishop') {
-                  bgCtx.beginPath(); bgCtx.arc(px, py-8, 5, 0, Math.PI*2); bgCtx.fill(); bgCtx.stroke();
-                  bgCtx.beginPath(); bgCtx.moveTo(px-4,py-3); bgCtx.lineTo(px+4,py-3); bgCtx.lineTo(px+5,py+14); bgCtx.lineTo(px-5,py+14); bgCtx.closePath(); bgCtx.fill(); bgCtx.stroke();
-                  bgCtx.beginPath(); bgCtx.moveTo(px,py-13); bgCtx.lineTo(px,py-3); bgCtx.stroke();
-                }
-              };
-              drawFrozenPiece(180, 150, 'pawn');
-              drawFrozenPiece(350, 100, 'bishop');
-              drawFrozenPiece(550, 180, 'pawn');
-              drawFrozenPiece(700, 130, 'bishop');
-              
-              // Neon pink accent glow spots
-              for (let i=0; i<12; i++) {
-                const nx = Math.random()*800, ny = Math.random()*400;
-                const ng = bgCtx.createRadialGradient(nx, ny, 0, nx, ny, 20);
-                ng.addColorStop(0, 'rgba(168,85,247,0.06)');
-                ng.addColorStop(1, 'transparent');
-                bgCtx.fillStyle = ng;
-                bgCtx.beginPath(); bgCtx.arc(nx, ny, 20, 0, Math.PI*2); bgCtx.fill();
-              }
-              
-            } else {
+          } else {
           // 7. Chess-Themed Goal: The Magical Portal, Majestic White Queen and friendly Peoncito!
           // 7.1. Portal of the 64 Casillas (Magical spinning gateway in the background)
           scene.portal = scene.add.sprite(2150, 245, 'portal_texture');
