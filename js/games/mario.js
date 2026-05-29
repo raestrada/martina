@@ -2619,41 +2619,64 @@ class MarioGame {
             scene.boss.minY = 180;
             scene.boss.maxY = 340;
             
-            // Boss room walls (hidden, appear when player enters room)
-            scene.bossWalls = scene.physics.add.staticGroup();
-            const wallW = 10;
-            // Left wall
-            const wallL = scene.add.graphics();
-            wallL.fillStyle(0x7c3aed, 0.0);
-            wallL.fillRect(bd.roomLeft - wallW, 100, wallW, 320);
-            scene.physics.add.existing(wallL, true);
-            wallL.body.setSize(wallW, 320);
-            wallL.body.setOffset(bd.roomLeft - wallW, 100);
-            wallL.setVisible(false);
-            scene.bossWalls.add(wallL);
-            // Right wall
-            const wallR = scene.add.graphics();
-            wallR.fillStyle(0x7c3aed, 0.0);
-            wallR.fillRect(bd.roomRight, 100, wallW, 320);
-            scene.physics.add.existing(wallR, true);
-            wallR.body.setSize(wallW, 320);
-            wallR.body.setOffset(bd.roomRight, 100);
-            wallR.setVisible(false);
-            scene.bossWalls.add(wallR);
-            // Ceiling
-            const wallT = scene.add.graphics();
-            wallT.fillStyle(0x7c3aed, 0.0);
-            wallT.fillRect(bd.roomLeft, 95, bd.roomRight - bd.roomLeft, wallW);
-            scene.physics.add.existing(wallT, true);
-            wallT.body.setSize(bd.roomRight - bd.roomLeft, wallW);
-            wallT.body.setOffset(bd.roomLeft, 95);
-            wallT.setVisible(false);
-            scene.bossWalls.add(wallT);
+            // Boss room walls — created dynamically when room activates
+            scene.bossWalls = null;
+            scene.bossWallGlow = null;
+            scene.bossRoomActive = false;
             
-            // Neon wall visuals (appear with walls)
-            scene.bossWallGlow = scene.add.graphics();
-            scene.bossWallGlow.setDepth(5);
-            scene.bossWallGlow.setVisible(false);
+            // Dark overlay for outside the boss room (dramatic effect)
+            scene.bossOverlay = scene.add.graphics();
+            scene.bossOverlay.setDepth(15);
+            scene.bossOverlay.setScrollFactor(0);
+            scene.bossOverlay.setVisible(false);
+            
+            function createBossWalls() {
+              if (scene.bossWalls) return;
+              scene.bossWalls = scene.physics.add.staticGroup();
+              
+              // Use simple rectangles positioned correctly
+              const ww = 16;
+              // Left wall — sprite-based for reliable collision
+              const wL = scene.add.rectangle(bd.roomLeft - ww/2, 250, ww, 340, 0x7c3aed, 0);
+              scene.physics.add.existing(wL, true);
+              wL.body.setSize(ww, 340);
+              wL.setDepth(6);
+              scene.bossWalls.add(wL);
+              
+              // Right wall
+              const wR = scene.add.rectangle(bd.roomRight + ww/2, 250, ww, 340, 0x7c3aed, 0);
+              scene.physics.add.existing(wR, true);
+              wR.body.setSize(ww, 340);
+              wR.setDepth(6);
+              scene.bossWalls.add(wR);
+              
+              // Ceiling
+              const rw = bd.roomRight - bd.roomLeft;
+              const wT = scene.add.rectangle(bd.roomLeft + rw/2, 80, rw + ww*2, ww, 0x7c3aed, 0);
+              scene.physics.add.existing(wT, true);
+              wT.body.setSize(rw + ww*2, ww);
+              wT.setDepth(6);
+              scene.bossWalls.add(wT);
+              
+              // Neon wall glow visuals
+              scene.bossWallGlow = scene.add.graphics();
+              scene.bossWallGlow.setDepth(5);
+              scene.bossWallGlow.lineStyle(3, 0xa855f7, 0.9);
+              scene.bossWallGlow.strokeRect(bd.roomLeft, 90, rw, 330);
+              scene.bossWallGlow.lineStyle(1, 0xc084fc, 0.4);
+              scene.bossWallGlow.strokeRect(bd.roomLeft+3, 93, rw-6, 324);
+              // Pulsing glow animation
+              scene.tweens.add({
+                targets: scene.bossWallGlow,
+                alpha: 0.5,
+                duration: 800,
+                yoyo: true,
+                repeat: -1,
+                ease: 'Sine.easeInOut'
+              });
+              
+              scene.physics.add.collider(scene.player, scene.bossWalls);
+            }
             
             // Boss projectiles group
             scene.bossProjectiles = scene.physics.add.group({ allowGravity: false });
@@ -3342,20 +3365,79 @@ class MarioGame {
               scene.bossRoomActive = true;
               scene.bossActive = true;
               scene.bossHP = scene.boss.hp;
+              
+              // Create walls NOW (not before)
+              createBossWalls();
+              
+              // Dramatic boss intro
               scene.boss.setVisible(true);
-              scene.boss.setPosition(bd.x, bd.y);
-              scene.bossWalls.getChildren().forEach(w => w.setVisible(true));
-              scene.bossWallGlow.setVisible(true);
-              scene.bossWallGlow.clear();
-              scene.bossWallGlow.lineStyle(3, 0xa855f7, 0.9);
-              scene.bossWallGlow.strokeRect(bd.roomLeft, 100, bd.roomRight-bd.roomLeft, 315);
-              scene.bossWallGlow.lineStyle(1, 0xc084fc, 0.4);
-              scene.bossWallGlow.strokeRect(bd.roomLeft+3, 103, bd.roomRight-bd.roomLeft-6, 309);
+              scene.boss.setPosition(bd.x, bd.y + 60);
+              scene.boss.setAlpha(0);
+              scene.boss.setScale(1.5);
+              
+              // Darken area outside boss room
+              scene.bossOverlay.setVisible(true);
+              scene.bossOverlay.clear();
+              scene.bossOverlay.fillStyle(0x000000, 0.55);
+              scene.bossOverlay.fillRect(0, 0, 800, 450);
+              scene.bossOverlay.fillStyle(0x000000, 0);
+              // Cut out the room area
+              const camX = scene.cameras.main.scrollX;
+              const rx = bd.roomLeft - camX;
+              const rw = bd.roomRight - bd.roomLeft;
+              scene.bossOverlay.fillRect(rx, 80, rw, 350);
+              
+              // Camera zoom into boss room
+              scene.cameras.main.zoomTo(1.2, 600);
+              scene.cameras.main.pan(bd.roomLeft + rw/2, 260, 600);
+              
+              // Boss drop-in animation
+              scene.tweens.add({
+                targets: scene.boss,
+                y: bd.y,
+                scaleX: 1, scaleY: 1,
+                alpha: 1,
+                duration: 800,
+                ease: 'Bounce.easeOut'
+              });
+              
+              // Boss intro particles burst
+              for (let i=0;i<25;i++) {
+                scene.time.delayedCall(700 + i*30, () => {
+                  if (!scene.bossActive) return;
+                  const a = (i/25)*Math.PI*2;
+                  const sp = scene.add.circle(scene.boss.x, scene.boss.y, Math.random()*3+1.5, 0xa855f7, 0.8);
+                  sp.setDepth(6);
+                  scene.tweens.add({
+                    targets: sp, alpha: 0, scale: 0.05,
+                    x: sp.x+Math.cos(a)*80, y: sp.y+Math.sin(a)*80,
+                    duration: 500, onComplete: ()=>sp.destroy()
+                  });
+                });
+              }
+              
+              // Change to boss music
+              self.stopMusic();
+              self.startBossMusic();
+              
+              // Show health bar
               const hb = document.getElementById('boss-health-bar');
               if (hb) hb.style.display = 'block';
             }
             
             if (scene.bossActive) {
+              // Update dark overlay to follow camera
+              if (scene.bossOverlay && scene.bossOverlay.visible) {
+                const camX = scene.cameras.main.scrollX;
+                const rx = bd.roomLeft - camX;
+                const rw = bd.roomRight - bd.roomLeft;
+                scene.bossOverlay.clear();
+                scene.bossOverlay.fillStyle(0x000000, 0.55);
+                scene.bossOverlay.fillRect(0, 0, 800, 450);
+                scene.bossOverlay.fillStyle(0x000000, 0);
+                scene.bossOverlay.fillRect(rx, 80, rw, 350);
+              }
+              
               if (scene.bossInvincible > 0) {
                 scene.bossInvincible--;
                 scene.boss.setAlpha(scene.bossInvincible%4<2?0.4:1);
@@ -3408,9 +3490,23 @@ class MarioGame {
                       self.synthesizeSound('victory');
                       const hb = document.getElementById('boss-health-bar');
                       if (hb) hb.style.display = 'none';
+                      
+                      // Restore camera
+                      scene.cameras.main.zoomTo(1, 400);
+                      scene.cameras.main.startFollow(scene.player, true, 0.1, 0.1);
+                      scene.bossOverlay.setVisible(false);
+                      
+                      // Restore level music
+                      self.stopMusic();
+                      self.startMusic();
+                      
+                      // Boss death + wall removal
                       scene.tweens.add({targets:scene.boss, alpha:0, scaleX:0.1, scaleY:0.1, angle:720, duration:1000, onComplete:()=>scene.boss.destroy()});
-                      scene.bossWalls.getChildren().forEach(w=>{scene.tweens.add({targets:w, alpha:0, duration:400, onComplete:()=>w.destroy()});});
-                      scene.bossWallGlow.setVisible(false);
+                      if (scene.bossWalls) {
+                        scene.bossWalls.getChildren().forEach(w=>{scene.tweens.add({targets:w, alpha:0, duration:400, onComplete:()=>w.destroy()});});
+                        scene.bossWalls = null;
+                      }
+                      if (scene.bossWallGlow) { scene.bossWallGlow.destroy(); scene.bossWallGlow = null; }
                       for (let i=0;i<40;i++) {
                         scene.time.delayedCall(i*20, ()=>{
                           const cp=scene.add.circle(bd.roomLeft+Math.random()*(bd.roomRight-bd.roomLeft), 150+Math.random()*250, Math.random()*3+1.5, i%2===0?0xc084fc:0xfbbf24, 0.8);
@@ -3989,6 +4085,73 @@ class MarioGame {
       } catch (e) {}
     });
     this.synthNotes = [];
+  }
+
+  // --- BOSS BATTLE MUSIC (intense, dramatic, fast-paced) ---
+  startBossMusic() {
+    this.stopMusic();
+    if (!this.musicEnabled) return;
+    window.GameAudio.init();
+    const audioCtx = window.GameAudio.ctx;
+    if (!audioCtx) return;
+    
+    // Aggressive, fast, chromatic descent theme
+    const melody = [
+      587.33, 0, 554.37, 0, 523.25, 0, 493.88, 0,
+      466.16, 0, 440.00, 440.00, 466.16, 466.16, 493.88, 493.88,
+      523.25, 523.25, 587.33, 587.33, 659.25, 0, 587.33, 0,
+      523.25, 523.25, 493.88, 493.88, 440.00, 0, 392.00, 0,
+      659.25, 0, 622.25, 0, 587.33, 0, 554.37, 0,
+      523.25, 523.25, 493.88, 493.88, 440.00, 440.00, 392.00, 392.00,
+      349.23, 0, 392.00, 0, 440.00, 0, 523.25, 0,
+      587.33, 587.33, 659.25, 659.25, 783.99, 783.99, 880.00, 880.00
+    ];
+    const bass = [
+      146.83, 0, 0, 0, 146.83, 0, 146.83, 0,
+      130.81, 0, 0, 0, 130.81, 0, 130.81, 0,
+      110.00, 0, 0, 0, 110.00, 0, 110.00, 0,
+      98.00,  0, 0, 0, 98.00,  0, 98.00,  0,
+      164.81, 0, 0, 0, 164.81, 0, 164.81, 0,
+      146.83, 0, 0, 0, 146.83, 0, 146.83, 0,
+      87.31,  0, 0, 0, 87.31,  0, 87.31,  0,
+      110.00, 0, 0, 0, 110.00, 0, 110.00, 0
+    ];
+    const tempo = 130;
+    let step = 0;
+    
+    this.musicInterval = setInterval(() => {
+      if (this.gameState !== 'playing' || !this.musicEnabled) {
+        this.stopMusic();
+        return;
+      }
+      const now = audioCtx.currentTime;
+      const leadFreq = melody[step];
+      if (leadFreq > 0) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(leadFreq, now);
+        gain.gain.setValueAtTime(0.05, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(now); osc.stop(now + 0.12);
+        this.synthNotes.push(osc);
+      }
+      const bassFreq = bass[step];
+      if (bassFreq > 0) {
+        const bOsc = audioCtx.createOscillator();
+        const bGain = audioCtx.createGain();
+        bOsc.type = 'square';
+        bOsc.frequency.setValueAtTime(bassFreq, now);
+        bGain.gain.setValueAtTime(0.06, now);
+        bGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        bOsc.connect(bGain); bGain.connect(audioCtx.destination);
+        bOsc.start(now); bOsc.stop(now + 0.12);
+        this.synthNotes.push(bOsc);
+      }
+      step = (step + 1) % melody.length;
+      if (this.synthNotes.length > 80) this.synthNotes.splice(0, 40);
+    }, tempo);
   }
 
   // --- DESTROY GAME INSTANCE (CLEANS PHASER) ---
