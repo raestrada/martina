@@ -517,7 +517,7 @@ class ChessBoxGame {
         if (this._oggLoading) return; // Already loading
         this._oggLoading = true;
         try {
-          const response = await fetch('assets/audio/inner_light.ogg');
+          const response = await fetch('/assets/audio/inner_light.ogg');
           if (!response.ok) throw new Error('OGG not found');
           const arrayBuffer = await response.arrayBuffer();
           this.oggBuffer = await audioCtx.decodeAudioData(arrayBuffer);
