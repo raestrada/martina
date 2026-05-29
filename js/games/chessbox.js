@@ -75,9 +75,8 @@ class ChessBoxGame {
     ];
   }
 
-  // --- INICIALIZAR MÚSICA DE BOXEO (OGG real) O AJEDREZ (sintetizada) ---
+  // --- INICIALIZAR MÚSICA Inner Light OGG (solo la primera vez, no reinicia entre rounds) ---
   startMusic(type) {
-    this.stopMusic();
     this.activeMusicType = type;
     if (!this.musicEnabled) return;
 
@@ -94,7 +93,9 @@ class ChessBoxGame {
       audioCtx.resume();
     }
 
-    // === Inner Light OGG for both boxing and chess ===
+    // Only start OGG if not already playing — keeps music continuous across rounds
+    if (this.oggSource) return;
+
     this._playInnerLightOGG(audioCtx);
     return;
     // Overdrive Distortion WaveShaper node for realistic electric guitar sound
@@ -1032,7 +1033,7 @@ class ChessBoxGame {
               <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden; margin-top: 4px; border: 1px solid rgba(255,255,255,0.05);">
                 <div id="super-player-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #2563eb); transition: width 0.15s ease-out;"></div>
               </div>
-              <span id="super-player-ready" style="font-size: 0.63rem; color: #fbbf24; display: none; font-weight: 900; animation: pulse 0.8s infinite alternate; margin-top: 3px;">⚡ ¡LISTO! PULSA [S]</span>
+              <span id="super-player-ready" style="font-size: 0.63rem; color: #fbbf24; display: none; font-weight: 900; animation: pulse 0.8s infinite alternate; margin-top: 3px;">⚡ ¡LISTO! PULSA [ESPACIO]</span>
             </div>
 
             <div style="position: absolute; top: 12px; right: 12px; width: 170px; background: rgba(15,23,42,0.85); padding: 6px 10px; border-radius: 8px; border: 1.5px solid rgba(239, 68, 68, 0.4); text-align: right; font-family: 'Outfit', sans-serif; pointer-events: none; z-index: 10; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
@@ -1060,17 +1061,17 @@ class ChessBoxGame {
 
             <!-- Mobile overlay controllers -->
             <div class="mario-touch-pad" style="opacity: 0.85; z-index: 15;">
-              <div class="touch-btn" id="btn-dodge-l" style="background: rgba(56, 189, 248, 0.25); border-color: #0284c7;">Q</div>
+              <div class="touch-btn" id="btn-dodge-l" style="background: rgba(56, 189, 248, 0.25); border-color: #0284c7;">◀</div>
               <div class="touch-btn" id="btn-punch-l" style="background: rgba(244, 63, 94, 0.25); border-color: #e11d48;">A</div>
-              <div class="touch-btn" id="btn-super" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.4), rgba(217, 119, 6, 0.6)); border-color: #fbbf24; color: #fff; font-weight: 900; display: none; text-shadow: 0 0 5px #f59e0b; box-shadow: 0 0 10px rgba(245,158,11,0.5); animation: pulse 0.8s infinite alternate;">S</div>
+              <div class="touch-btn" id="btn-super" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.4), rgba(217, 119, 6, 0.6)); border-color: #fbbf24; color: #fff; font-weight: 900; display: none; text-shadow: 0 0 5px #f59e0b; box-shadow: 0 0 10px rgba(245,158,11,0.5); animation: pulse 0.8s infinite alternate;">⚡</div>
               <div class="touch-btn" id="btn-block-guard" style="background: rgba(74, 222, 128, 0.25); border-color: #16a34a;">W</div>
               <div class="touch-btn" id="btn-punch-r" style="background: rgba(244, 63, 94, 0.25); border-color: #e11d48;">D</div>
-              <div class="touch-btn" id="btn-dodge-r" style="background: rgba(56, 189, 248, 0.25); border-color: #0284c7;">E</div>
+              <div class="touch-btn" id="btn-dodge-r" style="background: rgba(56, 189, 248, 0.25); border-color: #0284c7;">▶</div>
             </div>
           </div>
           
           <p style="font-size: 0.82rem; color: #94a3b8; margin-top: 8px;">
-            <b>Teclado</b>: <kbd>Q</kbd> Esquivar Izq | <kbd>E</kbd> Esquivar Der | <kbd>W</kbd> Bloquear | <kbd>A</kbd> Golpe Izq | <kbd>D</kbd> Golpe Der | <kbd>S</kbd> ⚡ DEMPSEY ROLL
+            <b>Teclado</b>: <kbd>◀</kbd> Esquivar Izq | <kbd>▶</kbd> Esquivar Der | <kbd>W</kbd> Bloquear | <kbd>A</kbd> Golpe Izq | <kbd>D</kbd> Golpe Der | <kbd>␣</kbd> ⚡ DEMPSEY ROLL
           </p>
         </div>
       </div>
@@ -1178,12 +1179,12 @@ class ChessBoxGame {
           
           // Action mapping
           scene.keys = scene.input.keyboard.addKeys({
-            dodgeL: Phaser.Input.Keyboard.KeyCodes.Q,
-            dodgeR: Phaser.Input.Keyboard.KeyCodes.E,
+            dodgeL: Phaser.Input.Keyboard.KeyCodes.LEFT,
+            dodgeR: Phaser.Input.Keyboard.KeyCodes.RIGHT,
             block: Phaser.Input.Keyboard.KeyCodes.W,
             punchL: Phaser.Input.Keyboard.KeyCodes.A,
             punchR: Phaser.Input.Keyboard.KeyCodes.D,
-            super: Phaser.Input.Keyboard.KeyCodes.S
+            super: Phaser.Input.Keyboard.KeyCodes.SPACE
           });
 
           // Touch inputs binders
