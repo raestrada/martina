@@ -1026,6 +1026,14 @@ class ChessBoxGame {
           </div>
         </div>
 
+        ${this.isMobile ? `
+        <!-- Mobile: floating mini-HUD inside canvas -->
+        <div style="position: absolute; top: 4px; left: 50%; transform: translateX(-50%); z-index: 20; display: flex; gap: 6px; pointer-events: none;">
+          <span style="background: rgba(0,0,0,0.55); color: #fff; font-size: 0.6rem; padding: 2px 8px; border-radius: 8px; font-family: Outfit, sans-serif;" id="mobile-timer">⏱ 30s</span>
+          <span style="background: rgba(0,0,0,0.55); color: #f87171; font-size: 0.6rem; padding: 2px 8px; border-radius: 8px; font-family: Outfit, sans-serif;" id="mobile-punches">🥊 0/0</span>
+        </div>
+        ` : ''}
+
         <div class="empanadas-layout" style="flex-direction: column; align-items: center;">
           <!-- Phaser Canvas container -->
           <div class="mario-canvas-container" id="phaser-boxing-parent" style="border: 4px solid #ef4444; border-radius: 16px; width: 800px; height: 450px; background: #000; overflow:hidden; position:relative;">
@@ -1761,6 +1769,9 @@ class ChessBoxGame {
       this.boxingTimeLeft--;
       const el = document.getElementById('boxing-timer-val');
       if (el) el.textContent = `${this.boxingTimeLeft}s`;
+      // Mobile mini-HUD
+      const mel = document.getElementById('mobile-timer');
+      if (mel) mel.textContent = `⏱ ${this.boxingTimeLeft}s`;
 
       if (this.boxingTimeLeft <= 5) {
         const box = document.getElementById('boxing-timer-box');
@@ -2675,6 +2686,9 @@ class ChessBoxGame {
     if (pEl) {
       pEl.textContent = `L: ${this.hitsLandedThisRound} | R: ${this.hitsReceivedThisRound}`;
     }
+    // Mobile mini-HUD
+    const mpEl = document.getElementById('mobile-punches');
+    if (mpEl) mpEl.textContent = `🥊 ${this.hitsLandedThisRound}/${this.hitsReceivedThisRound}`;
     
     // Update Health bars — simple solid color changes for thin bars
     const pHPBar = document.getElementById('health-player-bar');
