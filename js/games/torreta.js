@@ -474,6 +474,8 @@ class TorretaGame {
         const square = document.createElement('div');
         square.className = `chess-square ${isDark ? 'square-dark' : 'square-light'}`;
         square.setAttribute('data-coord', coord);
+        square.setAttribute('data-file', file);
+        square.setAttribute('data-rank', r);
 
         const piece = this.boardState[coord];
         if (piece) {

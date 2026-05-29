@@ -148,14 +148,18 @@
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
-  width: min(85vw, 420px);
-  height: min(85vw, 420px);
-  border: 8px solid #5c4033;
-  border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  width: min(88vw, 440px);
+  height: min(88vw, 440px);
+  border: 10px solid #1a1c2e; /* Sleek dark tournament metallic border */
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.65), 
+              0 0 0 1px rgba(255, 255, 255, 0.08), 
+              inset 0 0 15px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
+  background-color: #0c0d16;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .chess-square {
@@ -165,7 +169,9 @@
   align-items: center;
   position: relative;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), 
+              transform 0.15s cubic-bezier(0.25, 0.8, 0.25, 1),
+              box-shadow 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .square-light {
@@ -207,15 +213,32 @@
   background-color: var(--board-selected) !important;
 }
 
+@keyframes pulseDot {
+  0% { transform: scale(1); opacity: 0.75; box-shadow: 0 0 4px var(--board-trail); }
+  100% { transform: scale(1.2); opacity: 0.95; box-shadow: 0 0 12px var(--board-trail); }
+}
+
 .square-path::after {
   content: '';
-  width: 30%;
-  height: 30%;
+  width: 24%;
+  height: 24%;
   background-color: var(--board-trail);
   border-radius: 50%;
   position: absolute;
   z-index: 2;
-  box-shadow: 0 0 8px var(--board-trail);
+  animation: pulseDot 0.8s infinite alternate ease-in-out;
+  pointer-events: none;
+}
+
+.chess-square.square-path:hover {
+  box-shadow: inset 0 0 10px rgba(231, 111, 81, 0.45) !important;
+  background-color: rgba(231, 111, 81, 0.04) !important;
+  filter: brightness(1.05) !important;
+}
+
+.chess-square:hover:not(.square-obstacle) {
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.18) !important;
+  filter: brightness(1.05);
 }
 
 .square-obstacle {
@@ -570,17 +593,49 @@
   40%, 80% { transform: translateX(8px); }
 }
 
-/* Board coord overlays */
+/* Professional Chessboard Edge Coordinates (Lichess/Chess.com Style) */
 .chess-square::before {
-  content: attr(data-coord);
+  content: '';
+}
+
+/* File letters on bottom row (rank 1) */
+.chess-square[data-rank="1"]::before {
+  content: attr(data-file);
   position: absolute;
   bottom: 2px;
-  right: 2px;
-  font-size: 0.65rem;
-  font-weight: bold;
-  opacity: 0.35;
-  color: var(--ink);
+  right: 4px;
+  font-size: 0.68rem;
+  font-weight: 800;
   pointer-events: none;
+  font-family: 'Nunito', sans-serif;
+  text-transform: uppercase;
+  z-index: 10;
+}
+
+/* Rank numbers on left column (file a) */
+.chess-square[data-file="a"]::after {
+  content: attr(data-rank);
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  pointer-events: none;
+  font-family: 'Nunito', sans-serif;
+  z-index: 10;
+}
+
+/* Dynamic coordinate contrast based on square color */
+.square-light[data-rank="1"]::before,
+.square-light[data-file="a"]::after {
+  color: #b58863 !important; /* Dark brown on light wood squares */
+  opacity: 0.85;
+}
+
+.square-dark[data-rank="1"]::before,
+.square-dark[data-file="a"]::after {
+  color: #f0d9b5 !important; /* Light wood color on dark wood squares */
+  opacity: 0.85;
 }
 
 /* === GAMIFICATION ACHIEVEMENTS DASHBOARD === */
