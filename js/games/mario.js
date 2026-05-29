@@ -2958,8 +2958,8 @@ class MarioGame {
             }
           }
 
-          // Out of bounds pit checks
-          if (scene.player.y > 450) {
+          // Out of bounds pit checks — player fell into a gap and hit world bottom
+          if (scene.player.y > 405) {
             self.lives--;
             self.synthesizeSound('damage');
             scene.doDamageAnim();
