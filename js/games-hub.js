@@ -138,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (gameType === 'caballo') title = 'El Laberinto del Caballo de Ŋ';
     if (gameType === 'reina') title = '¡Cuidado con el Estornudo!';
     if (gameType === 'sombra') title = 'Martina contra su Sombra';
+    if (gameType === 'mario') title = 'Super Martina: El Salto Mágico';
     
     gameTitle.textContent = title;
     modal.classList.add('open');
