@@ -522,7 +522,7 @@ class ChessBoxGame {
       // Create gain node for volume/mute control
       if (!this.oggGain) {
         this.oggGain = audioCtx.createGain();
-        this.oggGain.gain.value = 3.0;
+        this.oggGain.gain.value = 5.0;
         this.oggGain.connect(audioCtx.destination);
       }
 
