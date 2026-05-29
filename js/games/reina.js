@@ -321,6 +321,7 @@ class ReinaGame {
     this.mustachesCollected = [];
     this.gameActive = true;
     this.selectedSquare = null;
+    this.isExploding = false;
 
     // Difficulty settings
     if (this.selectedDifficulty === 'easy') {
@@ -551,7 +552,7 @@ class ReinaGame {
 
   // --- DETECT ADVANCED MOVEMENT AND BLOCKS ---
   movePeoncito(coord) {
-    if (!this.gameActive) return;
+    if (!this.gameActive || this.isExploding) return;
 
     const targetPos = this.nameToCoords(coord);
     this.peoncitoPos = targetPos;
@@ -576,86 +577,92 @@ class ReinaGame {
       return;
     }
 
-    if (this.sneezeTimer <= 0) {
-      // 1. Disable active state and clear all green path dots immediately
-      this.gameActive = false;
-      this.updateStatsDisplay();
-      this.renderBoard(); // Renders with gameActive=false, clearing path dots!
-
-      // 2. Short 250ms cinematic delay so Peoncito is seen safe in his new tile before sneeze strikes
-      setTimeout(() => {
-        this.detonateSneeze();
-      }, 250);
+    if (this.sneezeTimer === 0) {
+      this.triggerSneezeDetonation();
     } else {
-      // Periodic Reina movements on high ranks to keep it highly dynamic
-      this.moveReinaRandomly();
       this.updateStatsDisplay();
       this.renderBoard();
     }
   }
 
-  // --- RANDOMISED REINA STEP TO ALTER PATTERNS ---
-  moveReinaRandomly() {
-    // La Reina se mantiene en su trono para que los patrones de estornudo sean estratégicos y predecibles.
+  triggerSneezeDetonation() {
+    this.isExploding = true;
     const level = this.levels[this.currentLevelIndex];
-    const targetPos = this.nameToCoords(level.reinaPos);
-    this.reinaPos = targetPos;
-  }
+    const dangerSquares = this.getSneezeWarningSquares(level, this.coordsToName(this.reinaPos.r, this.reinaPos.c));
 
-  // --- SNEEZE DETONATOR ENGINE ---
-  detonateSneeze() {
-    const level = this.levels[this.currentLevelIndex];
-    const warnings = this.getSneezeWarningSquares(level, this.coordsToName(this.reinaPos.r, this.reinaPos.c));
-    const peoncitoCoord = this.coordsToName(this.peoncitoPos.r, this.peoncitoPos.c);
-    
-    // Play custom synthesized sound
+    // First render Peoncito on his target square so he is visually there before explosion
+    this.renderBoard();
+    this.updateStatsDisplay();
+
+    // Play sound
     this.playSneezeSound();
 
-    // Trigger visual blast animations in DOM
+    // Shake the board
     const boardDOM = document.getElementById('chess-board-DOM');
     if (boardDOM) {
-      warnings.forEach(coord => {
-        const sq = boardDOM.querySelector(`[data-coord="${coord}"]`);
-        if (sq) {
-          sq.classList.add('square-sneeze-blast');
-        }
-      });
+      boardDOM.classList.add('board-shake');
+      setTimeout(() => {
+        if (boardDOM) boardDOM.classList.remove('board-shake');
+      }, 400);
     }
 
-    // Check hit
-    const gotHit = warnings.includes(peoncitoCoord);
-    
-    setTimeout(() => {
-      // Remove blast classes
-      if (boardDOM) {
-        warnings.forEach(coord => {
-          const sq = boardDOM.querySelector(`[data-coord="${coord}"]`);
-          if (sq) {
-            sq.classList.remove('square-sneeze-blast');
-          }
-        });
-      }
+    // Apply blast class and create beautiful particles on all danger squares
+    dangerSquares.forEach(coord => {
+      const squareEl = this.container.querySelector(`[data-coord="${coord}"]`);
+      if (squareEl) {
+        squareEl.classList.add('square-sneeze-blast');
 
-      if (gotHit) {
-        this.lives--;
-        window.GameAudio.playError();
-        if (this.lives <= 0) {
-          this.gameOver();
-          return;
-        } else {
-          // Reset position to level start
-          this.peoncitoPos = this.nameToCoords(level.startPos);
+        // Create a shockwave expanding ring
+        const shockwave = document.createElement('div');
+        shockwave.className = 'square-sneeze-shockwave';
+        squareEl.appendChild(shockwave);
+
+        // Spawn beautiful neon particles that burst out
+        for (let i = 0; i < 6; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'sneeze-particle';
+          const angle = Math.random() * Math.PI * 2;
+          const distance = 15 + Math.random() * 35; // px
+          const dx = Math.cos(angle) * distance;
+          const dy = Math.sin(angle) * distance;
+          particle.style.setProperty('--dx', `${dx}px`);
+          particle.style.setProperty('--dy', `${dy}px`);
+          particle.style.left = 'calc(50% - 5px)';
+          particle.style.top = 'calc(50% - 5px)';
+          squareEl.appendChild(particle);
         }
       }
-      
-      // Reset Sneeze timer
-      this.sneezeTimer = this.sneezeCooldown;
-      this.gameActive = true;
-      this.moveReinaRandomly();
-      
-      this.updateStatsDisplay();
-      this.renderBoard();
-    }, 600);
+    });
+
+    // Check hit condition
+    const peoncitoCoord = this.coordsToName(this.peoncitoPos.r, this.peoncitoPos.c);
+    const isHit = dangerSquares.includes(peoncitoCoord);
+
+    if (isHit) {
+      this.lives--;
+      window.GameAudio.playError();
+
+      // Show red screen flash
+      const flash = document.createElement('div');
+      flash.className = 'screen-flash-red';
+      document.body.appendChild(flash);
+      setTimeout(() => flash.remove(), 400);
+    }
+
+    this.updateStatsDisplay();
+
+    // Check game over vs continue
+    setTimeout(() => {
+      if (this.lives <= 0) {
+        this.gameOver();
+      } else {
+        // Reset sneeze timer and restore game flow
+        this.sneezeTimer = this.sneezeCooldown;
+        this.isExploding = false;
+        this.renderBoard();
+        this.updateStatsDisplay();
+      }
+    }, 600); // Wait for animations to complete before letting the player move again
   }
 
   // --- CUSTOM AUDIO SYNTH FOR SNEEZE (ACHÚÚS!) ---
