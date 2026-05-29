@@ -167,7 +167,18 @@ window.MartinaLevels = {
       goal: {
         type: 'trophy',
         trophyX: 2180, trophyY: 270
-      }
+      },
+
+      // Rotating clockwork gear platforms (unique level 2 mechanic)
+      gearData: [
+        {
+          centerX: 600, centerY: 280,
+          radius: 76,
+          numTeeth: 8,
+          speed: 0.55,       // degrees per frame
+          hazardIndices: [2, 6]  // which teeth deal damage (0-indexed)
+        }
+      ]
     }
   ]
 };

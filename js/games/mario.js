@@ -1942,6 +1942,60 @@ class MarioGame {
               
               scene.textures.addCanvas('trophy', tCanvas);
             }
+            
+            // Clockwork gear texture (for rotating gear platforms)
+            if (!scene.textures.exists('gear_wheel')) {
+              const gCanvas = document.createElement('canvas');
+              gCanvas.width = 180;
+              gCanvas.height = 180;
+              const gCtx = gCanvas.getContext('2d');
+              const cx = 90, cy = 90;
+              // Outer ring
+              gCtx.strokeStyle = '#b8963c';
+              gCtx.lineWidth = 4;
+              gCtx.beginPath(); gCtx.arc(cx, cy, 82, 0, Math.PI*2); gCtx.stroke();
+              gCtx.strokeStyle = '#8a6d2f';
+              gCtx.lineWidth = 2;
+              gCtx.beginPath(); gCtx.arc(cx, cy, 78, 0, Math.PI*2); gCtx.stroke();
+              // Gear teeth around edge
+              for (let i = 0; i < 16; i++) {
+                const a = (i/16)*Math.PI*2;
+                const outerR = 85, innerR = 73;
+                gCtx.fillStyle = '#6b5328';
+                gCtx.beginPath();
+                gCtx.moveTo(cx+Math.cos(a-0.06)*innerR, cy+Math.sin(a-0.06)*innerR);
+                gCtx.lineTo(cx+Math.cos(a-0.06)*outerR, cy+Math.sin(a-0.06)*outerR);
+                gCtx.lineTo(cx+Math.cos(a+0.06)*outerR, cy+Math.sin(a+0.06)*outerR);
+                gCtx.lineTo(cx+Math.cos(a+0.06)*innerR, cy+Math.sin(a+0.06)*innerR);
+                gCtx.closePath();
+                gCtx.fill();
+              }
+              // Inner spokes
+              gCtx.strokeStyle = '#7a6030';
+              gCtx.lineWidth = 3;
+              for (let i = 0; i < 6; i++) {
+                const a = (i/6)*Math.PI*2;
+                gCtx.beginPath();
+                gCtx.moveTo(cx+Math.cos(a)*18, cy+Math.sin(a)*18);
+                gCtx.lineTo(cx+Math.cos(a)*68, cy+Math.sin(a)*68);
+                gCtx.stroke();
+              }
+              // Center hub
+              const hubGrad = gCtx.createRadialGradient(cx, cy, 2, cx, cy, 20);
+              hubGrad.addColorStop(0, '#d4b84c');
+              hubGrad.addColorStop(0.5, '#8a6d2f');
+              hubGrad.addColorStop(1, '#4a3822');
+              gCtx.fillStyle = hubGrad;
+              gCtx.beginPath(); gCtx.arc(cx, cy, 20, 0, Math.PI*2); gCtx.fill();
+              // Center bolt
+              gCtx.fillStyle = '#e2c868';
+              gCtx.beginPath(); gCtx.arc(cx, cy, 5, 0, Math.PI*2); gCtx.fill();
+              gCtx.strokeStyle = '#4a3822';
+              gCtx.lineWidth = 1;
+              gCtx.beginPath(); gCtx.arc(cx, cy, 5, 0, Math.PI*2); gCtx.stroke();
+              
+              scene.textures.addCanvas('gear_wheel', gCanvas);
+            }
           }
           
           // 1. Triple Parallax magical background
@@ -2303,6 +2357,77 @@ class MarioGame {
             crown.body.setImmovable(true);
             // Crowns stay static and solemn as requested! No initial float animation.
           });
+
+          // 6.8 Rotating Clockwork Gears (level 2 exclusive mechanic)
+          scene.gearGroups = [];
+          if (biome === 'clockwork' && levelDef.gearData) {
+            levelDef.gearData.forEach((gearDef, gi) => {
+              const gx = gearDef.centerX;
+              const gy = gearDef.centerY;
+              const gearAngle = { val: gi * 45 }; // staggered start angles
+              
+              // Visual gear sprite (decorative, no physics)
+              const gearVis = scene.add.sprite(gx, gy, 'gear_wheel');
+              gearVis.setDisplaySize(170, 170);
+              gearVis.setDepth(0);
+              gearVis.setAlpha(0.5);
+              
+              // Create tooth platforms around the gear
+              const teeth = [];
+              const toothW = 28;
+              const toothH = 14;
+              
+              for (let t = 0; t < gearDef.numTeeth; t++) {
+                const baseAngle = (t / gearDef.numTeeth) * Math.PI * 2;
+                const tx = gx + Math.cos(baseAngle) * gearDef.radius;
+                const ty = gy + Math.sin(baseAngle) * gearDef.radius;
+                
+                const isHazard = gearDef.hazardIndices && gearDef.hazardIndices.includes(t);
+                
+                // Platform graphic
+                const toothGfx = scene.add.graphics();
+                if (isHazard) {
+                  toothGfx.fillStyle(0x8b2500, 0.9);
+                  toothGfx.fillRect(-toothW/2, -toothH/2, toothW, toothH);
+                  toothGfx.fillStyle(0xff4444, 0.7);
+                  toothGfx.fillRect(-toothW/2, -toothH/2, toothW, 3);
+                  // Spiky top
+                  toothGfx.fillStyle(0xff6644, 0.6);
+                  for (let sx = -toothW/2 + 2; sx < toothW/2; sx += 5) {
+                    toothGfx.fillRect(sx, -toothH/2 - 5, 3, 6);
+                  }
+                } else {
+                  toothGfx.fillStyle(0x5c4020, 0.9);
+                  toothGfx.fillRect(-toothW/2, -toothH/2, toothW, toothH);
+                  toothGfx.fillStyle(0x8a6d2f, 0.7);
+                  toothGfx.fillRect(-toothW/2, -toothH/2, toothW, 3);
+                }
+                toothGfx.lineStyle(1, 0xb8963c, 0.6);
+                toothGfx.strokeRect(-toothW/2, -toothH/2, toothW, toothH);
+                toothGfx.setDepth(3);
+                
+                // Physics body
+                scene.physics.add.existing(toothGfx, true);
+                toothGfx.body.setSize(toothW, toothH);
+                toothGfx.body.setOffset(tx - toothW/2, ty - toothH/2);
+                
+                teeth.push({
+                  gfx: toothGfx,
+                  baseAngle: baseAngle,
+                  isHazard: isHazard
+                });
+              }
+              
+              scene.gearGroups.push({
+                gx, gy,
+                radius: gearDef.radius,
+                speed: gearDef.speed,
+                angle: gearAngle,
+                teeth: teeth,
+                visual: gearVis
+              });
+            });
+          }
 
           // 7. Goal — biome-specific (Portal+Queen for grass, Trophy for clockwork)
           if (biome === 'clockwork') {
@@ -2931,6 +3056,42 @@ class MarioGame {
             // Hovering wobble effect!
             ae.setAngle(Math.sin(scene.time.now * 0.007) * 8);
           });
+
+          // Rotating clockwork gears update
+          if (scene.gearGroups) {
+            scene.gearGroups.forEach(gear => {
+              gear.angle.val += gear.speed * (Math.PI / 180);
+              gear.visual.angle += gear.speed;
+              
+              gear.teeth.forEach((tooth, ti) => {
+                const a = gear.angle.val + tooth.baseAngle;
+                const tx = gear.gx + Math.cos(a) * gear.radius;
+                const ty = gear.gy + Math.sin(a) * gear.radius;
+                tooth.gfx.x = tx;
+                tooth.gfx.y = ty;
+                tooth.gfx.body.position.x = tx - 14;
+                tooth.gfx.body.position.y = ty - 7;
+                tooth.gfx.angle = (a * 180 / Math.PI) + 90;
+                
+                // Hazard collision check
+                if (tooth.isHazard && scene.player.invincibility === 0) {
+                  const dx = scene.player.x - tx;
+                  const dy = scene.player.y - ty;
+                  const dist = Math.sqrt(dx*dx + dy*dy);
+                  if (dist < 26 && scene.player.body.velocity.y >= 0) {
+                    self.lives--;
+                    scene.player.invincibility = 60;
+                    scene.player.body.setVelocityX(scene.player.x < tx ? -180 : 180);
+                    scene.player.body.setVelocityY(-120);
+                    self.synthesizeSound('damage');
+                    scene.doDamageAnim();
+                    document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
+                    if (self.lives <= 0) self.gameOver();
+                  }
+                }
+              });
+            });
+          }
 
           // Spin the magical chess portal of the 64 squares!
           if (scene.portal) {
