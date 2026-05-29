@@ -112,22 +112,31 @@ class ChessBoxGame {
 
     let melody = [];
     let bass = [];
-    let tempo = 190; // 190ms per step (Slower, heavier chugging metal groove)
+    let tempo = 140; // 140ms per step — fast, energetic Ippo pace
 
     if (type === 'boxing') {
-      // High-energy epic heavy metal anthem in A minor (Hajime no Ippo style chord progression)
-      // A minor -> F Major -> G Major -> E Major
+      // === HAJIME NO IPPO STYLE: Heroic brass anthem in A minor ===
+      // Chord progression: Am → F → G → E (classic epic anime progression)
+      // Octave 4 = middle, Octave 5 = high brass range
       melody = [
-        440.00, 440.00, 440.00, 523.25, 587.33, 523.25, 440.00, 392.00, // A minor riff
-        349.23, 349.23, 349.23, 440.00, 523.25, 440.00, 349.23, 329.63, // F Major riff
-        392.00, 392.00, 392.00, 493.88, 587.33, 493.88, 392.00, 329.63, // G Major riff
-        329.63, 329.63, 329.63, 415.30, 493.88, 415.30, 493.88, 659.25  // E Major crescendo
+        // Bar 1: Am — Rising heroic arpeggio
+        440.00, 523.25, 659.25, 880.00, 659.25, 523.25, 440.00, 392.00,
+        // Bar 2: F — Majestic sweep
+        349.23, 440.00, 523.25, 698.46, 659.25, 523.25, 440.00, 349.23,
+        // Bar 3: G — Building tension
+        392.00, 493.88, 587.33, 783.99, 698.46, 587.33, 493.88, 392.00,
+        // Bar 4: E — Heroic climax
+        329.63, 415.30, 493.88, 659.25, 587.33, 493.88, 415.30, 329.63
       ];
       bass = [
-        110.00, 110.00, 110.00, 110.00, 110.00, 110.00, 110.00, 110.00, // A2
-        87.31,  87.31,  87.31,  87.31,  87.31,  87.31,  87.31,  87.31,  // F2
-        98.00,  98.00,  98.00,  98.00,  98.00,  98.00,  98.00,  98.00,  // G2
-        82.41,  82.41,  82.41,  82.41,  82.41,  82.41,  82.41,  82.41   // E2
+        // Am — driving octave bass
+        110.00, 110.00, 110.00, 110.00, 110.00, 110.00, 110.00, 110.00,
+        // F
+        87.31,  87.31,  87.31,  87.31,  87.31,  87.31,  87.31,  87.31,
+        // G
+        98.00,  98.00,  98.00,  98.00,  98.00,  98.00,  98.00,  98.00,
+        // E
+        82.41,  82.41,  82.41,  82.41,  82.41,  82.41,  82.41,  82.41
       ];
     } else {
       // Chess tension music: Slow, ominous A-minor drone with woodblock ticking
@@ -155,28 +164,28 @@ class ChessBoxGame {
 
       const now = audioCtx.currentTime;
 
-      // 1. DYNAMIC DRUM CHANNEL (Relentless Double Bass Metal drums) for boxing
+      // 1. DYNAMIC DRUM CHANNEL (Relentless Ippo-style drums) for boxing
       if (type === 'boxing') {
         const beat = step % 8;
-        // Kick Drum: Relentless heavy double kick metal beat (steps 0, 1, 3, 4, 5)
-        if (beat === 0 || beat === 1 || beat === 3 || beat === 4 || beat === 5) {
+        // Kick Drum: RELENTLESS double kick on EVERY beat (0-7) for max intensity
+        if (beat !== 2 && beat !== 6) { // everything except snare beats gets kick
           try {
             const kOsc = audioCtx.createOscillator();
             const kGain = audioCtx.createGain();
             kOsc.type = 'sine';
-            kOsc.frequency.setValueAtTime(150, now);
-            kOsc.frequency.exponentialRampToValueAtTime(30, now + 0.08); // high punch pitch sweep
-            kGain.gain.setValueAtTime(0.24, now); // loud driving bass drum
-            kGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
+            kOsc.frequency.setValueAtTime(160, now);
+            kOsc.frequency.exponentialRampToValueAtTime(25, now + 0.06);
+            kGain.gain.setValueAtTime(0.28, now);
+            kGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
             kOsc.connect(kGain);
             kGain.connect(audioCtx.destination);
             kOsc.start(now);
-            kOsc.stop(now + 0.1);
+            kOsc.stop(now + 0.08);
             this.synthNotes.push(kOsc);
           } catch(e) {}
         }
         
-        // Snare Drum: Loud cracking high-sustain snare on beats 2 and 6
+        // Snare Drum: Powerful crack on beats 2 and 6 (half-time feel)
         if (beat === 2 || beat === 6) {
           try {
             const bufferSize = audioCtx.sampleRate * 0.15; // 150ms snare blast
@@ -203,10 +212,10 @@ class ChessBoxGame {
           } catch(e) {}
         }
 
-        // Cymbals: Crash cymbal on step 0, crisp closed hi-hats on odd beats
+        // Cymbals: Big crash on step 0, ride bell on 2/4/6, hi-hats on 1/3/5/7
         if (beat === 0) {
           try {
-            const bufferSize = audioCtx.sampleRate * 0.4; // 400ms crash
+            const bufferSize = audioCtx.sampleRate * 0.5;
             const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
             const data = buffer.getChannelData(0);
             for (let i = 0; i < bufferSize; i++) {
@@ -216,30 +225,88 @@ class ChessBoxGame {
             noise.buffer = buffer;
             const filter = audioCtx.createBiquadFilter();
             filter.type = 'highpass';
-            filter.frequency.value = 8000;
+            filter.frequency.value = 7000;
             const noiseGain = audioCtx.createGain();
-            noiseGain.gain.setValueAtTime(0.06, now); // metallic crash
-            noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.38);
+            noiseGain.gain.setValueAtTime(0.10, now); // bigger crash!
+            noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
             noise.connect(filter);
             filter.connect(noiseGain);
             noiseGain.connect(audioCtx.destination);
             noise.start(now);
-            noise.stop(now + 0.4);
+            noise.stop(now + 0.5);
             this.synthNotes.push(noise);
           } catch(e) {}
-        } else if (beat % 2 === 1) {
+        } else if (beat === 2 || beat === 4 || beat === 6) {
+          // Ride cymbal bell — metallic ping for training montage energy
+          try {
+            const rOsc = audioCtx.createOscillator();
+            const rGain = audioCtx.createGain();
+            rOsc.type = 'square';
+            rOsc.frequency.setValueAtTime(4200, now);
+            rGain.gain.setValueAtTime(0.016, now);
+            rGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
+            rOsc.connect(rGain);
+            rGain.connect(audioCtx.destination);
+            rOsc.start(now);
+            rOsc.stop(now + 0.08);
+            this.synthNotes.push(rOsc);
+          } catch(e) {}
+        } else {
+          // Crisp closed hi-hat on 1, 3, 5, 7
           try {
             const hOsc = audioCtx.createOscillator();
             const hGain = audioCtx.createGain();
             hOsc.type = 'square';
-            hOsc.frequency.setValueAtTime(12000, now);
-            hGain.gain.setValueAtTime(0.012, now); // crisp closed hi-hat
-            hGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+            hOsc.frequency.setValueAtTime(14000, now);
+            hGain.gain.setValueAtTime(0.014, now);
+            hGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.035);
             hOsc.connect(hGain);
             hGain.connect(audioCtx.destination);
             hOsc.start(now);
-            hOsc.stop(now + 0.045);
+            hOsc.stop(now + 0.04);
             this.synthNotes.push(hOsc);
+          } catch(e) {}
+        }
+
+        // Drum Fill: Epic snare roll every 4 bars (step 24-31) + big crash at bar end
+        if (step >= 24 && step <= 30) {
+          try {
+            const fOsc = audioCtx.createOscillator();
+            const fGain = audioCtx.createGain();
+            fOsc.type = 'triangle';
+            fOsc.frequency.setValueAtTime(200 + (step - 24) * 30, now);
+            fGain.gain.setValueAtTime(0.08, now);
+            fGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
+            fOsc.connect(fGain);
+            fGain.connect(audioCtx.destination);
+            fOsc.start(now);
+            fOsc.stop(now + 0.07);
+            this.synthNotes.push(fOsc);
+          } catch(e) {}
+        }
+        if (step === 30) {
+          try {
+            // BIG crash cymbal at fill climax
+            const bufferSize = audioCtx.sampleRate * 0.7;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+              data[i] = Math.random() * 2 - 1;
+            }
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.value = 6000;
+            const noiseGain = audioCtx.createGain();
+            noiseGain.gain.setValueAtTime(0.12, now);
+            noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.65);
+            noise.connect(filter);
+            filter.connect(noiseGain);
+            noiseGain.connect(audioCtx.destination);
+            noise.start(now);
+            noise.stop(now + 0.7);
+            this.synthNotes.push(noise);
           } catch(e) {}
         }
       }
@@ -310,6 +377,61 @@ class ChessBoxGame {
               osc.stop(now + 0.17);
               this.synthNotes.push(osc);
             });
+            
+            // === HAJIME NO IPPO BRASS SECTION ===
+            // Dual-layer trumpet synth: aggressive sawtooth through resonant lowpass filter
+            // with dramatic envelope sweep — the signature Ippo heroic sound
+            try {
+              // Layer 1: Main trumpet — bright, wide filter sweep
+              const b1Osc = audioCtx.createOscillator();
+              const b1Filter = audioCtx.createBiquadFilter();
+              const b1Gain = audioCtx.createGain();
+              
+              b1Osc.type = 'sawtooth';
+              b1Osc.frequency.setValueAtTime(leadFreq * 2.0, now);
+              b1Osc.detune.setValueAtTime(8, now); // slight detune for richness
+              
+              b1Filter.type = 'lowpass';
+              b1Filter.frequency.setValueAtTime(250, now);
+              b1Filter.frequency.linearRampToValueAtTime(4500, now + 0.05); // aggressive wah open
+              b1Filter.frequency.exponentialRampToValueAtTime(500, now + 0.14); // quick close
+              b1Filter.Q.value = 5.0; // resonant peak for trumpet bite
+              
+              b1Gain.gain.setValueAtTime(0.055, now); // LOUD — lead instrument!
+              b1Gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+              
+              b1Osc.connect(b1Filter);
+              b1Filter.connect(b1Gain);
+              b1Gain.connect(audioCtx.destination);
+              b1Osc.start(now);
+              b1Osc.stop(now + 0.18);
+              this.synthNotes.push(b1Osc);
+
+              // Layer 2: Harmony trumpet — one octave lower, slightly quieter, for depth
+              const b2Osc = audioCtx.createOscillator();
+              const b2Filter = audioCtx.createBiquadFilter();
+              const b2Gain = audioCtx.createGain();
+              
+              b2Osc.type = 'sawtooth';
+              b2Osc.frequency.setValueAtTime(leadFreq * 1.0, now);
+              b2Osc.detune.setValueAtTime(-5, now);
+              
+              b2Filter.type = 'lowpass';
+              b2Filter.frequency.setValueAtTime(200, now);
+              b2Filter.frequency.linearRampToValueAtTime(3000, now + 0.05);
+              b2Filter.frequency.exponentialRampToValueAtTime(400, now + 0.14);
+              b2Filter.Q.value = 3.5;
+              
+              b2Gain.gain.setValueAtTime(0.030, now); // supportive harmony
+              b2Gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+              
+              b2Osc.connect(b2Filter);
+              b2Filter.connect(b2Gain);
+              b2Gain.connect(audioCtx.destination);
+              b2Osc.start(now);
+              b2Osc.stop(now + 0.18);
+              this.synthNotes.push(b2Osc);
+            } catch(e) {}
           } else {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
@@ -358,6 +480,160 @@ class ChessBoxGame {
       clearInterval(this.musicInterval);
       this.musicInterval = null;
     }
+  }
+
+  // --- SFX SYSTEM: Bell, punch impacts, crowd reactions ---
+  _getAudioCtx() {
+    let ctx = window.GameAudio.ctx;
+    if (!ctx) {
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      window.GameAudio.ctx = ctx;
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+
+  playBell() {
+    const ctx = this._getAudioCtx();
+    if (!ctx || !this.musicEnabled) return;
+    try {
+      const now = ctx.currentTime;
+      // Ring bell: two high-frequency strikes with metallic ring
+      for (let i = 0; i < 2; i++) {
+        const t = now + i * 0.18;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(880, t);
+        osc.frequency.setValueAtTime(1100, t + 0.02);
+        gain.gain.setValueAtTime(0.15, t);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.4);
+        this.synthNotes.push(osc);
+      }
+    } catch(e) {}
+  }
+
+  playPunchImpact() {
+    const ctx = this._getAudioCtx();
+    if (!ctx || !this.musicEnabled) return;
+    try {
+      const now = ctx.currentTime;
+      // Low thud + high crack layered for satisfying punch sound
+      // Thud layer
+      const tOsc = ctx.createOscillator();
+      const tGain = ctx.createGain();
+      tOsc.type = 'sine';
+      tOsc.frequency.setValueAtTime(150, now);
+      tOsc.frequency.exponentialRampToValueAtTime(40, now + 0.07);
+      tGain.gain.setValueAtTime(0.2, now);
+      tGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+      tOsc.connect(tGain);
+      tGain.connect(ctx.destination);
+      tOsc.start(now);
+      tOsc.stop(now + 0.09);
+      this.synthNotes.push(tOsc);
+      // Crack layer
+      const bufferSize = ctx.sampleRate * 0.06;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+      const nFilter = ctx.createBiquadFilter();
+      nFilter.type = 'highpass';
+      nFilter.frequency.value = 3000;
+      const nGain = ctx.createGain();
+      nGain.gain.setValueAtTime(0.1, now);
+      nGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
+      noise.connect(nFilter);
+      nFilter.connect(nGain);
+      nGain.connect(ctx.destination);
+      noise.start(now);
+      noise.stop(now + 0.07);
+      this.synthNotes.push(noise);
+    } catch(e) {}
+  }
+
+  playPunchBlocked() {
+    const ctx = this._getAudioCtx();
+    if (!ctx || !this.musicEnabled) return;
+    try {
+      const now = ctx.currentTime;
+      // Dull thud for blocked punch
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(100, now);
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.08);
+      this.synthNotes.push(osc);
+    } catch(e) {}
+  }
+
+  playCrowdCheer() {
+    const ctx = this._getAudioCtx();
+    if (!ctx || !this.musicEnabled) return;
+    try {
+      const now = ctx.currentTime;
+      const bufferSize = ctx.sampleRate * 0.35;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+      }
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 1200;
+      filter.Q.value = 0.6;
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.06, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.33);
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      noise.start(now);
+      noise.stop(now + 0.35);
+      this.synthNotes.push(noise);
+    } catch(e) {}
+  }
+
+  playCrowdGasp() {
+    const ctx = this._getAudioCtx();
+    if (!ctx || !this.musicEnabled) return;
+    try {
+      const now = ctx.currentTime;
+      const bufferSize = ctx.sampleRate * 0.25;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize) * 0.6;
+      }
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 800;
+      filter.Q.value = 0.4;
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.05, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.23);
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      noise.start(now);
+      noise.stop(now + 0.25);
+      this.synthNotes.push(noise);
+    } catch(e) {}
   }
 
   toggleMute() {
@@ -667,6 +943,7 @@ class ChessBoxGame {
     
     // Start boxing chiptune music
     this.startMusic('boxing');
+    this.playBell();
 
     this.container.innerHTML = `
       <div class="empanadas-container">
@@ -707,6 +984,21 @@ class ChessBoxGame {
                 <div id="super-opponent-bar" style="width: 0%; height: 100%; background: linear-gradient(270deg, #ef4444, #b91c1c); transition: width 0.15s ease-out;"></div>
               </div>
               <span id="super-opponent-ready" style="font-size: 0.63rem; color: #f43f5e; display: none; font-weight: 900; animation: pulse 0.8s infinite alternate; margin-top: 3px;">🔥 ¡SÚPER ENEMIGO!</span>
+            </div>
+
+            <!-- Health Bars Overlay — compact, just thin bars under super bars -->
+            <div style="position: absolute; top: 62px; left: 12px; width: 170px; display: flex; align-items: center; gap: 6px; pointer-events: none; z-index: 10;">
+              <div style="flex: 1; height: 5px; background: rgba(0,0,0,0.5); border-radius: 3px; overflow: hidden; border: 1px solid rgba(74,222,128,0.2);">
+                <div id="health-player-bar" style="width: 100%; height: 100%; background: #4ade80; transition: width 0.3s ease-out; border-radius: 3px;"></div>
+              </div>
+              <span id="health-player-text" style="font-size: 0.58rem; color: #4ade80; font-weight: 800; min-width: 30px; text-align: right;">100%</span>
+            </div>
+
+            <div style="position: absolute; top: 62px; right: 12px; width: 170px; display: flex; align-items: center; gap: 6px; flex-direction: row-reverse; pointer-events: none; z-index: 10;">
+              <div style="flex: 1; height: 5px; background: rgba(0,0,0,0.5); border-radius: 3px; overflow: hidden; border: 1px solid rgba(239,68,68,0.2);">
+                <div id="health-opponent-bar" style="width: 100%; height: 100%; background: #ef4444; transition: width 0.3s ease-out; border-radius: 3px;"></div>
+              </div>
+              <span id="health-opponent-text" style="font-size: 0.58rem; color: #f87171; font-weight: 800; min-width: 30px; text-align: left;">100%</span>
             </div>
 
             <!-- Mobile overlay controllers -->
@@ -787,6 +1079,18 @@ class ChessBoxGame {
           scene.opponent = scene.add.sprite(400, 180, 'opp-idle');
           scene.opponent.setOrigin(0.5, 0.5);
           scene.opponent.setScale(0.6);
+
+          // Opponent idle breathing
+          scene.oppBreathingTween = scene.tweens.add({
+            targets: scene.opponent,
+            scaleX: 0.62,
+            scaleY: 0.58,
+            duration: 1300,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+          });
+
           scene.opponentHP = maxOpponentHP;
           scene.opponentMaxHP = maxOpponentHP;
 
@@ -794,6 +1098,17 @@ class ChessBoxGame {
           scene.player = scene.add.sprite(400, 350, 'player-idle');
           scene.player.setOrigin(0.5, 0.5);
           scene.player.setScale(0.65);
+
+          // Idle breathing animation — subtle scale pulse for living feel
+          scene.breathingTween = scene.tweens.add({
+            targets: scene.player,
+            scaleX: 0.67,
+            scaleY: 0.63,
+            duration: 1100,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+          });
 
           // Interactive overlays
           scene.starsEffect = scene.add.text(400, 80, '', { font: '40px Outfit, sans-serif', fill: '#fbbf24' }).setOrigin(0.5);
@@ -840,6 +1155,7 @@ class ChessBoxGame {
             self.updateBoxingTopBar();
             
             window.GameAudio.playVictory(); // Triumphant bell sound!
+            self.playCrowdCheer();
             scene.cameras.main.flash(200, 56, 189, 248, 0.4); // neon blue flash
             scene.addTextEffect(400, 310, "🌀 ¡DEMPSEY ROLL! 🌀", "#38bdf8");
             
@@ -917,6 +1233,7 @@ class ChessBoxGame {
             self.updateBoxingTopBar();
             
             window.GameAudio.playError(); // Alarm sound!
+            self.playCrowdGasp();
             scene.cameras.main.flash(200, 239, 68, 68, 0.4); // neon red flash
             scene.addTextEffect(400, 140, "🏰 ¡ENROQUE DESTRUCTOR! 🏰", "#f43f5e");
             
@@ -1088,8 +1405,7 @@ class ChessBoxGame {
               self.hitsLandedThisRound++;
               self.totalPunchesLanded++;
               window.GameAudio.playSuccess();
-
-              // Spawn sparkle particle effects
+              self.playPunchImpact();
               scene.spawnSparkleParticles(400, 160, currentLevel.color);
 
               // Flash Opponent red and scale briefly
@@ -1117,6 +1433,7 @@ class ChessBoxGame {
             } else if (scene.opponentState === 'idle') {
               // Idle opponent blocks punches easily
               window.GameAudio.playMove();
+              self.playPunchBlocked();
               scene.addTextEffect(400, 140, "¡BLOQUEADO!", "#cbd5e1");
               self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 5); // charge opponent (balanced rate)
             } else if (scene.opponentState === 'telegraphing-l' || scene.opponentState === 'telegraphing-r') {
@@ -1126,6 +1443,7 @@ class ChessBoxGame {
               self.hitsLandedThisRound++;
               self.totalPunchesLanded++;
               window.GameAudio.playSuccess();
+              self.playPunchImpact();
               scene.spawnSparkleParticles(400, 160, currentLevel.color);
               
               // Interrupt! Shift state to brief hit recoil, cancel telegraphing!
@@ -1153,6 +1471,7 @@ class ChessBoxGame {
             } else {
               // Hitting punching opponent has no effect or gets blocked
               window.GameAudio.playMove();
+              self.playPunchBlocked();
             }
             self.updateBoxingTopBar();
           };
@@ -1189,6 +1508,7 @@ class ChessBoxGame {
 
           // Trigger Opponent KO
           scene.triggerOpponentKO = () => {
+            self.playCrowdCheer();
             scene.opponentState = 'ko';
             scene.opponent.setTexture('opp-stunned');
             scene.starsEffect.setText('');
@@ -1212,6 +1532,7 @@ class ChessBoxGame {
               self.playerHealth = Math.max(0, self.playerHealth - damage * 0.2);
               self.playerSuperPower = Math.min(100, self.playerSuperPower + 5); // charge Dempsey (highly balanced rate)
               window.GameAudio.playMove();
+              self.playPunchBlocked();
               scene.addTextEffect(400, 310, "🛡️ ¡BLOQUEADO!", "#38bdf8");
               scene.spawnSparkleParticles(400, 340, '#38bdf8');
             } else if ((side === 'left' && scene.playerState === 'dodging-l') || 
@@ -1232,6 +1553,7 @@ class ChessBoxGame {
               self.hitsReceivedThisRound++;
               self.totalPunchesReceived++;
               window.GameAudio.playError();
+              self.playPunchImpact();
               scene.addTextEffect(400, 310, "💥 ¡IMPACTO!", "#ef4444");
 
               // Interrupt player inputs and trigger hit flinch animation
@@ -1269,6 +1591,32 @@ class ChessBoxGame {
         },
         update: function(time, delta) {
           const scene = this;
+
+          // Restart idle breathing animations when fighters are idle
+          if (scene.playerState === 'idle' && (!scene.breathingTween || !scene.breathingTween.isPlaying())) {
+            if (scene.breathingTween) scene.breathingTween.stop();
+            scene.breathingTween = scene.tweens.add({
+              targets: scene.player,
+              scaleX: 0.67,
+              scaleY: 0.63,
+              duration: 1100,
+              yoyo: true,
+              repeat: -1,
+              ease: 'Sine.easeInOut'
+            });
+          }
+          if (scene.opponentState === 'idle' && (!scene.oppBreathingTween || !scene.oppBreathingTween.isPlaying())) {
+            if (scene.oppBreathingTween) scene.oppBreathingTween.stop();
+            scene.oppBreathingTween = scene.tweens.add({
+              targets: scene.opponent,
+              scaleX: 0.62,
+              scaleY: 0.58,
+              duration: 1300,
+              yoyo: true,
+              repeat: -1,
+              ease: 'Sine.easeInOut'
+            });
+          }
 
           // Redraw ring background with dynamic crowd bobbing and sporadic flashes in real-time!
           self.drawRetroRingBackground(scene.ringGraphics, currentLevel.color, time);
@@ -1366,6 +1714,21 @@ class ChessBoxGame {
 
   // --- DYNAMICALLY DRAW PHASER CANVAS RETRO VECTOR TEXTURES ---
   renderBoxingTextures(scene) {
+    const levelIdx = this.currentLevelIndex;
+    this._renderPlayerTextures(scene);
+    this._renderOpponentTextures(scene, levelIdx);
+  }
+
+  _getOpponentTier(levelIdx) {
+    if (levelIdx <= 3) return 'pawn';
+    if (levelIdx <= 7) return 'knight';
+    if (levelIdx <= 11) return 'bishop';
+    if (levelIdx <= 13) return 'rook';
+    return 'queen';
+  }
+
+  // --- PLAYER TEXTURES (Martina — always the same) ---
+  _renderPlayerTextures(scene) {
     // Shared color gradients and styling helpers
     const getPoloGrad = (ctx, x1, y1, x2, y2) => {
       const g = ctx.createLinearGradient(x1, y1, x2, y2);
@@ -1572,7 +1935,7 @@ class ChessBoxGame {
     plCtx.beginPath(); plCtx.arc(64, 52, 28, Math.PI, 0); plCtx.rect(36, 52, 56, 24); plCtx.fill();
     plCtx.fillStyle = '#facc15'; plCtx.beginPath(); plCtx.arc(64, 76, 8, 0, Math.PI*2); plCtx.fill();
     plCtx.fillStyle = hairGrad; plCtx.beginPath();
-    plCtx.moveTo(64, 76); plCtx.quadraticCurveTo(36, 104, 48, 136); plCtx.quadraticCurveTo(68, 116, 64, 76); bCtx.closePath(); plCtx.fill();
+    plCtx.moveTo(64, 76); plCtx.quadraticCurveTo(36, 104, 48, 136); plCtx.quadraticCurveTo(68, 116, 64, 76); plCtx.closePath(); plCtx.fill();
 
     // Torso white
     plCtx.fillStyle = getPoloGrad(plCtx, 32, 80, 96, 140);
@@ -1591,7 +1954,7 @@ class ChessBoxGame {
     
     plCtx.fillStyle = getPinkGloveGrad(plCtx, 28, 28, 32);
     plCtx.beginPath(); plCtx.arc(28, 28, 32, 0, Math.PI*2); plCtx.fill();
-    plCtx.fillStyle = 'rgba(255, 255, 255, 0.55)'; pCtx.beginPath(); pCtx.arc(22, 20, 8, 0, Math.PI*2); plCtx.fill(); // bright flash sheen
+    plCtx.fillStyle = 'rgba(255, 255, 255, 0.55)'; plCtx.beginPath(); plCtx.arc(22, 20, 8, 0, Math.PI*2); plCtx.fill(); // bright flash sheen
     plCtx.fillStyle = '#f8fafc'; plCtx.fillRect(16, 54, 24, 6);
 
     scene.textures.addCanvas('player-punch-l', plCanvas);
@@ -1606,7 +1969,7 @@ class ChessBoxGame {
     prCtx.beginPath(); prCtx.arc(64, 52, 28, Math.PI, 0); prCtx.rect(36, 52, 56, 24); prCtx.fill();
     prCtx.fillStyle = '#facc15'; prCtx.beginPath(); prCtx.arc(64, 76, 8, 0, Math.PI*2); prCtx.fill();
     prCtx.fillStyle = hairGrad; prCtx.beginPath();
-    prCtx.moveTo(64, 76); prCtx.quadraticCurveTo(36, 104, 48, 136); prCtx.quadraticCurveTo(68, 116, 64, 76); bCtx.closePath(); prCtx.fill();
+    prCtx.moveTo(64, 76); prCtx.quadraticCurveTo(36, 104, 48, 136); prCtx.quadraticCurveTo(68, 116, 64, 76); prCtx.closePath(); prCtx.fill();
 
     // Torso white
     prCtx.fillStyle = getPoloGrad(prCtx, 32, 80, 96, 140);
@@ -1624,14 +1987,55 @@ class ChessBoxGame {
 
     prCtx.fillStyle = getPinkGloveGrad(prCtx, 100, 28, 32);
     prCtx.beginPath(); prCtx.arc(100, 28, 32, 0, Math.PI*2); prCtx.fill();
-    prCtx.fillStyle = 'rgba(255, 255, 255, 0.55)'; pCtx.beginPath(); pCtx.arc(94, 20, 8, 0, Math.PI*2); prCtx.fill();
+    prCtx.fillStyle = 'rgba(255, 255, 255, 0.55)'; prCtx.beginPath(); prCtx.arc(94, 20, 8, 0, Math.PI*2); prCtx.fill();
     prCtx.fillStyle = '#f8fafc'; prCtx.fillRect(88, 54, 24, 6);
 
     scene.textures.addCanvas('player-punch-r', prCanvas);
+  }
 
-    // ================================================================
-    // OPPONENT: GENERAL TORREÓN (STYLISH 3D STONE CASTLE ROOK DETAILED) - Canvas 192x192
-    // ================================================================
+  // ================================================================
+  // OPPONENT TEXTURES — Tier-specific designs per level group
+  // ================================================================
+  _renderOpponentTextures(scene, levelIdx) {
+    const tier = this._getOpponentTier(levelIdx);
+    
+    const getStoneGrad = (ctx, x1, y1, x2, y2) => {
+      const g = ctx.createLinearGradient(x1, y1, x2, y2);
+      g.addColorStop(0, '#374151'); g.addColorStop(0.2, '#6b7280'); g.addColorStop(0.5, '#d1d5db'); g.addColorStop(0.8, '#4b5563'); g.addColorStop(1, '#1f2937');
+      return g;
+    };
+
+    const getRedGloveGrad = (ctx, x, y, r) => {
+      const g = ctx.createRadialGradient(x - r*0.3, y - r*0.3, r*0.1, x, y, r);
+      g.addColorStop(0, '#fca5a5'); g.addColorStop(0.3, '#dc2626'); g.addColorStop(0.8, '#b91c1c'); g.addColorStop(1, '#7f1d1d');
+      return g;
+    };
+
+    // Tier-specific color schemes
+    const tierColors = {
+      pawn:   { body: ['#93c5fd', '#60a5fa', '#bfdbfe', '#3b82f6', '#1e3a5f'], glove: ['#fca5a5', '#60a5fa', '#3b82f6', '#1e3a5f'], eye: '#f59e0b', name: 'Peón Boxeador' },
+      knight: { body: ['#d4b88c', '#b8956a', '#f5e6d3', '#8b6914', '#5c3d0e'], glove: ['#fca5a5', '#d97706', '#b45309', '#7c2d12'], eye: '#ef4444', name: 'Caballo Boxeador' },
+      bishop: { body: ['#c4b5fd', '#a78bfa', '#ddd6fe', '#7c3aed', '#4c1d95'], glove: ['#fca5a5', '#a855f7', '#7e22ce', '#581c87'], eye: '#fbbf24', name: 'Alfil Boxeador' },
+      rook:   { body: ['#374151', '#6b7280', '#d1d5db', '#4b5563', '#1f2937'], glove: ['#fca5a5', '#dc2626', '#b91c1c', '#7f1d1d'], eye: '#facc15', name: 'General Torreón' },
+      queen:  { body: ['#2d1b4e', '#5b21b6', '#a78bfa', '#4c1d95', '#1a0a2e'], glove: ['#fca5a5', '#c026d3', '#86198f', '#4a044e'], eye: '#f43f5e', name: 'Reina Negra' }
+    };
+    const tc = tierColors[tier];
+
+    const opponentShortsColor = tc.body[3];
+    const opponentBeltColor = tc.eye;
+    const opponentBeltDark = tc.body[4];
+    const opponentEyeGlow = tc.eye;
+
+    const getBodyGrad = (ctx, x1, y1, x2, y2) => {
+      const g = ctx.createLinearGradient(x1, y1, x2, y2);
+      g.addColorStop(0, tc.body[0]); g.addColorStop(0.2, tc.body[1]); g.addColorStop(0.5, tc.body[2]); g.addColorStop(0.8, tc.body[3]); g.addColorStop(1, tc.body[4]);
+      return g;
+    };
+    const getGloveGrad = (ctx, x, y, r) => {
+      const g = ctx.createRadialGradient(x - r*0.3, y - r*0.3, r*0.1, x, y, r);
+      g.addColorStop(0, tc.glove[0]); g.addColorStop(0.3, tc.glove[1]); g.addColorStop(0.8, tc.glove[2]); g.addColorStop(1, tc.glove[3]);
+      return g;
+    };
     
     // 7. General Torreón Idle (Canvas 192x192)
     const oCanvas = document.createElement('canvas'); oCanvas.width = 192; oCanvas.height = 192;
@@ -1643,7 +2047,7 @@ class ChessBoxGame {
     oCtx.fillStyle = '#111827'; oCtx.fillRect(52, 48, 88, 20);
     
     // Cylindrical 3D stone Rook shape
-    oCtx.fillStyle = getStoneGrad(oCtx, 44, 40, 148, 156);
+    oCtx.fillStyle = getBodyGrad(oCtx, 44, 40, 148, 156);
     oCtx.beginPath();
     // Crenellations (teeth) top
     oCtx.moveTo(52, 36); oCtx.lineTo(68, 36); oCtx.lineTo(68, 52); 
@@ -1712,11 +2116,11 @@ class ChessBoxGame {
     oCtx.closePath(); oCtx.fill();
 
     // Heavy red leather gloves (placed in guard)
-    oCtx.fillStyle = getRedGloveGrad(oCtx, 36, 116, 26);
+    oCtx.fillStyle = getGloveGrad(oCtx, 36, 116, 26);
     oCtx.beginPath(); oCtx.arc(36, 116, 26, 0, Math.PI*2); oCtx.fill();
     oCtx.fillStyle = 'rgba(255, 255, 255, 0.4)'; oCtx.beginPath(); oCtx.arc(30, 108, 6, 0, Math.PI*2); oCtx.fill();
 
-    oCtx.fillStyle = getRedGloveGrad(oCtx, 156, 116, 26);
+    oCtx.fillStyle = getGloveGrad(oCtx, 156, 116, 26);
     oCtx.beginPath(); oCtx.arc(156, 116, 26, 0, Math.PI*2); oCtx.fill();
     oCtx.fillStyle = 'rgba(255, 255, 255, 0.4)'; oCtx.beginPath(); oCtx.arc(150, 108, 6, 0, Math.PI*2); oCtx.fill();
 
@@ -1747,14 +2151,14 @@ class ChessBoxGame {
     olCtx.fillStyle = '#fbbf24'; olCtx.beginPath(); olCtx.arc(96, 142, 12, 0, Math.PI*2); olCtx.fill();
 
     // Normal Right Glove in guard
-    olCtx.fillStyle = getRedGloveGrad(olCtx, 156, 116, 26);
+    olCtx.fillStyle = getGloveGrad(olCtx, 156, 116, 26);
     olCtx.beginPath(); olCtx.arc(156, 116, 26, 0, Math.PI*2); olCtx.fill();
 
     // EXTENDED MASSIVE LEFT GLOVE (Foreshortened punch shooting forward, huge at Y=140, radius=36!)
     olCtx.strokeStyle = 'rgba(239, 68, 68, 0.4)'; olCtx.lineWidth = 12;
     olCtx.beginPath(); olCtx.moveTo(36, 116); olCtx.lineTo(28, 146); olCtx.stroke();
 
-    olCtx.fillStyle = getRedGloveGrad(olCtx, 28, 146, 36);
+    olCtx.fillStyle = getGloveGrad(olCtx, 28, 146, 36);
     olCtx.beginPath(); olCtx.arc(28, 146, 36, 0, Math.PI*2); olCtx.fill();
     olCtx.fillStyle = 'rgba(255, 255, 255, 0.5)'; olCtx.beginPath(); olCtx.arc(20, 136, 8, 0, Math.PI*2); olCtx.fill();
 
@@ -1773,7 +2177,7 @@ class ChessBoxGame {
     
     // Eyes angry
     orCtx.fillStyle = '#111827'; orCtx.beginPath(); orCtx.arc(76, 84, 13, 0, Math.PI*2); orCtx.arc(116, 84, 13, 0, Math.PI*2); orCtx.fill();
-    orCtx.fillStyle = '#ef4444'; orCtx.beginPath(); oCtx.arc(76, 84, 9, 0, Math.PI*2); orCtx.arc(116, 84, 9, 0, Math.PI*2); orCtx.fill();
+    orCtx.fillStyle = '#ef4444'; orCtx.beginPath(); orCtx.arc(76, 84, 9, 0, Math.PI*2); orCtx.arc(116, 84, 9, 0, Math.PI*2); orCtx.fill();
 
     // ROARING mouth
     orCtx.fillStyle = '#0f172a'; orCtx.beginPath(); orCtx.arc(96, 116, 16, 0, Math.PI*2); orCtx.fill();
@@ -1785,14 +2189,14 @@ class ChessBoxGame {
     orCtx.fillStyle = '#fbbf24'; orCtx.beginPath(); orCtx.arc(96, 142, 12, 0, Math.PI*2); orCtx.fill();
 
     // Normal Left Glove in guard
-    orCtx.fillStyle = getRedGloveGrad(orCtx, 36, 116, 26);
+    orCtx.fillStyle = getGloveGrad(orCtx, 36, 116, 26);
     orCtx.beginPath(); orCtx.arc(36, 116, 26, 0, Math.PI*2); orCtx.fill();
 
     // EXTENDED MASSIVE RIGHT GLOVE (Y=146, radius=36!)
     orCtx.strokeStyle = 'rgba(239, 68, 68, 0.4)'; orCtx.lineWidth = 12;
     orCtx.beginPath(); orCtx.moveTo(156, 116); orCtx.lineTo(164, 146); orCtx.stroke();
 
-    orCtx.fillStyle = getRedGloveGrad(orCtx, 164, 146, 36);
+    orCtx.fillStyle = getGloveGrad(orCtx, 164, 146, 36);
     orCtx.beginPath(); orCtx.arc(164, 146, 36, 0, Math.PI*2); orCtx.fill();
     orCtx.fillStyle = 'rgba(255, 255, 255, 0.5)'; orCtx.beginPath(); orCtx.arc(156, 136, 8, 0, Math.PI*2); orCtx.fill();
 
@@ -1861,10 +2265,10 @@ class ChessBoxGame {
     osCtx.fillStyle = '#dc2626'; osCtx.fillRect(44, 142, 104, 22);
 
     // Gloves dropped and hanging down weakly!
-    osCtx.fillStyle = getRedGloveGrad(osCtx, 32, 156, 20);
+    osCtx.fillStyle = getGloveGrad(osCtx, 32, 156, 20);
     osCtx.beginPath(); osCtx.arc(32, 156, 20, 0, Math.PI*2); osCtx.fill();
 
-    osCtx.fillStyle = getRedGloveGrad(osCtx, 160, 156, 20);
+    osCtx.fillStyle = getGloveGrad(osCtx, 160, 156, 20);
     osCtx.beginPath(); osCtx.arc(160, 156, 20, 0, Math.PI*2); osCtx.fill();
 
     // COMICAL SPINNING GOLD STARS ORBIT (Tilted ellipse above head)
@@ -2205,6 +2609,28 @@ class ChessBoxGame {
       pEl.textContent = `L: ${this.hitsLandedThisRound} | R: ${this.hitsReceivedThisRound}`;
     }
     
+    // Update Health bars — simple solid color changes for thin bars
+    const pHPBar = document.getElementById('health-player-bar');
+    const pHPText = document.getElementById('health-player-text');
+    if (pHPBar) {
+      pHPBar.style.width = `${this.playerHealth}%`;
+      if (this.playerHealth < 30) pHPBar.style.background = '#ef4444';
+      else if (this.playerHealth < 60) pHPBar.style.background = '#fbbf24';
+      else pHPBar.style.background = '#4ade80';
+    }
+    if (pHPText) pHPText.textContent = `${Math.round(this.playerHealth)}%`;
+
+    const oHPBar = document.getElementById('health-opponent-bar');
+    const oHPText = document.getElementById('health-opponent-text');
+    if (oHPBar) {
+      const oppPct = Math.round(this.opponentHealth);
+      oHPBar.style.width = `${oppPct}%`;
+      if (oppPct < 30) oHPBar.style.background = '#991b1b';
+      else if (oppPct < 60) oHPBar.style.background = '#f59e0b';
+      else oHPBar.style.background = '#ef4444';
+    }
+    if (oHPText) oHPText.textContent = `${Math.round(this.opponentHealth)}%`;
+    
     // Update Super progress bars in DOM
     const pBar = document.getElementById('super-player-bar');
     if (pBar) {
@@ -2253,6 +2679,7 @@ class ChessBoxGame {
   startChessPhase() {
     // Start tension clock-ticking chess chiptune music
     this.startMusic('chess');
+    this.playBell();
 
     // Calculate damage-based visual filters & overlays (smoothly gradual blurry vision, blood, vignette)
     let boardStyle = "";
@@ -2276,40 +2703,65 @@ class ChessBoxGame {
         ${isCritical ? 'font-weight: 900; animation: shakeHeavy 0.5s infinite;' : ''}
       `;
 
-      // 3. Gradual Red Vignette
-      const vignetteIntensity = (damageFactor * 0.70).toFixed(2);
-      const vignetteBlur = Math.round(20 + damageFactor * 35);
+      // 3. Gradual Damage Vignette (purple-blue cartoon tint, not blood red)
+      const vignetteIntensity = (damageFactor * 0.50).toFixed(2);
+      const vignetteBlur = Math.round(15 + damageFactor * 30);
       vignetteOverlayHTML = `
         <div id="chess-damage-vignette" style="
           position: absolute;
           inset: 0;
           pointer-events: none;
           z-index: 100;
-          box-shadow: inset 0 0 ${vignetteBlur}px rgba(239, 68, 68, ${vignetteIntensity});
+          box-shadow: inset 0 0 ${vignetteBlur}px rgba(139, 92, 246, ${vignetteIntensity});
           ${isCritical ? 'animation: pulseVignette 1.2s infinite alternate;' : ''}
           transition: all 0.5s ease;
           border-radius: 20px;
         "></div>
       `;
 
-      // 4. Immersive Corner Blood Splatters only appear under 50% health (heavy punishment), scaling their opacity!
+      // 4. Cartoonish damage effects: comical band-aids, stars, cracked lens (no blood!)
       if (this.playerHealth < 50) {
-        const bloodOpacity = ((50 - this.playerHealth) / 50 * 0.80 + 0.10).toFixed(2);
+        const dmgOpacity = ((50 - this.playerHealth) / 50 * 0.75 + 0.10).toFixed(2);
         bloodDropsHTML = `
-          <!-- Immersive Corner Blood Splatters -->
+          <!-- Cartoonish Battle Damage Overlays — kid-friendly! -->
           <svg style="position: absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index: 101;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450">
-            <!-- Top Left splatter -->
-            <path d="M 0 0 L 80 0 C 70 30, 60 50, 30 65 C 15 72, 8 85, 0 100 Z" fill="#991b1b" opacity="${bloodOpacity}" />
-            <circle cx="100" cy="30" r="5" fill="#991b1b" opacity="${(bloodOpacity * 0.9).toFixed(2)}" />
-            <circle cx="65" cy="85" r="4" fill="#991b1b" opacity="${(bloodOpacity * 0.9).toFixed(2)}" />
-            <circle cx="30" cy="115" r="3" fill="#991b1b" opacity="${(bloodOpacity * 0.8).toFixed(2)}" />
-            <circle cx="15" cy="140" r="2" fill="#991b1b" opacity="${(bloodOpacity * 0.9).toFixed(2)}" />
-            
-            <!-- Bottom Right splatter -->
-            <path d="M 800 450 L 720 450 C 730 420, 740 400, 770 385 C 785 378, 792 365, 800 350 Z" fill="#991b1b" opacity="${bloodOpacity}" />
-            <circle cx="700" cy="420" r="5" fill="#991b1b" opacity="${(bloodOpacity * 0.9).toFixed(2)}" />
-            <circle cx="735" cy="365" r="4" fill="#991b1b" opacity="${(bloodOpacity * 0.9).toFixed(2)}" />
-            <circle cx="770" cy="335" r="3" fill="#991b1b" opacity="${(bloodOpacity * 0.8).toFixed(2)}" />
+            <!-- Top-left: Comical band-aid -->
+            <g transform="translate(25, 25) rotate(-15)" opacity="${dmgOpacity}">
+              <rect x="0" y="0" width="60" height="22" rx="3" fill="#fed7aa" stroke="#d97706" stroke-width="1.5"/>
+              <rect x="22" y="0" width="16" height="22" fill="#fca5a5" stroke="#d97706" stroke-width="0.8"/>
+              <circle cx="4" cy="11" r="2" fill="#d97706"/>
+              <circle cx="12" cy="11" r="2" fill="#d97706"/>
+              <circle cx="48" cy="11" r="2" fill="#d97706"/>
+              <circle cx="56" cy="11" r="2" fill="#d97706"/>
+            </g>
+            <!-- Top-right: Cartoon spinning stars -->
+            <g transform="translate(755, 35)" opacity="${dmgOpacity}">
+              <polygon points="0,-18 5,-6 18,-6 8,2 11,15 0,7 -11,15 -8,2 -18,-6 -5,-6" fill="#fbbf24" stroke="#f59e0b" stroke-width="1">
+                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="3s" repeatCount="indefinite"/>
+              </polygon>
+            </g>
+            <g transform="translate(725, 55)" opacity="${(dmgOpacity * 0.7).toFixed(2)}">
+              <polygon points="0,-10 3,-3 10,-3 5,1 7,8 0,3 -7,8 -5,1 -10,-3 -3,-3" fill="#fbbf24" stroke="#f59e0b" stroke-width="0.8">
+                <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="2.2s" repeatCount="indefinite"/>
+              </polygon>
+            </g>
+            <!-- Bottom-right: Cracked lens / glass shatter effect -->
+            <g transform="translate(700, 380)" opacity="${dmgOpacity}">
+              <line x1="0" y1="0" x2="45" y2="-30" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="45" y1="-30" x2="60" y2="-50" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+              <line x1="45" y1="-30" x2="70" y2="-15" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="0" y1="0" x2="-35" y2="-20" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+              <line x1="0" y1="0" x2="-20" y2="-45" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/>
+            </g>
+            <!-- Bottom-left: Comical purple bruise marks (cartoon circles) -->
+            <g transform="translate(50, 385)" opacity="${(dmgOpacity * 0.8).toFixed(2)}">
+              <circle cx="0" cy="0" r="15" fill="none" stroke="#a855f7" stroke-width="3" stroke-dasharray="6,4">
+                <animate attributeName="r" values="15;18;15" dur="1.5s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="0" cy="0" r="8" fill="#c084fc" opacity="0.5">
+                <animate attributeName="r" values="8;10;8" dur="1.5s" repeatCount="indefinite"/>
+              </circle>
+            </g>
           </svg>
         `;
       }
@@ -2479,10 +2931,12 @@ class ChessBoxGame {
           const pieceEl = document.createElement('div');
           pieceEl.className = 'chess-piece';
           pieceEl.textContent = sym[piece] || '';
-          pieceEl.style.color = piece === piece.toUpperCase() ? '#fffef0' : '#1a1a1a';
+          pieceEl.style.color = piece === piece.toUpperCase() ? '#ffffff' : '#0a0a0a';
           pieceEl.style.textShadow = piece === piece.toUpperCase()
-            ? '0 2px 3px rgba(0,0,0,0.4)'
-            : '0 1px 2px rgba(255,255,255,0.15)';
+            ? '-1px -1px 0 #1a1a2e, 1px -1px 0 #1a1a2e, -1px 1px 0 #1a1a2e, 1px 1px 0 #1a1a2e, 0 3px 6px rgba(0,0,0,0.5)'
+            : '-1px -1px 0 #e2e8f0, 1px -1px 0 #e2e8f0, -1px 1px 0 #e2e8f0, 1px 1px 0 #e2e8f0, 0 2px 4px rgba(0,0,0,0.3)';
+          pieceEl.style.fontSize = '2.6rem';
+          pieceEl.style.fontWeight = '700';
           square.appendChild(pieceEl);
         }
 
@@ -3136,7 +3590,7 @@ class ChessBoxGame {
     this.container.innerHTML = `
       <div class="game-screen" style="border-color: #ef4444; box-shadow: 0 10px 40px rgba(239,68,68,0.25);">
         <div class="game-screen-img" style="border-color:#ef4444; background: #000;">
-          <div style="font-size: 4.5rem; animation: wobble-head 2.5s infinite ease-in-out;">💀</div>
+          <div style="font-size: 4.5rem; animation: wobble-head 2.5s infinite ease-in-out;">🥊</div>
         </div>
         <h2>COMBATE PERDIDO 😞</h2>
         <p style="color:#fca5a5;">${reason}</p>
@@ -3275,8 +3729,8 @@ class ChessBoxGame {
         to { transform: scale(1.04); box-shadow: 0 0 20px rgba(251, 191, 36, 0.6); }
       }
       @keyframes pulseVignette {
-        from { box-shadow: inset 0 0 35px rgba(239, 68, 68, 0.35); }
-        to { box-shadow: inset 0 0 65px rgba(239, 68, 68, 0.7); }
+        from { box-shadow: inset 0 0 35px rgba(139, 92, 246, 0.30); }
+        to { box-shadow: inset 0 0 55px rgba(139, 92, 246, 0.55); }
       }
       @keyframes shakeHeavy {
         0% { transform: translate(1px, 1px) rotate(0deg); }
