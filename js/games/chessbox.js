@@ -759,7 +759,7 @@ class ChessBoxGame {
     if (this.selectedDifficulty === 'martina') { speedMod = 0.70; hpMod = 1.5; }
 
     const finalPunchSpeed = currentLevel.punchSpeed * speedMod;
-    const maxOpponentHP = currentLevel.hp * hpMod * 3;
+    const maxOpponentHP = Math.round(currentLevel.hp * hpMod * 1.25); // rebalanced from 3x to 1.25x for realistic KO opportunity!
 
     const config = {
       type: Phaser.AUTO,
@@ -877,8 +877,8 @@ class ChessBoxGame {
                       
                       scene.cameras.main.shake(80, 0.015);
                       
-                      // Massive unblockable damage!
-                      scene.opponentHP = Math.max(0, scene.opponentHP - 8.5);
+                      // Massive unblockable damage! (Increased from 8.5 to 16 for satisfying K.O. potential!)
+                      scene.opponentHP = Math.max(0, scene.opponentHP - 16);
                       self.opponentHealth = Math.max(0, (scene.opponentHP / scene.opponentMaxHP) * 100);
                       window.GameAudio.playSuccess();
                       scene.spawnSparkleParticles(400, 160, '#38bdf8');
@@ -1082,8 +1082,8 @@ class ChessBoxGame {
           // Check if player punch lands on oponent
           scene.checkPunchHit = (side) => {
             if (scene.opponentState === 'stunned') {
-              // Stunned opponent takes massive critical damage!
-              scene.opponentHP -= 6;
+              // Stunned opponent takes massive critical damage! (increased from 6 to 12)
+              scene.opponentHP -= 12;
               self.playerSuperPower = Math.min(100, self.playerSuperPower + 30); // charge Dempsey faster
               self.hitsLandedThisRound++;
               self.totalPunchesLanded++;
@@ -1120,8 +1120,8 @@ class ChessBoxGame {
               scene.addTextEffect(400, 140, "¡BLOQUEADO!", "#cbd5e1");
               self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 6); // charge opponent (balanced rate)
             } else if (scene.opponentState === 'telegraphing-l' || scene.opponentState === 'telegraphing-r') {
-              // Opponent gets interrupted if caught preparing a punch! Clean hit!
-              scene.opponentHP -= 4;
+              // Opponent gets interrupted if caught preparing a punch! Clean hit! (increased from 4 to 8)
+              scene.opponentHP -= 8;
               self.playerSuperPower = Math.min(100, self.playerSuperPower + 35); // massive Dempsey charge
               self.hitsLandedThisRound++;
               self.totalPunchesLanded++;
@@ -2254,8 +2254,65 @@ class ChessBoxGame {
     // Start tension clock-ticking chess chiptune music
     this.startMusic('chess');
 
+    // Calculate damage-based visual filters & overlays (blurry vision, blood, vignette)
+    let boardStyle = "";
+    let statusStyle = "";
+    let vignetteOverlayHTML = "";
+    let bloodDropsHTML = "";
+
+    if (this.playerHealth < 100) {
+      const damagePercent = 100 - this.playerHealth;
+      const vignetteIntensity = (damagePercent / 100) * 0.70;
+      const vignetteBlur = 20 + (damagePercent / 100) * 35;
+      
+      vignetteOverlayHTML = `
+        <div id="chess-damage-vignette" style="
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          z-index: 100;
+          box-shadow: inset 0 0 ${vignetteBlur}px rgba(239, 68, 68, ${vignetteIntensity});
+          ${this.playerHealth < 45 ? 'animation: pulseVignette 1.2s infinite alternate;' : ''}
+          transition: all 0.5s ease;
+          border-radius: 20px;
+        "></div>
+      `;
+
+      if (this.playerHealth < 45) {
+        // Severe damage: heavy blur, chromatic aberration double vision
+        boardStyle = "filter: blur(1.8px); transition: filter 0.3s; pointer-events: auto;";
+        statusStyle = "text-shadow: 2.5px 0 1px rgba(239,68,68,0.75), -2.5px 0 1px rgba(56,189,248,0.75); font-weight: 900; animation: shakeHeavy 0.5s infinite;";
+      } else if (this.playerHealth < 75) {
+        // Mild damage: slight blur, subtle double vision
+        boardStyle = "filter: blur(0.8px); transition: filter 0.3s; pointer-events: auto;";
+        statusStyle = "text-shadow: 1.2px 0 0.5px rgba(239,68,68,0.5), -1.2px 0 0.5px rgba(56,189,248,0.5);";
+      }
+
+      if (this.playerHealth < 65) {
+        bloodDropsHTML = `
+          <!-- Immersive Corner Blood Splatters -->
+          <svg style="position: absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index: 101;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450">
+            <!-- Top Left splatter -->
+            <path d="M 0 0 L 80 0 C 70 30, 60 50, 30 65 C 15 72, 8 85, 0 100 Z" fill="#991b1b" opacity="0.8" />
+            <circle cx="100" cy="30" r="5" fill="#991b1b" opacity="0.75" />
+            <circle cx="65" cy="85" r="4" fill="#991b1b" opacity="0.75" />
+            <circle cx="30" cy="115" r="3" fill="#991b1b" opacity="0.7" />
+            <circle cx="15" cy="140" r="2" fill="#991b1b" opacity="0.75" />
+            
+            <!-- Bottom Right splatter -->
+            <path d="M 800 450 L 720 450 C 730 420, 740 400, 770 385 C 785 378, 792 365, 800 350 Z" fill="#991b1b" opacity="0.8" />
+            <circle cx="700" cy="420" r="5" fill="#991b1b" opacity="0.75" />
+            <circle cx="735" cy="365" r="4" fill="#991b1b" opacity="0.75" />
+            <circle cx="770" cy="335" r="3" fill="#991b1b" opacity="0.7" />
+          </svg>
+        `;
+      }
+    }
+
     this.container.innerHTML = `
-      <div class="empanadas-container">
+      <div class="empanadas-container" style="position: relative; overflow: hidden; border-radius: 20px;">
+        ${vignetteOverlayHTML}
+        ${bloodDropsHTML}
         <div class="empanadas-top-bar">
           <button class="btn-close-modal" id="btn-chess-resign" style="background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: var(--warm-white);">
             ← Rendirse ✕
@@ -2277,7 +2334,7 @@ class ChessBoxGame {
         <div class="empanadas-layout">
           <!-- Chess Board -->
           <div class="cooking-station">
-            <div class="chess-board-wrapper">
+            <div class="chess-board-wrapper" style="${boardStyle}">
               <div class="chess-board" id="chessbox-board-DOM"></div>
             </div>
           </div>
@@ -2287,7 +2344,7 @@ class ChessBoxGame {
             <div style="border-bottom: 1px solid var(--glass-border); padding-bottom: 8px; margin-bottom: 10px;">
               <span class="round-badge" style="background: #fbbf24; font-size:0.75rem;">Ronda ${this.currentRound} — Ajedrez</span>
               <h4 style="color:#fbbf24; font-size:1.15rem; margin-top:5px;">🧠 Batalla Mental</h4>
-              <p id="chessbox-status" style="font-size:0.85rem; color:#cbd5e1; margin-top:4px;">¡Tu turno! Juegas con blancas ♔</p>
+              <p id="chessbox-status" style="font-size:0.85rem; color:#cbd5e1; margin-top:4px; ${statusStyle}">¡Tu turno! Juegas con blancas ♔</p>
             </div>
             
             <div style="background: rgba(0,0,0,0.25); padding: 10px; border-radius: 8px; font-size: 0.85rem; border:1px solid rgba(255,255,255,0.03); max-height: 120px; overflow-y: auto;">
@@ -2295,10 +2352,10 @@ class ChessBoxGame {
               <div id="chessbox-history" style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; color: #94a3b8; font-family: monospace;"></div>
             </div>
 
-            <!-- Boxing round duration timer (A Chess round lasts 180s, then bell rings and switches to boxing!) -->
+            <!-- Boxing round duration timer (A Chess round lasts 300s, then bell rings and switches to boxing!) -->
             <div class="recipe-instruction-card" style="border-color: #fbbf24; margin-top:10px; padding: 8px 12px; text-align:center;">
               <span style="font-size: 0.75rem; color:#94a3b8; text-transform:uppercase;">Duración del Asalto de Ajedrez</span>
-              <div style="font-size: 1.5rem; font-weight:800; color:#fbbf24;" id="chessbox-round-timer-val">180s</div>
+              <div style="font-size: 1.5rem; font-weight:800; color:#fbbf24;" id="chessbox-round-timer-val">300s</div>
             </div>
           </div>
         </div>
@@ -2323,7 +2380,7 @@ class ChessBoxGame {
     const opponentClockVal = document.getElementById('chess-opponent-clock-val');
     const roundTimerVal = document.getElementById('chess-box-round-timer-val') || document.getElementById('chessbox-round-timer-val');
     
-    let chessRoundSecondsLeft = 180; // 180s chess round limit
+    let chessRoundSecondsLeft = 300; // 300s (5 minutes) chess round limit for comfortable, deep strategic play!
     
     // Set initial text
     if (playerClockVal) playerClockVal.textContent = this.formatClock(this.playerChessClock);
@@ -3210,6 +3267,23 @@ class ChessBoxGame {
       @keyframes pulse {
         from { transform: scale(1); box-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
         to { transform: scale(1.04); box-shadow: 0 0 20px rgba(251, 191, 36, 0.6); }
+      }
+      @keyframes pulseVignette {
+        from { box-shadow: inset 0 0 35px rgba(239, 68, 68, 0.35); }
+        to { box-shadow: inset 0 0 65px rgba(239, 68, 68, 0.7); }
+      }
+      @keyframes shakeHeavy {
+        0% { transform: translate(1px, 1px) rotate(0deg); }
+        10% { transform: translate(-1px, -2px) rotate(-1deg); }
+        20% { transform: translate(-3px, 0px) rotate(1deg); }
+        30% { transform: translate(0px, 2px) rotate(0deg); }
+        40% { transform: translate(1px, -1px) rotate(1deg); }
+        50% { transform: translate(-1px, 2px) rotate(-1deg); }
+        60% { transform: translate(-3px, 1px) rotate(0deg); }
+        70% { transform: translate(2px, 1px) rotate(-1deg); }
+        80% { transform: translate(-1px, -1px) rotate(1deg); }
+        90% { transform: translate(2px, 2px) rotate(0deg); }
+        100% { transform: translate(1px, -2px) rotate(-1deg); }
       }
     `;
     document.head.appendChild(styles);
