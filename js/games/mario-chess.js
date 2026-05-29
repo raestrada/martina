@@ -24,38 +24,49 @@ window.ChessDuel = class ChessDuel {
     this.loadStockfish();
   }
 
-  // --- LOAD STOCKFISH WASM AS WEB WORKER ---
+  // --- LOAD STOCKFISH WASM AS WEB WORKER (Blob URL for file:// compatibility) ---
   loadStockfish() {
     const sfUrl = 'https://cdn.jsdelivr.net/npm/stockfish.wasm@0.10.0/stockfish.js';
-    
-    // Show loading
     const statusEl = document.getElementById('chess-status');
     if (statusEl) statusEl.textContent = 'Cargando Stockfish...';
 
-    try {
-      this.sfWorker = new Worker(sfUrl);
-    } catch(e) {
-      // Fallback: if Worker from CDN fails, try inline
-      this.sfFailed('No se pudo cargar el motor de ajedrez');
-      return;
-    }
-
-    this.sfWorker.onmessage = (e) => {
-      const msg = e.data || '';
-      this.handleSFMessage(msg);
-    };
-
-    this.sfWorker.onerror = () => {
-      this.sfFailed('Error en el motor de ajedrez');
-    };
-
-    // Initialize UCI protocol
-    this.sfWorker.postMessage('uci');
+    // Fetch the worker script, create a Blob URL (works with file:// protocol)
+    fetch(sfUrl)
+      .then(r => {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.text();
+      })
+      .then(code => {
+        const blob = new Blob([code], { type: 'application/javascript' });
+        const blobUrl = URL.createObjectURL(blob);
+        
+        this.sfWorker = new Worker(blobUrl);
+        
+        this.sfWorker.onmessage = (e) => {
+          this.handleSFMessage(e.data || '');
+        };
+        
+        this.sfWorker.onerror = () => {
+          if (statusEl) statusEl.textContent = 'Error en Stockfish — recarga la página';
+        };
+        
+        this.sfWorker.postMessage('uci');
+        
+        // Timeout fallback
+        setTimeout(() => {
+          if (!this.sfReady && statusEl) {
+            statusEl.textContent = 'Stockfish tardando... espera unos segundos';
+          }
+        }, 5000);
+      })
+      .catch(err => {
+        console.error('Stockfish load failed:', err);
+        if (statusEl) statusEl.textContent = 'Error al cargar Stockfish. ¿Tienes internet?';
+      });
   }
 
   handleSFMessage(msg) {
     if (msg === 'uciok') {
-      // Set low strength
       this.sfWorker.postMessage('setoption name UCI_LimitStrength value true');
       this.sfWorker.postMessage('setoption name UCI_Elo value 1320');
       this.sfWorker.postMessage('isready');
@@ -68,32 +79,26 @@ window.ChessDuel = class ChessDuel {
       const parts = msg.split(' ');
       const bestMove = parts[1];
       if (bestMove && bestMove !== '(none)') {
-        this.pendingBestmove = bestMove;
-        // Apply blunder logic for ~300 ELO feel
-        this.applyBlunderThenMove();
+        this.applyBlunderThenMove(bestMove);
       }
     }
   }
 
-  // --- BLUNDER LOGIC: sometimes play random instead of Stockfish's move ---
-  applyBlunderThenMove() {
-    const sfMove = this.pendingBestmove;
-    this.pendingBestmove = null;
-    if (!sfMove) return;
-
-    // 35% chance of blunder: play a random legal move instead
+  applyBlunderThenMove(sfMove) {
+    // 30% chance of blunder for ~300 ELO feel
     const legalMoves = this.getAllLegalMoves('b');
-    let chosenMove = sfMove;
-
-    if (Math.random() < 0.35 && legalMoves.length > 1) {
-      // Pick random move, but avoid the best one (sfMove) to ensure it's a blunder
+    let chosen = sfMove;
+    if (Math.random() < 0.30 && legalMoves.length > 1) {
       const filtered = legalMoves.filter(m => m !== sfMove);
-      if (filtered.length > 0) {
-        chosenMove = filtered[Math.floor(Math.random() * filtered.length)];
-      }
+      if (filtered.length > 0) chosen = filtered[Math.floor(Math.random() * filtered.length)];
     }
+    this.executeMove(chosen, false);
+  }
 
-    this.executeMove(chosenMove, false);
+  sfFailed(msg) {
+    const statusEl = document.getElementById('chess-status');
+    if (statusEl) statusEl.textContent = msg;
+    this.sfReady = false;
   }
 
   // --- GET ALL LEGAL MOVES FOR A COLOR ---
@@ -287,8 +292,8 @@ window.ChessDuel = class ChessDuel {
       return;
     }
     
-    // If it's Stockfish's turn, ask it to move
-    if (newTurn === 'b' && this.sfReady && !this.gameOver) {
+    // If it's opponent's turn, ask Stockfish
+    if (newTurn === 'b' && !this.gameOver) {
       const statusEl = document.getElementById('chess-status');
       if (statusEl) statusEl.textContent = 'Equis está pensando... 🤔';
       
