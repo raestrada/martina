@@ -2613,6 +2613,8 @@ class MarioGame {
             scene.boss.projTimer = 0;
             scene.boss.state = 'idle'; // idle, moving, shooting
             scene.boss.moveDir = 1;
+            scene.boss.moveDirX = 1;
+            scene.boss.moveDirY = -1;
             scene.boss.moveTimer = 0;
             scene.boss.minX = bd.roomLeft + 40;
             scene.boss.maxX = bd.roomRight - 40;
@@ -2650,23 +2652,33 @@ class MarioGame {
             scene.createBossWalls = function() {
               if (scene.bossWalls) return;
               scene.bossWalls = scene.physics.add.staticGroup();
-              const ww = 16;
+              const ww = 24; // thicker walls
               const rw = bd.roomRight - bd.roomLeft;
-              const wL = scene.add.rectangle(bd.roomLeft + 2, 250, ww, 340, 0x7c3aed, 0);
+              // Left wall
+              const wL = scene.add.rectangle(bd.roomLeft + 2, 250, ww, 380, 0x7c3aed, 0);
               scene.physics.add.existing(wL, true);
-              wL.body.setSize(ww, 340);
+              wL.body.setSize(ww, 380);
               wL.setDepth(6);
               scene.bossWalls.add(wL);
-              const wR = scene.add.rectangle(bd.roomRight + ww/2, 250, ww, 340, 0x7c3aed, 0);
+              // Right wall — blocks path to goal
+              const wR = scene.add.rectangle(bd.roomRight - 2, 250, ww, 380, 0x7c3aed, 0);
               scene.physics.add.existing(wR, true);
-              wR.body.setSize(ww, 340);
+              wR.body.setSize(ww, 380);
               wR.setDepth(6);
               scene.bossWalls.add(wR);
-              const wT = scene.add.rectangle(bd.roomLeft + rw/2, 80, rw + ww*2, ww, 0x7c3aed, 0);
+              // Ceiling — taller to prevent jumping over
+              const wT = scene.add.rectangle(bd.roomLeft + rw/2, 70, rw + ww*2, 28, 0x7c3aed, 0);
               scene.physics.add.existing(wT, true);
-              wT.body.setSize(rw + ww*2, ww);
+              wT.body.setSize(rw + ww*2, 28);
               wT.setDepth(6);
               scene.bossWalls.add(wT);
+              // Floor-level barrier at right side (backup)
+              const wRB = scene.add.rectangle(bd.roomRight - 2, 400, ww, 60, 0x7c3aed, 0);
+              scene.physics.add.existing(wRB, true);
+              wRB.body.setSize(ww, 60);
+              wRB.setDepth(6);
+              scene.bossWalls.add(wRB);
+              // Glow
               scene.bossWallGlow = scene.add.graphics();
               scene.bossWallGlow.setDepth(5);
               scene.bossWallGlow.lineStyle(3, 0xa855f7, 0.9);
@@ -2674,12 +2686,8 @@ class MarioGame {
               scene.bossWallGlow.lineStyle(1, 0xc084fc, 0.4);
               scene.bossWallGlow.strokeRect(bd.roomLeft+3, 93, rw-6, 324);
               scene.tweens.add({
-                targets: scene.bossWallGlow,
-                alpha: 0.5,
-                duration: 800,
-                yoyo: true,
-                repeat: -1,
-                ease: 'Sine.easeInOut'
+                targets: scene.bossWallGlow, alpha: 0.5,
+                duration: 800, yoyo: true, repeat: -1, ease: 'Sine.easeInOut'
               });
               scene.physics.add.collider(scene.player, scene.bossWalls);
             };
@@ -3462,12 +3470,19 @@ class MarioGame {
               } else scene.boss.setAlpha(1);
               
               scene.boss.moveTimer++;
-              if (scene.boss.moveTimer > 90) { scene.boss.moveTimer = 0; scene.boss.moveDir = Math.random()<0.5?-1:1; }
-              const bx = scene.boss.x + scene.boss.moveDir*scene.boss.speed*0.015;
-              const by = scene.boss.y + scene.boss.moveDir*scene.boss.speed*0.01;
+              if (scene.boss.moveTimer > 45) {
+                scene.boss.moveTimer = 0;
+                // Track player: move toward Martina
+                const dx = scene.player.x - scene.boss.x;
+                const dy = scene.player.y - scene.boss.y;
+                scene.boss.moveDirX = dx > 0 ? 1 : -1;
+                scene.boss.moveDirY = dy > 0 ? 1 : -1;
+              }
+              const bx = scene.boss.x + scene.boss.moveDirX * scene.boss.speed * 0.025;
+              const by = scene.boss.y + scene.boss.moveDirY * scene.boss.speed * 0.018;
               scene.boss.x = Phaser.Math.Clamp(bx, scene.boss.minX, scene.boss.maxX);
               scene.boss.y = Phaser.Math.Clamp(by, scene.boss.minY, scene.boss.maxY);
-              scene.boss.setFlipX(scene.boss.moveDir<0);
+              scene.boss.setFlipX(scene.boss.moveDirX < 0);
               
               scene.boss.projTimer++;
               if (scene.boss.projTimer >= scene.boss.projInterval) {
