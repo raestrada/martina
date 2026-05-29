@@ -42,6 +42,15 @@ window.ChessDuel = class ChessDuel {
         const savedTurn = this.turn;
         
         this.executeMoveRaw(move);
+        
+        // Skip moves that leave own king in check
+        if (this.isKingInCheck('b')) {
+          this.fen = savedFEN;
+          this.moveHistory = savedHistory;
+          this.turn = savedTurn;
+          continue;
+        }
+        
         const score = this.evaluateBoard('b');
         
         this.fen = savedFEN;

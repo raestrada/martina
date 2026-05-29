@@ -2248,74 +2248,114 @@ class MarioGame {
             // Wild knight texture (L-jump hazard for level 4)
             if (!scene.textures.exists('wild_knight')) {
               const wkCanvas = document.createElement('canvas');
-              wkCanvas.width = 44;
+              wkCanvas.width = 52;
               wkCanvas.height = 48;
               const wkCtx = wkCanvas.getContext('2d');
-              // Horse body — brown with mane
+              
+              // Body — large horse
               wkCtx.fillStyle = '#8B4513';
-              // Body
               wkCtx.beginPath();
-              wkCtx.ellipse(22, 28, 14, 9, 0, 0, Math.PI*2);
+              wkCtx.ellipse(26, 30, 16, 10, 0, 0, Math.PI*2);
               wkCtx.fill();
-              // Neck
+              
+              // Neck — long and curved
               wkCtx.fillStyle = '#7a3b10';
               wkCtx.beginPath();
-              wkCtx.moveTo(12, 24); wkCtx.quadraticCurveTo(8, 12, 12, 4);
-              wkCtx.lineTo(18, 4); wkCtx.quadraticCurveTo(16, 14, 20, 24);
+              wkCtx.moveTo(14, 26);
+              wkCtx.quadraticCurveTo(6, 14, 6, 2);
+              wkCtx.lineTo(13, 2);
+              wkCtx.quadraticCurveTo(14, 14, 20, 26);
               wkCtx.closePath();
               wkCtx.fill();
-              // Head
+              
+              // Head — elongated horse head
               wkCtx.fillStyle = '#8B4513';
               wkCtx.beginPath();
-              wkCtx.ellipse(15, 6, 7, 5, -0.2, 0, Math.PI*2);
+              wkCtx.moveTo(6, 2);
+              wkCtx.quadraticCurveTo(-2, -2, -4, 4);
+              wkCtx.quadraticCurveTo(-4, 8, 2, 10);
+              wkCtx.quadraticCurveTo(10, 8, 13, 3);
+              wkCtx.closePath();
               wkCtx.fill();
-              // Snout
-              wkCtx.fillStyle = '#a0522d';
+              
+              // Snout — lighter
+              wkCtx.fillStyle = '#a0622e';
               wkCtx.beginPath();
-              wkCtx.ellipse(10, 5, 4, 3.5, 0, 0, Math.PI*2);
+              wkCtx.ellipse(-3, 6, 5, 4, 0.1, 0, Math.PI*2);
               wkCtx.fill();
-              // Eye
+              
+              // Nostril
+              wkCtx.fillStyle = '#3a1f0a';
+              wkCtx.beginPath();
+              wkCtx.arc(-5, 6, 1.2, 0, Math.PI*2);
+              wkCtx.fill();
+              
+              // Eye — white with pupil
               wkCtx.fillStyle = '#fff';
-              wkCtx.beginPath(); wkCtx.arc(17, 4, 2, 0, Math.PI*2); wkCtx.fill();
+              wkCtx.beginPath(); wkCtx.arc(7, 4, 2.8, 0, Math.PI*2); wkCtx.fill();
               wkCtx.fillStyle = '#000';
-              wkCtx.beginPath(); wkCtx.arc(17, 4, 1.2, 0, Math.PI*2); wkCtx.fill();
-              // Ear
+              wkCtx.beginPath(); wkCtx.arc(8, 3.5, 1.5, 0, Math.PI*2); wkCtx.fill();
+              wkCtx.fillStyle = '#fff';
+              wkCtx.beginPath(); wkCtx.arc(8.5, 2.5, 0.5, 0, Math.PI*2); wkCtx.fill();
+              
+              // Ears — two pointed
               wkCtx.fillStyle = '#6b3410';
               wkCtx.beginPath();
-              wkCtx.moveTo(18, 2); wkCtx.lineTo(16, -1); wkCtx.lineTo(14, 3);
+              wkCtx.moveTo(9, 0); wkCtx.lineTo(8, -5); wkCtx.lineTo(11, -1);
               wkCtx.closePath(); wkCtx.fill();
-              // Mane
-              wkCtx.strokeStyle = '#3a1f0a';
-              wkCtx.lineWidth = 1.5;
-              for (let i=0; i<5; i++) {
-                wkCtx.beginPath();
-                wkCtx.moveTo(12-i*0.5, 2+i*3);
-                wkCtx.quadraticCurveTo(8-i, 4+i*3, 12-i*0.5, 8+i*3);
-                wkCtx.stroke();
-              }
-              // Legs
-              wkCtx.fillStyle = '#6b3410';
-              wkCtx.fillRect(14, 35, 3, 10);
-              wkCtx.fillRect(18, 35, 3, 10);
-              wkCtx.fillRect(25, 35, 3, 10);
-              wkCtx.fillRect(30, 35, 3, 10);
-              // Hooves
-              wkCtx.fillStyle = '#2a1508';
-              wkCtx.fillRect(13, 43, 4, 3);
-              wkCtx.fillRect(17, 43, 4, 3);
-              wkCtx.fillRect(24, 43, 4, 3);
-              wkCtx.fillRect(29, 43, 4, 3);
-              // Tail
-              wkCtx.strokeStyle = '#3a1f0a';
+              wkCtx.beginPath();
+              wkCtx.moveTo(4, 0); wkCtx.lineTo(3, -4); wkCtx.lineTo(6, 0);
+              wkCtx.closePath(); wkCtx.fill();
+              
+              // Mane — flowing hair
+              wkCtx.strokeStyle = '#2a1508';
               wkCtx.lineWidth = 2;
               wkCtx.beginPath();
-              wkCtx.moveTo(35, 26);
-              wkCtx.quadraticCurveTo(40, 24, 38, 32);
-              wkCtx.quadraticCurveTo(40, 36, 36, 34);
+              wkCtx.moveTo(12, 1);
+              wkCtx.quadraticCurveTo(16, -3, 18, 8);
+              wkCtx.quadraticCurveTo(20, -1, 22, 12);
+              wkCtx.quadraticCurveTo(24, 6, 26, 16);
               wkCtx.stroke();
-              // Red glow hazard
-              wkCtx.fillStyle = 'rgba(255,40,20,0.3)';
-              wkCtx.beginPath(); wkCtx.arc(22, 24, 20, 0, Math.PI*2); wkCtx.fill();
+              wkCtx.lineWidth = 1.5;
+              wkCtx.strokeStyle = '#1a0a04';
+              wkCtx.beginPath();
+              wkCtx.moveTo(13, 0);
+              wkCtx.quadraticCurveTo(17, -2, 19, 6);
+              wkCtx.stroke();
+              
+              // Legs — 4 visible
+              wkCtx.fillStyle = '#6b3410';
+              wkCtx.fillRect(18, 36, 4, 9);
+              wkCtx.fillRect(24, 37, 4, 8);
+              wkCtx.fillRect(30, 36, 4, 9);
+              wkCtx.fillRect(36, 37, 4, 8);
+              
+              // Hooves
+              wkCtx.fillStyle = '#1a0a04';
+              wkCtx.fillRect(17, 43, 5, 3);
+              wkCtx.fillRect(23, 43, 5, 3);
+              wkCtx.fillRect(29, 43, 5, 3);
+              wkCtx.fillRect(35, 43, 5, 3);
+              
+              // Tail — flowing behind
+              wkCtx.strokeStyle = '#2a1508';
+              wkCtx.lineWidth = 2.5;
+              wkCtx.beginPath();
+              wkCtx.moveTo(40, 28);
+              wkCtx.quadraticCurveTo(48, 22, 46, 32);
+              wkCtx.quadraticCurveTo(49, 36, 44, 38);
+              wkCtx.quadraticCurveTo(47, 42, 42, 40);
+              wkCtx.stroke();
+              wkCtx.lineWidth = 1.5;
+              wkCtx.strokeStyle = '#1a0a04';
+              wkCtx.beginPath();
+              wkCtx.moveTo(41, 27);
+              wkCtx.quadraticCurveTo(47, 24, 45, 30);
+              wkCtx.stroke();
+              
+              // Red hazard glow
+              wkCtx.fillStyle = 'rgba(255,30,15,0.35)';
+              wkCtx.beginPath(); wkCtx.arc(22, 24, 22, 0, Math.PI*2); wkCtx.fill();
               
               scene.textures.addCanvas('wild_knight', wkCanvas);
             }
