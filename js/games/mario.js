@@ -55,21 +55,22 @@ class MarioGame {
     this.gameState = 'welcome';
     this.stopMusic();
     
-    // Sync level unlocks from local storage
-    this.unlockedLevels = JSON.parse(localStorage.getItem('martina_mario_unlocked')) || [true];
+    // Force only Level 1 to be unlocked! Ignore localStorage so Level 2 cannot be unlocked or bypassed.
+    this.unlockedLevels = [true];
     while (this.unlockedLevels.length < 16) this.unlockedLevels.push(false);
     
     let levelGridHTML = '';
     
     this.levels.forEach((level, idx) => {
       const isUnlocked = this.unlockedLevels[idx] === true;
+      const displayDesc = idx === 0 ? level.desc : `${level.desc} (Próximamente)`;
       levelGridHTML += `
         <div class="mario-stage-node ${isUnlocked ? 'unlocked' : ''}" data-level="${idx}">
           <div class="mario-node-lock">${isUnlocked ? '🔓' : '🔒'}</div>
           <div class="mario-node-badge">${isUnlocked ? level.icon : '❓'}</div>
           <div class="mario-node-num">Nivel ${level.num}</div>
           <div class="mario-node-name">${level.name}</div>
-          <div class="mario-node-desc">${level.desc}</div>
+          <div class="mario-node-desc">${displayDesc}</div>
           <div class="mario-node-status">${isUnlocked ? 'Disponible' : 'Bloqueado'}</div>
           <button class="mario-node-play-btn">Jugar ➔</button>
         </div>
@@ -81,7 +82,7 @@ class MarioGame {
         <div class="mario-map-container">
           <div class="mario-map-header">
             <h2>⭐️ Super Martina: El Salto Mágico ⭐️</h2>
-            <p>¡Explora los 16 capítulos del reino! Corre, salta sobre plataformas y conquista la bandera dorada.</p>
+            <p>¡Explora el primer capítulo del reino! Corre, salta sobre plataformas y despierta el tablero mágico.</p>
           </div>
           <div class="mario-map-grid">
             ${levelGridHTML}
@@ -238,6 +239,193 @@ class MarioGame {
     bindTouch('touch-right', 'right');
     bindTouch('touch-dash', 'dash');
     bindTouch('touch-jump', 'jump');
+
+    // Inject custom premium victory screen overlay styling if not already present
+    if (!document.getElementById('mario-victory-styles')) {
+      const styles = document.createElement('style');
+      styles.id = 'mario-victory-styles';
+      styles.textContent = `
+        .mario-victory-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(15, 23, 42, 0.75);
+          backdrop-filter: blur(8px);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 9999;
+          animation: fadeIn 0.4s ease-out forwards;
+        }
+        .mario-victory-panel {
+          background: rgba(30, 27, 75, 0.9);
+          border: 2px solid rgba(250, 204, 21, 0.55);
+          border-radius: 20px;
+          padding: 30px;
+          text-align: center;
+          max-width: 420px;
+          width: 90%;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(126, 34, 206, 0.3);
+          color: #ffffff;
+          font-family: 'Outfit', 'Inter', sans-serif;
+        }
+        .mario-victory-crown {
+          font-size: 50px;
+          margin-bottom: 10px;
+          animation: bounce 2s infinite ease-in-out;
+        }
+        .mario-victory-panel h2 {
+          font-size: 26px;
+          color: #fbbf24;
+          margin: 10px 0;
+          font-weight: 800;
+          text-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
+        }
+        .mario-victory-msg {
+          font-size: 13px;
+          color: #cbd5e1;
+          line-height: 1.5;
+          margin-bottom: 20px;
+        }
+        .mario-victory-stats {
+          display: flex;
+          justify-content: space-around;
+          background: rgba(15, 23, 42, 0.5);
+          border-radius: 12px;
+          padding: 15px 10px;
+          margin-bottom: 25px;
+          border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .mario-stat-box {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .mario-stat-icon {
+          font-size: 24px;
+          margin-bottom: 5px;
+        }
+        .mario-stat-num {
+          font-size: 22px;
+          font-weight: 800;
+          color: #38bdf8;
+        }
+        .mario-stat-name {
+          font-size: 11px;
+          color: #94a3b8;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+        .mario-victory-buttons {
+          display: flex;
+          gap: 15px;
+        }
+        .mario-vic-btn {
+          flex: 1;
+          padding: 12px 18px;
+          border-radius: 10px;
+          font-size: 14px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s ease-out;
+          border: none;
+          font-family: inherit;
+        }
+        .mario-vic-btn.btn-replay {
+          background: rgba(255, 255, 255, 0.1);
+          color: #ffffff;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .mario-vic-btn.btn-replay:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+        .mario-vic-btn.btn-map {
+          background: linear-gradient(135deg, #e11d48, #be123c);
+          color: #ffffff;
+          box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
+        }
+        .mario-vic-btn.btn-map:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(225, 29, 72, 0.5);
+        }
+        
+        /* Game Over Premium Styling */
+        .mario-gameover-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(15, 23, 42, 0.85);
+          backdrop-filter: blur(8px);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 9999;
+          animation: fadeIn 0.4s ease-out forwards;
+        }
+        .mario-gameover-panel {
+          background: rgba(30, 27, 75, 0.9);
+          border: 2px solid rgba(239, 68, 68, 0.55);
+          border-radius: 20px;
+          padding: 30px;
+          text-align: center;
+          max-width: 420px;
+          width: 90%;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(220, 38, 38, 0.25);
+          color: #ffffff;
+          font-family: 'Outfit', 'Inter', sans-serif;
+        }
+        .mario-gameover-skull {
+          font-size: 50px;
+          margin-bottom: 10px;
+          animation: wobble-head 2.5s infinite ease-in-out;
+        }
+        .mario-gameover-panel h2 {
+          font-size: 26px;
+          color: #ef4444;
+          margin: 10px 0;
+          font-weight: 800;
+          text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+        }
+        .mario-gameover-msg {
+          font-size: 13px;
+          color: #cbd5e1;
+          line-height: 1.5;
+          margin-bottom: 20px;
+        }
+        .mario-gameover-stats {
+          display: flex;
+          justify-content: space-around;
+          background: rgba(15, 23, 42, 0.5);
+          border-radius: 12px;
+          padding: 15px 10px;
+          margin-bottom: 25px;
+          border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .mario-gameover-buttons {
+          display: flex;
+          gap: 15px;
+        }
+        @keyframes wobble-head {
+          0%, 100% { transform: rotate(0) translateY(0); }
+          25% { transform: rotate(-5deg) translateY(-2px); }
+          75% { transform: rotate(5deg) translateY(-2px); }
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
+        }
+      `;
+      document.head.appendChild(styles);
+    }
   }
 
   // --- INITIALIZE PHASER GAME ENGINE ---
@@ -268,13 +456,7 @@ class MarioGame {
       { x: 1540, y: 310, w: 100, h: 20 },
       
       // Intermediate bridges over second pit
-      { x: 1730, y: 310, w: 120, h: 20 },
-      
-      // Staircase steps near flagpole
-      { x: 1980, y: 370, w: 40, h: 40 },
-      { x: 2030, y: 330, w: 40, h: 80 },
-      { x: 2080, y: 290, w: 40, h: 120 },
-      { x: 2130, y: 250, w: 40, h: 160 }
+      { x: 1730, y: 310, w: 120, h: 20 }
     ];
 
     const coinsData = [
@@ -287,8 +469,15 @@ class MarioGame {
       { x: 1590, y: 260 },
       // Over second pit arches
       { x: 1750, y: 260 }, { x: 1790, y: 260 },
-      // Staircase rewards
-      { x: 2000, y: 320 }, { x: 2050, y: 280 }, { x: 2100, y: 240 }
+      // Ground incentives to drop down and stomp patrolling peons!
+      { x: 220, y: 370 }, { x: 250, y: 370 }, { x: 280, y: 370 },
+      { x: 380, y: 370 }, { x: 410, y: 370 }, { x: 440, y: 370 },
+      { x: 580, y: 370 }, { x: 610, y: 370 }, { x: 640, y: 370 },
+      { x: 1060, y: 370 }, { x: 1090, y: 370 }, { x: 1120, y: 370 },
+      { x: 1200, y: 370 }, { x: 1230, y: 370 }, { x: 1260, y: 370 },
+      { x: 1460, y: 370 }, { x: 1490, y: 370 }, { x: 1520, y: 370 },
+      // Portal approach rewards (on the flat final pathway!)
+      { x: 1960, y: 360 }, { x: 2010, y: 360 }, { x: 2060, y: 360 }
     ];
 
     const enemiesData = [
@@ -369,22 +558,43 @@ class MarioGame {
               pCtx.arc(16, 13, 7, Math.PI * 1.1, Math.PI * 1.9);
               pCtx.fill();
               
-              // Glasses (Black frames, signature Martina!)
-              pCtx.lineWidth = 1.5;
-              pCtx.strokeStyle = '#000000';
-              // Left eye lens
-              pCtx.strokeRect(10, 14, 5, 4);
-              // Right eye lens
-              pCtx.strokeRect(17, 14, 5, 4);
-              // Bridge
+              // Glasses (Black frames, signature Martina - rounder and thinner to avoid mask effect!)
+              pCtx.lineWidth = 0.6; // Extra thin frame
+              pCtx.strokeStyle = '#1e293b'; // Dark slate frame
+              
+              // Draw small cute eyes behind the glass lenses first!
+              pCtx.fillStyle = '#1e293b';
               pCtx.beginPath();
-              pCtx.moveTo(15, 16);
-              pCtx.lineTo(17, 16);
+              pCtx.arc(12.5, 16, 0.75, 0, Math.PI * 2);
+              pCtx.arc(19.5, 16, 0.75, 0, Math.PI * 2);
+              pCtx.fill();
+              
+              // Left eye lens (round)
+              pCtx.beginPath();
+              pCtx.arc(12.5, 16, 2.2, 0, Math.PI * 2);
               pCtx.stroke();
-              // Glare highlight in glasses
-              pCtx.fillStyle = 'rgba(255,255,255,0.6)';
-              pCtx.fillRect(11, 15, 3, 2);
-              pCtx.fillRect(18, 15, 3, 2);
+              // Right eye lens (round)
+              pCtx.beginPath();
+              pCtx.arc(19.5, 16, 2.2, 0, Math.PI * 2);
+              pCtx.stroke();
+              // Bridge (curve bridge)
+              pCtx.beginPath();
+              pCtx.moveTo(14.7, 16);
+              pCtx.quadraticCurveTo(16, 15.2, 17.3, 16);
+              pCtx.stroke();
+              // Temple arms (thin frames going to the sides)
+              pCtx.beginPath();
+              pCtx.moveTo(10.3, 16);
+              pCtx.lineTo(8.5, 16);
+              pCtx.moveTo(21.7, 16);
+              pCtx.lineTo(23.5, 16);
+              pCtx.stroke();
+              // Glare lens reflections (small cute white sparkles)
+              pCtx.fillStyle = '#ffffff';
+              pCtx.beginPath();
+              pCtx.arc(13.3, 15.2, 0.5, 0, Math.PI*2);
+              pCtx.arc(20.3, 15.2, 0.5, 0, Math.PI*2);
+              pCtx.fill();
               
               // White Polo Shirt (Body)
               pCtx.fillStyle = '#ffffff';
@@ -495,18 +705,18 @@ class MarioGame {
             // Map the base 'player' texture key to the idle frame for seamless compatibility!
             scene.textures.addCanvas('player', drawMartinaFrame('idle'));
 
-            // 2. Peoncito Canvas (size 32x42)
+            // 2. Shadow Peoncito Canvas (size 32x42) - Kingdom of Shadows!
             const eCanvas = document.createElement('canvas');
             eCanvas.width = 32;
             eCanvas.height = 42;
             const eCtx = eCanvas.getContext('2d');
             
-            // Draw shiny crystal pawn body (Gradient)
-            const bodyGrad = eCtx.createLinearGradient(8, 20, 24, 38);
-            bodyGrad.addColorStop(0, '#93c5fd'); // Light shiny blue
-            bodyGrad.addColorStop(0.5, '#3b82f6'); // Medium blue
-            bodyGrad.addColorStop(1, '#1d4ed8'); // Deep blue
-            eCtx.fillStyle = bodyGrad;
+            // Draw obsidian / deep purple shiny crystal body (Gradient)
+            const enemyBodyGrad = eCtx.createLinearGradient(8, 20, 24, 38);
+            enemyBodyGrad.addColorStop(0, '#c084fc'); // Glowing purple core
+            enemyBodyGrad.addColorStop(0.5, '#6b21a8'); // Shadow purple
+            enemyBodyGrad.addColorStop(1, '#1e1b4b'); // Deep obsidian indigo-black
+            eCtx.fillStyle = enemyBodyGrad;
             
             eCtx.beginPath();
             eCtx.moveTo(12, 19);
@@ -517,43 +727,53 @@ class MarioGame {
             eCtx.closePath();
             eCtx.fill();
             
-            // Base plate
-            eCtx.fillStyle = '#1e3a8a';
+            // Base plate (Dark obsidian gold-trimmed)
+            eCtx.fillStyle = '#1e1b4b';
             eCtx.fillRect(6, 38, 20, 3);
-            eCtx.fillStyle = '#60a5fa'; // shine
+            eCtx.fillStyle = '#a855f7'; // purple shine line
             eCtx.fillRect(6, 38, 20, 1);
             
             // Head ring
-            eCtx.fillStyle = '#2563eb';
+            eCtx.fillStyle = '#581c87';
             eCtx.beginPath();
             eCtx.ellipse(16, 19, 5, 1.5, 0, 0, Math.PI*2);
             eCtx.fill();
             
-            // Pawn Head (Shiny Crystal Sphere)
-            const headGrad = eCtx.createRadialGradient(14, 11, 1, 16, 12, 8);
-            headGrad.addColorStop(0, '#ffffff'); // Glare center
-            headGrad.addColorStop(0.3, '#bfdbfe'); // Soft blue
-            headGrad.addColorStop(0.8, '#3b82f6'); // Base blue
-            headGrad.addColorStop(1, '#1e3a8a'); // Border dark blue
-            eCtx.fillStyle = headGrad;
+            // Pawn Head (Obsidian Crystal Sphere with Glowing center)
+            const enemyHeadGrad = eCtx.createRadialGradient(14, 11, 1, 16, 12, 8);
+            enemyHeadGrad.addColorStop(0, '#f3e8ff'); // Light core glow
+            enemyHeadGrad.addColorStop(0.3, '#d8b4fe'); // Soft purple shine
+            enemyHeadGrad.addColorStop(0.8, '#6b21a8'); // Body shadow purple
+            enemyHeadGrad.addColorStop(1, '#1e1b4b'); // Deep obsidian black
+            eCtx.fillStyle = enemyHeadGrad;
             eCtx.beginPath();
             eCtx.arc(16, 12, 7.5, 0, Math.PI * 2);
             eCtx.fill();
             
-            // Cute tiny eyes
-            eCtx.fillStyle = '#ffffff';
+            // Mischievous glowing red eyes
+            // Eye sockets red glow
+            eCtx.fillStyle = 'rgba(239, 68, 68, 0.3)';
+            eCtx.beginPath();
+            eCtx.arc(13, 11, 2.8, 0, Math.PI*2);
+            eCtx.arc(19, 11, 2.8, 0, Math.PI*2);
+            eCtx.fill();
+            
+            // Red eyes
+            eCtx.fillStyle = '#ef4444';
             eCtx.beginPath();
             eCtx.arc(13, 11, 1.5, 0, Math.PI*2);
             eCtx.arc(19, 11, 1.5, 0, Math.PI*2);
             eCtx.fill();
+            
+            // Small sharp pupil (obsidian black)
             eCtx.fillStyle = '#000000';
             eCtx.beginPath();
-            eCtx.arc(13, 11, 0.75, 0, Math.PI*2);
-            eCtx.arc(19, 11, 0.75, 0, Math.PI*2);
+            eCtx.arc(13, 11, 0.6, 0, Math.PI*2);
+            eCtx.arc(19, 11, 0.6, 0, Math.PI*2);
             eCtx.fill();
             
-            // THE BIGOTE (Curly black mustache, Peoncito's signature!)
-            eCtx.fillStyle = '#000000';
+            // THE BIGOTE (Curly dark charcoal mustache, Peoncito's signature!)
+            eCtx.fillStyle = '#1e293b'; // Slate dark charcoal mustache
             eCtx.beginPath();
             // Left curl
             eCtx.moveTo(16, 15);
@@ -643,62 +863,512 @@ class MarioGame {
             
             scene.textures.addCanvas('castle', cCanvas);
 
+            // 3.5. Highly Refined Majestic White Queen Canvas (size 64x128)
+            const qCanvas = document.createElement('canvas');
+            qCanvas.width = 64;
+            qCanvas.height = 128;
+            const qCtx = qCanvas.getContext('2d');
+            
+            // Royal Purple & Indigo Cloak behind the Queen (adds depth and royal stature!)
+            const cloakGrad = qCtx.createLinearGradient(0, 32, 64, 116);
+            cloakGrad.addColorStop(0, '#8b5cf6'); // Royal violet
+            cloakGrad.addColorStop(0.5, '#6d28d9'); // Solid violet
+            cloakGrad.addColorStop(1, '#3b0764'); // Deep purple shadow
+            qCtx.fillStyle = cloakGrad;
+            qCtx.beginPath();
+            qCtx.moveTo(32, 34); // starts under the head
+            qCtx.bezierCurveTo(10, 30, 2, 70, 4, 116); // left flare
+            qCtx.lineTo(60, 116); // bottom edge
+            qCtx.bezierCurveTo(62, 70, 54, 30, 32, 34); // right flare
+            qCtx.closePath();
+            qCtx.fill();
+            
+            // Golden embroidery on cloak edges
+            qCtx.strokeStyle = '#fbbf24';
+            qCtx.lineWidth = 1.8;
+            qCtx.beginPath();
+            qCtx.moveTo(32, 34);
+            qCtx.bezierCurveTo(10, 30, 2, 70, 4, 116);
+            qCtx.moveTo(32, 34);
+            qCtx.bezierCurveTo(62, 70, 54, 30, 32, 34);
+            qCtx.stroke();
+            
+            // High Imperial Collar framing the head
+            qCtx.fillStyle = '#a78bfa'; // Lilac velvet collar
+            qCtx.beginPath();
+            qCtx.moveTo(22, 34);
+            qCtx.quadraticCurveTo(14, 14, 24, 12);
+            qCtx.lineTo(40, 12);
+            qCtx.quadraticCurveTo(50, 14, 42, 34);
+            qCtx.closePath();
+            qCtx.fill();
+            
+            // Gold trim on collar
+            qCtx.strokeStyle = '#fbbf24';
+            qCtx.lineWidth = 1;
+            qCtx.stroke();
+            
+            // Shaded silver base plate of the chess piece
+            const baseGrad = qCtx.createLinearGradient(8, 108, 56, 128);
+            baseGrad.addColorStop(0, '#ffffff');
+            baseGrad.addColorStop(0.5, '#cbd5e1'); // silver shading
+            baseGrad.addColorStop(1, '#64748b');
+            qCtx.fillStyle = baseGrad;
+            qCtx.fillRect(8, 116, 48, 12);
+            qCtx.fillStyle = '#fbbf24'; // rich gold trim on base
+            qCtx.fillRect(8, 112, 48, 4);
+            
+            // Torso and gown (glowing white crystal with royal gold borders)
+            const queenBodyGrad = qCtx.createLinearGradient(16, 42, 48, 112);
+            queenBodyGrad.addColorStop(0, '#ffffff'); // Glare top
+            queenBodyGrad.addColorStop(0.4, '#f8fafc'); // Soft white
+            queenBodyGrad.addColorStop(0.8, '#e2e8f0'); // Silver-grey folds
+            queenBodyGrad.addColorStop(1, '#cbd5e1'); // Bottom shadow
+            qCtx.fillStyle = queenBodyGrad;
+            qCtx.beginPath();
+            qCtx.moveTo(16, 112);
+            qCtx.quadraticCurveTo(18, 58, 24, 42); // left curve
+            qCtx.lineTo(40, 42);
+            qCtx.quadraticCurveTo(46, 58, 48, 112); // right curve
+            qCtx.closePath();
+            qCtx.fill();
+            
+            // Gold corset / bodice trim
+            qCtx.fillStyle = '#fbbf24';
+            qCtx.beginPath();
+            qCtx.moveTo(24, 42);
+            qCtx.lineTo(40, 42);
+            qCtx.lineTo(36, 52);
+            qCtx.lineTo(28, 52);
+            qCtx.closePath();
+            qCtx.fill();
+            
+            // Elegant red ruby jewel on center bodice
+            qCtx.fillStyle = '#ef4444';
+            qCtx.beginPath();
+            qCtx.arc(32, 47, 2, 0, Math.PI*2);
+            qCtx.fill();
+            
+            // Draw elegant vertical folds on the gown
+            qCtx.strokeStyle = 'rgba(100, 116, 139, 0.3)';
+            qCtx.lineWidth = 1.5;
+            for (let offset = -8; offset <= 8; offset += 4) {
+              qCtx.beginPath();
+              qCtx.moveTo(32 + offset * 0.4, 54);
+              qCtx.lineTo(32 + offset * 1.5, 112);
+              qCtx.stroke();
+            }
+            
+            // Gold lace hem at the bottom of gown
+            qCtx.fillStyle = '#fbbf24';
+            qCtx.fillRect(16, 110, 32, 2);
+            
+            // Golden hair flowing on the sides
+            qCtx.fillStyle = '#fbbf24'; // Rich gold hair
+            qCtx.beginPath();
+            qCtx.arc(23, 27, 4, 0, Math.PI*2); // Left hair lock
+            qCtx.arc(41, 27, 4, 0, Math.PI*2); // Right hair lock
+            qCtx.rect(19, 27, 4, 15);
+            qCtx.rect(41, 27, 4, 15);
+            qCtx.fill();
+            
+            // Queen's head (spherical skin gradient)
+            const queenHeadGrad = qCtx.createRadialGradient(30, 24, 1, 32, 26, 8);
+            queenHeadGrad.addColorStop(0, '#ffffff'); // Highlight
+            queenHeadGrad.addColorStop(0.6, '#fed7aa'); // Soft peach skin
+            queenHeadGrad.addColorStop(1, '#fdba74'); // Warm shadow
+            qCtx.fillStyle = queenHeadGrad;
+            qCtx.beginPath();
+            qCtx.arc(32, 26, 8, 0, Math.PI * 2);
+            qCtx.fill();
+            
+            // Gentle closed eyes (smiling face)
+            qCtx.strokeStyle = '#7c2d12'; // Warm dark outline
+            qCtx.lineWidth = 1;
+            qCtx.beginPath();
+            qCtx.arc(29, 25, 1.5, Math.PI, 0); // left closed eye
+            qCtx.moveTo(36.5, 25);
+            qCtx.arc(35, 25, 1.5, Math.PI, 0); // right closed eye
+            qCtx.stroke();
+            
+            // Sweet rosy cheeks
+            qCtx.fillStyle = 'rgba(244, 63, 94, 0.4)'; // translucent rose
+            qCtx.beginPath();
+            qCtx.arc(27, 28, 1.5, 0, Math.PI*2);
+            qCtx.arc(37, 28, 1.5, 0, Math.PI*2);
+            qCtx.fill();
+            
+            // Exquisite crown with 5 sharp golden points and rubies
+            qCtx.fillStyle = '#fbbf24';
+            qCtx.beginPath();
+            qCtx.moveTo(21, 21);
+            qCtx.lineTo(23, 8); // Point 1
+            qCtx.lineTo(27, 15);
+            qCtx.lineTo(32, 3);  // Tall center point
+            qCtx.lineTo(37, 15);
+            qCtx.lineTo(41, 8); // Point 3
+            qCtx.lineTo(43, 21);
+            qCtx.closePath();
+            qCtx.fill();
+            
+            // Red gems on crown points
+            qCtx.fillStyle = '#ef4444';
+            qCtx.beginPath();
+            qCtx.arc(23, 8, 1.5, 0, Math.PI*2);
+            qCtx.arc(32, 3, 2.0, 0, Math.PI*2);
+            qCtx.arc(41, 8, 1.5, 0, Math.PI*2);
+            qCtx.fill();
+            
+            // Crown top cross ornament
+            qCtx.fillStyle = '#fbbf24';
+            qCtx.fillRect(31, -2, 2, 4);
+            qCtx.fillRect(30, -1, 4, 2);
+            
+            scene.textures.addCanvas('white_queen', qCanvas);
+
+            // 3.6. Translucent Crystal Peoncito Goal Canvas (size 32x42)
+            const fCanvas = document.createElement('canvas');
+            fCanvas.width = 32;
+            fCanvas.height = 42;
+            const fCtx = fCanvas.getContext('2d');
+            
+            // Translucent crystal body (cyan-white turquoise gradient)
+            const fBodyGrad = fCtx.createLinearGradient(8, 20, 24, 38);
+            fBodyGrad.addColorStop(0, '#e0f2fe'); // crystal white-blue
+            fBodyGrad.addColorStop(0.5, '#38bdf8'); // Sky blue crystal
+            fBodyGrad.addColorStop(1, '#0284c7'); // Deep cyan crystal
+            fCtx.fillStyle = fBodyGrad;
+            
+            fCtx.beginPath();
+            fCtx.moveTo(12, 19);
+            fCtx.lineTo(20, 19);
+            fCtx.quadraticCurveTo(23, 29, 24, 38);
+            fCtx.lineTo(8, 38);
+            fCtx.quadraticCurveTo(9, 29, 12, 19);
+            fCtx.closePath();
+            fCtx.fill();
+            
+            // Crystal base plate
+            fCtx.fillStyle = '#0ea5e9';
+            fCtx.fillRect(6, 38, 20, 3);
+            fCtx.fillStyle = '#bae6fd';
+            fCtx.fillRect(6, 38, 20, 1);
+            
+            // Head ring
+            fCtx.fillStyle = '#0284c7';
+            fCtx.beginPath();
+            fCtx.ellipse(16, 19, 5, 1.5, 0, 0, Math.PI*2);
+            fCtx.fill();
+            
+            // Crystal sphere head (High definition radial shine)
+            const fHeadGrad = fCtx.createRadialGradient(14, 11, 1, 16, 12, 8);
+            fHeadGrad.addColorStop(0, '#ffffff'); // Glare spot
+            fHeadGrad.addColorStop(0.4, '#bae6fd'); // Light blue
+            fHeadGrad.addColorStop(0.8, '#0ea5e9'); // Cyan crystal
+            fHeadGrad.addColorStop(1, '#0369a1'); // Border dark cyan
+            fCtx.fillStyle = fHeadGrad;
+            fCtx.beginPath();
+            fCtx.arc(16, 12, 7.5, 0, Math.PI * 2);
+            fCtx.fill();
+            
+            // Big cute anime-style eyes
+            fCtx.fillStyle = '#ffffff';
+            fCtx.beginPath();
+            fCtx.arc(12.5, 11, 2.2, 0, Math.PI*2);
+            fCtx.arc(19.5, 11, 2.2, 0, Math.PI*2);
+            fCtx.fill();
+            
+            // Slate blue pupils
+            fCtx.fillStyle = '#0f172a';
+            fCtx.beginPath();
+            fCtx.arc(12.5, 11, 1.2, 0, Math.PI*2);
+            fCtx.arc(19.5, 11, 1.2, 0, Math.PI*2);
+            fCtx.fill();
+            
+            // Cute double lens reflections (gleams of friendship)
+            fCtx.fillStyle = '#ffffff';
+            fCtx.beginPath();
+            fCtx.arc(11.8, 10.2, 0.6, 0, Math.PI*2);
+            fCtx.arc(18.8, 10.2, 0.6, 0, Math.PI*2);
+            fCtx.arc(13.2, 11.8, 0.3, 0, Math.PI*2);
+            fCtx.arc(20.2, 11.8, 0.3, 0, Math.PI*2);
+            fCtx.fill();
+            
+            // Friendly wide smile
+            fCtx.strokeStyle = '#0f172a';
+            fCtx.lineWidth = 1;
+            fCtx.beginPath();
+            fCtx.arc(16, 14, 1.5, 0, Math.PI); // cute curved smile!
+            fCtx.stroke();
+            
+            // Rosy cheeks
+            fCtx.fillStyle = 'rgba(244, 63, 94, 0.5)';
+            fCtx.beginPath();
+            fCtx.arc(9.5, 13, 1, 0, Math.PI*2);
+            fCtx.arc(22.5, 13, 1, 0, Math.PI*2);
+            fCtx.fill();
+            
+            // Peoncito's big false mustache! (torcido/crooked for comic relief!)
+            fCtx.fillStyle = '#1e293b'; // slate dark mustache
+            fCtx.beginPath();
+            // Left lobe (slightly higher at angle!)
+            fCtx.moveTo(16, 16.5);
+            fCtx.bezierCurveTo(12, 15, 6, 16.5, 4, 19.5);
+            fCtx.bezierCurveTo(5.5, 22.5, 11, 20.5, 16, 18);
+            // Right lobe (slightly lower)
+            fCtx.moveTo(16, 16.5);
+            fCtx.bezierCurveTo(20, 16, 25, 18.5, 27, 21.5);
+            fCtx.bezierCurveTo(26, 24.5, 21, 21.5, 16, 18);
+            fCtx.closePath();
+            fCtx.fill();
+            
+            // Mustache center nose pin dot
+            fCtx.fillStyle = '#1e293b';
+            fCtx.beginPath();
+            fCtx.arc(16, 17.2, 1, 0, Math.PI*2);
+            fCtx.fill();
+            
+            scene.textures.addCanvas('peoncito_friendly', fCanvas);
+
+            const drawBishopFrame = (wingState) => {
+              const aCanvas = document.createElement('canvas');
+              aCanvas.width = 32;
+              aCanvas.height = 48;
+              const aCtx = aCanvas.getContext('2d');
+              
+              // Shaded dark purple Bishop body
+              const bGrad = aCtx.createLinearGradient(8, 20, 24, 44);
+              bGrad.addColorStop(0, '#a855f7'); // Purple
+              bGrad.addColorStop(0.5, '#7e22ce');
+              bGrad.addColorStop(1, '#4c1d95'); // Deep purple
+              aCtx.fillStyle = bGrad;
+              
+              aCtx.beginPath();
+              aCtx.moveTo(12, 16);
+              aCtx.lineTo(20, 16);
+              aCtx.quadraticCurveTo(24, 28, 24, 42);
+              aCtx.lineTo(8, 42);
+              aCtx.quadraticCurveTo(8, 28, 12, 16);
+              aCtx.closePath();
+              aCtx.fill();
+              
+              // Bishop mitre head
+              const bHeadGrad = aCtx.createRadialGradient(14, 10, 1, 16, 12, 6);
+              bHeadGrad.addColorStop(0, '#c084fc');
+              bHeadGrad.addColorStop(0.8, '#7e22ce');
+              bHeadGrad.addColorStop(1, '#4c1d95');
+              aCtx.fillStyle = bHeadGrad;
+              aCtx.beginPath();
+              aCtx.arc(16, 12, 6, 0, Math.PI*2);
+              aCtx.fill();
+              
+              // Mitre slice slot (the bishop cut!)
+              aCtx.strokeStyle = '#2e1065';
+              aCtx.lineWidth = 1.2;
+              aCtx.beginPath();
+              aCtx.moveTo(16, 6);
+              aCtx.lineTo(16, 18);
+              aCtx.moveTo(13, 9);
+              aCtx.lineTo(19, 15);
+              aCtx.stroke();
+              
+              // Little cross/ball on top of mitre
+              aCtx.fillStyle = '#fbbf24'; // Golden ball
+              aCtx.beginPath();
+              aCtx.arc(16, 5, 2, 0, Math.PI*2);
+              aCtx.fill();
+              
+              // Glowing energy wings! (flapping positions)
+              aCtx.fillStyle = 'rgba(192, 132, 252, 0.7)'; // Translucent glowing lilac
+              
+              aCtx.beginPath();
+              aCtx.moveTo(8, 24);
+              if (wingState === 'up') {
+                aCtx.quadraticCurveTo(1, 8, 0, 14); // Wing pointed UP
+                aCtx.quadraticCurveTo(3, 26, 8, 26);
+              } else {
+                aCtx.quadraticCurveTo(1, 28, 0, 32); // Wing pointed DOWN
+                aCtx.quadraticCurveTo(3, 26, 8, 26);
+              }
+              aCtx.closePath();
+              aCtx.fill();
+              
+              aCtx.beginPath();
+              aCtx.moveTo(24, 24);
+              if (wingState === 'up') {
+                aCtx.quadraticCurveTo(31, 8, 32, 14); // Wing pointed UP
+                aCtx.quadraticCurveTo(29, 26, 24, 26);
+              } else {
+                aCtx.quadraticCurveTo(31, 28, 32, 32); // Wing pointed DOWN
+                aCtx.quadraticCurveTo(29, 26, 24, 26);
+              }
+              aCtx.closePath();
+              aCtx.fill();
+              
+              return aCanvas;
+            };
+            
+            scene.textures.addCanvas('flying_bishop_0', drawBishopFrame('up'));
+            scene.textures.addCanvas('flying_bishop_1', drawBishopFrame('down'));
+            scene.textures.addCanvas('flying_bishop', drawBishopFrame('up'));
+
+            // 3.8. Portal Vórtice Canvas (size 160x160) - Spinning Vortex of 64 Squares!
+            const poCanvas = document.createElement('canvas');
+            poCanvas.width = 160;
+            poCanvas.height = 160;
+            const poCtx = poCanvas.getContext('2d');
+            
+            // Base radial black-blue indigo void
+            const poGrad = poCtx.createRadialGradient(80, 80, 5, 80, 80, 80);
+            poGrad.addColorStop(0, '#090514');
+            poGrad.addColorStop(0.6, '#1e1b4b');
+            poGrad.addColorStop(0.9, '#312e81');
+            poGrad.addColorStop(1, '#4338ca');
+            poCtx.fillStyle = poGrad;
+            poCtx.beginPath();
+            poCtx.arc(80, 80, 80, 0, Math.PI*2);
+            poCtx.fill();
+            
+            // Draw swirling grid / chessboard spiral pattern
+            poCtx.strokeStyle = 'rgba(34, 211, 238, 0.45)'; // glowing cyan
+            poCtx.lineWidth = 1.5;
+            for (let i = 0; i < 24; i++) {
+              const angle = (i * 15) * Math.PI / 180;
+              poCtx.beginPath();
+              poCtx.moveTo(80, 80);
+              // Spiral path outward
+              for (let r = 0; r <= 80; r += 4) {
+                const spiralAngle = angle + (r * 0.025);
+                poCtx.lineTo(80 + Math.cos(spiralAngle) * r, 80 + Math.sin(spiralAngle) * r);
+              }
+              poCtx.stroke();
+            }
+            
+            // Draw swirling chess square indicators
+            poCtx.fillStyle = 'rgba(250, 204, 21, 0.15)'; // faint gold
+            for (let i = 0; i < 8; i++) {
+              const angle = (i * 45) * Math.PI / 180;
+              poCtx.beginPath();
+              poCtx.moveTo(80, 80);
+              const spiralAngle1 = angle + (30 * 0.025);
+              const spiralAngle2 = angle + 15 * Math.PI/180 + (50 * 0.025);
+              poCtx.lineTo(80 + Math.cos(spiralAngle1) * 30, 80 + Math.sin(spiralAngle1) * 30);
+              poCtx.lineTo(80 + Math.cos(spiralAngle2) * 50, 80 + Math.sin(spiralAngle2) * 50);
+              poCtx.arc(80, 80, 50, spiralAngle2, spiralAngle1, true);
+              poCtx.closePath();
+              poCtx.fill();
+            }
+            
+            // Golden outer ring with elegant tick marks (like a magic clockwork chess board)
+            poCtx.strokeStyle = '#fbbf24';
+            poCtx.lineWidth = 3.5;
+            poCtx.beginPath();
+            poCtx.arc(80, 80, 77, 0, Math.PI*2);
+            poCtx.stroke();
+            
+            poCtx.strokeStyle = '#22d3ee'; // cyan inner highlight ring
+            poCtx.lineWidth = 1.2;
+            poCtx.beginPath();
+            poCtx.arc(80, 80, 73, 0, Math.PI*2);
+            poCtx.stroke();
+            
+            scene.textures.addCanvas('portal_texture', poCanvas);
+
             // 4. Background Sky Canvas (size 800x450)
             const bgCanvas = document.createElement('canvas');
             bgCanvas.width = 800;
             bgCanvas.height = 450;
             const bgCtx = bgCanvas.getContext('2d');
             
-            // Cosmic gradient
+            // Cosmic twilight gradient
             const skyGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
-            skyGrad.addColorStop(0, '#090514'); // Deep cosmic void
-            skyGrad.addColorStop(0.4, '#170b3b'); // Magical twilight purple
-            skyGrad.addColorStop(0.8, '#4c1d95'); // Dream violet
-            skyGrad.addColorStop(1, '#6d28d9'); // Soft lilac horizon
+            skyGrad.addColorStop(0, '#090514'); // Deep void
+            skyGrad.addColorStop(0.4, '#170b3b'); // Twilight purple
+            skyGrad.addColorStop(0.8, '#4c1d95'); // Lilac horizon
+            skyGrad.addColorStop(1, '#2e1065'); // Deep magical horizon
             bgCtx.fillStyle = skyGrad;
             bgCtx.fillRect(0, 0, 800, 450);
             
-            // Twinkling stars
-            bgCtx.fillStyle = '#ffffff';
-            for (let i = 0; i < 60; i++) {
-              const x = Math.random() * 800;
-              const y = Math.random() * 320;
-              const size = Math.random() * 1.5 + 0.5;
-              bgCtx.beginPath();
-              bgCtx.arc(x, y, size, 0, Math.PI * 2);
-              bgCtx.fill();
+            // Tablero Invertido de Estrellas (aligned in chess board grid pattern!)
+            bgCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            for (let row = 0; row < 12; row++) {
+              for (let col = 0; col < 20; col++) {
+                const x = col * 40 + 20;
+                const y = row * 22 + 15;
+                if ((row + col) % 2 === 0) {
+                  bgCtx.beginPath();
+                  bgCtx.arc(x, y, 0.8, 0, Math.PI * 2);
+                  bgCtx.fill();
+                }
+              }
             }
             
-            // Glowing chess grid in the sky
-            bgCtx.strokeStyle = 'rgba(139, 92, 246, 0.15)';
+            // Rebel star at h12 (column 12, row 3) with gorgeous diagonal sparkles
+            const rebelX = 12 * 40 + 20;
+            const rebelY = 3 * 22 + 15;
+            bgCtx.fillStyle = '#fbbf24'; // bright glowing gold
+            bgCtx.beginPath();
+            bgCtx.arc(rebelX, rebelY, 2.5, 0, Math.PI * 2);
+            bgCtx.fill();
+            bgCtx.strokeStyle = 'rgba(251, 191, 36, 0.55)';
+            bgCtx.lineWidth = 0.8;
+            bgCtx.beginPath();
+            bgCtx.moveTo(rebelX - 7, rebelY - 7);
+            bgCtx.lineTo(rebelX + 7, rebelY + 7);
+            bgCtx.moveTo(rebelX + 7, rebelY - 7);
+            bgCtx.lineTo(rebelX - 7, rebelY + 7);
+            bgCtx.stroke();
+            
+            // Flowing auroras of magical dream energy
+            bgCtx.strokeStyle = 'rgba(34, 211, 238, 0.08)'; // cyan aurora
+            bgCtx.lineWidth = 15;
+            bgCtx.beginPath();
+            bgCtx.moveTo(0, 150);
+            bgCtx.bezierCurveTo(200, 50, 400, 250, 800, 100);
+            bgCtx.stroke();
+            bgCtx.strokeStyle = 'rgba(167, 139, 250, 0.06)'; // violet aurora
+            bgCtx.lineWidth = 25;
+            bgCtx.beginPath();
+            bgCtx.moveTo(0, 100);
+            bgCtx.bezierCurveTo(300, 220, 500, 20, 800, 180);
+            bgCtx.stroke();
+
+            // 3D Perspective Chessboard Grid stretching to the horizon Y=270!
+            bgCtx.strokeStyle = 'rgba(139, 92, 246, 0.16)';
             bgCtx.lineWidth = 1;
-            for (let x = 0; x < 800; x += 100) {
+            const horizonY = 270;
+            const vanishingX = 400;
+            
+            // Draw lines fanning out from vanishing point to the bottom of the screen
+            for (let angle = -8; angle <= 8; angle++) {
               bgCtx.beginPath();
-              bgCtx.moveTo(x, 0);
-              bgCtx.lineTo(x + 50, 450);
+              bgCtx.moveTo(vanishingX, horizonY);
+              const bottomX = vanishingX + angle * 120;
+              bgCtx.lineTo(bottomX, 450);
               bgCtx.stroke();
             }
-            for (let y = 0; y < 450; y += 40) {
+            
+            // Draw horizontal lines that get closer as they approach the horizon
+            for (let i = 0; i < 20; i++) {
+              const y = horizonY + Math.pow(i / 20, 2.5) * (450 - horizonY);
               bgCtx.beginPath();
               bgCtx.moveTo(0, y);
               bgCtx.lineTo(800, y);
               bgCtx.stroke();
             }
             
-            // Clouds
-            bgCtx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-            const drawCloud = (cx, cy, r) => {
-              bgCtx.beginPath();
-              bgCtx.arc(cx, cy, r, 0, Math.PI * 2);
-              bgCtx.arc(cx - r*0.7, cy + r*0.2, r*0.8, 0, Math.PI * 2);
-              bgCtx.arc(cx + r*0.7, cy + r*0.2, r*0.8, 0, Math.PI * 2);
-              bgCtx.closePath();
-              bgCtx.fill();
+            // Nubes Cuadradas (Square Clouds from Cuento 1)
+            bgCtx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            const drawSquareCloud = (cx, cy, cw, ch) => {
+              bgCtx.fillRect(cx, cy, cw, ch);
+              bgCtx.fillRect(cx + cw * 0.2, cy - ch * 0.3, cw * 0.6, ch * 0.3);
+              bgCtx.fillRect(cx - cw * 0.15, cy + ch * 0.2, cw * 0.3, ch * 0.6);
+              bgCtx.fillRect(cx + cw * 0.85, cy + ch * 0.2, cw * 0.3, ch * 0.6);
             };
-            drawCloud(150, 100, 30);
-            drawCloud(450, 160, 40);
-            drawCloud(680, 80, 25);
-            drawCloud(300, 60, 20);
+            drawSquareCloud(100, 80, 80, 16);
+            drawSquareCloud(400, 140, 100, 20);
+            drawSquareCloud(650, 60, 70, 14);
+            drawSquareCloud(260, 50, 60, 12);
             
             scene.textures.addCanvas('background', bgCanvas);
 
@@ -708,32 +1378,138 @@ class MarioGame {
             midCanvas.height = 450;
             const midCtx = midCanvas.getContext('2d');
             
-            // Draw floating violet silhouette hills
-            midCtx.fillStyle = 'rgba(76, 29, 149, 0.3)'; // Semi-transparent dark violet hills
+            // Island 1 (Left floating island - Checkered chess pattern + Torreta Rook Shop!)
+            midCtx.fillStyle = 'rgba(76, 29, 149, 0.4)';
             midCtx.beginPath();
-            midCtx.moveTo(0, 450);
-            midCtx.lineTo(0, 320);
-            midCtx.quadraticCurveTo(200, 280, 400, 350);
-            midCtx.quadraticCurveTo(600, 420, 800, 310);
-            midCtx.lineTo(800, 450);
+            midCtx.moveTo(80, 320);
+            midCtx.lineTo(240, 320);
+            midCtx.lineTo(220, 340);
+            midCtx.lineTo(60, 340);
             midCtx.closePath();
             midCtx.fill();
             
-            // Draw a deeper, darker violet hill layer
-            midCtx.fillStyle = 'rgba(58, 28, 112, 0.2)';
+            // Checkered squares on top of Island 1
+            midCtx.fillStyle = 'rgba(139, 92, 246, 0.3)';
+            for (let x = 80; x < 240; x += 32) {
+              midCtx.fillRect(x, 320, 16, 20);
+            }
+            
+            // Underside of island (rocky base)
+            midCtx.fillStyle = 'rgba(58, 20, 112, 0.45)';
             midCtx.beginPath();
-            midCtx.moveTo(0, 450);
-            midCtx.lineTo(0, 260);
-            midCtx.quadraticCurveTo(250, 340, 500, 270);
-            midCtx.quadraticCurveTo(650, 240, 800, 290);
-            midCtx.lineTo(800, 450);
+            midCtx.moveTo(60, 340);
+            midCtx.lineTo(220, 340);
+            midCtx.lineTo(140, 390);
             midCtx.closePath();
             midCtx.fill();
             
-            // Draw floating crystal rook silhouettes in background
-            midCtx.fillStyle = 'rgba(109, 40, 217, 0.25)';
-            midCtx.fillRect(180, 230, 20, 60);
-            midCtx.fillRect(520, 200, 16, 80);
+            // Draw Torreta Rook Shop silhouette on Island 1!
+            midCtx.fillStyle = 'rgba(109, 40, 217, 0.45)';
+            midCtx.fillRect(135, 260, 30, 60); // main rook body
+            midCtx.fillRect(130, 250, 40, 10);  // crenellations support
+            midCtx.clearRect(140, 250, 4, 6);   // crenellation cut 1
+            midCtx.clearRect(156, 250, 4, 6);   // crenellation cut 2
+            
+            // Shop canopy
+            midCtx.fillStyle = 'rgba(167, 139, 250, 0.5)';
+            midCtx.beginPath();
+            midCtx.moveTo(125, 278);
+            midCtx.lineTo(150, 273);
+            midCtx.lineTo(175, 278);
+            midCtx.lineTo(165, 285);
+            midCtx.lineTo(135, 285);
+            midCtx.closePath();
+            midCtx.fill();
+            
+            // Empanada sign
+            midCtx.fillStyle = 'rgba(251, 191, 36, 0.5)';
+            midCtx.beginPath();
+            midCtx.arc(120, 292, 4, 0, Math.PI, true);
+            midCtx.closePath();
+            midCtx.fill();
+
+            // Island 2 (Right floating island - Checkered chess pattern + Giant Chess Knight!)
+            midCtx.fillStyle = 'rgba(76, 29, 149, 0.4)';
+            midCtx.beginPath();
+            midCtx.moveTo(480, 280);
+            midCtx.lineTo(680, 280);
+            midCtx.lineTo(650, 300);
+            midCtx.lineTo(450, 300);
+            midCtx.closePath();
+            midCtx.fill();
+            
+            // Checkered squares on top of Island 2
+            midCtx.fillStyle = 'rgba(139, 92, 246, 0.3)';
+            for (let x = 480; x < 680; x += 32) {
+              midCtx.fillRect(x, 280, 16, 20);
+            }
+            
+            // Underside of island 2
+            midCtx.fillStyle = 'rgba(58, 20, 112, 0.45)';
+            midCtx.beginPath();
+            midCtx.moveTo(450, 300);
+            midCtx.lineTo(650, 300);
+            midCtx.lineTo(550, 350);
+            midCtx.closePath();
+            midCtx.fill();
+
+            // Draw giant Chess Knight silhouette standing on Island 2!
+            midCtx.fillStyle = 'rgba(109, 40, 217, 0.45)';
+            midCtx.beginPath();
+            midCtx.moveTo(550, 280);
+            midCtx.quadraticCurveTo(545, 240, 560, 220); // neck back
+            midCtx.quadraticCurveTo(550, 195, 555, 185); // ear back
+            midCtx.lineTo(562, 175); // ear top
+            midCtx.lineTo(566, 195);
+            midCtx.quadraticCurveTo(582, 198, 586, 210); // snout
+            midCtx.quadraticCurveTo(595, 220, 586, 230); // mouth
+            midCtx.lineTo(574, 230); // jaw
+            midCtx.quadraticCurveTo(566, 240, 566, 260); // chest
+            midCtx.lineTo(582, 280);
+            midCtx.closePath();
+            midCtx.fill();
+            
+            // Island 3 (Center small floating island - Peoncito and giant mustache silhouette!)
+            midCtx.fillStyle = 'rgba(76, 29, 149, 0.4)';
+            midCtx.beginPath();
+            midCtx.moveTo(300, 200);
+            midCtx.lineTo(400, 200);
+            midCtx.lineTo(385, 212);
+            midCtx.lineTo(285, 212);
+            midCtx.closePath();
+            midCtx.fill();
+            
+            // Underside of Island 3
+            midCtx.fillStyle = 'rgba(58, 20, 112, 0.45)';
+            midCtx.beginPath();
+            midCtx.moveTo(285, 212);
+            midCtx.lineTo(385, 212);
+            midCtx.lineTo(335, 240);
+            midCtx.closePath();
+            midCtx.fill();
+            
+            // Peoncito body silhouette
+            midCtx.fillStyle = 'rgba(109, 40, 217, 0.45)';
+            midCtx.beginPath();
+            midCtx.arc(335, 172, 7, 0, Math.PI * 2); // Head
+            midCtx.fill();
+            midCtx.beginPath();
+            midCtx.moveTo(327, 200);
+            midCtx.quadraticCurveTo(329, 182, 335, 177);
+            midCtx.quadraticCurveTo(341, 182, 343, 200);
+            midCtx.closePath();
+            midCtx.fill();
+            
+            // Giant comical fake mustache silhouette floating above Peoncito!
+            midCtx.fillStyle = 'rgba(167, 139, 250, 0.45)';
+            midCtx.beginPath();
+            midCtx.moveTo(335, 162);
+            midCtx.quadraticCurveTo(315, 152, 310, 167);
+            midCtx.quadraticCurveTo(320, 177, 335, 170);
+            midCtx.quadraticCurveTo(350, 177, 360, 167);
+            midCtx.quadraticCurveTo(355, 152, 335, 162);
+            midCtx.closePath();
+            midCtx.fill();
             
             scene.textures.addCanvas('bg_middle', midCanvas);
 
@@ -816,25 +1592,46 @@ class MarioGame {
           platformsData.forEach(p => {
             const block = scene.add.graphics();
             
-            // Draw textured, professional chess-themed green platform
-            // Forest grass top
-            block.fillStyle(0x38bdf8, 0.45); // light magical cyan glow
-            block.fillRect(p.x, p.y, p.w, p.h);
-            
-            block.fillStyle(0x1e3a8a, 0.85); // deep magical royal blue dirt
-            block.fillRect(p.x, p.y + 6, p.w, p.h - 6);
-            
-            block.fillStyle(0x60a5fa, 0.95); // glowing cyan neon grass edge
-            block.fillRect(p.x, p.y, p.w, 6);
+            if (p.x === 1850) {
+              // Draw a highly detailed checkered white-and-gold marble ceremonial runway!
+              block.fillStyle(0xf8fafc, 0.95); // white-grey marble base
+              block.fillRect(p.x, p.y, p.w, p.h);
+              
+              // Gold top border line
+              block.fillStyle(0xfacc15, 1);
+              block.fillRect(p.x, p.y, p.w, 4);
+              
+              // Draw 3D gold checkered plates on the marble face
+              block.fillStyle(0xfef08a, 0.4); // soft golden checkers
+              for (let x = p.x; x < p.x + p.w; x += 32) {
+                block.fillRect(x, p.y + 4, 16, 16);
+                block.fillRect(x + 16, p.y + 20, 16, 16);
+              }
+              
+              // Inner glowing gold line
+              block.lineStyle(2, 0xfacc15, 0.85);
+              block.strokeRect(p.x, p.y, p.w, p.h);
+            } else {
+              // Draw textured, professional chess-themed green platform
+              // Forest grass top
+              block.fillStyle(0x38bdf8, 0.45); // light magical cyan glow
+              block.fillRect(p.x, p.y, p.w, p.h);
+              
+              block.fillStyle(0x1e3a8a, 0.85); // deep magical royal blue dirt
+              block.fillRect(p.x, p.y + 6, p.w, p.h - 6);
+              
+              block.fillStyle(0x60a5fa, 0.95); // glowing cyan neon grass edge
+              block.fillRect(p.x, p.y, p.w, 6);
 
-            // Draw checkered grid details directly on platforms!
-            block.fillStyle(0x1d4ed8, 0.25);
-            for (let x = p.x; x < p.x + p.w; x += 16) {
-              block.fillRect(x, p.y + 6, 8, 6);
+              // Draw checkered grid details directly on platforms!
+              block.fillStyle(0x1d4ed8, 0.25);
+              for (let x = p.x; x < p.x + p.w; x += 16) {
+                block.fillRect(x, p.y + 6, 8, 6);
+              }
+
+              block.lineStyle(2, 0x1d4ed8, 1);
+              block.strokeRect(p.x, p.y, p.w, p.h);
             }
-
-            block.lineStyle(2, 0x1d4ed8, 1);
-            block.strokeRect(p.x, p.y, p.w, p.h);
 
             // Generate physics body
             scene.physics.add.existing(block, true);
@@ -887,6 +1684,15 @@ class MarioGame {
               frames: [{ key: 'player-jump' }],
               frameRate: 1
             });
+            scene.anims.create({
+              key: 'bishop-fly',
+              frames: [
+                { key: 'flying_bishop_0' },
+                { key: 'flying_bishop_1' }
+              ],
+              frameRate: 8,
+              repeat: -1
+            });
           }
           
           // Start with idle animation
@@ -905,7 +1711,7 @@ class MarioGame {
           });
           scene.particles.startFollow(scene.player, -10, 16);
 
-          scene.coins = scene.physics.add.group();
+          scene.coins = scene.physics.add.group({ allowGravity: false, immovable: true });
           coinsData.forEach(c => {
             const coin = scene.add.graphics({x: c.x, y: c.y});
             // Draw a beautiful rotating/pulsing gold star coin
@@ -921,9 +1727,10 @@ class MarioGame {
             coin.lineStyle(1.2, 0xe76f51, 1);
             coin.stroke();
 
-            scene.physics.add.existing(coin, false);
+            scene.coins.add(coin); // Add first to the grav-safe group
             coin.body.setCircle(10, -10, -10);
             coin.body.allowGravity = false;
+            coin.body.setImmovable(true);
             
             // Add a floating animation loop to the coins!
             scene.tweens.add({
@@ -934,8 +1741,6 @@ class MarioGame {
               repeat: -1,
               ease: 'Sine.easeInOut'
             });
-
-            scene.coins.add(coin);
           });
 
           // 6. Chess Peoncito Enemies Group
@@ -955,6 +1760,52 @@ class MarioGame {
             scene.enemies.add(enemy);
           });
 
+          // 6.4. Airborne Flying Bishop Enemies (complicate jump paths with dynamic patrols!)
+          scene.airEnemies = scene.physics.add.group({ allowGravity: false });
+          
+          const airEnemiesData = [
+            { x: 500, y: 140, pattern: 'horizontal', minX: 400, maxX: 640, speed: 75 },
+            { x: 910, y: 220, pattern: 'diagonal', minX: 830, maxX: 980, minY: 160, maxY: 260, speed: 70, speedY: 55 },
+            { x: 1790, y: 200, pattern: 'sinusoidal', minX: 1700, maxX: 1880, baseY: 190, ampY: 45, speed: 80 }
+          ];
+          
+          airEnemiesData.forEach(ae => {
+            const airEnemy = scene.physics.add.sprite(ae.x, ae.y, 'flying_bishop_0');
+            airEnemy.setDisplaySize(28, 42);
+            airEnemy.setSize(22, 34);
+            airEnemy.setOffset(3, 4);
+            scene.airEnemies.add(airEnemy);
+            airEnemy.body.allowGravity = false;
+            airEnemy.body.setImmovable(true);
+            
+            // Set pattern-specific physics properties
+            airEnemy.pattern = ae.pattern;
+            airEnemy.speed = ae.speed;
+            
+            if (ae.pattern === 'horizontal') {
+              airEnemy.minX = ae.minX;
+              airEnemy.maxX = ae.maxX;
+              airEnemy.body.setVelocityX(-ae.speed);
+            } else if (ae.pattern === 'diagonal') {
+              airEnemy.minX = ae.minX;
+              airEnemy.maxX = ae.maxX;
+              airEnemy.minY = ae.minY;
+              airEnemy.maxY = ae.maxY;
+              airEnemy.speedY = ae.speedY;
+              airEnemy.body.setVelocity(-ae.speed, -ae.speedY);
+            } else if (ae.pattern === 'sinusoidal') {
+              airEnemy.minX = ae.minX;
+              airEnemy.maxX = ae.maxX;
+              airEnemy.baseY = ae.baseY;
+              airEnemy.ampY = ae.ampY;
+              airEnemy.direction = -1; // -1 = left, 1 = right
+              airEnemy.body.setVelocityX(-ae.speed);
+            }
+            
+            // Play wing flapping animation!
+            airEnemy.play('bishop-fly');
+          });
+
           // 6.5 Secret Gold Crowns group ( Celeste / Hollow Knight style collectibles )
           const crownsData = [
             { x: 890, y: 180 },
@@ -962,92 +1813,176 @@ class MarioGame {
             { x: 1790, y: 180 }
           ];
 
-          scene.crowns = scene.physics.add.group();
+          scene.crowns = scene.physics.add.group({ allowGravity: false, immovable: true });
           crownsData.forEach(c => {
             const crown = scene.add.sprite(c.x, c.y, 'crown_gold');
             crown.setDisplaySize(24, 24);
-            scene.physics.add.existing(crown, false);
-            crown.body.allowGravity = false;
-            
-            // Floating bounce tween
-            scene.tweens.add({
-              targets: crown,
-              y: c.y - 8,
-              duration: 1000 + Math.random()*300,
-              yoyo: true,
-              repeat: -1,
-              ease: 'Sine.easeInOut'
-            });
-            
             scene.crowns.add(crown);
+            crown.body.allowGravity = false;
+            crown.body.setImmovable(true);
+            // Crowns stay static and solemn as requested! No initial float animation.
           });
 
-          // 7. Goal Mástil and Castle Boss
-          scene.flagpole = scene.add.graphics();
-          scene.flagpole.fillStyle(0xdcdcdc, 1);
-          scene.flagpole.fillRect(2150, 100, 8, 310);
-          scene.flagpole.fillStyle(0xfacc15, 1);
-          scene.flagpole.beginPath();
-          scene.flagpole.arc(2154, 100, 8, 0, Math.PI * 2);
-          scene.flagpole.fill();
+          // 7. Chess-Themed Goal: The Magical Portal, Majestic White Queen and friendly Peoncito!
+          // 7.1. Portal of the 64 Casillas (Magical spinning gateway in the background)
+          scene.portal = scene.add.sprite(2150, 245, 'portal_texture');
+          scene.portal.setDisplaySize(175, 175);
+          scene.portal.setDepth(1);
           
-          // Magical Gold Banner Flag
-          scene.flag = scene.add.graphics();
-          scene.flag.fillStyle(0xfacc15, 1);
-          scene.flag.beginPath();
-          scene.flag.moveTo(2158, 120);
-          scene.flag.lineTo(2208, 135);
-          scene.flag.lineTo(2158, 150);
-          scene.flag.closePath();
-          scene.flag.fill();
+          // Outer magical portal glow
+          scene.portalGlow = scene.add.graphics();
+          scene.portalGlow.fillStyle(0x7e22ce, 0.15); // purple backdrop glow
+          scene.portalGlow.beginPath();
+          scene.portalGlow.arc(2150, 245, 100, 0, Math.PI * 2);
+          scene.portalGlow.fill();
+          scene.portalGlow.setDepth(0);
 
-          scene.physics.add.existing(scene.flagpole, true);
-          scene.flagpole.body.setSize(16, 310);
-          scene.flagpole.body.setOffset(2146, 100);
-
-          scene.castle = scene.physics.add.staticSprite(2280, 310, 'castle');
-          scene.castle.setDisplaySize(120, 160);
+          // 7.2. Highly Refined Majestic White Queen Physics Sprite!
+          scene.whiteQueen = scene.physics.add.staticSprite(2150, 245, 'white_queen');
+          scene.whiteQueen.setDisplaySize(60, 120);
+          scene.whiteQueen.body.setSize(44, 120);
+          scene.whiteQueen.body.setOffset(8, 0);
+          scene.whiteQueen.setDepth(2);
+          
+          // Add a soft golden glow behind the White Queen!
+          scene.queenGlow = scene.add.graphics();
+          scene.queenGlow.fillStyle(0xfacc15, 0.15); // Warm gold glow
+          scene.queenGlow.beginPath();
+          scene.queenGlow.arc(2150, 245, 80, 0, Math.PI * 2);
+          scene.queenGlow.fill();
+          scene.queenGlow.setDepth(1);
+          
+          // 7.3. Friendly Translucent Crystal Peoncito Goal Sprite!
+          scene.peoncitoGoal = scene.add.sprite(2070, 290, 'peoncito_friendly');
+          scene.peoncitoGoal.setDisplaySize(32, 42);
+          scene.peoncitoGoal.setDepth(2);
+          
+          // Floating and breathing animations for Peoncito to make him tierno and alive!
+          scene.tweens.add({
+            targets: scene.peoncitoGoal,
+            y: 280, // gentle float up
+            angle: 5, // gentle wobble tilt
+            duration: 1600,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+          });
+          
+          scene.tweens.add({
+            targets: scene.peoncitoGoal,
+            scaleX: 1.06,
+            scaleY: 0.94,
+            duration: 1000,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+          });
 
           // 8. Colliders and Overlaps configuration
           scene.physics.add.collider(scene.player, scene.platforms);
           scene.physics.add.collider(scene.enemies, scene.platforms);
           
-          // Collect coin overlap
+          // Collect coin overlap (Star shoots off diagonal like a shooting star!)
           scene.physics.add.overlap(scene.player, scene.coins, (player, coin) => {
-            coin.destroy();
+            if (coin.isCollected) return;
+            coin.isCollected = true;
+            coin.body.enable = false; // Disable collision immediately!
+            
             self.coins++;
             self.score += 100;
             self.synthesizeSound('coin');
             
             document.getElementById('hud-coins').textContent = `🪙 x${self.coins.toString().padStart(2, '0')}`;
             document.getElementById('hud-score').textContent = self.score.toString().padStart(5, '0');
+            
+            // Stop any existing floating tweens
+            scene.tweens.killTweensOf(coin);
+            
+            // Shoot off like a wild shooting star!
+            const flyDirX = Math.random() < 0.5 ? -250 : 250;
+            const flyDirY = -500 - Math.random() * 100;
+            
+            // Trailing magical sparkles emitter behind the flying star
+            const starTrail = scene.add.particles(0, 0, 'sparkle', {
+              speed: 15,
+              scale: { start: 0.6, end: 0 },
+              alpha: { start: 0.75, end: 0 },
+              lifespan: 250,
+              frequency: 25,
+              blendMode: 'ADD'
+            });
+            starTrail.startFollow(coin);
+            
+            // Parabolic fly-out trajectory using tweens
+            scene.tweens.add({
+              targets: coin,
+              x: coin.x + flyDirX * 0.7,
+              ease: 'Linear',
+              duration: 650
+            });
+            scene.tweens.add({
+              targets: coin,
+              y: coin.y + flyDirY * 0.7,
+              ease: 'Quad.easeOut',
+              duration: 325,
+              yoyo: true,
+              easeYoyo: 'Quad.easeIn'
+            });
+            scene.tweens.add({
+              targets: coin,
+              angle: 1080, // spin crazily!
+              scale: 0.1,  // shrink!
+              alpha: 0,    // fade out!
+              duration: 650,
+              onComplete: () => {
+                starTrail.destroy();
+                coin.destroy();
+              }
+            });
           });
 
-          // Collect secret crown overlap
+          // Collect secret crown overlap (Fades out, spins, expands + 16-sparkle radial explosion)
           scene.physics.add.overlap(scene.player, scene.crowns, (player, crown) => {
-            crown.destroy();
+            if (crown.isCollected) return;
+            crown.isCollected = true;
+            crown.body.enable = false; // Disable collision immediately!
+            
             self.score += 1000;
             self.synthesizeSound('victory'); // Fanfare for secret!
             
-            // Create a massive burst of gold sparkles!
-            for (let i = 0; i < 12; i++) {
-              const p = scene.add.circle(crown.x, crown.y, Math.random() * 4 + 2, 0xfacc15, 0.9);
+            document.getElementById('hud-score').textContent = self.score.toString().padStart(5, '0');
+            
+            // 1. Massive radial stardust blast (16 golden particles!)
+            for (let i = 0; i < 16; i++) {
+              const angle = (i * 360 / 16) * Math.PI / 180;
+              const speed = 120 + Math.random() * 80;
+              const p = scene.add.circle(crown.x, crown.y, Math.random() * 3 + 2.5, 0xfacc15, 0.95);
               scene.physics.add.existing(p, false);
               p.body.allowGravity = false;
-              p.body.setVelocity(
-                (Math.random() * 120 - 60),
-                (Math.random() * 120 - 60)
-              );
+              p.body.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed);
+              
               scene.tweens.add({
                 targets: p,
                 alpha: 0,
                 scale: 0.1,
-                duration: 600 + Math.random()*200,
+                duration: 800 + Math.random() * 300,
                 onComplete: () => p.destroy()
               });
             }
             
-            document.getElementById('hud-score').textContent = self.score.toString().padStart(5, '0');
+            // 2. Crown expansion and explosion animation!
+            scene.tweens.add({
+              targets: crown,
+              scaleX: 3.5,
+              scaleY: 3.5,
+              alpha: 0,
+              angle: 360,
+              duration: 500,
+              ease: 'Back.easeOut',
+              onComplete: () => {
+                crown.destroy();
+              }
+            });
           });
 
           // Enemy collision overlap
@@ -1065,6 +2000,51 @@ class MarioGame {
               document.getElementById('hud-score').textContent = self.score.toString().padStart(5, '0');
               
               player.body.setVelocityY(-350); // bounce up high!
+
+              // Spawn 5 star coins that burst out when stomped! Excellent gameplay incentive!
+              for (let i = 0; i < 5; i++) {
+                const coin = scene.add.graphics({x: enemy.x, y: enemy.y - 12});
+                coin.fillStyle(0xfacc15, 1);
+                coin.beginPath();
+                for (let s = 0; s < 5; s++) {
+                  coin.lineTo(Math.cos((18 + s * 72) * Math.PI / 180) * 8, Math.sin((18 + s * 72) * Math.PI / 180) * 8);
+                  coin.lineTo(Math.cos((54 + s * 72) * Math.PI / 180) * 3, Math.sin((54 + s * 72) * Math.PI / 180) * 3);
+                }
+                coin.closePath();
+                coin.fill();
+                coin.lineStyle(1.2, 0xe76f51, 1);
+                coin.stroke();
+                
+                scene.coins.add(coin);
+                coin.body.setCircle(10, -10, -10);
+                coin.body.allowGravity = false;
+                coin.body.setImmovable(true);
+                
+                // Spread the 5 coins out in a gorgeous fountain arc!
+                // Angles from -135 deg to -45 deg spread symmetrically
+                const arcAngle = (-135 + i * 22.5) * Math.PI / 180;
+                const burstSpeed = 180 + Math.random() * 60;
+                const vx = Math.cos(arcAngle) * burstSpeed;
+                const vy = Math.sin(arcAngle) * burstSpeed - 120; // strong upward launch!
+                
+                scene.tweens.add({
+                  targets: coin,
+                  x: coin.x + vx * 0.65,
+                  y: coin.y + vy * 0.65,
+                  duration: 600,
+                  ease: 'Quad.easeOut',
+                  onComplete: () => {
+                    scene.tweens.add({
+                      targets: coin,
+                      y: coin.y - 6,
+                      duration: 1000 + Math.random() * 400,
+                      yoyo: true,
+                      repeat: -1,
+                      ease: 'Sine.easeInOut'
+                    });
+                  }
+                });
+              }
 
               // Stomp squash animation
               scene.tweens.add({
@@ -1092,41 +2072,88 @@ class MarioGame {
             }
           });
 
-          // Goal flagpole overlap (Level completed)
-          scene.physics.add.overlap(scene.player, scene.flagpole, () => {
-            if (self.player.isSliding) return;
+          // Flying Bishop airborne collision overlap (deals damage to Martina)
+          scene.physics.add.overlap(scene.player, scene.airEnemies, (player, ae) => {
+            if (player.invincibility === 0) {
+              self.lives--;
+              player.invincibility = 60; // 1 second
+              player.body.setVelocityX(player.x < ae.x ? -220 : 220);
+              player.body.setVelocityY(-150);
+              self.synthesizeSound('damage');
+              
+              document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
+              
+              if (self.lives <= 0) {
+                self.gameOver();
+              }
+            }
+          });
+
+          // Goal White Queen overlap (Ascension to Wake Up from the dream!)
+          scene.physics.add.overlap(scene.player, scene.whiteQueen, () => {
+            if (self.player.isAscending) return;
+            self.player.isAscending = true;
             self.completeLevel();
             
-            self.player.isSliding = true;
+            // Disable player control, trails and physics gravity
             scene.particles.stop();
             scene.player.body.setVelocityX(0);
-            scene.player.body.setVelocityY(80);
+            scene.player.body.setVelocityY(-60); // slow drift upwards!
             scene.player.body.allowGravity = false;
-
-            // Slide flag down in sync
-            scene.tweens.add({
-              targets: scene.flag,
-              y: 200,
-              duration: 1500
-            });
-
-            // Walk to castle
-            scene.time.delayedCall(1600, () => {
-              scene.player.body.allowGravity = true;
-              scene.player.body.setVelocityX(120);
-              
-              // Walk right
-              scene.time.delayedCall(1200, () => {
+            
+            // Camera zoom into Martina as she ascends into the swirling portal!
+            scene.cameras.main.zoomTo(1.35, 2200);
+            
+            // Display beautiful floating text: "¡JAQUE MATE! Despertando..."
+            const victoryText = scene.add.text(scene.player.x, scene.player.y - 80, "¡JAQUE MATE!\nDespertando...", {
+              fontFamily: "'Outfit', 'Inter', sans-serif",
+              fontSize: '20px',
+              fontStyle: 'bold',
+              fill: '#fbbf24', // Gold
+              stroke: '#1e0b3b',
+              strokeThickness: 5,
+              align: 'center'
+            }).setOrigin(0.5);
+            
+            // Spiral sparkles vortex around Martina as she floats up!
+            for (let i = 0; i < 40; i++) {
+              scene.time.delayedCall(i * 50, () => {
+                if (!scene.player.active) return;
+                const angle = i * 0.4;
+                const radius = 25 - (i * 0.3); // spiral narrows!
+                const px = scene.player.x + Math.cos(angle) * Math.max(5, radius);
+                const py = scene.player.y + Math.sin(angle) * Math.max(5, radius);
+                
+                const sparkleColor = i % 2 === 0 ? 0xfacc15 : 0x22d3ee; // Alternate gold & cyan!
+                const sp = scene.add.circle(px, py, Math.random() * 2 + 1.5, sparkleColor, 0.9);
+                scene.physics.add.existing(sp, false);
+                sp.body.allowGravity = false;
+                sp.body.setVelocityY(-110); // float up faster than Martina!
+                
                 scene.tweens.add({
-                  targets: scene.player,
+                  targets: sp,
                   alpha: 0,
-                  scale: 0,
-                  duration: 500,
-                  onComplete: () => {
-                    self.showVictoryScreen(true);
-                  }
+                  scale: 0.1,
+                  duration: 800,
+                  onComplete: () => sp.destroy()
                 });
               });
+            }
+            
+            // Spin, scale down, and fade out Martina in a beautiful dream-state transition!
+            scene.tweens.add({
+              targets: scene.player,
+              angle: 1080, // spin 3 full times!
+              scaleX: 0.05,
+              scaleY: 0.05,
+              alpha: 0,
+              y: scene.player.y - 120, // drift up even higher
+              duration: 2200,
+              ease: 'Quad.easeOut',
+              onComplete: () => {
+                victoryText.destroy();
+                self.showVictoryScreen(true);
+              }
             });
           });
 
@@ -1197,6 +2224,57 @@ class MarioGame {
               enemy.setFlipX(false);
             }
           });
+
+          // Flying Bishop airborne vertical/horizontal/diagonal/sinusoidal patrol update
+          scene.airEnemies.getChildren().forEach(ae => {
+            if (ae.pattern === 'horizontal') {
+              if (ae.x <= ae.minX) {
+                ae.body.setVelocityX(ae.speed);
+                ae.setFlipX(true);
+              } else if (ae.x >= ae.maxX) {
+                ae.body.setVelocityX(-ae.speed);
+                ae.setFlipX(false);
+              }
+            } else if (ae.pattern === 'diagonal') {
+              if (ae.x <= ae.minX) {
+                ae.body.setVelocityX(ae.speed);
+                ae.body.setVelocityY(ae.speedY);
+                ae.setFlipX(true);
+              } else if (ae.x >= ae.maxX) {
+                ae.body.setVelocityX(-ae.speed);
+                ae.body.setVelocityY(-ae.speedY);
+                ae.setFlipX(false);
+              }
+            } else if (ae.pattern === 'sinusoidal') {
+              // Smooth sine wave vertical displacement while moving horizontally
+              ae.y = ae.baseY + Math.sin(scene.time.now * 0.003) * ae.ampY;
+              
+              if (ae.x <= ae.minX) {
+                ae.direction = 1;
+                ae.body.setVelocityX(ae.speed);
+                ae.setFlipX(true);
+              } else if (ae.x >= ae.maxX) {
+                ae.direction = -1;
+                ae.body.setVelocityX(-ae.speed);
+                ae.setFlipX(false);
+              }
+            } else {
+              // Fallback vertical
+              if (ae.y >= ae.maxY) {
+                ae.body.setVelocityY(-ae.speed);
+              } else if (ae.y <= ae.minY) {
+                ae.body.setVelocityY(ae.speed);
+              }
+            }
+            
+            // Hovering wobble effect!
+            ae.setAngle(Math.sin(scene.time.now * 0.007) * 8);
+          });
+
+          // Spin the magical chess portal of the 64 squares!
+          if (scene.portal) {
+            scene.portal.angle += 0.6; // smooth rotation
+          }
 
           // Out of bounds pit checks
           if (scene.player.y > 450) {
@@ -1532,6 +2610,28 @@ class MarioGame {
         osc.stop(now + idx * rhythm + 0.4);
       });
     }
+    
+    else if (type === 'defeat') {
+      // Melancholic, descending retro game over sound
+      // Notes: A3 (220Hz), G#3 (207.65Hz), F3 (174.61Hz), E3 (164.81Hz), C3 (130.81Hz)
+      const notes = [220.00, 207.65, 174.61, 164.81, 130.81];
+      const rhythm = 0.18;
+      notes.forEach((freq, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = idx === notes.length - 1 ? 'sawtooth' : 'triangle';
+        osc.frequency.setValueAtTime(freq, now + idx * rhythm);
+        
+        gain.gain.setValueAtTime(0, now + idx * rhythm);
+        gain.gain.linearRampToValueAtTime(0.08, now + idx * rhythm + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * rhythm + 0.5);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now + idx * rhythm);
+        osc.stop(now + idx * rhythm + 0.5);
+      });
+    }
   }
 
   // --- START ORIGINAL DREAMY CHIPTUNE BGM (64 steps) ---
@@ -1655,23 +2755,62 @@ class MarioGame {
   gameOver() {
     this.gameState = 'gameover';
     this.stopMusic();
-    this.synthesizeSound('damage');
+    this.synthesizeSound('defeat'); // Play the sad, descending retro game over sound!
+    
     if (this.phaserGame && this.phaserGame.scene && this.phaserGame.scene.scenes[0]) {
       this.phaserGame.scene.scenes[0].scene.pause();
     }
-    setTimeout(() => {
+    
+    // Create premium game over overlay element
+    const gameoverOverlay = document.createElement('div');
+    gameoverOverlay.className = 'mario-gameover-overlay';
+    gameoverOverlay.innerHTML = `
+      <div class="mario-gameover-panel">
+        <div class="mario-gameover-skull">💀</div>
+        <h2>FIN DEL JUEGO</h2>
+        <p class="mario-gameover-msg">Los peones de las sombras te han superado en esta partida. ¡No te rindas! Analiza el tablero y vuelve a intentarlo.</p>
+        
+        <div class="mario-gameover-stats">
+          <div class="mario-stat-box">
+            <span class="mario-stat-icon">🪙</span>
+            <span class="mario-stat-num">${this.coins}</span>
+            <span class="mario-stat-name">Monedas</span>
+          </div>
+          <div class="mario-stat-box">
+            <span class="mario-stat-icon">⭐</span>
+            <span class="mario-stat-num">${this.score}</span>
+            <span class="mario-stat-name">Puntaje</span>
+          </div>
+        </div>
+        
+        <div class="mario-gameover-buttons">
+          <button class="mario-vic-btn btn-map" id="go-btn-replay" style="background: linear-gradient(135deg, #e11d48, #be123c); color: #ffffff; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);">Reintentar 🔄</button>
+          <button class="mario-vic-btn btn-replay" id="go-btn-map">Volver al Mapa ➔</button>
+        </div>
+      </div>
+    `;
+    
+    this.container.appendChild(gameoverOverlay);
+    
+    // Bind buttons
+    document.getElementById('go-btn-replay').addEventListener('click', () => {
+      window.GameAudio.playMove();
+      gameoverOverlay.remove();
+      this.destroy();
+      this.startLevel();
+    });
+    
+    document.getElementById('go-btn-map').addEventListener('click', () => {
+      window.GameAudio.playMove();
+      gameoverOverlay.remove();
       this.destroy();
       this.showWelcomeScreen();
-    }, 2000);
+    });
   }
 
   // --- LEVEL COMPLETE HANDLER ---
   completeLevel() {
-    const nextIdx = this.currentLevelIndex + 1;
-    if (nextIdx < 16) {
-      this.unlockedLevels[nextIdx] = true;
-      localStorage.setItem('martina_mario_unlocked', JSON.stringify(this.unlockedLevels));
-    }
+    // Only working on level 1, do NOT unlock any next levels!
     this.gameState = 'victory';
     this.synthesizeSound('victory');
   }
@@ -1679,10 +2818,52 @@ class MarioGame {
   // --- VICTORY SCREEN ---
   showVictoryScreen(replayLevel) {
     this.stopMusic();
-    setTimeout(() => {
+    
+    // Create premium victory overlay element
+    const victoryOverlay = document.createElement('div');
+    victoryOverlay.className = 'mario-victory-overlay';
+    victoryOverlay.innerHTML = `
+      <div class="mario-victory-panel">
+        <div class="mario-victory-crown">👑</div>
+        <h2>¡Nivel Completado!</h2>
+        <p class="mario-victory-msg">Martina ha despertado con éxito del Reino de las 64 Casillas con su bigote y táctica impecables.</p>
+        
+        <div class="mario-victory-stats">
+          <div class="mario-stat-box">
+            <span class="mario-stat-icon">🪙</span>
+            <span class="mario-stat-num">${this.coins}</span>
+            <span class="mario-stat-name">Monedas</span>
+          </div>
+          <div class="mario-stat-box">
+            <span class="mario-stat-icon">⭐</span>
+            <span class="mario-stat-num">${this.score}</span>
+            <span class="mario-stat-name">Puntaje</span>
+          </div>
+        </div>
+        
+        <div class="mario-victory-buttons">
+          <button class="mario-vic-btn btn-replay" id="vic-btn-replay">Repetir Nivel 🔄</button>
+          <button class="mario-vic-btn btn-map" id="vic-btn-map">Volver al Mapa ➔</button>
+        </div>
+      </div>
+    `;
+    
+    this.container.appendChild(victoryOverlay);
+    
+    // Bind buttons
+    document.getElementById('vic-btn-replay').addEventListener('click', () => {
+      window.GameAudio.playMove();
+      victoryOverlay.remove();
+      this.destroy();
+      this.startLevel();
+    });
+    
+    document.getElementById('vic-btn-map').addEventListener('click', () => {
+      window.GameAudio.playMove();
+      victoryOverlay.remove();
       this.destroy();
       this.showWelcomeScreen();
-    }, 2500);
+    });
   }
 }
 
