@@ -1,6 +1,7 @@
 // === JUEGO: SUPER MARTINA · EL SALTO MÁGICO ===
-// Minijuego estrella de plataformas en 2D al estilo Super Mario Bros.
-// Desarrollado nativamente en Canvas HTML5 con Web Audio API para síntesis Chiptune de 8-bits.
+// Minijuego estrella de plataformas en 2D al estilo retro.
+// Desarrollado con el potente motor Phaser 3 (cargado dinámicamente)
+// y con los assets de ilustración oficiales de Martina para una fidelidad total.
 
 class MarioGame {
   constructor(container) {
@@ -44,8 +45,8 @@ class MarioGame {
     this.musicInterval = null;
     this.synthNotes = [];
     
-    // Keyboard inputs
-    this.keys = { left: false, right: false, up: false, down: false, space: false };
+    // Phaser game instance reference
+    this.phaserGame = null;
     this.touchInputs = { left: false, right: false, jump: false };
   }
 
@@ -70,7 +71,7 @@ class MarioGame {
           <div class="mario-node-name">${level.name}</div>
           <div class="mario-node-desc">${level.desc}</div>
           <div class="mario-node-status">${isUnlocked ? 'Disponible' : 'Bloqueado'}</div>
-          <button class="mario-node-play-btn">Cabalgar ➔</button>
+          <button class="mario-node-play-btn">Jugar ➔</button>
         </div>
       `;
     });
@@ -80,7 +81,7 @@ class MarioGame {
         <div class="mario-map-container">
           <div class="mario-map-header">
             <h2>⭐️ Super Martina: El Salto Mágico ⭐️</h2>
-            <p>¡Explora los 16 capítulos del reino! Corre, salta sobre plataformas de ajedrez y conquista la bandera dorada.</p>
+            <p>¡Explora los 16 capítulos del reino! Corre, salta sobre plataformas y conquista la bandera dorada.</p>
           </div>
           <div class="mario-map-grid">
             ${levelGridHTML}
@@ -101,114 +102,44 @@ class MarioGame {
     });
   }
 
-  // --- START ACTIVE LEVEL ---
+  // --- START ACTIVE LEVEL (PHASER DYNAMIC LOADING) ---
   startLevel() {
     this.gameState = 'playing';
     this.score = 0;
     this.coins = 0;
     this.lives = 3;
-    
-    // Physics variables setup
-    this.levelWidth = 2400; // Large scrolling platformer level
-    this.levelHeight = 450;
-    this.cameraX = 0;
-    
-    // Player object
-    this.player = {
-      x: 80,
-      y: 300,
-      vx: 0,
-      vy: 0,
-      width: 28,
-      height: 48,
-      onGround: false,
-      direction: 'right',
-      invincibilityFrames: 0,
-      stompTimer: 0,
-      runAnimFrame: 0,
-      isSliding: false
-    };
-
-    // Parallax background layers
-    this.clouds = [
-      { x: 100, y: 80, size: 40, speed: 0.2 },
-      { x: 350, y: 50, size: 60, speed: 0.1 },
-      { x: 600, y: 90, size: 50, speed: 0.15 },
-      { x: 1000, y: 60, size: 70, speed: 0.08 },
-      { x: 1300, y: 75, size: 45, speed: 0.25 },
-      { x: 1700, y: 40, size: 55, speed: 0.12 },
-      { x: 2100, y: 85, size: 65, speed: 0.18 }
-    ];
-
-    // Platforms (solid blocks)
-    this.platforms = [
-      // Standard Ground blocks
-      { x: 0, y: 400, w: 800, h: 50 },
-      { x: 950, y: 400, w: 700, h: 50 },
-      { x: 1800, y: 400, w: 600, h: 50 },
-      
-      // Floating Chapter 1 Grass Platforms
-      { x: 260, y: 290, w: 140, h: 25 },
-      { x: 460, y: 190, w: 100, h: 25 },
-      { x: 640, y: 280, w: 120, h: 25 },
-      
-      // Midground Platforms over first pit
-      { x: 800, y: 180, w: 120, h: 25 },
-      
-      // Second Segment floating platforms
-      { x: 1050, y: 290, w: 160, h: 25 },
-      { x: 1300, y: 200, w: 120, h: 25 },
-      { x: 1500, y: 290, w: 100, h: 25 },
-      
-      // Staircase steps near flagpole
-      { x: 1950, y: 360, w: 40, h: 40 },
-      { x: 2000, y: 320, w: 40, h: 80 },
-      { x: 2050, y: 280, w: 40, h: 120 },
-      { x: 2100, y: 240, w: 40, h: 160 }
-    ];
-
-    // Collectible Chess Coins (Cromos)
-    this.coinsList = [
-      { x: 300, y: 250, collected: false },
-      { x: 330, y: 250, collected: false },
-      { x: 510, y: 150, collected: false },
-      { x: 680, y: 240, collected: false },
-      { x: 710, y: 240, collected: false },
-      { x: 860, y: 140, collected: false },
-      { x: 1100, y: 250, collected: false },
-      { x: 1130, y: 250, collected: false },
-      { x: 1360, y: 160, collected: false },
-      { x: 1550, y: 250, collected: false },
-      // High arches over second pit
-      { x: 1700, y: 180, collected: false },
-      { x: 1730, y: 150, collected: false },
-      { x: 1760, y: 180, collected: false },
-      // Staircase rewards
-      { x: 2015, y: 270, collected: false },
-      { x: 2065, y: 230, collected: false },
-      { x: 2115, y: 190, collected: false }
-    ];
-
-    // Chess Pawn Enemies ("Peones rebeldes" walking Goomba-style)
-    this.enemies = [
-      { x: 380, y: 368, w: 30, h: 32, vx: -1.2, leftBound: 180, rightBound: 500, dead: false, squashFrame: 0 },
-      { x: 620, y: 368, w: 30, h: 32, vx: -1.0, leftBound: 480, rightBound: 760, dead: false, squashFrame: 0 },
-      { x: 1150, y: 368, w: 30, h: 32, vx: -1.4, leftBound: 980, rightBound: 1350, dead: false, squashFrame: 0 },
-      { x: 1480, y: 368, w: 30, h: 32, vx: -1.2, leftBound: 1300, rightBound: 1600, dead: false, squashFrame: 0 },
-      { x: 1900, y: 368, w: 30, h: 32, vx: -1.6, leftBound: 1820, rightBound: 2100, dead: false, squashFrame: 0 }
-    ];
-
-    // Goal Castle Flagpole
-    this.flagpole = { x: 2180, y: 100, w: 8, h: 300 };
-    this.castle = { x: 2260, y: 240, w: 100, h: 160 };
 
     this.setupLevelLayout();
-    this.setupInputs();
-    this.startMusic();
     
-    // Trigger loop execution
-    this.gameLoopActive = true;
-    this.loop();
+    // Dynamically Load Phaser from CDN
+    this.loadPhaser(() => {
+      this.initPhaserEngine();
+      this.startMusic();
+    });
+  }
+
+  // --- DYNAMIC PHASER SCRIPT LOAD ---
+  loadPhaser(callback) {
+    if (window.Phaser) {
+      callback();
+      return;
+    }
+    const script = document.createElement('script');
+    script.id = 'phaser-cdn-script';
+    script.src = 'https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js';
+    script.onload = callback;
+    script.onerror = () => {
+      const parent = document.getElementById('phaser-game-parent');
+      if (parent) {
+        parent.innerHTML = `
+          <div class="game-screen">
+            <h2>Error de Conexión</h2>
+            <p>No se pudo cargar el motor Phaser 3 desde la red. Verifica tu conexión.</p>
+          </div>
+        `;
+      }
+    };
+    document.body.appendChild(script);
   }
 
   // --- SETUP HTML STRUCTURE OF ACTIVE LEVEL ---
@@ -249,9 +180,9 @@ class MarioGame {
             </div>
           </div>
 
-          <!-- Active HTML5 Canvas -->
-          <div class="mario-canvas-container">
-            <canvas class="mario-canvas" id="mario-canvas-DOM" width="800" height="450"></canvas>
+          <!-- Active Canvas Container -->
+          <div class="mario-canvas-container" id="phaser-game-parent">
+            <!-- Phaser canvas will be dynamically injected here -->
             
             <!-- Mobile Translucent Touch Gamepad -->
             <div class="mario-touch-pad">
@@ -264,9 +195,6 @@ class MarioGame {
         </div>
       </div>
     `;
-
-    this.canvas = document.getElementById('mario-canvas-DOM');
-    this.ctx = this.canvas.getContext('2d');
 
     // Attach HUD control events
     document.getElementById('mario-btn-quit').addEventListener('click', () => {
@@ -290,23 +218,14 @@ class MarioGame {
     const bindTouch = (id, field) => {
       const btn = document.getElementById(id);
       if (btn) {
-        btn.addEventListener('touchstart', (e) => {
+        const setTouch = (e, val) => {
           e.preventDefault();
-          this.touchInputs[field] = true;
-        });
-        btn.addEventListener('touchend', (e) => {
-          e.preventDefault();
-          this.touchInputs[field] = false;
-        });
-        // Mouse Fallbacks
-        btn.addEventListener('mousedown', (e) => {
-          e.preventDefault();
-          this.touchInputs[field] = true;
-        });
-        btn.addEventListener('mouseup', (e) => {
-          e.preventDefault();
-          this.touchInputs[field] = false;
-        });
+          this.touchInputs[field] = val;
+        };
+        btn.addEventListener('touchstart', (e) => setTouch(e, true));
+        btn.addEventListener('touchend', (e) => setTouch(e, false));
+        btn.addEventListener('mousedown', (e) => setTouch(e, true));
+        btn.addEventListener('mouseup', (e) => setTouch(e, false));
       }
     };
 
@@ -315,638 +234,427 @@ class MarioGame {
     bindTouch('touch-jump', 'jump');
   }
 
-  // --- KEYBOARD KEY INPUT HANDLER ---
-  setupInputs() {
-    this.keyPressHandler = (e) => {
-      const active = e.type === 'keydown';
-      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') this.keys.left = active;
-      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') this.keys.right = active;
-      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') this.keys.up = active;
-      if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') this.keys.down = active;
-      if (e.key === ' ' || e.key === 'Spacebar') this.keys.space = active;
+  // --- INITIALIZE PHASER GAME ENGINE ---
+  initPhaserEngine() {
+    const parentEl = document.getElementById('phaser-game-parent');
+    if (!parentEl) return;
+
+    const self = this;
+    
+    // Levels structure setup
+    const platformsData = [
+      // Standard Ground blocks
+      { x: 0, y: 410, w: 800, h: 40 },
+      { x: 980, y: 410, w: 750, h: 40 },
+      { x: 1850, y: 410, w: 600, h: 40 },
+      
+      // Floating Chapter 1 Grass Platforms
+      { x: 260, y: 310, w: 140, h: 20 },
+      { x: 460, y: 220, w: 100, h: 20 },
+      { x: 640, y: 300, w: 120, h: 20 },
+      
+      // Midground Platforms over first pit (Tuned heights for easy jumping!)
+      { x: 800, y: 220, w: 120, h: 20 },
+      
+      // Second Segment floating platforms
+      { x: 1080, y: 310, w: 160, h: 20 },
+      { x: 1320, y: 220, w: 120, h: 20 },
+      { x: 1540, y: 310, w: 100, h: 20 },
+      
+      // Intermediate bridges over second pit
+      { x: 1730, y: 220, w: 120, h: 20 },
+      
+      // Staircase steps near flagpole
+      { x: 1980, y: 370, w: 40, h: 40 },
+      { x: 2030, y: 330, w: 40, h: 80 },
+      { x: 2080, y: 290, w: 40, h: 120 },
+      { x: 2130, y: 250, w: 40, h: 160 }
+    ];
+
+    const coinsData = [
+      { x: 300, y: 260 }, { x: 330, y: 260 }, { x: 360, y: 260 },
+      { x: 510, y: 170 },
+      { x: 680, y: 250 }, { x: 710, y: 250 },
+      { x: 860, y: 170 },
+      { x: 1120, y: 260 }, { x: 1150, y: 260 },
+      { x: 1380, y: 170 },
+      { x: 1590, y: 260 },
+      // Over second pit arches
+      { x: 1750, y: 170 }, { x: 1790, y: 170 },
+      // Staircase rewards
+      { x: 2000, y: 320 }, { x: 2050, y: 280 }, { x: 2100, y: 240 }
+    ];
+
+    const enemiesData = [
+      { x: 380, y: 360, left: 180, right: 600, speed: 70 },
+      { x: 650, y: 360, left: 450, right: 750, speed: 60 },
+      { x: 1200, y: 360, left: 1020, right: 1500, speed: 80 },
+      { x: 1520, y: 360, left: 1350, right: 1680, speed: 70 },
+      { x: 1950, y: 360, left: 1880, right: 2120, speed: 90 }
+    ];
+
+    const config = {
+      type: Phaser.AUTO,
+      width: 800,
+      height: 450,
+      parent: 'phaser-game-parent',
+      physics: {
+        default: 'arcade',
+        arcade: {
+          gravity: { y: 700 }, // Perfect platformer gravity
+          debug: false
+        }
+      },
+      scene: {
+        preload: function() {
+          // Preload actual cuento assets!
+          this.load.image('player', 'assets/img/martina_full_body_1778904544807.png');
+          this.load.image('enemy', 'assets/img/peoncito_1778904557723.png');
+          this.load.image('background', 'assets/img/mundo_magico_1778904597376.png');
+          this.load.image('castle', 'assets/img/rey_blanco_entrenamiento_1779139099201.png');
+          
+          // Generate a smooth particle sparkle texture dynamically
+          const canvas = document.createElement('canvas');
+          canvas.width = 16;
+          canvas.height = 16;
+          const ctx = canvas.getContext('2d');
+          const grad = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
+          grad.addColorStop(0, 'rgba(255, 223, 0, 1)');
+          grad.addColorStop(0.3, 'rgba(255, 180, 0, 0.8)');
+          grad.addColorStop(1, 'rgba(255, 180, 0, 0)');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(8, 8, 8, 0, Math.PI * 2);
+          ctx.fill();
+          this.textures.addBase64('sparkle', canvas.toDataURL());
+        },
+        create: function() {
+          const scene = this;
+          
+          // 1. Double Parallax magical background
+          scene.bg = scene.add.tileSprite(0, 0, 2400, 450, 'background').setOrigin(0, 0);
+          scene.bg.setAlpha(0.65);
+          scene.bg.setScrollFactor(0.25); // Parallax slow scroll
+
+          // 2. Physics Static Platforms Group
+          scene.platforms = scene.physics.add.staticGroup();
+
+          platformsData.forEach(p => {
+            const block = scene.add.graphics();
+            
+            // Draw textured, professional chess-themed green platform
+            // Forest grass top
+            block.fillStyle(0x38bdf8, 0.45); // light magical cyan glow
+            block.fillRect(p.x, p.y, p.w, p.h);
+            
+            block.fillStyle(0x1e3a8a, 0.85); // deep magical royal blue dirt
+            block.fillRect(p.x, p.y + 6, p.w, p.h - 6);
+            
+            block.fillStyle(0x60a5fa, 0.95); // glowing cyan neon grass edge
+            block.fillRect(p.x, p.y, p.w, 6);
+
+            // Draw checkered grid details directly on platforms!
+            block.fillStyle(0x1d4ed8, 0.25);
+            for (let x = p.x; x < p.x + p.w; x += 16) {
+              block.fillRect(x, p.y + 6, 8, 6);
+            }
+
+            block.lineStyle(2, 0x1d4ed8, 1);
+            block.strokeRect(p.x, p.y, p.w, p.h);
+
+            // Generate physics body
+            const container = scene.add.container(0, 0);
+            container.add(block);
+            scene.physics.add.existing(container, true);
+            container.body.setSize(p.w, p.h);
+            container.body.setOffset(p.x, p.y);
+            
+            scene.platforms.add(container);
+          });
+
+          // 3. Create Player (Martina using the actual cuento illustration!)
+          scene.player = scene.physics.add.sprite(80, 200, 'player');
+          scene.player.setCollideWorldBounds(true);
+          scene.player.setSize(26, 44);
+          scene.player.setOffset(10, 8);
+          // Scale her illustration down to fit the platform grids perfectly
+          scene.player.setDisplaySize(38, 56);
+          scene.player.body.setGravityY(100); // stable arcade physics gravity
+          scene.player.invincibility = 0;
+
+          // 4. Magical Sparkles Particle trail!
+          scene.particles = scene.add.particles(0, 0, 'sparkle', {
+            speed: { min: 10, max: 40 },
+            angle: { min: 140, max: 220 },
+            scale: { start: 0.8, end: 0.1 },
+            alpha: { start: 0.8, end: 0 },
+            lifespan: 400,
+            frequency: 60,
+            quantity: 1,
+            blendMode: 'ADD'
+          });
+          scene.particles.startFollow(scene.player, -10, 16);
+
+          // 5. Collectible Chess Coins (Cromos)
+          scene.coins = scene.physics.add.group();
+          coinsData.forEach(c => {
+            const coin = scene.add.graphics();
+            // Draw a beautiful rotating/pulsing gold star coin
+            coin.fillStyle(0xfacc15, 1);
+            coin.beginPath();
+            // Draw a star shape
+            for (let i = 0; i < 5; i++) {
+              coin.lineTo(Math.cos((18 + i * 72) * Math.PI / 180) * 8, Math.sin((18 + i * 72) * Math.PI / 180) * 8);
+              coin.lineTo(Math.cos((54 + i * 72) * Math.PI / 180) * 3, Math.sin((54 + i * 72) * Math.PI / 180) * 3);
+            }
+            coin.closePath();
+            coin.fill();
+            coin.lineStyle(1.2, 0xe76f51, 1);
+            coin.stroke();
+
+            const coinContainer = scene.add.container(c.x, c.y);
+            coinContainer.add(coin);
+            scene.physics.add.existing(coinContainer, true);
+            coinContainer.body.setCircle(10, -10, -10);
+            
+            // Add a floating animation loop to the coins!
+            scene.tweens.add({
+              targets: coinContainer,
+              y: c.y - 6,
+              duration: 1200 + Math.random()*400,
+              yoyo: true,
+              repeat: -1,
+              ease: 'Sine.easeInOut'
+            });
+
+            scene.coins.add(coinContainer);
+          });
+
+          // 6. Chess Peoncito Enemies Group
+          scene.enemies = scene.physics.add.group();
+          enemiesData.forEach(e => {
+            const enemy = scene.physics.add.sprite(e.x, e.y, 'enemy');
+            enemy.setDisplaySize(32, 42);
+            enemy.setSize(24, 34);
+            enemy.setOffset(4, 4);
+            enemy.setCollideWorldBounds(true);
+            enemy.leftBound = e.left;
+            enemy.rightBound = e.right;
+            enemy.speed = e.speed;
+            enemy.dead = false;
+            enemy.body.setVelocityX(-e.speed);
+            
+            scene.enemies.add(enemy);
+          });
+
+          // 7. Goal Mástil and Castle Boss
+          scene.flagpole = scene.add.graphics();
+          scene.flagpole.fillStyle(0xdcdcdc, 1);
+          scene.flagpole.fillRect(2150, 100, 8, 310);
+          scene.flagpole.fillStyle(0xfacc15, 1);
+          scene.flagpole.beginPath();
+          scene.flagpole.arc(2154, 100, 8, 0, Math.PI * 2);
+          scene.flagpole.fill();
+          
+          // Magical Gold Banner Flag
+          scene.flag = scene.add.graphics();
+          scene.flag.fillStyle(0xfacc15, 1);
+          scene.flag.beginPath();
+          scene.flag.moveTo(2158, 120);
+          scene.flag.lineTo(2208, 135);
+          scene.flag.lineTo(2158, 150);
+          scene.flag.closePath();
+          scene.flag.fill();
+
+          scene.physics.add.existing(scene.flagpole, true);
+          scene.flagpole.body.setSize(16, 310);
+          scene.flagpole.body.setOffset(2146, 100);
+
+          scene.castle = scene.physics.add.staticSprite(2280, 310, 'castle');
+          scene.castle.setDisplaySize(120, 160);
+
+          // 8. Colliders and Overlaps configuration
+          scene.physics.add.collider(scene.player, scene.platforms);
+          scene.physics.add.collider(scene.enemies, scene.platforms);
+          
+          // Collect coin overlap
+          scene.physics.add.overlap(scene.player, scene.coins, (player, coin) => {
+            coin.destroy();
+            self.coins++;
+            self.score += 100;
+            self.synthesizeSound('coin');
+            
+            document.getElementById('hud-coins').textContent = `🪙 x${self.coins.toString().padStart(2, '0')}`;
+            document.getElementById('hud-score').textContent = self.score.toString().padStart(5, '0');
+          });
+
+          // Enemy collision overlap
+          scene.physics.add.overlap(scene.player, scene.enemies, (player, enemy) => {
+            if (enemy.dead) return;
+
+            // Stomp on enemy head
+            if (player.body.velocity.y > 0 && player.y + player.displayHeight - player.body.velocity.y/60 <= enemy.y + 12) {
+              enemy.dead = true;
+              enemy.body.setVelocityX(0);
+              enemy.body.allowGravity = false;
+              enemy.body.setSize(0, 0); // remove collision body
+              self.score += 200;
+              self.synthesizeSound('stomp');
+              document.getElementById('hud-score').textContent = self.score.toString().padStart(5, '0');
+              
+              player.body.setVelocityY(-350); // bounce up high!
+
+              // Stomp squash animation
+              scene.tweens.add({
+                targets: enemy,
+                scaleY: 0.1,
+                y: enemy.y + 18,
+                duration: 200,
+                onComplete: () => enemy.destroy()
+              });
+            } else {
+              // Martina takes damage
+              if (player.invincibility === 0) {
+                self.lives--;
+                player.invincibility = 60; // 1 second
+                player.body.setVelocityX(player.x < enemy.x ? -250 : 250);
+                player.body.setVelocityY(-150);
+                self.synthesizeSound('damage');
+                
+                document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
+
+                if (self.lives <= 0) {
+                  self.gameOver();
+                }
+              }
+            }
+          });
+
+          // Goal flagpole overlap (Level completed)
+          scene.physics.add.overlap(scene.player, scene.flagpole, () => {
+            if (self.player.isSliding) return;
+            self.completeLevel();
+            
+            self.player.isSliding = true;
+            scene.particles.stop();
+            scene.player.body.setVelocityX(0);
+            scene.player.body.setVelocityY(80);
+            scene.player.body.allowGravity = false;
+
+            // Slide flag down in sync
+            scene.tweens.add({
+              targets: scene.flag,
+              y: 200,
+              duration: 1500
+            });
+
+            // Walk to castle
+            scene.time.delayedCall(1600, () => {
+              scene.player.body.allowGravity = true;
+              scene.player.body.setVelocityX(120);
+              
+              // Walk right
+              scene.time.delayedCall(1200, () => {
+                scene.tweens.add({
+                  targets: scene.player,
+                  alpha: 0,
+                  scale: 0,
+                  duration: 500,
+                  onComplete: () => {
+                    self.showVictoryScreen(true);
+                  }
+                });
+              });
+            });
+          });
+
+          // 9. Camera setup
+          scene.cameras.main.setBounds(0, 0, 2400, 450);
+          scene.cameras.main.startFollow(scene.player, true, 0.1, 0.1);
+          
+          // 10. Inputs binder
+          scene.cursors = scene.input.keyboard.createCursorKeys();
+          scene.keysWASD = scene.input.keyboard.addKeys({
+            up: Phaser.Input.Keyboard.KeyCodes.W,
+            left: Phaser.Input.Keyboard.KeyCodes.A,
+            right: Phaser.Input.Keyboard.KeyCodes.D
+          });
+        },
+        update: function() {
+          const scene = this;
+          if (self.gameState !== 'playing') return;
+
+          // Invincibility flashing timer
+          if (scene.player.invincibility > 0) {
+            scene.player.invincibility--;
+            scene.player.setAlpha(scene.player.invincibility % 4 === 0 ? 0.3 : 0.85);
+          } else {
+            scene.player.setAlpha(1.0);
+          }
+
+          // Enemy patrols update
+          scene.enemies.getChildren().forEach(enemy => {
+            if (enemy.dead) return;
+            
+            if (enemy.x <= enemy.leftBound) {
+              enemy.body.setVelocityX(enemy.speed);
+              enemy.setFlipX(true);
+            } else if (enemy.x >= enemy.rightBound) {
+              enemy.body.setVelocityX(-enemy.speed);
+              enemy.setFlipX(false);
+            }
+          });
+
+          // Out of bounds pit checks
+          if (scene.player.y > 450) {
+            self.lives--;
+            self.synthesizeSound('damage');
+            document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
+            
+            if (self.lives > 0) {
+              scene.player.setPosition(scene.player.x < 950 ? 80 : 1050, 150);
+              scene.player.body.setVelocity(0, 0);
+              scene.player.invincibility = 60;
+            } else {
+              self.gameOver();
+            }
+            return;
+          }
+
+          if (self.player.isSliding) return;
+
+          // Keyboard + Virtual Gamepad inputs
+          const moveLeft = scene.cursors.left.isDown || scene.keysWASD.left.isDown || self.touchInputs.left;
+          const moveRight = scene.cursors.right.isDown || scene.keysWASD.right.isDown || self.touchInputs.right;
+          const jumpPressed = scene.cursors.up.isDown || scene.cursors.space.isDown || scene.keysWASD.up.isDown || self.touchInputs.jump;
+
+          // Horizontal movement
+          if (moveLeft) {
+            scene.player.body.setVelocityX(-175);
+            scene.player.setFlipX(true); // flip sprite left
+            scene.particles.start();
+          } else if (moveRight) {
+            scene.player.body.setVelocityX(175);
+            scene.player.setFlipX(false); // standard flip right
+            scene.particles.start();
+          } else {
+            scene.player.body.setVelocityX(0);
+            scene.particles.stop();
+          }
+
+          // Jump physics ( Arcade jump physics are extremely stable! )
+          if (jumpPressed && scene.player.body.touching.down) {
+            scene.player.body.setVelocityY(-405); // high enough to reach all platforms easily!
+            self.synthesizeSound('jump');
+          }
+        }
+      }
     };
 
-    window.addEventListener('keydown', this.keyPressHandler);
-    window.addEventListener('keyup', this.keyPressHandler);
+    this.phaserGame = new Phaser.Game(config);
   }
 
-  // --- 60FPS PLATFORMER RENDERING ENGINE ---
-  loop() {
-    if (!this.gameLoopActive) return;
-    
-    this.update();
-    this.render();
-    
-    requestAnimationFrame(() => this.loop());
-  }
-
-  // --- GAME STATE & PHYSICS UPDATE ---
-  update() {
-    if (this.gameState !== 'playing') return;
-
-    // A. Tick animations & counters
-    if (this.player.invincibilityFrames > 0) {
-      this.player.invincibilityFrames--;
-    }
-    
-    // B. Player horizontal movement inputs
-    const moveLeft = this.keys.left || this.touchInputs.left;
-    const moveRight = this.keys.right || this.touchInputs.right;
-    
-    if (moveLeft && !this.player.isSliding) {
-      this.player.vx -= 0.65;
-      this.player.direction = 'left';
-      this.player.runAnimFrame++;
-    } else if (moveRight && !this.player.isSliding) {
-      this.player.vx += 0.65;
-      this.player.direction = 'right';
-      this.player.runAnimFrame++;
-    }
-    
-    // Friction
-    this.player.vx *= 0.85;
-
-    // C. Gravity
-    this.player.vy += 0.55;
-    if (this.player.vy > 12) this.player.vy = 12; // Terminal velocity
-
-    // D. Jump inputs
-    const jumpPressed = this.keys.up || this.keys.space || this.touchInputs.jump;
-    if (jumpPressed && this.player.onGround && !this.player.isSliding) {
-      this.player.vy = -10.5;
-      this.player.onGround = false;
-      this.synthesizeSound('jump');
-    }
-
-    // E. Level 1 Horizontal bounds & physics update
-    this.player.x += this.player.vx;
-    
-    // Keep player in level left bound
-    if (this.player.x < 0) {
-      this.player.x = 0;
-      this.player.vx = 0;
-    }
-
-    // F. Horizontal platform collision check
-    this.platforms.forEach(block => {
-      if (this.collides(this.player, block)) {
-        if (this.player.vx > 0) { // Collide right wall
-          this.player.x = block.x - this.player.width;
-          this.player.vx = 0;
-        } else if (this.player.vx < 0) { // Collide left wall
-          this.player.x = block.x + block.w;
-          this.player.vx = 0;
-        }
-      }
-    });
-
-    // G. Vertical movement & platform collision check
-    this.player.y += this.player.vy;
-    this.player.onGround = false;
-
-    this.platforms.forEach(block => {
-      if (this.collides(this.player, block)) {
-        if (this.player.vy > 0) { // Landing on top of platform
-          this.player.y = block.y - this.player.height;
-          this.player.vy = 0;
-          this.player.onGround = true;
-        } else if (this.player.vy < 0) { // Bumping head into ceiling
-          this.player.y = block.y + block.h;
-          this.player.vy = 0;
-        }
-      }
-    });
-
-    // H. Scrolling Camera smoothly tracks Martina
-    const targetCamX = this.player.x - 320;
-    this.cameraX += (targetCamX - this.cameraX) * 0.1;
-    
-    // Bounds of camera scroll
-    if (this.cameraX < 0) this.cameraX = 0;
-    if (this.cameraX > this.levelWidth - 800) this.cameraX = this.levelWidth - 800;
-
-    // I. Collect Coins
-    this.coinsList.forEach(coin => {
-      if (!coin.collected) {
-        // Simple circle box overlap check
-        const dist = Math.hypot((this.player.x + this.player.width/2) - coin.x, (this.player.y + this.player.height/2) - coin.y);
-        if (dist < 26) {
-          coin.collected = true;
-          this.coins++;
-          this.score += 100;
-          this.synthesizeSound('coin');
-          
-          document.getElementById('hud-coins').textContent = `🪙 x${this.coins.toString().padStart(2, '0')}`;
-          document.getElementById('hud-score').textContent = this.score.toString().padStart(5, '0');
-        }
-      }
-    });
-
-    // J. Update & Collide Pawns (Enemies)
-    this.enemies.forEach(enemy => {
-      if (enemy.dead) {
-        enemy.squashFrame++;
-        return;
-      }
-
-      // Patrol movement
-      enemy.x += enemy.vx;
-      if (enemy.x <= enemy.leftBound) {
-        enemy.x = enemy.leftBound;
-        enemy.vx = Math.abs(enemy.vx);
-      } else if (enemy.x >= enemy.rightBound) {
-        enemy.x = enemy.rightBound;
-        enemy.vx = -Math.abs(enemy.vx);
-      }
-
-      // Overlap with player
-      if (this.collides(this.player, enemy)) {
-        // Squashing enemy from the top
-        if (this.player.vy > 0 && (this.player.y + this.player.height - this.player.vy <= enemy.y + 12)) {
-          enemy.dead = true;
-          this.player.vy = -8.5; // bounce up
-          this.score += 200;
-          this.synthesizeSound('stomp');
-          document.getElementById('hud-score').textContent = this.score.toString().padStart(5, '0');
-        } else {
-          // Player touched from side (Takes damage)
-          if (this.player.invincibilityFrames === 0) {
-            this.lives--;
-            this.player.invincibilityFrames = 60; // 1 second invincibility
-            this.player.vx = this.player.x < enemy.x ? -6 : 6;
-            this.player.vy = -4;
-            this.synthesizeSound('damage');
-            
-            document.getElementById('hud-lives').textContent = `❤️ x${this.lives}`;
-
-            if (this.lives <= 0) {
-              this.gameOver();
-            }
-          }
-        }
-      }
-    });
-
-    // K. Fell in pits (Out of bounds bottom)
-    if (this.player.y > this.levelHeight + 50) {
-      this.lives--;
-      this.synthesizeSound('damage');
-      document.getElementById('hud-lives').textContent = `❤️ x${this.lives}`;
-
-      if (this.lives > 0) {
-        // Respawn at last safe segment
-        this.player.x = this.player.x < 900 ? 80 : 1000;
-        this.player.y = 200;
-        this.player.vx = 0;
-        this.player.vy = 0;
-        this.player.invincibilityFrames = 60;
-      } else {
-        this.gameOver();
-      }
-    }
-
-    // L. Overlap with Flagpole (Level Win!)
-    const pCenter = this.player.x + this.player.width/2;
-    if (pCenter >= this.flagpole.x - 10 && pCenter <= this.flagpole.x + this.flagpole.w + 10 && this.player.y < this.flagpole.y + this.flagpole.h) {
-      this.completeLevel();
-    }
-  }
-
-  // --- GAME OVER ---
-  gameOver() {
-    this.gameState = 'gameover';
-    this.stopMusic();
-    window.GameAudio.playError();
-
-    // Reset controls
-    this.keys = { left: false, right: false, up: false, down: false, space: false };
-    this.touchInputs = { left: false, right: false, jump: false };
-
-    // Overlay Game Over Screen on DOM
-    setTimeout(() => {
-      this.container.innerHTML = `
-        <div class="game-screen">
-          <div class="game-screen-img" style="border-color: #ff6b6b; background: rgba(255, 107, 107, 0.1);">
-            <div style="font-size: 5rem; margin-top: 1.2rem;">🥀</div>
-          </div>
-          <h2>¡Oh no! Juego Terminado</h2>
-          <p>Martina se quedó sin energía explorando la pradera. ¡No te rindas y prueba otra vez!</p>
-          <div class="game-screen-stats">
-            <div class="stat-item">
-              <span>Puntuación</span>
-              <div class="stat-val">${this.score}</div>
-            </div>
-            <div class="stat-item">
-              <span>Monedas</span>
-              <div class="stat-val">🪙 ${this.coins}</div>
-            </div>
-          </div>
-          <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; width: 100%;">
-            <button class="btn btn-game-screen" id="mario-fail-menu" style="background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: var(--warm-white);">
-              Menú de Niveles 📋
-            </button>
-            <button class="btn btn-game-screen" id="mario-fail-retry">Reintentar Nivel 🔁</button>
-          </div>
-        </div>
-      `;
-
-      document.getElementById('mario-fail-menu').addEventListener('click', () => {
-        this.showWelcomeScreen();
-      });
-      document.getElementById('mario-fail-retry').addEventListener('click', () => {
-        this.startLevel();
-      });
-    }, 500);
-  }
-
-  // --- VICTORY COMPLETE LEVEL ---
-  completeLevel() {
-    this.gameState = 'victory';
-    this.stopMusic();
-    this.synthesizeSound('victory');
-
-    // Trigger sliding animation
-    this.player.isSliding = true;
-    this.player.vx = 0;
-    this.player.vy = 2; // slow slide down flagpole
-
-    // Trigger level unlock
-    const nextIdx = this.currentLevelIndex + 1;
-    if (nextIdx < 16) {
-      this.unlockedLevels[nextIdx] = true;
-      localStorage.setItem('martina_mario_unlocked', JSON.stringify(this.unlockedLevels));
-    }
-
-    // Award 3 Card packs to album on completing Level 1 for the first time!
-    let packAwarded = false;
-    try {
-      const key = 'martina_mario_pack_reward';
-      if (localStorage.getItem(key) !== 'true') {
-        localStorage.setItem(key, 'true');
-        let packs = parseInt(localStorage.getItem('martina_album_packs') || '0');
-        localStorage.setItem('martina_album_packs', (packs + 3).toString());
-        packAwarded = true;
-      }
-    } catch (e) {
-      console.error(e);
-    }
-
-    // Update global dashboard immediately
-    if (typeof window.loadDashboardStats === 'function') {
-      window.loadDashboardStats();
-    }
-
-    // Slide down flagpole animation
-    const slideDown = setInterval(() => {
-      this.player.y += 3;
-      if (this.player.y >= 352) {
-        this.player.y = 352;
-        clearInterval(slideDown);
-        
-        // Walk to castle
-        const walkToCastle = setInterval(() => {
-          this.player.x += 2.5;
-          this.player.runAnimFrame++;
-          this.render(); // force render
-          if (this.player.x >= this.castle.x + 35) {
-            clearInterval(walkToCastle);
-            
-            // Trigger victory screen
-            setTimeout(() => {
-              this.showVictoryScreen(packAwarded);
-            }, 600);
-          }
-        }, 1000/60);
-      }
-      this.render();
-    }, 1000/60);
-  }
-
-  showVictoryScreen(packAwarded) {
-    let packMsgHTML = packAwarded 
-      ? `
-        <div style="background: rgba(244, 162, 97, 0.08); border: 2px dashed var(--gold); padding: 1rem; border-radius: 16px; margin: 1rem 0; color: var(--gold-light); font-weight: 700; font-size: 0.95rem;">
-          🎒 ¡PERFECTO! Has ganado 3 SOBRES DE CROMOS por completar el Juego Estrella. ¡Ve al Álbum a abrirlos!
-        </div>
-      `
-      : '';
-
-    this.container.innerHTML = `
-      <div class="game-screen">
-        <div class="game-screen-img" style="border-color: var(--sage); background: rgba(42, 157, 143, 0.1);">
-          <div style="font-size: 5rem; margin-top: 1.2rem;">🏆</div>
-        </div>
-        <h2>¡Nivel Completado! ⭐</h2>
-        <p>¡Increíble! Has guiado a Martina con saltos perfectos superando la **Pradera del Centro**.</p>
-        
-        ${packMsgHTML}
-
-        <div class="game-screen-stats">
-          <div class="stat-item">
-            <span>Puntos</span>
-            <div class="stat-val">+${this.score}</div>
-          </div>
-          <div class="stat-item">
-            <span>Monedas</span>
-            <div class="stat-val">🪙 ${this.coins}</div>
-          </div>
-        </div>
-        
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; width: 100%;">
-          <button class="btn btn-game-screen" id="mario-win-menu">
-            Menú de Niveles 📋
-          </button>
-        </div>
-      </div>
-    `;
-
-    document.getElementById('mario-win-menu').addEventListener('click', () => {
-      this.showWelcomeScreen();
-    });
-  }
-
-  // --- DRAW CANVAS SCENE ---
-  render() {
-    if (!this.ctx) return;
-
-    this.ctx.clearRect(0, 0, 800, 450);
-
-    // 1. Render Sky Background
-    this.ctx.fillStyle = '#70a0ff'; // Beautiful Nintendo sky blue
-    this.ctx.fillRect(0, 0, 800, 450);
-
-    // 2. Render Parallax Clouds
-    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
-    this.clouds.forEach(cloud => {
-      // Parallax camera calculation
-      const cx = (cloud.x - this.cameraX * cloud.speed) % (this.levelWidth);
-      const drawX = cx < -100 ? cx + this.levelWidth : cx;
-
-      this.ctx.beginPath();
-      this.ctx.arc(drawX, cloud.y, cloud.size * 0.5, 0, Math.PI * 2);
-      this.ctx.arc(drawX + cloud.size * 0.35, cloud.y - cloud.size * 0.1, cloud.size * 0.45, 0, Math.PI * 2);
-      this.ctx.arc(drawX - cloud.size * 0.35, cloud.y, cloud.size * 0.35, 0, Math.PI * 2);
-      this.ctx.fill();
-    });
-
-    // 3. Render Parallax Rolling Chess Mountains (Midground)
-    this.ctx.fillStyle = '#38bdf8'; // Soft teal-green rolling hills
-    
-    // First hill layer
-    this.ctx.fillStyle = '#2d6a4f';
-    this.ctx.beginPath();
-    this.ctx.moveTo(0, 450);
-    for (let i = 0; i <= 800; i += 20) {
-      const height = Math.sin((i + this.cameraX * 0.35) * 0.005) * 45 + 320;
-      this.ctx.lineTo(i, height);
-    }
-    this.ctx.lineTo(800, 450);
-    this.ctx.fill();
-
-    // Render Chess checkerboard faded pattern inside hills for thematic magic!
-    this.ctx.fillStyle = '#40916c';
-    this.ctx.beginPath();
-    this.ctx.moveTo(0, 450);
-    for (let i = 0; i <= 800; i += 25) {
-      const height = Math.sin((i + this.cameraX * 0.5) * 0.008) * 35 + 345;
-      this.ctx.lineTo(i, height);
-    }
-    this.ctx.lineTo(800, 450);
-    this.ctx.fill();
-
-    // 4. Render Castle & Flagpole (Before Foreground)
-    this.ctx.save();
-    this.ctx.translate(-this.cameraX, 0);
-
-    // Castle Drawing
-    this.ctx.fillStyle = '#4a4e69'; // slate grey castle
-    this.ctx.fillRect(this.castle.x, this.castle.y, this.castle.w, this.castle.h);
-    // Draw battlements/turrets
-    this.ctx.fillStyle = '#22223b';
-    this.ctx.fillRect(this.castle.x - 8, this.castle.y - 15, 20, 15);
-    this.ctx.fillRect(this.castle.x + this.castle.w - 12, this.castle.y - 15, 20, 15);
-    this.ctx.fillRect(this.castle.x + this.castle.w/2 - 10, this.castle.y - 10, 20, 10);
-    // Draw golden chess piece logo on castle
-    this.ctx.font = '2rem serif';
-    this.ctx.fillStyle = '#facc15';
-    this.ctx.fillText('♕', this.castle.x + this.castle.w/2 - 14, this.castle.y + 60);
-    // Castle door
-    this.ctx.fillStyle = '#111';
-    this.ctx.fillRect(this.castle.x + this.castle.w/2 - 16, this.castle.y + this.castle.h - 45, 32, 45);
-
-    // Flagpole Drawing
-    this.ctx.fillStyle = '#dcdcdc'; // metallic grey pole
-    this.ctx.fillRect(this.flagpole.x, this.flagpole.y, this.flagpole.w, this.flagpole.h);
-    // Flag pole gold ball on top
-    this.ctx.beginPath();
-    this.ctx.arc(this.flagpole.x + this.flagpole.w/2, this.flagpole.y, 8, 0, Math.PI * 2);
-    this.ctx.fillStyle = '#facc15';
-    this.ctx.fill();
-    // Green/gold magical Flag itself
-    this.ctx.fillStyle = '#facc15';
-    this.ctx.beginPath();
-    // Flag slides down with player if completed
-    let flagY = this.flagpole.y + 20;
-    if (this.player.isSliding) {
-      flagY = this.player.y + 5;
-      if (flagY > this.flagpole.y + this.flagpole.h - 40) {
-        flagY = this.flagpole.y + this.flagpole.h - 40;
-      }
-    }
-    this.ctx.moveTo(this.flagpole.x + this.flagpole.w, flagY);
-    this.ctx.lineTo(this.flagpole.x + this.flagpole.w + 45, flagY + 15);
-    this.ctx.lineTo(this.flagpole.x + this.flagpole.w, flagY + 30);
-    this.ctx.closePath();
-    this.ctx.fill();
-    // Draw star emoji on flag
-    this.ctx.font = '0.7rem serif';
-    this.ctx.fillStyle = '#080710';
-    this.ctx.fillText('⭐', this.flagpole.x + this.flagpole.w + 6, flagY + 19);
-
-    // 5. Render Coins
-    this.ctx.fillStyle = '#facc15';
-    this.coinsList.forEach(coin => {
-      if (!coin.collected) {
-        // Draw rotating coin (ellipse/circle)
-        this.ctx.beginPath();
-        const spinRadius = 8 * Math.abs(Math.sin(Date.now() * 0.008));
-        this.ctx.ellipse(coin.x, coin.y, spinRadius, 10, 0, 0, Math.PI * 2);
-        this.ctx.fill();
-        this.ctx.strokeStyle = '#e76f51';
-        this.ctx.lineWidth = 1;
-        this.ctx.stroke();
-      }
-    });
-
-    // 6. Render Enemies (Chess Pawns Goombas)
-    this.enemies.forEach(enemy => {
-      if (enemy.dead) {
-        // Squashed pawn drawing
-        this.ctx.fillStyle = '#ef4444';
-        this.ctx.fillRect(enemy.x, enemy.y + 20, enemy.w, 12);
-        return;
-      }
-
-      // Draw Pawn Body
-      this.ctx.fillStyle = '#ef4444'; // Red rebel pawns
-      this.ctx.strokeStyle = '#1e293b';
-      this.ctx.lineWidth = 2;
-      
-      // Pawn base
-      this.ctx.fillRect(enemy.x, enemy.y + enemy.h - 6, enemy.w, 6);
-      this.ctx.strokeRect(enemy.x, enemy.y + enemy.h - 6, enemy.w, 6);
-
-      // Pawn body triangular
-      this.ctx.beginPath();
-      this.ctx.moveTo(enemy.x + 4, enemy.y + enemy.h - 6);
-      this.ctx.lineTo(enemy.x + enemy.w - 4, enemy.y + enemy.h - 6);
-      this.ctx.lineTo(enemy.x + enemy.w/2, enemy.y + 12);
-      this.ctx.closePath();
-      this.ctx.fill();
-      this.ctx.stroke();
-
-      // Pawn head ball
-      this.ctx.beginPath();
-      this.ctx.arc(enemy.x + enemy.w/2, enemy.y + 10, 8, 0, Math.PI * 2);
-      this.ctx.fill();
-      this.ctx.stroke();
-
-      // Draw mean angry eyes on pawn!
-      this.ctx.fillStyle = '#080710';
-      this.ctx.beginPath();
-      this.ctx.arc(enemy.x + enemy.w/2 - 3, enemy.y + 9, 1.2, 0, Math.PI * 2);
-      this.ctx.arc(enemy.x + enemy.w/2 + 3, enemy.y + 9, 1.2, 0, Math.PI * 2);
-      this.ctx.fill();
-      // Angry eyebrows
-      this.ctx.strokeStyle = '#080710';
-      this.ctx.lineWidth = 1;
-      this.ctx.beginPath();
-      this.ctx.moveTo(enemy.x + enemy.w/2 - 5, enemy.y + 6);
-      this.ctx.lineTo(enemy.x + enemy.w/2 - 1, enemy.y + 8);
-      this.ctx.moveTo(enemy.x + enemy.w/2 + 5, enemy.y + 6);
-      this.ctx.lineTo(enemy.x + enemy.w/2 + 1, enemy.y + 8);
-      this.ctx.stroke();
-    });
-
-    // 7. Render Platforms & Ground Blocks
-    this.platforms.forEach(block => {
-      // Draw grass top
-      this.ctx.fillStyle = '#40916c'; // beautiful forest green grass
-      this.ctx.fillRect(block.x, block.y, block.w, 8);
-      
-      // Draw dirt base
-      this.ctx.fillStyle = '#5c3d2e'; // warm brown soil
-      this.ctx.fillRect(block.x, block.y + 8, block.w, block.h - 8);
-
-      // Grass fringe details
-      this.ctx.fillStyle = '#1b4332';
-      for (let x = block.x; x < block.x + block.w; x += 16) {
-        this.ctx.fillRect(x, block.y + 8, 8, 4);
-      }
-      
-      // Outline of platforms
-      this.ctx.strokeStyle = '#1e293b';
-      this.ctx.lineWidth = 2.2;
-      this.ctx.strokeRect(block.x, block.y, block.w, block.h);
-    });
-
-    // 8. Render Protagonist (Martina)
-    const p = this.player;
-    const isInvincible = p.invincibilityFrames > 0;
-    
-    // Blinking effect when invincible
-    if (!isInvincible || Math.floor(Date.now() / 60) % 2 === 0) {
-      this.ctx.save();
-      this.ctx.translate(p.x, p.y);
-
-      // Face flip based on direction
-      if (p.direction === 'left') {
-        this.ctx.translate(p.width, 0);
-        this.ctx.scale(-1, 1);
-      }
-
-      // Draw Martina dynamically and crisply:
-      
-      // A. Legs (Run animation cycle)
-      this.ctx.fillStyle = '#1d4ed8'; // blue socks / white shoes
-      const legCycle = Math.sin(p.runAnimFrame * 0.25) * 8;
-      const isRunning = Math.abs(p.vx) > 0.1 && p.onGround;
-
-      // Leg left
-      this.ctx.fillRect(4, p.height - 12, 6, isRunning ? 10 + legCycle : 10);
-      this.ctx.fillStyle = '#ffffff'; // shoe
-      this.ctx.fillRect(3, p.height - 4, 8, 4);
-      
-      // Leg right
-      this.ctx.fillStyle = '#1d4ed8';
-      this.ctx.fillRect(p.width - 10, p.height - 12, 6, isRunning ? 10 - legCycle : 10);
-      this.ctx.fillStyle = '#ffffff'; // shoe
-      this.ctx.fillRect(p.width - 11, p.height - 4, 8, 4);
-
-      // B. Shorts (Blue volleyball shorts)
-      this.ctx.fillStyle = '#1d4ed8'; // volleyball blue
-      this.ctx.fillRect(3, p.height - 18, p.width - 6, 8);
-      
-      // C. Body (White/light polo shirt with collar)
-      this.ctx.fillStyle = '#f3f4f6'; // Light grey polo shirt
-      this.ctx.fillRect(2, p.height - 38, p.width - 4, 20);
-
-      // Red logo checker crown print on her shirt!
-      this.ctx.fillStyle = '#ef4444';
-      this.ctx.fillRect(p.width/2 - 2, p.height - 30, 4, 4);
-
-      // D. Arms (Run animation)
-      this.ctx.fillStyle = '#fcd34d'; // skin color arms
-      const armCycle = Math.cos(p.runAnimFrame * 0.25) * 6;
-      
-      // Left arm
-      this.ctx.fillRect(-2, p.height - 34, 4, isRunning ? 12 + armCycle : 12);
-      // Right arm
-      this.ctx.fillRect(p.width - 2, p.height - 34, 4, isRunning ? 12 - armCycle : 12);
-
-      // E. Head & Skin
-      this.ctx.fillStyle = '#fcd34d'; // skin tone
-      this.ctx.fillRect(6, p.height - 52, p.width - 12, 14);
-
-      // F. Hair (Martina's straight dark hair)
-      this.ctx.fillStyle = '#271b13'; // straight dark brown/black hair
-      // Back hair drape
-      this.ctx.fillRect(4, p.height - 46, p.width - 8, 12);
-      // Top hair & Bangs
-      this.ctx.fillRect(4, p.height - 54, p.width - 8, 6);
-      this.ctx.fillRect(4, p.height - 50, 4, 8);
-      this.ctx.fillRect(p.width - 8, p.height - 50, 4, 8);
-
-      // G. Glasses (Her signature Glasses 👓)
-      this.ctx.strokeStyle = '#080710'; // black frames
-      this.ctx.lineWidth = 1.8;
-      // Draw rectangular left frame
-      this.ctx.strokeRect(p.width - 11, p.height - 46, 7, 5);
-      // Draw rectangular right frame
-      this.ctx.strokeRect(p.width - 21, p.height - 46, 7, 5);
-      // Bridge
-      this.ctx.beginPath();
-      this.ctx.moveTo(p.width - 14, p.height - 43);
-      this.ctx.lineTo(p.width - 11, p.height - 43);
-      this.ctx.stroke();
-
-      // Eye dots
-      this.ctx.fillStyle = '#080710';
-      this.ctx.fillRect(p.width - 8, p.height - 44, 2, 2);
-      this.ctx.fillRect(p.width - 18, p.height - 44, 2, 2);
-
-      // H. Outline of body for maximum sharpness/contrast (premium arcade finish!)
-      this.ctx.strokeStyle = '#1e293b';
-      this.ctx.lineWidth = 1.5;
-      this.ctx.strokeRect(2, p.height - 38, p.width - 4, 20);
-
-      this.ctx.restore();
-    }
-
-    this.ctx.restore();
-  }
-
-  // --- NATIVE 8-BIT RETRO SYNTH ENGINE (Web Audio API) ---
+  // --- NATIVE Web Audio API SINTETIZADOR (Música Original Mágica de 64 pasos) ---
   synthesizeSound(type) {
     if (!this.musicEnabled) return;
     
@@ -956,66 +664,32 @@ class MarioGame {
     const now = audioCtx.currentTime;
 
     if (type === 'jump') {
-      // Short upward frequency arpeggio
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(150, now);
-      osc.frequency.exponentialRampToValueAtTime(700, now + 0.12);
-      
-      gain.gain.setValueAtTime(0.12, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
-      
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start(now);
-      osc.stop(now + 0.12);
-    }
-    
-    else if (type === 'coin') {
-      // Classic double-tone chiptune arpeggio
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(987.77, now); // B5
-      osc.frequency.setValueAtTime(1318.51, now + 0.08); // E6
-      
-      gain.gain.setValueAtTime(0.1, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
-      
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start(now);
-      osc.stop(now + 0.25);
-    }
-
-    else if (type === 'stomp') {
-      // Downward noise-like frequency stomp
+      // Ethereal upward chime
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(250, now);
-      osc.frequency.linearRampToValueAtTime(40, now + 0.15);
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
       
-      gain.gain.setValueAtTime(0.2, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
       
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       osc.start(now);
       osc.stop(now + 0.15);
     }
-
-    else if (type === 'damage') {
-      // Harsh noise buzzer
+    
+    else if (type === 'coin') {
+      // Magical sparkling bell
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(120, now);
-      osc.frequency.linearRampToValueAtTime(30, now + 0.3);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1046.50, now); // C6
+      osc.frequency.setValueAtTime(1567.98, now + 0.07); // G6
       
-      gain.gain.setValueAtTime(0.2, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+      gain.gain.setValueAtTime(0.06, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
       
       osc.connect(gain);
       gain.connect(audioCtx.destination);
@@ -1023,32 +697,64 @@ class MarioGame {
       osc.stop(now + 0.3);
     }
 
-    else if (type === 'victory') {
-      // Play triumphant NES-style fanfarre!
-      const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50]; // C4, E4, G4, C5, E5, G5, C6
-      const rhythm = [0.1, 0.1, 0.1, 0.15, 0.15, 0.15, 0.6];
-      let offset = 0;
-      notes.forEach((freq, idx) => {
+    else if (type === 'stomp') {
+      // Soft magic bounce
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(261.63, now); // C4
+      osc.frequency.linearRampToValueAtTime(80, now + 0.12);
+      
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.12);
+    }
+
+    else if (type === 'damage') {
+      // Minor dark chord
+      [150, 180, 220].forEach(f => {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(freq, now + offset);
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(f, now);
         
-        gain.gain.setValueAtTime(0, now + offset);
-        gain.gain.linearRampToValueAtTime(0.15, now + offset + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + offset + rhythm[idx]);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
         
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        osc.start(now + offset);
-        osc.stop(now + offset + rhythm[idx]);
+        osc.start(now);
+        osc.stop(now + 0.28);
+      });
+    }
+
+    else if (type === 'victory') {
+      // Triumphant fairy arpeggio fanfare
+      const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98, 2093.00]; // C5 to C7
+      const rhythm = 0.12;
+      notes.forEach((freq, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * rhythm);
         
-        offset += rhythm[idx] * 0.85;
+        gain.gain.setValueAtTime(0, now + idx * rhythm);
+        gain.gain.linearRampToValueAtTime(0.12, now + idx * rhythm + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * rhythm + 0.4);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now + idx * rhythm);
+        osc.stop(now + idx * rhythm + 0.4);
       });
     }
   }
 
-  // --- START CHIPTUNE BGM LOOP ---
+  // --- START ORIGINAL DREAMY CHIPTUNE BGM (64 steps) ---
   startMusic() {
     this.stopMusic();
     if (!this.musicEnabled) return;
@@ -1057,22 +763,32 @@ class MarioGame {
     const audioCtx = window.GameAudio.ctx;
     if (!audioCtx) return;
 
+    // Dreamy, ethereal, minor-mode fairy tale chords:
+    // Bar 1-2: A minor | Bar 3-4: F major | Bar 5-6: C major | Bar 7-8: E major
     const melody = [
-      659.25, 659.25, 0, 659.25, 0, 523.25, 659.25, 0,
-      783.99, 0, 0, 0, 392.00, 0, 0, 0,
-      523.25, 0, 0, 392.00, 0, 0, 329.63, 0,
-      0, 440.00, 0, 493.88, 0, 440.00, 523.25, 0
+      440.00, 523.25, 659.25, 880.00, 659.25, 523.25, 440.00, 0,
+      440.00, 523.25, 659.25, 880.00, 659.25, 523.25, 659.25, 783.99,
+      349.23, 440.00, 523.25, 698.46, 523.25, 440.00, 349.23, 0,
+      349.23, 440.00, 523.25, 698.46, 523.25, 440.00, 523.25, 659.25,
+      261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 261.63, 0,
+      261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 392.00, 493.88,
+      329.63, 415.30, 493.88, 659.25, 493.88, 415.30, 329.63, 0,
+      329.63, 415.30, 493.88, 659.25, 783.99, 659.25, 587.33, 493.88
     ];
 
     const bass = [
+      110.00, 0, 110.00, 0, 110.00, 0, 110.00, 0,
+      110.00, 0, 110.00, 0, 110.00, 0, 110.00, 0,
+      87.31,  0, 87.31,  0, 87.31,  0, 87.31,  0,
+      87.31,  0, 87.31,  0, 87.31,  0, 87.31,  0,
       130.81, 0, 130.81, 0, 130.81, 0, 130.81, 0,
-      196.00, 0, 196.00, 0, 196.00, 0, 196.00, 0,
       130.81, 0, 130.81, 0, 130.81, 0, 130.81, 0,
-      174.61, 0, 174.61, 0, 196.00, 0, 130.81, 0
+      82.41,  0, 82.41,  0, 82.41,  0, 82.41,  0,
+      82.41,  0, 82.41,  0, 82.41,  0, 82.41,  0
     ];
 
     let step = 0;
-    const tempo = 150; // milliseconds per step
+    const tempo = 220; // 220ms per step, slower tempo for dreamy, magical vibe!
 
     this.musicInterval = setInterval(() => {
       if (this.gameState !== 'playing' || !this.musicEnabled) {
@@ -1082,45 +798,45 @@ class MarioGame {
 
       const now = audioCtx.currentTime;
 
-      // Play lead track (Square wave)
+      // Lead arpeggio track (Soft Triangle wave for fairytale atmosphere)
       const leadFreq = melody[step];
       if (leadFreq > 0) {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        osc.type = 'square';
+        osc.type = 'triangle';
         osc.frequency.setValueAtTime(leadFreq, now);
         
         gain.gain.setValueAtTime(0.04, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
         
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         osc.start(now);
-        osc.stop(now + 0.15);
+        osc.stop(now + 0.2);
         this.synthNotes.push(osc);
       }
 
-      // Play bass track (Triangle wave)
+      // Smooth bass track (Sine wave for round low-end)
       const bassFreq = bass[step];
       if (bassFreq > 0) {
         const bOsc = audioCtx.createOscillator();
         const bGain = audioCtx.createGain();
-        bOsc.type = 'triangle';
+        bOsc.type = 'sine';
         bOsc.frequency.setValueAtTime(bassFreq, now);
         
-        bGain.gain.setValueAtTime(0.08, now);
-        bGain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+        bGain.gain.setValueAtTime(0.07, now);
+        bGain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
         
         bOsc.connect(bGain);
         bGain.connect(audioCtx.destination);
         bOsc.start(now);
-        bOsc.stop(now + 0.15);
+        bOsc.stop(now + 0.2);
         this.synthNotes.push(bOsc);
       }
 
       step = (step + 1) % melody.length;
       
-      // Clean up past oscillators reference to prevent leaks
+      // Prevent memory leakage
       if (this.synthNotes.length > 50) {
         this.synthNotes.splice(0, 30);
       }
@@ -1142,20 +858,17 @@ class MarioGame {
     this.synthNotes = [];
   }
 
-  // --- COLLISION HELPER (AABB) ---
-  collides(r1, r2) {
-    return r1.x < r2.x + r2.w &&
-           r1.x + r1.width > r2.x &&
-           r1.y < r2.y + r2.h &&
-           r1.y + r1.height > r2.y;
-  }
-
-  // --- DESTROY GAME INSTANCE ---
+  // --- DESTROY GAME INSTANCE (CLEANS PHASER) ---
   destroy() {
-    this.gameLoopActive = false;
+    this.gameState = 'welcome';
     this.stopMusic();
-    window.removeEventListener('keydown', this.keyPressHandler);
-    window.removeEventListener('keyup', this.keyPressHandler);
+    this.touchInputs = { left: false, right: false, jump: false };
+    
+    // Shut down Phaser completely to prevent WebGL leaks and remove canvas
+    if (this.phaserGame) {
+      this.phaserGame.destroy(true);
+      this.phaserGame = null;
+    }
   }
 }
 
