@@ -331,7 +331,7 @@ class ReinaGame {
       this.sneezeTimer = Math.max(1, level.sneezeCooldown - 1);
     } else if (this.selectedDifficulty === 'martina') {
       this.maxLives = 1; // Perfect play required!
-      this.sneezeTimer = 1; // Sneeze every single turn!
+      this.sneezeTimer = level.sneezeCooldown; // Keep level standard speed, but with 1 life and blindfold!
     } else {
       this.maxLives = 3;
       this.sneezeTimer = level.sneezeCooldown;

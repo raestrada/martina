@@ -1087,7 +1087,7 @@
 
 /* === MODO CIEGO (BLINDFOLD) EN MODO MARTINA === */
 .board-blindfold .chess-square::before {
-  display: none !important;
+  opacity: 0.15 !important; /* Very faint labels for chess visualization */
 }
 
 /* === GAME: ¡CUIDADO CON EL ESTORNUDO! === */
@@ -1404,12 +1404,14 @@
   z-index: 5;
 }
 
-.board-blindfold .chess-square:not(.square-obstacle):not(.square-lava):not(.square-ice) {
-  background-color: #121212 !important; /* Pitch black mode */
+.board-blindfold .chess-square {
+  background-color: #0c0d16 !important; /* Deep dark cosmic violet */
+  border: 1px solid rgba(157, 78, 221, 0.09) !important; /* Glowing neon grid borders */
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.9) !important;
 }
 
 .board-blindfold .chess-square::before {
-  opacity: 0 !important; /* Hide labels */
+  opacity: 0.15 !important; /* Faint coordination coordinates */
 }
 
 
