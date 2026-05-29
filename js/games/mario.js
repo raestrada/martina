@@ -3922,11 +3922,13 @@ class MarioGame {
                 
                 self.chessDuel = new window.ChessDuel(
                   document.getElementById('phaser-game-parent'),
-                  () => { // ON WIN
+                  () => { // ON WIN — checkmate to opponent
                     scene.chessCompleted = true;
                     scene.player.body.allowGravity = true;
                     scene.player.setAlpha(1);
                     scene.player.invincibility = 60;
+                    self.stopMusic();
+                    self.startMusic();
                     if (scene.chessWalls) {
                       scene.chessWalls.getChildren().forEach(w => w.destroy());
                       scene.chessWalls = null;
@@ -3966,22 +3968,28 @@ class MarioGame {
                       });
                     }
                   },
-                  () => { // ON LOSE
+                  () => { // ON LOSE — instant game over, no second chances
                     self.chessDuel = null;
-                    self.lives--;
-                    scene.player.body.allowGravity = true;
-                    scene.player.setAlpha(1);
-                    scene.chessActive = false;
-                    document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
-                    scene.player.invincibility = 60;
-                    scene.player.body.setVelocityX(-150);
-                    scene.player.body.setVelocityY(-100);
-                    self.synthesizeSound('damage');
-                    scene.doDamageAnim();
                     scene.chessActive = false;
                     self.stopMusic();
+                    self.gameOver();
+                  },
+                  () => { // ON STALEMATE — reset level from start
+                    self.chessDuel = null;
+                    scene.chessActive = false;
+                    scene.chessCompleted = false;
+                    scene.player.body.allowGravity = true;
+                    scene.player.setAlpha(1);
+                    scene.player.invincibility = 60;
+                    self.stopMusic();
+                    // Reset position to start of level
+                    scene.player.setPosition(80, 200);
+                    scene.player.body.setVelocity(0, 0);
+                    if (scene.chessWalls) {
+                      scene.chessWalls.getChildren().forEach(w => w.destroy());
+                      scene.chessWalls = null;
+                    }
                     self.startMusic();
-                    if (self.lives <= 0) self.gameOver();
                   }
                 );
                 self.chessDuel.start();

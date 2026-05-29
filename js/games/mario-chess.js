@@ -3,10 +3,11 @@
 // Evalúa material y posición, busca a profundidad 1 con blunders realistas.
 
 window.ChessDuel = class ChessDuel {
-  constructor(container, onWin, onLose) {
+  constructor(container, onWin, onLose, onStalemate) {
     this.container = container;
     this.onWin = onWin;
     this.onLose = onLose;
+    this.onStalemate = onStalemate || onWin; // fallback to win
     this.fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
     this.turn = 'w';
     this.selectedSquare = null;
@@ -15,7 +16,7 @@ window.ChessDuel = class ChessDuel {
     this.moveHistory = [];
     this.pieceValues = { p:1, n:3, b:3, r:5, q:9, k:0 };
     this.isThinking = false;
-    this.lastMove = null; // {from: 'e2', to: 'e4'}
+    this.lastMove = null;
   }
 
   start() {
@@ -356,12 +357,12 @@ window.ChessDuel = class ChessDuel {
           this.updateStatus('¡JAQUE MATE! ¡Ganaste! 🎉');
           setTimeout(() => this.onWin(), 1500);
         } else {
-          this.updateStatus('Jaque mate. Perdiste 😞');
+          this.updateStatus('Jaque mate. Fin del juego 😞');
           setTimeout(() => this.onLose(), 1500);
         }
       } else {
-        this.updateStatus('¡Ahogado! Tablas — cuentas como ganador 🎉');
-        setTimeout(() => this.onWin(), 1500);
+        this.updateStatus('¡Ahogado! Tablas — vuelve a intentarlo 🔄');
+        setTimeout(() => this.onStalemate(), 1500);
       }
       return;
     }
