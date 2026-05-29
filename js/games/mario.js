@@ -110,11 +110,33 @@ class MarioGame {
     this.lives = 3;
 
     this.setupLevelLayout();
-    
-    // Dynamically Load Phaser from CDN
-    this.loadPhaser(() => {
-      this.initPhaserEngine();
-      this.startMusic();
+    this.loadBase64Images().then(() => {
+      this.loadPhaser(() => {
+        this.initPhaserEngine();
+        this.startMusic();
+      });
+    });
+  }
+
+  loadBase64Images() {
+    return new Promise((resolve) => {
+      const assets = window.MartinaGameAssets;
+      if (!assets || !assets.martina) { this.loadedImages = null; resolve(); return; }
+      const keys = ['player','enemy','background','castle'];
+      const b64keys = ['martina','peoncito','background','castle'];
+      let pending = 4;
+      this.loadedImages = {};
+      keys.forEach((key, i) => {
+        const img = new Image();
+        img.onload = () => {
+          this.loadedImages[key] = img;
+          if (--pending <= 0) resolve();
+        };
+        img.onerror = () => {
+          if (--pending <= 0) resolve();
+        };
+        img.src = assets[b64keys[i]];
+      });
     });
   }
 
@@ -298,27 +320,33 @@ class MarioGame {
       width: 800,
       height: 450,
       parent: 'phaser-game-parent',
+      backgroundColor: '#5c94fc',
       physics: {
         default: 'arcade',
         arcade: {
-          gravity: { y: 700 }, // Perfect platformer gravity
+          gravity: { y: 700 },
           debug: false
         }
       },
-      loader: {
-        imageLoadType: 'HTMLImageElement',
-        crossOrigin: ''
-      },
       scene: {
+        key: 'game',
         preload: function() {
-          // Preload actual cuento assets from Base64 or fallback to local PNG paths!
-          const assets = window.MartinaGameAssets || {};
-          this.load.image('player', assets.martina || 'assets/img/martina_full_body_1778904544807.png');
-          this.load.image('enemy', assets.peoncito || 'assets/img/peoncito_1778904557723.png');
-          this.load.image('background', assets.background || 'assets/img/mundo_magico_1778904597376.png');
-          this.load.image('castle', assets.castle || 'assets/img/rey_blanco_entrenamiento_1779139099201.png');
+          const scene = this;
+          // Disable crossOrigin to prevent browser security blocks on local URIs
+          scene.load.crossOrigin = undefined;
           
-          // Generate a smooth particle sparkle texture dynamically
+          // If Base64 images were NOT pre-loaded in memory, let Phaser load the local PNG files as fallback!
+          if (!self.loadedImages) {
+            scene.load.image('player', 'assets/img/martina_full_body_1778904544807.png');
+            scene.load.image('enemy', 'assets/img/peoncito_1778904557723.png');
+            scene.load.image('background', 'assets/img/mundo_magico_1778904597376.png');
+            scene.load.image('castle', 'assets/img/rey_blanco_entrenamiento_1779139099201.png');
+          }
+        },
+        create: function() {
+          const scene = this;
+          
+          // Generate a smooth particle sparkle texture dynamically inside create
           const canvas = document.createElement('canvas');
           canvas.width = 16;
           canvas.height = 16;
@@ -331,10 +359,23 @@ class MarioGame {
           ctx.beginPath();
           ctx.arc(8, 8, 8, 0, Math.PI * 2);
           ctx.fill();
-          this.textures.addBase64('sparkle', canvas.toDataURL());
-        },
-        create: function() {
-          const scene = this;
+          scene.textures.addCanvas('sparkle', canvas);
+          
+          const loaded = self.loadedImages || {};
+          if (loaded.player && loaded.enemy && loaded.background && loaded.castle) {
+            scene.textures.addImage('player', loaded.player);
+            scene.textures.addImage('enemy', loaded.enemy);
+            scene.textures.addImage('background', loaded.background);
+            scene.textures.addImage('castle', loaded.castle);
+          } else if (!scene.textures.exists('player')) {
+            // Safe fallback: generate colored shape textures if not preloaded and Phaser's loader failed
+            var g = scene.add.graphics();
+            g.fillStyle(0xf4a261); g.fillRect(0, 0, 32, 48); g.generateTexture('player', 32, 48); g.clear();
+            g.fillStyle(0xe76f51); g.fillRect(0, 0, 32, 42); g.generateTexture('enemy', 32, 42); g.clear();
+            g.fillStyle(0x5c94fc); g.fillRect(0, 0, 800, 450); g.generateTexture('background', 800, 450); g.clear();
+            g.fillStyle(0xfacc15); g.fillRect(0, 0, 120, 160); g.generateTexture('castle', 120, 160);
+            g.destroy();
+          }
           
           // 1. Double Parallax magical background
           scene.bg = scene.add.tileSprite(0, 0, 2400, 450, 'background').setOrigin(0, 0);
@@ -386,6 +427,8 @@ class MarioGame {
           scene.player.setDisplaySize(38, 56);
           scene.player.body.setGravityY(100); // stable arcade physics gravity
           scene.player.invincibility = 0;
+          
+          self.player = scene.player;
 
           // 4. Magical Sparkles Particle trail!
           scene.particles = scene.add.particles(0, 0, 'sparkle', {
@@ -874,6 +917,40 @@ class MarioGame {
       this.phaserGame.destroy(true);
       this.phaserGame = null;
     }
+  }
+  
+  // --- GAME OVER HANDLER ---
+  gameOver() {
+    this.gameState = 'gameover';
+    this.stopMusic();
+    this.synthesizeSound('damage');
+    if (this.phaserGame && this.phaserGame.scene && this.phaserGame.scene.scenes[0]) {
+      this.phaserGame.scene.scenes[0].scene.pause();
+    }
+    setTimeout(() => {
+      this.destroy();
+      this.showWelcomeScreen();
+    }, 2000);
+  }
+
+  // --- LEVEL COMPLETE HANDLER ---
+  completeLevel() {
+    const nextIdx = this.currentLevelIndex + 1;
+    if (nextIdx < 16) {
+      this.unlockedLevels[nextIdx] = true;
+      localStorage.setItem('martina_mario_unlocked', JSON.stringify(this.unlockedLevels));
+    }
+    this.gameState = 'victory';
+    this.synthesizeSound('victory');
+  }
+
+  // --- VICTORY SCREEN ---
+  showVictoryScreen(replayLevel) {
+    this.stopMusic();
+    setTimeout(() => {
+      this.destroy();
+      this.showWelcomeScreen();
+    }, 2500);
   }
 }
 
