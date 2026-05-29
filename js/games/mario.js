@@ -1440,6 +1440,69 @@ class MarioGame {
               frz(180,150,'pawn');frz(350,100,'bishop');frz(550,180,'pawn');frz(700,130,'bishop');
               for(let i=0;i<12;i++){const nx=Math.random()*800,ny=Math.random()*400;const ng=bgCtx.createRadialGradient(nx,ny,0,nx,ny,20);ng.addColorStop(0,'rgba(168,85,247,0.06)');ng.addColorStop(1,'transparent');bgCtx.fillStyle=ng;bgCtx.beginPath();bgCtx.arc(nx,ny,20,0,Math.PI*2);bgCtx.fill();}
               
+            } else if (biome === 'prairie') {
+              // --- PRAIRIE BACKGROUND: Blue sky, green hills, sun, clouds, wooden fences ---
+              const pGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
+              pGrad.addColorStop(0, '#4a90d9');
+              pGrad.addColorStop(0.35, '#87CEEB');
+              pGrad.addColorStop(0.55, '#b0d4f1');
+              pGrad.addColorStop(1, '#c8e6c9');
+              bgCtx.fillStyle = pGrad;
+              bgCtx.fillRect(0, 0, 800, 450);
+              
+              // Sun
+              const sunGrad = bgCtx.createRadialGradient(650, 70, 10, 650, 70, 90);
+              sunGrad.addColorStop(0, 'rgba(255,255,200,0.9)');
+              sunGrad.addColorStop(0.3, 'rgba(255,240,180,0.5)');
+              sunGrad.addColorStop(0.7, 'rgba(255,220,150,0.1)');
+              sunGrad.addColorStop(1, 'rgba(255,200,100,0)');
+              bgCtx.fillStyle = sunGrad;
+              bgCtx.beginPath(); bgCtx.arc(650, 70, 90, 0, Math.PI*2); bgCtx.fill();
+              bgCtx.fillStyle = '#fffde7';
+              bgCtx.beginPath(); bgCtx.arc(650, 70, 28, 0, Math.PI*2); bgCtx.fill();
+              
+              // Clouds
+              const drawCloud = (x, y, s) => {
+                bgCtx.fillStyle = 'rgba(255,255,255,0.7)';
+                bgCtx.beginPath(); bgCtx.arc(x, y, s*12, 0, Math.PI*2); bgCtx.fill();
+                bgCtx.beginPath(); bgCtx.arc(x+s*14, y-s*3, s*10, 0, Math.PI*2); bgCtx.fill();
+                bgCtx.beginPath(); bgCtx.arc(x+s*25, y, s*13, 0, Math.PI*2); bgCtx.fill();
+                bgCtx.beginPath(); bgCtx.arc(x-s*10, y+s*2, s*8, 0, Math.PI*2); bgCtx.fill();
+              };
+              drawCloud(100, 60, 1.2);
+              drawCloud(350, 40, 1.0);
+              drawCloud(500, 90, 0.8);
+              
+              // Rolling green hills
+              bgCtx.fillStyle = '#5a8f3c';
+              bgCtx.beginPath(); bgCtx.moveTo(0, 450);
+              bgCtx.bezierCurveTo(100, 300, 250, 320, 400, 340);
+              bgCtx.bezierCurveTo(550, 360, 650, 310, 800, 280);
+              bgCtx.lineTo(800, 450); bgCtx.closePath(); bgCtx.fill();
+              bgCtx.fillStyle = '#4a7c2e';
+              bgCtx.beginPath(); bgCtx.moveTo(0, 450);
+              bgCtx.bezierCurveTo(200, 350, 400, 370, 600, 360);
+              bgCtx.bezierCurveTo(700, 355, 750, 340, 800, 330);
+              bgCtx.lineTo(800, 450); bgCtx.closePath(); bgCtx.fill();
+              
+              // Fence posts
+              bgCtx.fillStyle = '#6B4226';
+              for (let fx=20; fx<780; fx+=50) {
+                bgCtx.fillRect(fx, 325, 4, 30);
+                bgCtx.fillRect(fx-3, 328, 10, 3);
+              }
+              
+              // Grass tufts
+              bgCtx.strokeStyle = '#3d6b24';
+              bgCtx.lineWidth = 1.2;
+              for (let gx=10; gx<790; gx+=15) {
+                const gh = 330 + Math.sin(gx*0.1)*5;
+                bgCtx.beginPath();
+                bgCtx.moveTo(gx, gh); bgCtx.lineTo(gx-2, gh-6);
+                bgCtx.moveTo(gx, gh); bgCtx.lineTo(gx+3, gh-8);
+                bgCtx.stroke();
+              }
+              
             } else {
               // --- GRASS BACKGROUND: Magical realm dreamscape ---
             const skyGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
@@ -1685,6 +1748,54 @@ class MarioGame {
                 midCtx.beginPath();
                 midCtx.moveTo(bx, 0); midCtx.lineTo(bx+300, 400); midCtx.stroke();
               }
+              
+            } else if (biome === 'prairie') {
+              // Prairie midground — trees, stable, horses
+              // Oak trees
+              const drawTree = (x, y, s) => {
+                midCtx.fillStyle = '#5c3a1e';
+                midCtx.fillRect(x-3, y-10, s*3, s*20);
+                midCtx.fillStyle = '#3d7a28';
+                midCtx.beginPath(); midCtx.arc(x, y-20, s*14, 0, Math.PI*2); midCtx.fill();
+                midCtx.fillStyle = '#4a8f34';
+                midCtx.beginPath(); midCtx.arc(x+s*5, y-15, s*10, 0, Math.PI*2); midCtx.fill();
+                midCtx.fillStyle = '#2d6b1e';
+                midCtx.beginPath(); midCtx.arc(x-s*6, y-10, s*9, 0, Math.PI*2); midCtx.fill();
+              };
+              drawTree(100, 350, 1.0);
+              drawTree(350, 340, 1.2);
+              drawTree(600, 355, 0.9);
+              drawTree(750, 345, 1.1);
+              
+              // Horse silhouettes
+              const drawHorse = (hx, hy, flip) => {
+                midCtx.fillStyle = 'rgba(60,30,10,0.25)';
+                const f = flip ? -1 : 1;
+                midCtx.beginPath();
+                midCtx.moveTo(hx, hy-25);
+                midCtx.quadraticCurveTo(hx+f*8, hy-32, hx+f*12, hy-22);
+                midCtx.lineTo(hx+f*10, hy-12);
+                midCtx.quadraticCurveTo(hx+f*4, hy-14, hx+f*6, hy-8);
+                midCtx.lineTo(hx+f*8, hy);
+                midCtx.lineTo(hx+f*6, hy+6);
+                midCtx.lineTo(hx-f*2, hy+6);
+                midCtx.lineTo(hx-f*2, hy-8);
+                midCtx.lineTo(hx-f*4, hy-14);
+                midCtx.lineTo(hx-f*6, hy-12);
+                midCtx.lineTo(hx-1, hy-22);
+                midCtx.closePath();
+                midCtx.fill();
+              };
+              drawHorse(200, 370, false);
+              drawHorse(450, 368, true);
+              
+              // Stable/barn silhouette
+              midCtx.fillStyle = 'rgba(80,40,15,0.3)';
+              midCtx.fillRect(550, 290, 80, 60);
+              midCtx.fillStyle = 'rgba(60,30,10,0.3)';
+              midCtx.beginPath(); midCtx.moveTo(540, 290); midCtx.lineTo(590, 250); midCtx.lineTo(640, 290); midCtx.closePath(); midCtx.fill();
+              midCtx.fillStyle = 'rgba(20,10,5,0.3)';
+              midCtx.fillRect(575, 310, 30, 40);
               
             } else {
             const drawIsland = (x, y, w, h, underH) => {
@@ -2554,6 +2665,27 @@ class MarioGame {
               block.fillStyle(0x7c3aed, 0.2);
               block.fillRect(p.x + 2, p.y + 5, p.w - 4, 1);
               block.lineStyle(1.5, 0x8b5cf6, 0.7);
+              block.strokeRect(p.x, p.y, p.w, p.h);
+            } else if (biome === 'prairie') {
+              // Prairie platform — warm wood with grass top
+              block.fillStyle(0x6B4226, 0.9);
+              block.fillRect(p.x, p.y, p.w, p.h);
+              block.fillStyle(0x7a4f30, 0.5);
+              block.fillRect(p.x, p.y + 2, p.w, p.h - 4);
+              // Grass top edge
+              block.fillStyle(0x5a8f3c, 0.7);
+              block.fillRect(p.x, p.y, p.w, 5);
+              block.fillStyle(0x4a7c2e, 0.5);
+              block.fillRect(p.x, p.y, p.w, 2);
+              // Wood grain lines
+              block.fillStyle(0x4a2a15, 0.2);
+              for (let wx = p.x + 4; wx < p.x + p.w - 4; wx += 10) {
+                block.fillRect(wx, p.y + 7, 2, p.h - 10);
+              }
+              // Wood knot
+              block.fillStyle(0x3a1a0a, 0.15);
+              block.fillRect(p.x + p.w/2 - 3, p.y + p.h/2 - 2, 6, 4);
+              block.lineStyle(1.5, 0x5c3a1e, 0.7);
               block.strokeRect(p.x, p.y, p.w, p.h);
             } else {
                   toothGfx.fillStyle(0x5c4020, 0.9);
@@ -3569,6 +3701,104 @@ class MarioGame {
             }
           }
 
+          // --- CHESS ROOM (level 4 — El Caballo Salvaje) ---
+          if (biome === 'prairie' && levelDef.chessRoom && !scene.chessCompleted) {
+            const cr = levelDef.chessRoom;
+            if (scene.player.x > cr.triggerX && !scene.chessActive) {
+              scene.chessActive = true;
+              scene.player.body.setVelocity(0, 0);
+              scene.player.invincibility = 999;
+              
+              // Create simple walls
+              if (!scene.chessWalls) {
+                scene.chessWalls = scene.physics.add.staticGroup();
+                const ww = 20;
+                const wL = scene.add.rectangle(cr.roomLeft, 250, ww, 380, 0x8B6914, 0.6);
+                scene.physics.add.existing(wL, true); wL.body.setSize(ww, 380);
+                scene.chessWalls.add(wL);
+                const wR = scene.add.rectangle(cr.roomRight, 250, ww, 380, 0x8B6914, 0.6);
+                scene.physics.add.existing(wR, true); wR.body.setSize(ww, 380);
+                scene.chessWalls.add(wR);
+                const wT = scene.add.rectangle(cr.roomLeft + (cr.roomRight-cr.roomLeft)/2, 70, cr.roomRight-cr.roomLeft+ww*2, 24, 0x8B6914, 0.6);
+                scene.physics.add.existing(wT, true); wT.body.setSize(cr.roomRight-cr.roomLeft+ww*2, 24);
+                scene.chessWalls.add(wT);
+                scene.physics.add.collider(scene.player, scene.chessWalls);
+              }
+              
+              // Show status
+              const statusEl = document.createElement('div');
+              statusEl.id = 'chess-prestatus';
+              statusEl.style.cssText = 'position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);z-index:60;color:#daa520;font-family:Outfit,sans-serif;font-size:24px;font-weight:800;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,0.8);';
+              statusEl.textContent = '🐴 Equis te desafía...';
+              document.getElementById('phaser-game-parent').appendChild(statusEl);
+              
+              self.stopMusic();
+              
+              setTimeout(() => {
+                const el = document.getElementById('chess-prestatus');
+                if (el) el.remove();
+                
+                self.chessDuel = new window.ChessDuel(
+                  document.getElementById('phaser-game-parent'),
+                  () => { // ON WIN
+                    scene.chessCompleted = true;
+                    if (scene.chessWalls) {
+                      scene.chessWalls.getChildren().forEach(w => w.destroy());
+                      scene.chessWalls = null;
+                    }
+                    self.chessDuel = null;
+                    scene.player.invincibility = 60;
+                    self.startMusic();
+                    // Show goal
+                    if (!scene.whiteQueen) {
+                      const gx = (levelDef.goal && levelDef.goal.portalX) || 2330;
+                      const gy = (levelDef.goal && levelDef.goal.portalY) || 245;
+                      scene.whiteQueen = scene.physics.add.staticSprite(gx, gy, 'white_queen');
+                      scene.whiteQueen.setDisplaySize(60, 120);
+                      scene.whiteQueen.setDepth(2);
+                      scene.physics.add.overlap(scene.player, scene.whiteQueen, () => {
+                        if (self.player.isAscending) return;
+                        self.player.isAscending = true;
+                        self.completeLevel();
+                        scene.particles.stop();
+                        scene.player.body.setVelocity(0, -60);
+                        scene.player.body.allowGravity = false;
+                        const vt = scene.add.text(scene.player.x, scene.player.y-130, "¡JAQUE MATE!\nDespertando...", {
+                          fontFamily:"'Outfit',sans-serif",fontSize:'22px',fontStyle:'bold',
+                          fill:'#fbbf24',stroke:'#1e0b3b',strokeThickness:5,align:'center'
+                        }).setOrigin(0.5).setDepth(10);
+                        for (let i=0;i<30;i++) {
+                          scene.time.delayedCall(i*40,()=>{
+                            if(!scene.player.active)return;
+                            const a=i*0.35,r=25-i*0.2;
+                            const sp=scene.add.circle(scene.player.x+Math.cos(a)*Math.max(3,r),scene.player.y+Math.sin(a)*Math.max(3,r),Math.random()*2+1.5,0xfacc15,0.9);
+                            scene.physics.add.existing(sp,false);sp.body.allowGravity=false;sp.body.setVelocityY(-100);
+                            scene.tweens.add({targets:sp,alpha:0,scale:0.1,duration:700,onComplete:()=>sp.destroy()});
+                          });
+                        }
+                        scene.tweens.add({targets:scene.player,angle:1080,scaleX:0.05,scaleY:0.05,alpha:0,y:scene.player.y-120,duration:2200,ease:'Quad.easeOut',onComplete:()=>{vt.destroy();self.showVictoryScreen(true);}});
+                      });
+                    }
+                  },
+                  () => { // ON LOSE
+                    self.chessDuel = null;
+                    self.lives--;
+                    document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
+                    scene.player.invincibility = 60;
+                    scene.player.body.setVelocityX(-150);
+                    scene.player.body.setVelocityY(-100);
+                    self.synthesizeSound('damage');
+                    scene.doDamageAnim();
+                    scene.chessActive = false;
+                    self.startMusic();
+                    if (self.lives <= 0) self.gameOver();
+                  }
+                );
+                self.chessDuel.start();
+              }, 1200);
+            }
+          }
+
           // Spin the magical chess portal of the 64 squares!
           if (scene.portal) {
             scene.portal.angle += 0.6; // smooth rotation
@@ -4023,6 +4253,29 @@ class MarioGame {
         87.31, 0, 0, 0, 87.31, 0, 0, 0
       ];
       tempo = 190;
+    } else if (this.currentLevelIndex === 3) {
+      // Level 4 — Prairie folk theme (D major, cheerful, acoustic)
+      melody = [
+        587.33, 0, 587.33, 659.25, 587.33, 523.25, 440.00, 0,
+        440.00, 523.25, 587.33, 0, 523.25, 440.00, 392.00, 0,
+        392.00, 0, 440.00, 523.25, 440.00, 392.00, 349.23, 0,
+        349.23, 392.00, 440.00, 0, 392.00, 349.23, 293.66, 0,
+        587.33, 659.25, 783.99, 0, 659.25, 587.33, 523.25, 0,
+        523.25, 587.33, 659.25, 0, 587.33, 523.25, 440.00, 0,
+        440.00, 523.25, 587.33, 659.25, 783.99, 659.25, 587.33, 0,
+        523.25, 440.00, 392.00, 349.23, 293.66, 349.23, 392.00, 440.00
+      ];
+      bass = [
+        146.83, 0, 0, 0, 146.83, 0, 0, 0,
+        110.00, 0, 0, 0, 110.00, 0, 0, 0,
+        98.00,  0, 0, 0, 98.00,  0, 0, 0,
+        87.31,  0, 0, 0, 87.31,  0, 0, 0,
+        146.83, 0, 0, 0, 146.83, 0, 0, 0,
+        130.81, 0, 0, 0, 130.81, 0, 0, 0,
+        110.00, 0, 0, 0, 110.00, 0, 0, 0,
+        73.42,  0, 0, 0, 73.42,  0, 0, 0
+      ];
+      tempo = 200;
     } else {
       // Level 1 — Dreamy, ethereal, minor-mode fairy tale chords
       melody = [

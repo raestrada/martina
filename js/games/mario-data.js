@@ -7,7 +7,8 @@ window.MartinaLevels = {
   maxScore: {
     0: 9900,
     1: 9900,
-    2: 9900
+    2: 9900,
+    3: 9900
   },
 
   levels: [
@@ -292,6 +293,90 @@ window.MartinaLevels = {
       goal: {
         type: 'neon_portal',
         portalX: 2550, portalY: 245
+      }
+    },
+
+    // ================================================================
+    // LEVEL 4 — "El Caballo Salvaje" — Prairie / Stable
+    // ================================================================
+    {
+      biome: 'prairie',
+      worldWidth: 2400,
+      backgroundColor: '#87CEEB',
+
+      platformsData: [
+        // Ground — dirt & grass
+        { x: 0, y: 410, w: 700, h: 40 },
+        { x: 850, y: 410, w: 600, h: 40 },
+        { x: 1600, y: 410, w: 500, h: 40 },
+        // Chess room floor
+        { x: 2150, y: 410, w: 250, h: 40 },
+
+        // Floating wooden platforms — L-shaped knight jump arrangements
+        { x: 200, y: 300, w: 100, h: 16 },
+        { x: 400, y: 220, w: 90, h: 16 },
+        { x: 620, y: 310, w: 100, h: 16 },
+        { x: 860, y: 290, w: 110, h: 16 },
+        { x: 1050, y: 210, w: 90, h: 16 },
+        { x: 1250, y: 300, w: 100, h: 16 },
+        { x: 1450, y: 240, w: 80, h: 16 },
+        { x: 1650, y: 300, w: 100, h: 16 },
+        { x: 1820, y: 250, w: 80, h: 16 },
+        { x: 1970, y: 310, w: 100, h: 16 }
+      ],
+
+      coinsData: [
+        { x: 230, y: 250 }, { x: 260, y: 250 }, { x: 290, y: 250 },
+        { x: 450, y: 170 },
+        { x: 660, y: 260 }, { x: 690, y: 260 },
+        { x: 900, y: 240 }, { x: 930, y: 240 },
+        { x: 1090, y: 160 },
+        { x: 1290, y: 250 }, { x: 1320, y: 250 },
+        { x: 1500, y: 190 },
+        { x: 1690, y: 250 }, { x: 1720, y: 250 },
+        { x: 1870, y: 200 },
+        // Ground coins
+        { x: 180, y: 370 }, { x: 220, y: 370 }, { x: 260, y: 370 },
+        { x: 380, y: 370 }, { x: 420, y: 370 },
+        { x: 540, y: 370 }, { x: 580, y: 370 },
+        { x: 920, y: 370 }, { x: 960, y: 370 }, { x: 1000, y: 370 },
+        { x: 1140, y: 370 }, { x: 1180, y: 370 },
+        { x: 1320, y: 370 }, { x: 1360, y: 370 },
+        { x: 1680, y: 370 }, { x: 1720, y: 370 }, { x: 1760, y: 370 },
+        { x: 1880, y: 370 }, { x: 1920, y: 370 },
+        // Chess room approach
+        { x: 2200, y: 360 }, { x: 2250, y: 360 }, { x: 2300, y: 360 }
+      ],
+
+      enemiesData: [
+        { x: 320, y: 360, left: 100, right: 550, speed: 70 },
+        { x: 580, y: 360, left: 480, right: 680, speed: 65 },
+        { x: 1020, y: 360, left: 880, right: 1280, speed: 75 },
+        { x: 1400, y: 360, left: 1280, right: 1580, speed: 70 }
+      ],
+
+      airEnemiesData: [
+        { x: 450, y: 140, pattern: 'horizontal', minX: 350, maxX: 600, speed: 72 },
+        { x: 1150, y: 130, pattern: 'diagonal', minX: 1000, maxX: 1300, minY: 100, maxY: 190, speed: 70, speedY: 50 }
+      ],
+
+      crownsData: [
+        { x: 500, y: 120 },
+        { x: 1100, y: 100 },
+        { x: 1700, y: 150 }
+      ],
+
+      // Chess duel room instead of boss
+      chessRoom: {
+        triggerX: 2100,
+        roomLeft: 2080,
+        roomRight: 2400,
+        elo: 300
+      },
+
+      goal: {
+        type: 'chess_victory',
+        portalX: 2330, portalY: 245
       }
     }
   ]
