@@ -2116,6 +2116,44 @@ class MarioGame {
           
           self.player = scene.player;
 
+          // Damage animation helper — red flash, particles, scale punch, camera shake
+          scene.doDamageAnim = () => {
+            const p = scene.player;
+            // Red tint flash
+            p.setTint(0xff4444);
+            scene.time.delayedCall(100, () => {
+              if (p.active) p.clearTint();
+            });
+            // Scale punch
+            p.setDisplaySize(22, 68);
+            scene.tweens.add({
+              targets: p,
+              displayWidth: 38,
+              displayHeight: 56,
+              duration: 300,
+              ease: 'Back.easeOut'
+            });
+            // Red damage particles burst
+            for (let i = 0; i < 10; i++) {
+              const angle = (i / 10) * Math.PI * 2 + Math.random() * 0.5;
+              const speed = 60 + Math.random() * 100;
+              const dp = scene.add.circle(p.x, p.y, Math.random() * 2.5 + 1.5, 0xff4444, 0.85);
+              scene.physics.add.existing(dp, false);
+              dp.body.allowGravity = true;
+              dp.body.setGravityY(300);
+              dp.body.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed - 60);
+              scene.tweens.add({
+                targets: dp,
+                alpha: 0,
+                scale: 0.1,
+                duration: 500 + Math.random() * 200,
+                onComplete: () => dp.destroy()
+              });
+            }
+            // Camera shake
+            scene.cameras.main.shake(120, 0.006);
+          };
+
           // Register procedural animations for Martina (Hollow Knight / Celeste style)
           if (!scene.anims.exists('martina-run')) {
             scene.anims.create({
@@ -2569,10 +2607,11 @@ class MarioGame {
               // Martina takes damage
               if (player.invincibility === 0) {
                 self.lives--;
-                player.invincibility = 60; // 1 second
+                player.invincibility = 60;
                 player.body.setVelocityX(player.x < enemy.x ? -250 : 250);
                 player.body.setVelocityY(-150);
                 self.synthesizeSound('damage');
+                scene.doDamageAnim();
                 
                 document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
 
@@ -2587,10 +2626,11 @@ class MarioGame {
           scene.physics.add.overlap(scene.player, scene.airEnemies, (player, ae) => {
             if (player.invincibility === 0) {
               self.lives--;
-              player.invincibility = 60; // 1 second
+              player.invincibility = 60;
               player.body.setVelocityX(player.x < ae.x ? -220 : 220);
               player.body.setVelocityY(-150);
               self.synthesizeSound('damage');
+              scene.doDamageAnim();
               
               document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
               
@@ -2931,6 +2971,7 @@ class MarioGame {
           if (scene.player.y > 450) {
             self.lives--;
             self.synthesizeSound('damage');
+            scene.doDamageAnim();
             document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
             
             if (self.lives > 0) {
