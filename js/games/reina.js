@@ -567,25 +567,30 @@ class ReinaGame {
 
     // Tick Sneeze timer down
     this.sneezeTimer--;
-    
+
+    // Check if he landed on the tissue box first (win condition!)
+    if (coord === level.tissueBox && this.mustachesCollected.length === level.mustaches.length) {
+      this.updateStatsDisplay();
+      this.renderBoard();
+      setTimeout(() => this.victory(), 250);
+      return;
+    }
+
     if (this.sneezeTimer <= 0) {
-      this.detonateSneeze();
+      // 1. Disable active state and clear all green path dots immediately
+      this.gameActive = false;
+      this.updateStatsDisplay();
+      this.renderBoard(); // Renders with gameActive=false, clearing path dots!
+
+      // 2. Short 250ms cinematic delay so Peoncito is seen safe in his new tile before sneeze strikes
+      setTimeout(() => {
+        this.detonateSneeze();
+      }, 250);
     } else {
       // Periodic Reina movements on high ranks to keep it highly dynamic
       this.moveReinaRandomly();
       this.updateStatsDisplay();
       this.renderBoard();
-    }
-
-    // Win condition check: collected all mustaches and reached tissue box
-    if (coord === level.tissueBox) {
-      if (this.mustachesCollected.length === level.mustaches.length) {
-        this.victory();
-      } else {
-        // Show informative prompt
-        this.updateStatsDisplay();
-        this.renderBoard();
-      }
     }
   }
 
@@ -599,7 +604,6 @@ class ReinaGame {
 
   // --- SNEEZE DETONATOR ENGINE ---
   detonateSneeze() {
-    this.gameActive = false;
     const level = this.levels[this.currentLevelIndex];
     const warnings = this.getSneezeWarningSquares(level, this.coordsToName(this.reinaPos.r, this.reinaPos.c));
     const peoncitoCoord = this.coordsToName(this.peoncitoPos.r, this.peoncitoPos.c);
@@ -622,12 +626,25 @@ class ReinaGame {
     const gotHit = warnings.includes(peoncitoCoord);
     
     setTimeout(() => {
+      // Remove blast classes
+      if (boardDOM) {
+        warnings.forEach(coord => {
+          const sq = boardDOM.querySelector(`[data-coord="${coord}"]`);
+          if (sq) {
+            sq.classList.remove('square-sneeze-blast');
+          }
+        });
+      }
+
       if (gotHit) {
         this.lives--;
         window.GameAudio.playError();
         if (this.lives <= 0) {
           this.gameOver();
           return;
+        } else {
+          // Reset position to level start
+          this.peoncitoPos = this.nameToCoords(level.startPos);
         }
       }
       
