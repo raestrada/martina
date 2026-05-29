@@ -374,6 +374,12 @@ window.MartinaLevels = {
         elo: 300
       },
 
+      // Wild knight L-jump hazards (unique level 4 mechanic)
+      knightData: [
+        { startX: 350, startY: 280, patrolMinX: 200, patrolMaxX: 650, patrolMinY: 200, patrolMaxY: 370, jumpInterval: 90 },
+        { startX: 1200, startY: 300, patrolMinX: 900, patrolMaxX: 1500, patrolMinY: 200, patrolMaxY: 370, jumpInterval: 75 }
+      ],
+
       goal: {
         type: 'chess_victory',
         portalX: 2330, portalY: 245

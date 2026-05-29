@@ -220,7 +220,9 @@ window.ChessDuel = class ChessDuel {
 
   // --- EXECUTE A MOVE (with validation) ---
   executeMove(uciMove, isPlayer) {
-    if (this.gameOver || this.isThinking) return;
+    if (this.gameOver) return;
+    // Only block player moves while thinking, not engine moves
+    if (isPlayer && this.isThinking) return;
     
     const fromC = uciMove.charCodeAt(0) - 97;
     const fromR = 8 - parseInt(uciMove[1]);

@@ -2244,6 +2244,44 @@ class MarioGame {
               
               scene.textures.addCanvas('boss_alfil', bCanvas);
             }
+            
+            // Wild knight texture (L-jump hazard for level 4)
+            if (!scene.textures.exists('wild_knight')) {
+              const wkCanvas = document.createElement('canvas');
+              wkCanvas.width = 40;
+              wkCanvas.height = 44;
+              const wkCtx = wkCanvas.getContext('2d');
+              // Knight body
+              wkCtx.fillStyle = '#5c3a1e';
+              wkCtx.beginPath();
+              wkCtx.moveTo(20, 44);
+              wkCtx.quadraticCurveTo(14, 30, 18, 20);
+              wkCtx.quadraticCurveTo(12, 10, 14, 4);
+              wkCtx.lineTo(18, 0);
+              wkCtx.lineTo(21, 10);
+              wkCtx.quadraticCurveTo(30, 8, 34, 14);
+              wkCtx.quadraticCurveTo(38, 18, 36, 24);
+              wkCtx.lineTo(28, 24);
+              wkCtx.quadraticCurveTo(26, 34, 28, 44);
+              wkCtx.closePath();
+              wkCtx.fill();
+              // Eye
+              wkCtx.fillStyle = '#fff';
+              wkCtx.beginPath(); wkCtx.arc(26, 12, 2.5, 0, Math.PI*2); wkCtx.fill();
+              wkCtx.fillStyle = '#000';
+              wkCtx.beginPath(); wkCtx.arc(26, 12, 1.2, 0, Math.PI*2); wkCtx.fill();
+              // Mane
+              wkCtx.fillStyle = '#3a1f0a';
+              wkCtx.beginPath();
+              wkCtx.moveTo(14, 4); wkCtx.quadraticCurveTo(8, 8, 10, 16);
+              wkCtx.quadraticCurveTo(12, 12, 14, 4);
+              wkCtx.fill();
+              // Red glow (hazard indicator)
+              wkCtx.fillStyle = 'rgba(255,60,30,0.4)';
+              wkCtx.beginPath(); wkCtx.arc(20, 22, 16, 0, Math.PI*2); wkCtx.fill();
+              
+              scene.textures.addCanvas('wild_knight', wkCanvas);
+            }
           }
           
           // 1. Triple Parallax magical background
@@ -2836,6 +2874,31 @@ class MarioGame {
             
             // Collider: player vs boss walls
             scene.physics.add.collider(scene.player, scene.bossWalls);
+          }
+
+          // 6.10 Wild Knight L-Jump Hazards (level 4 prairie mechanic)
+          scene.wildKnights = [];
+          if (biome === 'prairie' && levelDef.knightData) {
+            levelDef.knightData.forEach(kd => {
+              const knight = scene.physics.add.sprite(kd.startX, kd.startY, 'wild_knight');
+              knight.setDisplaySize(36, 40);
+              knight.setSize(28, 34);
+              knight.setDepth(4);
+              knight.body.allowGravity = false;
+              knight.body.setImmovable(true);
+              knight.kd = kd;
+              knight.jumpTimer = 0;
+              knight.targetX = kd.startX;
+              knight.targetY = kd.startY;
+              // L-jump offsets (knight moves: 2+1 pattern)
+              knight.lJumps = [
+                { dx: 80, dy: -40 }, { dx: 80, dy: 40 },
+                { dx: -80, dy: -40 }, { dx: -80, dy: 40 },
+                { dx: 40, dy: -80 }, { dx: 40, dy: 80 },
+                { dx: -40, dy: -80 }, { dx: -40, dy: 80 }
+              ];
+              scene.wildKnights.push(knight);
+            });
           }
 
           // 7. Goal — biome-specific (Portal+Queen for grass, Trophy for clockwork)
@@ -3702,12 +3765,54 @@ class MarioGame {
           }
 
           // --- CHESS ROOM (level 4 — El Caballo Salvaje) ---
+          
+          // Wild Knight L-jump patrol
+          if (scene.wildKnights) {
+            scene.wildKnights.forEach(knight => {
+              if (!knight.active) return;
+              knight.jumpTimer++;
+              if (knight.jumpTimer >= knight.kd.jumpInterval) {
+                knight.jumpTimer = 0;
+                // Pick a random L-jump
+                const jump = knight.lJumps[Math.floor(Math.random() * knight.lJumps.length)];
+                knight.targetX = Phaser.Math.Clamp(knight.x + jump.dx, knight.kd.patrolMinX, knight.kd.patrolMaxX);
+                knight.targetY = Phaser.Math.Clamp(knight.y + jump.dy, knight.kd.patrolMinY, knight.kd.patrolMaxY);
+                // Visual tween for smooth jump
+                scene.tweens.add({
+                  targets: knight,
+                  x: knight.targetX,
+                  y: knight.targetY,
+                  duration: 500,
+                  ease: 'Quad.easeInOut'
+                });
+              }
+              // Damage on contact
+              if (scene.player.invincibility === 0) {
+                const dx = scene.player.x - knight.x;
+                const dy = scene.player.y - knight.y;
+                if (Math.sqrt(dx*dx+dy*dy) < 30) {
+                  self.lives--;
+                  scene.player.invincibility = 60;
+                  scene.player.body.setVelocityX(scene.player.x < knight.x ? -180 : 180);
+                  scene.player.body.setVelocityY(-150);
+                  self.synthesizeSound('damage');
+                  scene.doDamageAnim();
+                  document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
+                  if (self.lives <= 0) self.gameOver();
+                }
+              }
+            });
+          }
+          
           if (biome === 'prairie' && levelDef.chessRoom && !scene.chessCompleted) {
             const cr = levelDef.chessRoom;
             if (scene.player.x > cr.triggerX && !scene.chessActive) {
               scene.chessActive = true;
+              // Freeze player completely during chess duel
               scene.player.body.setVelocity(0, 0);
+              scene.player.body.allowGravity = false;
               scene.player.invincibility = 999;
+              scene.player.setAlpha(0.3); // visual feedback: paused
               
               // Create simple walls
               if (!scene.chessWalls) {
@@ -3742,6 +3847,9 @@ class MarioGame {
                   document.getElementById('phaser-game-parent'),
                   () => { // ON WIN
                     scene.chessCompleted = true;
+                    scene.player.body.allowGravity = true;
+                    scene.player.setAlpha(1);
+                    scene.player.invincibility = 60;
                     if (scene.chessWalls) {
                       scene.chessWalls.getChildren().forEach(w => w.destroy());
                       scene.chessWalls = null;
@@ -3783,6 +3891,9 @@ class MarioGame {
                   () => { // ON LOSE
                     self.chessDuel = null;
                     self.lives--;
+                    scene.player.body.allowGravity = true;
+                    scene.player.setAlpha(1);
+                    scene.chessActive = false;
                     document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
                     scene.player.invincibility = 60;
                     scene.player.body.setVelocityX(-150);
@@ -3854,6 +3965,9 @@ class MarioGame {
           }
 
           if (self.player.isSliding) return;
+
+          // Block all input while chess duel is active
+          if (scene.chessActive && !scene.chessCompleted) return;
 
           // Track last safe ground position for pit respawn
           if (scene.player.body.touching.down && scene.player.y < 400) {
