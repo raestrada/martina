@@ -759,7 +759,7 @@ class ChessBoxGame {
     if (this.selectedDifficulty === 'martina') { speedMod = 0.70; hpMod = 1.5; }
 
     const finalPunchSpeed = currentLevel.punchSpeed * speedMod;
-    const maxOpponentHP = Math.round(currentLevel.hp * hpMod * 2.0); // perfectly balanced to 2.0x for realistic yet challenging K.O. opportunity!
+    const maxOpponentHP = Math.round(currentLevel.hp * hpMod * 2.5); // balanced to 2.5x to prevent first-round K.O.s and force playing chess!
 
     const config = {
       type: Phaser.AUTO,
@@ -1084,7 +1084,7 @@ class ChessBoxGame {
             if (scene.opponentState === 'stunned') {
               // Stunned opponent takes massive critical damage! (balanced from 12 to 8)
               scene.opponentHP -= 8;
-              self.playerSuperPower = Math.min(100, self.playerSuperPower + 16); // charge Dempsey (balanced rate)
+              self.playerSuperPower = Math.min(100, self.playerSuperPower + 8); // charge Dempsey (highly balanced rate)
               self.hitsLandedThisRound++;
               self.totalPunchesLanded++;
               window.GameAudio.playSuccess();
@@ -1122,7 +1122,7 @@ class ChessBoxGame {
             } else if (scene.opponentState === 'telegraphing-l' || scene.opponentState === 'telegraphing-r') {
               // Opponent gets interrupted if caught preparing a punch! Clean hit! (balanced from 8 to 6)
               scene.opponentHP -= 6;
-              self.playerSuperPower = Math.min(100, self.playerSuperPower + 20); // massive Dempsey charge (balanced rate)
+              self.playerSuperPower = Math.min(100, self.playerSuperPower + 10); // massive Dempsey charge (highly balanced rate)
               self.hitsLandedThisRound++;
               self.totalPunchesLanded++;
               window.GameAudio.playSuccess();
@@ -1210,7 +1210,7 @@ class ChessBoxGame {
               // Block damage reduction
               scene.playerState = 'idle';
               self.playerHealth = Math.max(0, self.playerHealth - damage * 0.2);
-              self.playerSuperPower = Math.min(100, self.playerSuperPower + 12); // charge Dempsey (balanced rate)
+              self.playerSuperPower = Math.min(100, self.playerSuperPower + 5); // charge Dempsey (highly balanced rate)
               window.GameAudio.playMove();
               scene.addTextEffect(400, 310, "🛡️ ¡BLOQUEADO!", "#38bdf8");
               scene.spawnSparkleParticles(400, 340, '#38bdf8');
@@ -1218,7 +1218,7 @@ class ChessBoxGame {
                        (side === 'right' && scene.playerState === 'dodging-r')) {
               // Dodged perfectly!
               scene.addTextEffect(400, 310, "💨 ¡ESQUIVADO!", "#4ade80");
-              self.playerSuperPower = Math.min(100, self.playerSuperPower + 25); // massive Dempsey dodge charge (balanced rate)
+              self.playerSuperPower = Math.min(100, self.playerSuperPower + 15); // massive Dempsey dodge charge (highly balanced rate)
               
               // Opponent gets stunned for counter-attack
               scene.opponentState = 'stunned';
