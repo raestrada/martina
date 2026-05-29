@@ -112,7 +112,7 @@ class ChessBoxGame {
 
     let melody = [];
     let bass = [];
-    let tempo = 160; // 160ms per step (Heavier, slower chugging metal tempo)
+    let tempo = 190; // 190ms per step (Slower, heavier chugging metal groove)
 
     if (type === 'boxing') {
       // High-energy epic heavy metal anthem in A minor (Hajime no Ippo style chord progression)
@@ -1084,7 +1084,7 @@ class ChessBoxGame {
             if (scene.opponentState === 'stunned') {
               // Stunned opponent takes massive critical damage!
               scene.opponentHP -= 6;
-              self.playerSuperPower = Math.min(100, self.playerSuperPower + 12); // charge Dempsey
+              self.playerSuperPower = Math.min(100, self.playerSuperPower + 30); // charge Dempsey faster
               self.hitsLandedThisRound++;
               self.totalPunchesLanded++;
               window.GameAudio.playSuccess();
@@ -1116,11 +1116,11 @@ class ChessBoxGame {
               // Idle opponent blocks punches easily
               window.GameAudio.playMove();
               scene.addTextEffect(400, 140, "¡BLOQUEADO!", "#cbd5e1");
-              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 8); // charge opponent
+              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 20); // charge opponent
             } else if (scene.opponentState === 'telegraphing-l' || scene.opponentState === 'telegraphing-r') {
               // Opponent gets interrupted if caught preparing a punch! Clean hit!
               scene.opponentHP -= 4;
-              self.playerSuperPower = Math.min(100, self.playerSuperPower + 15); // massive Dempsey charge
+              self.playerSuperPower = Math.min(100, self.playerSuperPower + 35); // massive Dempsey charge
               self.hitsLandedThisRound++;
               self.totalPunchesLanded++;
               window.GameAudio.playSuccess();
@@ -1208,7 +1208,7 @@ class ChessBoxGame {
               // Block damage reduction
               scene.playerState = 'idle';
               self.playerHealth = Math.max(0, self.playerHealth - damage * 0.2);
-              self.playerSuperPower = Math.min(100, self.playerSuperPower + 10); // charge Dempsey
+              self.playerSuperPower = Math.min(100, self.playerSuperPower + 25); // charge Dempsey faster
               window.GameAudio.playMove();
               scene.addTextEffect(400, 310, "🛡️ ¡BLOQUEADO!", "#38bdf8");
               scene.spawnSparkleParticles(400, 340, '#38bdf8');
@@ -1216,7 +1216,7 @@ class ChessBoxGame {
                        (side === 'right' && scene.playerState === 'dodging-r')) {
               // Dodged perfectly!
               scene.addTextEffect(400, 310, "💨 ¡ESQUIVADO!", "#4ade80");
-              self.playerSuperPower = Math.min(100, self.playerSuperPower + 20); // massive Dempsey dodge charge
+              self.playerSuperPower = Math.min(100, self.playerSuperPower + 45); // massive Dempsey dodge charge
               
               // Opponent gets stunned for counter-attack
               scene.opponentState = 'stunned';
@@ -1226,7 +1226,7 @@ class ChessBoxGame {
             } else {
               // Clean impact! Player takes damage and flinches!
               self.playerHealth = Math.max(0, self.playerHealth - damage);
-              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 15); // charge opponent super
+              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 35); // charge opponent super faster
               self.hitsReceivedThisRound++;
               self.totalPunchesReceived++;
               window.GameAudio.playError();
