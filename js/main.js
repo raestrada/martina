@@ -1,5 +1,10 @@
 // Martina · Cuentos para Dormir
-// Simple interactions: active nav link, fade animations, hamburger menu
+// Simple interactions: active nav link, fade animations, hamburger menu, PWA
+
+// Register service worker for PWA
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   // Hamburger menu toggle for mobile
