@@ -80,7 +80,7 @@ class CaballoGame {
         ice: [],
         lava: [],
         trophy: 'e7',
-        startPos: { r: 7, c: 0 } // a1
+        startPos: { r: 7, c: 1 } // b1
       },
       {
         name: "El Desierto de D5",
@@ -142,8 +142,8 @@ class CaballoGame {
         description: "El rey enemigo ha fortificado el enroque corto. Salta los muros helados para reclamar tu premio.",
         moves: 16,
         carrots: ['f7', 'h7', 'g6', 'f8', 'h8'],
-        obstacles: ['f6', 'g7', 'h6', 'e7', 'e8'],
-        ice: ['f6', 'g7', 'h6', 'e7', 'e8'],
+        obstacles: ['g7', 'h6', 'e7', 'e8'],
+        ice: ['g7', 'h6', 'e7', 'e8'],
         lava: [],
         trophy: 'g8',
         startPos: { r: 7, c: 1 } // b1
