@@ -2734,80 +2734,57 @@ class MarioGame {
               }
               
           } else {
-          // 7. Chess-Themed Goal: The Magical Portal, Majestic White Queen and friendly Peoncito!
-          // 7.1. Portal of the 64 Casillas (Magical spinning gateway in the background)
-          scene.portal = scene.add.sprite(2150, 245, 'portal_texture');
+          // 7. Chess-Themed Goal: Portal + White Queen + Peoncito
+          const gx = (levelDef.goal && levelDef.goal.portalX) || 2150;
+          const gy = (levelDef.goal && levelDef.goal.portalY) || 245;
+          // 7.1. Portal
+          scene.portal = scene.add.sprite(gx, gy, 'portal_texture');
           scene.portal.setDisplaySize(175, 175);
           scene.portal.setDepth(1);
-          
-          // Outer magical portal glow
           scene.portalGlow = scene.add.graphics();
-          scene.portalGlow.fillStyle(0x7e22ce, 0.15); // purple backdrop glow
+          scene.portalGlow.fillStyle(0x7e22ce, 0.15);
           scene.portalGlow.beginPath();
-          scene.portalGlow.arc(2150, 245, 100, 0, Math.PI * 2);
+          scene.portalGlow.arc(gx, gy, 100, 0, Math.PI * 2);
           scene.portalGlow.fill();
           scene.portalGlow.setDepth(0);
-
-          // 7.2. Highly Refined Majestic White Queen Physics Sprite!
-          scene.whiteQueen = scene.physics.add.staticSprite(2150, 245, 'white_queen');
+          // 7.2. White Queen
+          scene.whiteQueen = scene.physics.add.staticSprite(gx, gy, 'white_queen');
           scene.whiteQueen.setDisplaySize(60, 120);
           scene.whiteQueen.body.setSize(44, 120);
           scene.whiteQueen.body.setOffset(8, 0);
           scene.whiteQueen.setDepth(2);
-          
-           // Add a soft golden glow behind the White Queen!
           scene.queenGlow = scene.add.graphics();
           scene.queenGlow.fillStyle(0xfacc15, 0.08);
           scene.queenGlow.beginPath();
-          scene.queenGlow.arc(2150, 245, 90, 0, Math.PI * 2);
+          scene.queenGlow.arc(gx, gy, 90, 0, Math.PI * 2);
           scene.queenGlow.fill();
           scene.queenGlow.setDepth(1);
-          
-          // Floating ambient sparkles around the Queen & portal
           for (let i = 0; i < 18; i++) {
             const sa = (i * Math.PI * 2) / 18;
             const sr = 65 + Math.random() * 45;
-            const sx = 2150 + Math.cos(sa) * sr;
-            const sy = 245 + Math.sin(sa) * sr;
+            const sx = gx + Math.cos(sa) * sr;
+            const sy = gy + Math.sin(sa) * sr;
             const sc = scene.add.circle(sx, sy, Math.random() * 1.8 + 0.8, i % 3 === 0 ? 0xfef08a : 0x22d3ee, 0.4);
             sc.setDepth(3);
             scene.tweens.add({
-              targets: sc,
-              y: sy - 10,
-              alpha: 0.15,
-              scale: 0.5,
-              duration: 1200 + Math.random() * 600,
-              yoyo: true,
-              repeat: -1,
-              ease: 'Sine.easeInOut',
-              delay: i * 100
+              targets: sc, y: sy - 10, alpha: 0.15, scale: 0.5,
+              duration: 1200 + Math.random() * 600, yoyo: true, repeat: -1,
+              ease: 'Sine.easeInOut', delay: i * 100
             });
           }
-          
-          // 7.3. Friendly Translucent Crystal Peoncito Goal Sprite!
-          scene.peoncitoGoal = scene.add.sprite(2070, 290, 'peoncito_friendly');
+          // 7.3. Peoncito
+          scene.peoncitoGoal = scene.add.sprite(gx - 80, gy + 45, 'peoncito_friendly');
           scene.peoncitoGoal.setDisplaySize(32, 42);
           scene.peoncitoGoal.setDepth(2);
-          
-          // Floating and breathing animations for Peoncito to make him tierno and alive!
           scene.tweens.add({
             targets: scene.peoncitoGoal,
-            y: 280, // gentle float up
-            angle: 5, // gentle wobble tilt
-            duration: 1600,
-            yoyo: true,
-            repeat: -1,
-            ease: 'Sine.easeInOut'
+            y: gy + 35, angle: 5,
+            duration: 1600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut'
           });
-          
           scene.tweens.add({
             targets: scene.peoncitoGoal,
-            scaleX: 1.06,
-            scaleY: 0.94,
-            duration: 1000,
-            yoyo: true,
-            repeat: -1,
-            ease: 'Sine.easeInOut'
+            scaleX: 1.06, scaleY: 0.94,
+            duration: 1000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut'
           });
 
           } // end biome goal if/else
