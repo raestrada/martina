@@ -269,10 +269,28 @@ window.ChessDuel = class ChessDuel {
     
     this.renderBoard();
     
-    // Check game over
+    // Check game over — verify if any legal move exists (king safety)
     const nextColor = this.turn;
     const allMoves = this.getAllLegalMoves(nextColor);
-    if (allMoves.length === 0) {
+    let hasLegalMove = false;
+    for (const move of allMoves) {
+      const savedFEN = this.fen;
+      const savedHistory = [...this.moveHistory];
+      const savedTurn = this.turn;
+      this.executeMoveRaw(move);
+      if (!this.isKingInCheck(nextColor)) {
+        hasLegalMove = true;
+        this.fen = savedFEN;
+        this.moveHistory = savedHistory;
+        this.turn = savedTurn;
+        break;
+      }
+      this.fen = savedFEN;
+      this.moveHistory = savedHistory;
+      this.turn = savedTurn;
+    }
+    
+    if (!hasLegalMove) {
       this.gameOver = true;
       if (this.isKingInCheck(nextColor)) {
         if (isPlayer) {
@@ -299,6 +317,9 @@ window.ChessDuel = class ChessDuel {
         const move = this.findOpponentMove();
         if (move) {
           this.executeMove(move, false);
+        } else {
+          // No valid moves = engine detected checkmate
+          this.isThinking = false;
         }
         this.isThinking = false;
       }, 500 + Math.random() * 600);
