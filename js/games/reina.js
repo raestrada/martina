@@ -957,51 +957,51 @@ class ReinaGame {
 
   getPeoncitoSVG() {
     return `
-    <svg viewBox="0 0 100 100" style="width: 85%; height: 85%;">
+    <svg viewBox="0 0 45 45" style="width: 85%; height: 85%;">
       <defs>
-        <linearGradient id="peoncito-crystal" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="peoncito-grad" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stop-color="#ffffff" />
-          <stop offset="50%" stop-color="#93c5fd" />
-          <stop offset="100%" stop-color="#3b82f6" />
+          <stop offset="60%" stop-color="#93c5fd" />
+          <stop offset="100%" stop-color="#2563eb" />
         </linearGradient>
       </defs>
-      <!-- Base -->
-      <path d="M25,82 L75,82 L70,72 L30,72 Z" fill="url(#peoncito-crystal)" stroke="#1d4ed8" stroke-width="2" />
-      <!-- Body -->
-      <path d="M35,72 L65,72 L58,45 L42,45 Z" fill="url(#peoncito-crystal)" stroke="#1d4ed8" stroke-width="2" />
-      <!-- Collar -->
-      <ellipse cx="50" cy="46" rx="9" ry="2.5" fill="#ef4444" />
-      <!-- Head -->
-      <circle cx="50" cy="34" r="13" fill="url(#peoncito-crystal)" stroke="#1d4ed8" stroke-width="2" />
-      <!-- Fake Mustache (Iconic!) -->
-      <path d="M36,41 Q45,42 50,38 Q55,42 64,41 Q66,35 58,35 Q50,37 50,36 Q50,37 42,35 Q34,35 36,41 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1" />
+      <g fill="url(#peoncito-grad)" stroke="#1d4ed8" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M 22,9 C 19.79,9 18,10.79 18,13 C 18,13.89 18.29,14.71 18.78,15.38 C 16.83,16.5 15.5,18.59 15.5,21 C 15.5,23.03 16.44,24.84 17.91,26.03 C 14.91,27.09 12.5,30.03 12.5,33.5 L 31.5,33.5 C 31.5,30.03 29.09,27.09 26.09,26.03 C 27.56,24.84 28.5,23.03 28.5,21 C 28.5,18.59 27.17,16.5 25.22,15.38 C 25.71,14.71 26,13.89 26,13 C 26,10.79 24.21,9 22,9 Z" />
+        <path d="M 11.5,36.5 L 32.5,36.5 C 32.5,36.5 34,36.5 34,38 C 34,39.5 32.5,39.5 32.5,39.5 L 11.5,39.5 C 11.5,39.5 10,39.5 10,38 C 10,36.5 11.5,36.5 11.5,36.5 Z" />
+        <circle cx="22" cy="13" r="2.5" />
+      </g>
+      <!-- Crystal collar ribbon -->
+      <ellipse cx="22" cy="17" rx="3.5" ry="1" fill="#ef4444" />
+      <!-- Peoncito's BIG fake mustache! -->
+      <path d="M 16,14.5 Q 20,15.5 22,13.5 Q 24,15.5 28,14.5 Q 29,12 26,12 Q 22,13 22,12.5 Q 22,13 18,12 C 15,12 16,14.5 16,14.5 Z" fill="#1e293b" stroke="#0f172a" stroke-width="0.6" />
     </svg>`;
   }
 
   getReinaSVG() {
     return `
-    <svg viewBox="0 0 100 100" style="width: 88%; height: 88%;">
+    <svg viewBox="0 0 45 45" style="width: 88%; height: 88%;">
       <defs>
-        <linearGradient id="reina-body" x1="0%" y1="0%" x2="0%" y2="100%">
+        <linearGradient id="reina-grad" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stop-color="#312e81" />
           <stop offset="100%" stop-color="#0f172a" />
         </linearGradient>
       </defs>
-      <!-- Base -->
-      <path d="M22,86 L78,86 L74,76 L26,76 Z" fill="url(#reina-body)" stroke="#818cf8" stroke-width="2.5" />
-      <!-- Body -->
-      <path d="M30,76 L70,76 L64,36 L36,36 Z" fill="url(#reina-body)" stroke="#818cf8" stroke-width="2.5" />
-      <!-- Head -->
-      <circle cx="50" cy="30" r="15" fill="#1e1b4b" stroke="#818cf8" stroke-width="2" />
-      <!-- Tissue Cape (Allergy details) -->
-      <path d="M33,45 Q50,56 67,45 Q70,68 50,73 Q30,68 33,45 Z" fill="#f8fafc" opacity="0.9" stroke="#cbd5e1" stroke-width="1.5" />
-      <!-- Crown of folded tissues! -->
-      <path d="M32,18 L38,6 L44,14 L50,4 L56,14 L62,6 L68,18 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" />
-      <circle cx="38" cy="5" r="2" fill="#f87171" />
-      <circle cx="50" cy="3" r="2" fill="#f87171" />
-      <circle cx="62" cy="5" r="2" fill="#f87171" />
-      <!-- Red blushing nose -->
-      <circle cx="50" cy="32" r="3.5" fill="#ef4444" opacity="0.8" />
+      <g fill="url(#reina-grad)" stroke="#818cf8" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M 11.5,30 L 33.5,30 Q 33.5,34 30.5,36 Q 27.5,38 22.5,38 Q 17.5,38 14.5,36 Q 11.5,34 11.5,30 Z" />
+        <path d="M 11.5,30 L 11.5,24 L 33.5,24 L 33.5,30 Z" />
+        <path d="M 11.5,24 L 33.5,24 Q 33.5,14 27.5,14 Q 22.5,14 22.5,14 Q 22.5,14 17.5,14 Q 11.5,14 11.5,24 Z" />
+        <!-- Folded tissue crown shape over the standard crown peaks -->
+        <path d="M 12,24 L 9,15 L 17.5,21.5 L 22.5,12.5 L 27.5,21.5 L 36,15 L 33,24 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+        <circle cx="9" cy="15" r="2" fill="#ef4444" stroke="none" />
+        <circle cx="17.5" cy="21.5" r="2" fill="#ef4444" stroke="none" />
+        <circle cx="22.5" cy="12.5" r="2" fill="#ef4444" stroke="none" />
+        <circle cx="27.5" cy="21.5" r="2" fill="#ef4444" stroke="none" />
+        <circle cx="36" cy="15" r="2" fill="#ef4444" stroke="none" />
+      </g>
+      <!-- Tissue cape / scarf on her neck -->
+      <path d="M 15.5,24 Q 22.5,29 29.5,24 Q 31,31 22.5,33 Q 14,31 15.5,24 Z" fill="#f1f5f9" opacity="0.9" stroke="#cbd5e1" stroke-width="1.2" />
+      <!-- Red nose -->
+      <circle cx="22.5" cy="18" r="2" fill="#ef4444" opacity="0.8" />
     </svg>`;
   }
 }

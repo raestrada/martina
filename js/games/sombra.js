@@ -1087,55 +1087,70 @@ class SombraGame {
 
   getMartinaSVG() {
     return `
-    <svg viewBox="0 0 100 100" style="width: 85%; height: 85%;">
+    <svg viewBox="0 0 45 45" style="width: 88%; height: 88%;">
       <defs>
-        <filter id="glow-martina" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
+        <linearGradient id="martina-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#f72585" />
+          <stop offset="50%" stop-color="#b5179e" />
+          <stop offset="100%" stop-color="#7209b7" />
+        </linearGradient>
       </defs>
-      <!-- Base -->
-      <path d="M25,82 L75,82 L70,72 L30,72 Z" fill="#b5179e" stroke="#f72585" stroke-width="2" />
-      <path d="M35,72 L65,72 L60,40 L40,40 Z" fill="#7209b7" stroke="#f72585" stroke-width="2" />
-      <!-- Head / Hair -->
-      <circle cx="50" cy="36" r="14" fill="#f72585" />
-      <!-- Glasses -->
-      <rect x="39" y="32" width="9" height="7" rx="2.2" fill="none" stroke="#ffffff" stroke-width="2.5" />
-      <rect x="52" y="32" width="9" height="7" rx="2.2" fill="none" stroke="#ffffff" stroke-width="2.5" />
-      <line x1="48" y1="36" x2="52" y2="36" stroke="#ffffff" stroke-width="2.5" />
-      <!-- Crown -->
-      <path d="M38,22 L42,11 L50,18 L58,11 L62,22 Z" fill="#ffb703" stroke="#ffffff" stroke-width="1.5" />
-      <circle cx="42" cy="11" r="2" fill="#ffffff" />
-      <circle cx="50" cy="18" r="2" fill="#ffffff" />
-      <circle cx="58" cy="11" r="2" fill="#ffffff" />
+      <g fill="url(#martina-grad)" stroke="#ffffff" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M 11.5,30 L 33.5,30 Q 33.5,34 30.5,36 Q 27.5,38 22.5,38 Q 17.5,38 14.5,36 Q 11.5,34 11.5,30 Z" />
+        <path d="M 11.5,30 L 11.5,24 L 33.5,24 L 33.5,30 Z" />
+        <path d="M 11.5,24 L 33.5,24 Q 33.5,14 27.5,14 Q 22.5,14 22.5,14 Q 22.5,14 17.5,14 Q 11.5,14 11.5,24 Z" />
+        <path d="M 12,24 L 9,15 L 17.5,21.5 L 22.5,12.5 L 27.5,21.5 L 36,15 L 33,24 Z" />
+        <circle cx="9" cy="15" r="2" />
+        <circle cx="17.5" cy="21.5" r="2" />
+        <circle cx="22.5" cy="12.5" r="2" />
+        <circle cx="27.5" cy="21.5" r="2" />
+        <circle cx="36" cy="15" r="2" />
+      </g>
+      <!-- Martina's glasses drawn on the body area of the Queen piece -->
+      <g stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="16" y="25" width="5.5" height="4.5" rx="1" />
+        <rect x="23.5" y="25" width="5.5" height="4.5" rx="1" />
+        <line x1="21.5" y1="27" x2="23.5" y2="27" />
+      </g>
     </svg>`;
   }
 
   getSombraSVG() {
     return `
-    <svg viewBox="0 0 100 100" style="width: 85%; height: 85%;">
+    <svg viewBox="0 0 45 45" style="width: 88%; height: 88%;">
       <defs>
-        <filter id="glow-sombra" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="3" result="blur" />
+        <linearGradient id="sombra-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#3f37c9" />
+          <stop offset="50%" stop-color="#1b1c30" />
+          <stop offset="100%" stop-color="#090a10" />
+        </linearGradient>
+        <filter id="shadow-glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1.5" result="blur" />
           <feComposite in="SourceGraphic" in2="blur" operator="over" />
         </filter>
       </defs>
-      <!-- Base -->
-      <path d="M25,82 L75,82 L70,72 L30,72 Z" fill="#1b1c30" stroke="#7209b7" stroke-width="2" />
-      <path d="M35,72 L65,72 L60,40 L40,40 Z" fill="#10111a" stroke="#7209b7" stroke-width="2" />
-      <!-- Head / Hair -->
-      <circle cx="50" cy="36" r="14" fill="#3f37c9" opacity="0.85" />
-      <!-- Glowing Eyes -->
-      <circle cx="43" cy="36" r="3.2" fill="#4cc9f0" filter="url(#glow-sombra)" />
-      <circle cx="57" cy="36" r="3.2" fill="#4cc9f0" filter="url(#glow-sombra)" />
-      <!-- Broken Shadow Crown -->
-      <path d="M38,22 L42,13 L50,20 L58,9 L62,22 Z" fill="#480ca8" stroke="#4cc9f0" stroke-width="1.5" />
+      <g fill="url(#sombra-grad)" stroke="#4cc9f0" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M 11.5,30 L 33.5,30 Q 33.5,34 30.5,36 Q 27.5,38 22.5,38 Q 17.5,38 14.5,36 Q 11.5,34 11.5,30 Z" />
+        <path d="M 11.5,30 L 11.5,24 L 33.5,24 L 33.5,30 Z" />
+        <path d="M 11.5,24 L 33.5,24 Q 33.5,14 27.5,14 Q 22.5,14 22.5,14 Q 22.5,14 17.5,14 Q 11.5,14 11.5,24 Z" />
+        <path d="M 12,24 L 9,15 L 17.5,21.5 L 22.5,12.5 L 27.5,21.5 L 36,15 L 33,24 Z" />
+        <circle cx="9" cy="15" r="2" />
+        <circle cx="17.5" cy="21.5" r="2" />
+        <circle cx="22.5" cy="12.5" r="2" />
+        <circle cx="27.5" cy="21.5" r="2" />
+        <circle cx="36" cy="15" r="2" />
+      </g>
+      <!-- Glowing cyan eyes -->
+      <g fill="#4cc9f0" filter="url(#shadow-glow)">
+        <circle cx="19" cy="26" r="1.5" />
+        <circle cx="26" cy="26" r="1.5" />
+      </g>
     </svg>`;
   }
 
   getPeoncitoSVG() {
     return `
-    <svg viewBox="0 0 100 100" style="width: 80%; height: 80%;">
+    <svg viewBox="0 0 45 45" style="width: 85%; height: 85%;">
       <defs>
         <linearGradient id="peoncito-shield" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stop-color="#ffffff" />
@@ -1143,16 +1158,15 @@ class SombraGame {
           <stop offset="100%" stop-color="#06b6d4" />
         </linearGradient>
       </defs>
-      <!-- Base -->
-      <path d="M25,82 L75,82 L70,72 L30,72 Z" fill="url(#peoncito-shield)" stroke="#0891b2" stroke-width="2" />
-      <!-- Body -->
-      <path d="M35,72 L65,72 L58,45 L42,45 Z" fill="url(#peoncito-shield)" stroke="#0891b2" stroke-width="2" />
-      <!-- Collar -->
-      <ellipse cx="50" cy="46" rx="9" ry="2.5" fill="#f43f5e" />
-      <!-- Head -->
-      <circle cx="50" cy="34" r="13" fill="url(#peoncito-shield)" stroke="#0891b2" stroke-width="2" />
-      <!-- Bigote -->
-      <path d="M36,41 Q45,42 50,38 Q55,42 64,41 Q66,35 58,35 Q50,37 50,36 Q50,37 42,35 Q34,35 36,41 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1" />
+      <g fill="url(#peoncito-shield)" stroke="#0891b2" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M 22,9 C 19.79,9 18,10.79 18,13 C 18,13.89 18.29,14.71 18.78,15.38 C 16.83,16.5 15.5,18.59 15.5,21 C 15.5,23.03 16.44,24.84 17.91,26.03 C 14.91,27.09 12.5,30.03 12.5,33.5 L 31.5,33.5 C 31.5,30.03 29.09,27.09 26.09,26.03 C 27.56,24.84 28.5,23.03 28.5,21 C 28.5,18.59 27.17,16.5 25.22,15.38 C 25.71,14.71 26,13.89 26,13 C 26,10.79 24.21,9 22,9 Z" />
+        <path d="M 11.5,36.5 L 32.5,36.5 C 32.5,36.5 34,36.5 34,38 C 34,39.5 32.5,39.5 32.5,39.5 L 11.5,39.5 C 11.5,39.5 10,39.5 10,38 C 10,36.5 11.5,36.5 11.5,36.5 Z" />
+        <circle cx="22" cy="13" r="2.5" />
+      </g>
+      <!-- Crystal collar ribbon -->
+      <ellipse cx="22" cy="17" rx="3.5" ry="1" fill="#f43f5e" />
+      <!-- Peoncito's BIG fake mustache! -->
+      <path d="M 16,14.5 Q 20,15.5 22,13.5 Q 24,15.5 28,14.5 Q 29,12 26,12 Q 22,13 22,12.5 Q 22,13 18,12 C 15,12 16,14.5 16,14.5 Z" fill="#1e293b" stroke="#0f172a" stroke-width="0.6" />
     </svg>`;
   }
 }

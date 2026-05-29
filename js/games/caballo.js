@@ -719,24 +719,22 @@ class CaballoGame {
 
   getCaballoSVG() {
     return `
-    <svg viewBox="0 0 100 100" style="width: 85%; height: 85%; animation: floatPawn 1.5s infinite alternate;">
+    <svg viewBox="0 0 45 45" style="width: 88%; height: 88%; animation: floatPawn 1.5s infinite alternate;">
       <defs>
         <linearGradient id="caballo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stop-color="#f4a261" />
           <stop offset="100%" stop-color="#e76f51" />
         </linearGradient>
       </defs>
-      <!-- Base -->
-      <path d="M25,82 L75,82 L70,72 L30,72 Z" fill="url(#caballo-grad)" stroke="#264653" stroke-width="2.5" />
-      <!-- Body -->
-      <path d="M30,72 Q28,52 40,38 Q38,28 33,26 Q43,26 53,33 Q63,38 68,52 Q70,67 63,72 Z" fill="url(#caballo-grad)" stroke="#264653" stroke-width="2" />
-      <!-- Mane (flowing hair/fire) -->
-      <path d="M32,67 Q20,52 35,39 Q30,32 42,29 Q36,22 48,19 Q52,9 60,22 Q58,32 55,39 Z" fill="#e9c46a" opacity="0.9" />
-      <!-- Glowing eye -->
-      <circle cx="53" cy="42" r="3" fill="#ffffff" />
-      <circle cx="53" cy="42" r="1.5" fill="#264653" />
-      <!-- Cute cheek/mouth -->
-      <path d="M60,53 Q64,51 60,49" fill="none" stroke="#264653" stroke-width="2" />
+      <g fill="url(#caballo-grad)" stroke="#264653" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 22,10 C 32.5,11 38.5,18 38,28 C 37.5,30 37,31.5 35.5,31.5 C 34,31.5 34,29 34,29 C 31,31.5 31,34.5 33.5,37 C 33.5,37 31,38.5 28.5,37.5 C 26,36.5 24.5,34.5 24.5,34.5 C 24.5,34.5 21,37.5 17.5,36 C 14.5,34.5 16.5,31 16.5,31 C 12.5,31.5 11,28.5 11,28.5 C 11,28.5 13.5,25.5 15,26.5 C 16.5,27.5 18,25 18,25 C 18,25 14,24 13.5,19 C 13,14 17.5,12.5 17.5,12.5 C 17.5,12.5 18,8.5 22,10 Z" />
+        <path d="M 9.5,38.5 L 35.5,38.5 C 35.5,38.5 37,38.5 37,40 C 37,41.5 35.5,41.5 35.5,41.5 L 9.5,41.5 C 9.5,41.5 8,41.5 8,40 C 8,38.5 9.5,38.5 9.5,38.5 Z" />
+        <path d="M 11.5,30 C 15,29 17,29 21,31" />
+        <path d="M 20.5,21.5 C 23.5,21.5 24,24.5 24,24.5 C 24,24.5 20,24.5 18,26.5" />
+        <!-- Fire mane accent detail in golden yellow -->
+        <path d="M 12.5,19 C 11.5,15 14.5,13.5 15.5,13.5 Q 16.5,9.5 20,10.5 M 11,25 C 10,21 12,19.5 13,19.5" fill="none" stroke="#e9c46a" stroke-width="1.8" />
+        <circle cx="15" cy="15" r="1.5" fill="#e9c46a" stroke="none" />
+      </g>
     </svg>`;
   }
 }
