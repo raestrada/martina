@@ -2630,6 +2630,22 @@ class MarioGame {
             scene.bossOverlay.setScrollFactor(0);
             scene.bossOverlay.setVisible(false);
 
+            scene.drawBossOverlay = function() {
+              const camX = scene.cameras.main.scrollX;
+              const rx = bd.roomLeft - camX;
+              const rw = bd.roomRight - bd.roomLeft;
+              scene.bossOverlay.clear();
+              // Fill everything dark, then punch a hole for the room using path
+              scene.bossOverlay.fillStyle(0x040010, 0.5);
+              scene.bossOverlay.beginPath();
+              scene.bossOverlay.rect(0, 0, 800, 450); // outer full screen (clockwise)
+              scene.bossOverlay.rect(rx, 82, rw, 348); // inner room hole (clockwise = same winding)
+              scene.bossOverlay.fill(); // Phaser fills with evenodd by default → hole punched
+              // Neon border around the room
+              scene.bossOverlay.lineStyle(2.5, 0xa855f7, 0.85);
+              scene.bossOverlay.strokeRect(rx, 82, rw, 348);
+            };
+
             scene.createBossWalls = function() {
               if (scene.bossWalls) return;
               scene.bossWalls = scene.physics.add.staticGroup();
@@ -3373,17 +3389,9 @@ class MarioGame {
               scene.boss.body.enable = false;
               
               const rw0 = bd.roomRight - bd.roomLeft;
-              // Show the room overlay (darkens outside, clear inside with neon border)
+              // Draw room overlay — darken outside, clear inside with neon border
               scene.bossOverlay.setVisible(true);
-              scene.bossOverlay.clear();
-              const camX0 = scene.cameras.main.scrollX;
-              const rxC = bd.roomLeft - camX0;
-              scene.bossOverlay.fillStyle(0x050015, 0.45);
-              scene.bossOverlay.fillRect(0, 0, 800, 450);
-              scene.bossOverlay.fillStyle(0x000000, 0);
-              scene.bossOverlay.fillRect(rxC - 2, 84, rw0 + 4, 342);
-              scene.bossOverlay.lineStyle(2, 0xa855f7, 0.8);
-              scene.bossOverlay.strokeRect(rxC - 2, 84, rw0 + 4, 342);
+              drawBossOverlay();
               
               // Camera zoom into boss room
               scene.cameras.main.zoomTo(1.25, 500);
@@ -3457,18 +3465,8 @@ class MarioGame {
             }
             
             if (scene.bossActive && !scene.bossIntro) {
-              // Update room overlay position
               if (scene.bossOverlay && scene.bossOverlay.visible) {
-                const camX = scene.cameras.main.scrollX;
-                const rx = bd.roomLeft - camX;
-                const rw = bd.roomRight - bd.roomLeft;
-                scene.bossOverlay.clear();
-                scene.bossOverlay.fillStyle(0x050015, 0.45);
-                scene.bossOverlay.fillRect(0, 0, 800, 450);
-                scene.bossOverlay.fillStyle(0x000000, 0);
-                scene.bossOverlay.fillRect(rx - 2, 84, rw + 4, 342);
-                scene.bossOverlay.lineStyle(2, 0xa855f7, 0.8);
-                scene.bossOverlay.strokeRect(rx - 2, 84, rw + 4, 342);
+                scene.drawBossOverlay();
               }
               
               if (scene.bossInvincible > 0) {
