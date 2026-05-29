@@ -421,12 +421,7 @@ class ReinaGame {
     if (!boardDOM) return;
     boardDOM.innerHTML = '';
 
-    // Blindfold mode in Martina difficulty
-    if (this.selectedDifficulty === 'martina') {
-      boardDOM.classList.add('board-blindfold');
-    } else {
-      boardDOM.classList.remove('board-blindfold');
-    }
+    boardDOM.classList.remove('board-blindfold');
 
     const level = this.levels[this.currentLevelIndex];
     const peoncitoCoord = this.coordsToName(this.peoncitoPos.r, this.peoncitoPos.c);

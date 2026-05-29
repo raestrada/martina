@@ -460,12 +460,7 @@ class TorretaGame {
     if (!boardDOM) return;
     boardDOM.innerHTML = '';
 
-    // Blindfold chess in Martina Mode
-    if (this.selectedDifficulty === 'martina') {
-      boardDOM.classList.add('board-blindfold');
-    } else {
-      boardDOM.classList.remove('board-blindfold');
-    }
+    boardDOM.classList.remove('board-blindfold');
 
     const currentRecipe = this.recipes[this.currentRecipeIndex];
     const currentStep = currentRecipe ? currentRecipe.steps[this.currentStepIndex] : null;

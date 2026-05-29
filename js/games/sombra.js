@@ -635,12 +635,7 @@ class SombraGame {
     if (!boardDOM) return;
     boardDOM.innerHTML = '';
 
-    // Apply blindfold class in Martina difficulty
-    if (this.selectedDifficulty === 'martina') {
-      boardDOM.classList.add('board-blindfold');
-    } else {
-      boardDOM.classList.remove('board-blindfold');
-    }
+    boardDOM.classList.remove('board-blindfold');
 
     const level = this.levels[this.currentLevelIndex];
     const martinaCoord = this.coordsToName(this.martinaPos.r, this.martinaPos.c);

@@ -363,12 +363,7 @@ class CaballoGame {
     if (!boardDOM) return;
     boardDOM.innerHTML = '';
 
-    // Blindfold chess in Martina Mode
-    if (this.selectedDifficulty === 'martina') {
-      boardDOM.classList.add('board-blindfold');
-    } else {
-      boardDOM.classList.remove('board-blindfold');
-    }
+    boardDOM.classList.remove('board-blindfold');
 
     const currentLevel = this.levels[this.currentLevelIndex];
     const horseCoord = this.coordsToName(this.horsePos.r, this.horsePos.c);
