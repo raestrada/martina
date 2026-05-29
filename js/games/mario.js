@@ -307,11 +307,12 @@ class MarioGame {
       },
       scene: {
         preload: function() {
-          // Preload actual cuento assets!
-          this.load.image('player', 'assets/img/martina_full_body_1778904544807.png');
-          this.load.image('enemy', 'assets/img/peoncito_1778904557723.png');
-          this.load.image('background', 'assets/img/mundo_magico_1778904597376.png');
-          this.load.image('castle', 'assets/img/rey_blanco_entrenamiento_1779139099201.png');
+          // Preload actual cuento assets from Base64 to bypass local file CORS policy!
+          const assets = window.MartinaGameAssets || { martina: '', peoncito: '', background: '', castle: '' };
+          this.load.image('player', assets.martina);
+          this.load.image('enemy', assets.peoncito);
+          this.load.image('background', assets.background);
+          this.load.image('castle', assets.castle);
           
           // Generate a smooth particle sparkle texture dynamically
           const canvas = document.createElement('canvas');
