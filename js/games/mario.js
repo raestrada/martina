@@ -121,9 +121,9 @@ class MarioGame {
   loadBase64Images() {
     return new Promise((resolve) => {
       const assets = window.MartinaGameAssets;
-      if (!assets || !assets['martina_full_body_1778904544807']) { this.loadedImages = null; resolve(); return; }
+      if (!assets || !assets.martina) { this.loadedImages = null; resolve(); return; }
       const keys = ['player','enemy','background','castle'];
-      const b64keys = ['martina_full_body_1778904544807','peoncito_1778904557723','mundo_magico_1778904597376','rey_blanco_entrenamiento_1779139099201'];
+      const b64keys = ['martina','peoncito','background','castle'];
       let pending = 4;
       this.loadedImages = {};
       keys.forEach((key, i) => {
