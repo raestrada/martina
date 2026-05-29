@@ -55,6 +55,9 @@ class ChessBoxGame {
     this.oggGain = null;        // GainNode for volume/mute control
     this._oggLoading = false;   // prevent concurrent fetches
 
+    // Mobile detection
+    this.isMobile = window.innerWidth < 768 || window.innerHeight < 500 || 'ontouchstart' in window;
+
     // 15 Progressive tournament levels
     this.levels = [
       { name: "El Calentamiento del Peón", elo: 400, hp: 80, punchSpeed: 1400, color: "#38bdf8", desc: "Enfréntate a un Peón Boxeador novato en el ring azul celeste. ¡Aprende los esquives básicos!" },
@@ -1028,16 +1031,16 @@ class ChessBoxGame {
           <div class="mario-canvas-container" id="phaser-boxing-parent" style="border: 4px solid #ef4444; border-radius: 16px; width: 800px; height: 450px; background: #000; overflow:hidden; position:relative;">
             
             <!-- Super Power HUD Overlays -->
-            <div style="position: absolute; top: 12px; left: 12px; width: 170px; background: rgba(15,23,42,0.85); padding: 6px 10px; border-radius: 8px; border: 1.5px solid rgba(56, 189, 248, 0.4); text-align: left; font-family: 'Outfit', sans-serif; pointer-events: none; z-index: 10; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
-              <span style="font-size: 0.68rem; color: #38bdf8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; display:block;">⚡ DEMPSEY ROLL</span>
+            <div style="position: absolute; top: 12px; left: 12px; width: 195px; background: rgba(15,23,42,0.85); padding: 6px 10px; border-radius: 8px; border: 1.5px solid rgba(56, 189, 248, 0.4); text-align: left; font-family: 'Outfit', sans-serif; pointer-events: none; z-index: 10; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
+              <span style="font-size: 0.62rem; color: #38bdf8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; display:block; white-space: nowrap;">⚡ DEMPSEY ROLL</span>
               <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden; margin-top: 4px; border: 1px solid rgba(255,255,255,0.05);">
                 <div id="super-player-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #2563eb); transition: width 0.15s ease-out;"></div>
               </div>
               <span id="super-player-ready" style="font-size: 0.63rem; color: #fbbf24; display: none; font-weight: 900; animation: pulse 0.8s infinite alternate; margin-top: 3px;">⚡ ¡LISTO! PULSA [ESPACIO]</span>
             </div>
 
-            <div style="position: absolute; top: 12px; right: 12px; width: 170px; background: rgba(15,23,42,0.85); padding: 6px 10px; border-radius: 8px; border: 1.5px solid rgba(239, 68, 68, 0.4); text-align: right; font-family: 'Outfit', sans-serif; pointer-events: none; z-index: 10; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
-              <span style="font-size: 0.68rem; color: #f87171; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; display:block;">🏰 ENROQUE DESTRUCTOR</span>
+            <div style="position: absolute; top: 12px; right: 12px; width: 195px; background: rgba(15,23,42,0.85); padding: 6px 10px; border-radius: 8px; border: 1.5px solid rgba(239, 68, 68, 0.4); text-align: right; font-family: 'Outfit', sans-serif; pointer-events: none; z-index: 10; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
+              <span style="font-size: 0.62rem; color: #f87171; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; display:block; white-space: nowrap;">🏰 ENROQUE DESTRUCTOR</span>
               <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden; margin-top: 4px; border: 1px solid rgba(255,255,255,0.05); direction: rtl;">
                 <div id="super-opponent-bar" style="width: 0%; height: 100%; background: linear-gradient(270deg, #ef4444, #b91c1c); transition: width 0.15s ease-out;"></div>
               </div>
@@ -1070,7 +1073,7 @@ class ChessBoxGame {
             </div>
           </div>
           
-          <p style="font-size: 0.82rem; color: #94a3b8; margin-top: 8px;">
+          <p style="font-size: 0.82rem; color: #94a3b8; margin-top: 8px;" class="kb-hint">
             <b>Teclado</b>: <kbd>◀</kbd> Esquivar Izq | <kbd>▶</kbd> Esquivar Der | <kbd>W</kbd> Bloquear | <kbd>A</kbd> Golpe Izq | <kbd>D</kbd> Golpe Der | <kbd>␣</kbd> ⚡ DEMPSEY ROLL
           </p>
         </div>
@@ -1117,6 +1120,12 @@ class ChessBoxGame {
       height: 450,
       parent: 'phaser-boxing-parent',
       backgroundColor: '#111827',
+      scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: 800,
+        height: 450
+      },
       physics: {
         default: 'arcade',
         arcade: { gravity: { y: 0 } }
@@ -1149,7 +1158,7 @@ class ChessBoxGame {
             ease: 'Sine.easeInOut'
           });
 
-          scene.opponentHP = maxOpponentHP;
+          scene.opponentHP = Math.max(1, Math.round((self.opponentHealth / 100) * maxOpponentHP));
           scene.opponentMaxHP = maxOpponentHP;
 
           // Player (Martina boxing back-silhouette) at the center bottom
@@ -2762,7 +2771,7 @@ class ChessBoxGame {
       `;
 
       // 3. Gradual Damage Vignette (purple-blue cartoon tint, not blood red)
-      const vignetteIntensity = (damageFactor * 0.50).toFixed(2);
+      const vignetteIntensity = (damageFactor * 0.60).toFixed(2);
       const vignetteBlur = Math.round(15 + damageFactor * 30);
       vignetteOverlayHTML = `
         <div id="chess-damage-vignette" style="
@@ -2777,9 +2786,9 @@ class ChessBoxGame {
         "></div>
       `;
 
-      // 4. Cartoonish damage effects: comical band-aids, stars, cracked lens (no blood!)
-      if (this.playerHealth < 50) {
-        const dmgOpacity = ((50 - this.playerHealth) / 50 * 0.75 + 0.10).toFixed(2);
+      // 4. Cartoonish damage effects: comical band-aids, stars, cracked lens
+      if (this.playerHealth < 65) {
+        const dmgOpacity = ((65 - this.playerHealth) / 65 * 0.75 + 0.10).toFixed(2);
         bloodDropsHTML = `
           <!-- Cartoonish Battle Damage Overlays — kid-friendly! -->
           <svg style="position: absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index: 101;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450">

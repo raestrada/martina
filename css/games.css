@@ -2057,5 +2057,255 @@
   animation: trophyBounce 1.5s infinite ease-in-out;
 }
 
+/* ===================================================================
+   MOBILE OPTIMIZATIONS (max-width: 1024px)
+   =================================================================== */
+@media (max-width: 1024px) {
+  /* --- Fullscreen modal --- */
+  .game-modal {
+    padding: 0;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    overflow: hidden;
+  }
+  .game-modal-content {
+    border-radius: 0;
+    max-width: 100%;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  .game-modal-header {
+    padding: 0.5rem 0.75rem;
+  }
+  .game-modal-title {
+    font-size: 1rem;
+  }
+  .btn-close-modal {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.75rem;
+  }
+  .game-modal-body {
+    padding: 0;
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #game-sandbox {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* --- Make all game screens scale to fit without scroll --- */
+  .level-select-container {
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow-y: auto;
+    width: 100%;
+    padding: 0.3rem !important;
+    box-sizing: border-box;
+  }
+  .empanadas-container {
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .game-screen {
+    max-width: 95vw !important;
+    max-height: 95vh;
+    max-height: 95dvh;
+    overflow-y: auto;
+  }
+
+  /* --- Hide keyboard instructions on mobile --- */
+  .kb-hint { display: none !important; }
+
+  /* --- Force landscape overlay for landscape-only games --- */
+  .landscape-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #0f172a;
+    z-index: 9999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    color: #fff;
+    text-align: center;
+    font-family: 'Outfit', sans-serif;
+    padding: 2rem;
+  }
+  .landscape-overlay .rotate-icon {
+    font-size: 4rem;
+    animation: rotateHint 2s ease-in-out infinite;
+  }
+  @keyframes rotateHint {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(90deg); }
+  }
+  .landscape-overlay h2 { font-size: 1.4rem; font-weight: 800; }
+  .landscape-overlay p { color: #94a3b8; font-size: 0.9rem; }
+
+  /* --- Chessbox: level select grid --- */
+  .level-select-container { padding: 0.5rem !important; }
+  .level-select-header h2 { font-size: 1.2rem !important; }
+  .level-select-header p { font-size: 0.75rem !important; }
+  .difficulty-selector { flex-wrap: wrap; gap: 4px !important; }
+  .diff-tab { font-size: 0.65rem !important; padding: 0.3rem 0.5rem !important; }
+  .level-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+  .level-card { padding: 10px !important; }
+  .level-card-title { font-size: 0.85rem !important; }
+  .level-card-desc { font-size: 0.7rem !important; display: none !important; }
+  .level-card-footer { font-size: 0.7rem !important; }
+
+  /* --- Chessbox: boxing phase --- */
+  .empanadas-container {
+    padding: 0 !important;
+    border-radius: 0 !important;
+  }
+  .empanadas-top-bar {
+    padding: 0.35rem 0.5rem !important;
+    gap: 4px !important;
+    flex-wrap: wrap;
+  }
+  .empanadas-top-bar .btn-close-modal {
+    font-size: 0.65rem !important;
+    padding: 0.25rem 0.5rem !important;
+  }
+  .timer-box {
+    font-size: 0.6rem !important;
+    padding: 0.2rem 0.4rem !important;
+  }
+  .score-box {
+    font-size: 0.6rem !important;
+    padding: 0.2rem 0.4rem !important;
+  }
+  .empanadas-layout {
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+
+  /* --- Chessbox: Phaser canvas responsive --- */
+  .mario-canvas-container {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16/9;
+    border-radius: 0 !important;
+    border-width: 2px !important;
+  }
+  #phaser-boxing-parent {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16/9;
+  }
+  #phaser-boxing-parent canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* --- Chessbox: touch controls big & prominent --- */
+  .mario-touch-pad {
+    bottom: 8px !important;
+    gap: 6px !important;
+    padding: 4px !important;
+    opacity: 0.95 !important;
+  }
+  .touch-btn {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 1.1rem !important;
+    min-width: 40px !important;
+  }
+
+  /* --- Chessbox: super / health HUD compact --- */
+  #phaser-boxing-parent > div[style*="position: absolute"] {
+    transform: scale(0.80);
+    transform-origin: top left;
+  }
+  #phaser-boxing-parent > div[style*="position: absolute"][style*="right"] {
+    transform: scale(0.80);
+    transform-origin: top right;
+  }
+
+  /* --- Chessbox: chess phase --- */
+  .chess-board {
+    width: min(96vw, 96vh) !important;
+    height: min(96vw, 96vh) !important;
+    border-width: 4px !important;
+    border-radius: 8px !important;
+  }
+  .cooking-station {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* --- Chessbox: hide dashboard on mobile, show minimal --- */
+  .maze-dashboard {
+    display: none !important;
+  }
+
+  /* --- Chessbox: victory/defeat screens --- */
+  .game-screen {
+    padding: 1rem !important;
+    max-width: 100% !important;
+  }
+  .game-screen h2 { font-size: 1.2rem !important; }
+  .game-screen p { font-size: 0.8rem !important; }
+  .game-screen-img { width: 80px !important; height: 80px !important; }
+  .game-screen-img div { font-size: 2.5rem !important; }
+  .game-screen-stats { gap: 0.5rem !important; }
+  .stat-item { padding: 0.4rem 0.6rem !important; font-size: 0.7rem !important; }
+  .stat-val { font-size: 1rem !important; }
+  .btn-game-screen {
+    font-size: 0.8rem !important;
+    padding: 0.5rem 1rem !important;
+  }
+
+  /* --- Transition panel compact --- */
+  .transition-panel {
+    padding: 15px !important;
+    max-width: 95% !important;
+  }
+  .transition-panel h2 { font-size: 1.2rem !important; }
+  .transition-panel p { font-size: 0.75rem !important; }
+  .transition-panel .round-badge { font-size: 0.65rem !important; }
+
+  /* --- Mario game --- */
+  #mario-game-container {
+    width: 100% !important;
+    height: auto !important;
+  }
+  #mario-canvas-wrapper {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16/9;
+  }
+  #mario-game-ui {
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+  #mario-mobile-controls {
+    display: flex !important;
+  }
+}
+
 
 

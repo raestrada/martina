@@ -1,7 +1,24 @@
 // Martina · Cuentos para Dormir
-// Simple interactions: active nav link, fade animations, theme toggle placeholder
+// Simple interactions: active nav link, fade animations, hamburger menu
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Hamburger menu toggle for mobile
+  const hamburger = document.getElementById('hamburger-btn');
+  const navBar = document.querySelector('.nav-bar-compact');
+  if (hamburger && navBar) {
+    hamburger.addEventListener('click', () => {
+      navBar.classList.toggle('open');
+      hamburger.textContent = navBar.classList.contains('open') ? '✕' : '☰';
+    });
+    // Close menu when clicking a nav link
+    navBar.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        navBar.classList.remove('open');
+        hamburger.textContent = '☰';
+      });
+    });
+  }
+
   // Highlight current nav link
   const currentPath = window.location.pathname;
   document.querySelectorAll('.nav-link').forEach(link => {

@@ -987,3 +987,57 @@ main {
     border-radius: 12px;
   }
 }
+
+/* ===================================================================
+   HEADER MOBILE — hamburger menu
+   =================================================================== */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: var(--magic-dark);
+  padding: 0.3rem;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .site-header-compact {
+    padding: 0.6rem 1rem;
+  }
+  .header-content-compact {
+    gap: 0.5rem;
+  }
+  .site-title-compact {
+    font-size: 1.2rem;
+  }
+  .header-piece-compact {
+    font-size: 1.4rem;
+  }
+  .hamburger-btn {
+    display: block;
+  }
+  .nav-bar-compact {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--warm-white);
+    padding: 0.5rem 1rem 1rem;
+    gap: 0.3rem;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    border-bottom: 3px solid var(--gold);
+    z-index: 99;
+  }
+  .nav-bar-compact.open {
+    display: flex;
+  }
+  .nav-link {
+    font-size: 1rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 12px;
+  }
+}

@@ -141,6 +141,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (gameType === 'mario') title = 'Super Martina: El Salto Mágico';
     if (gameType === 'chessbox') title = 'Chess Boxing: Duelo de Titanes';
     
+    // Landscape overlay for landscape-only games on mobile
+    const isMobile = window.innerWidth < 768 || window.innerHeight < 500 || 'ontouchstart' in window;
+    const needsLandscape = gameType === 'mario' || gameType === 'chessbox';
+    if (isMobile && needsLandscape) {
+      ensureLandscapeOverlay();
+      // Lock screen orientation to landscape on mobile
+      try {
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock('landscape').catch(() => {});
+        }
+      } catch(e) {}
+    } else {
+      removeLandscapeOverlay();
+    }
+    
     gameTitle.textContent = title;
     modal.classList.add('open');
     document.body.style.overflow = 'hidden'; // Lock background scroll
@@ -336,6 +351,13 @@ document.addEventListener('DOMContentLoaded', () => {
   function closeGame() {
     modal.classList.remove('open');
     document.body.style.overflow = ''; // Restore background scroll
+    removeLandscapeOverlay();
+    // Unlock screen orientation
+    try {
+      if (screen.orientation && screen.orientation.unlock) {
+        screen.orientation.unlock();
+      }
+    } catch(e) {}
     
     // Destroy active game instance to prevent memory leaks and stop timers
     if (window.activeGameInstance) {
@@ -371,4 +393,34 @@ document.addEventListener('DOMContentLoaded', () => {
       closeGame();
     }
   });
+
+  // --- Landscape overlay for mobile games that require horizontal ---
+  function ensureLandscapeOverlay() {
+    if (document.getElementById('landscape-overlay')) return;
+    const overlay = document.createElement('div');
+    overlay.id = 'landscape-overlay';
+    overlay.className = 'landscape-overlay';
+    overlay.innerHTML = `
+      <div class="rotate-icon">📱</div>
+      <h2>Gira tu dispositivo</h2>
+      <p>Este juego se juega en horizontal</p>
+    `;
+    document.body.appendChild(overlay);
+    checkLandscape();
+    window.addEventListener('resize', checkLandscape);
+    window.addEventListener('orientationchange', checkLandscape);
+  }
+
+  function removeLandscapeOverlay() {
+    const overlay = document.getElementById('landscape-overlay');
+    if (overlay) overlay.remove();
+    window.removeEventListener('resize', checkLandscape);
+    window.removeEventListener('orientationchange', checkLandscape);
+  }
+
+  function checkLandscape() {
+    const overlay = document.getElementById('landscape-overlay');
+    if (!overlay) return;
+    overlay.style.display = window.innerWidth > window.innerHeight ? 'none' : 'flex';
+  }
 });
