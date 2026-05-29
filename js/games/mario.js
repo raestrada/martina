@@ -119,25 +119,7 @@ class MarioGame {
   }
 
   loadBase64Images() {
-    return new Promise((resolve) => {
-      const assets = window.MartinaGameAssets;
-      if (!assets || !assets.martina) { this.loadedImages = null; resolve(); return; }
-      const keys = ['player','enemy','background','castle'];
-      const b64keys = ['martina','peoncito','background','castle'];
-      let pending = 4;
-      this.loadedImages = {};
-      keys.forEach((key, i) => {
-        const img = new Image();
-        img.onload = () => {
-          this.loadedImages[key] = img;
-          if (--pending <= 0) resolve();
-        };
-        img.onerror = () => {
-          if (--pending <= 0) resolve();
-        };
-        img.src = assets[b64keys[i]];
-      });
-    });
+    return Promise.resolve();
   }
 
   // --- DYNAMIC PHASER SCRIPT LOAD ---
@@ -276,7 +258,7 @@ class MarioGame {
       { x: 640, y: 300, w: 120, h: 20 },
       
       // Midground Platforms over first pit (Tuned heights for easy jumping!)
-      { x: 800, y: 220, w: 120, h: 20 },
+      { x: 830, y: 310, w: 120, h: 20 },
       
       // Second Segment floating platforms
       { x: 1080, y: 310, w: 160, h: 20 },
@@ -284,7 +266,7 @@ class MarioGame {
       { x: 1540, y: 310, w: 100, h: 20 },
       
       // Intermediate bridges over second pit
-      { x: 1730, y: 220, w: 120, h: 20 },
+      { x: 1730, y: 310, w: 120, h: 20 },
       
       // Staircase steps near flagpole
       { x: 1980, y: 370, w: 40, h: 40 },
@@ -297,12 +279,12 @@ class MarioGame {
       { x: 300, y: 260 }, { x: 330, y: 260 }, { x: 360, y: 260 },
       { x: 510, y: 170 },
       { x: 680, y: 250 }, { x: 710, y: 250 },
-      { x: 860, y: 170 },
+      { x: 860, y: 260 },
       { x: 1120, y: 260 }, { x: 1150, y: 260 },
       { x: 1380, y: 170 },
       { x: 1590, y: 260 },
       // Over second pit arches
-      { x: 1750, y: 170 }, { x: 1790, y: 170 },
+      { x: 1750, y: 260 }, { x: 1790, y: 260 },
       // Staircase rewards
       { x: 2000, y: 320 }, { x: 2050, y: 280 }, { x: 2100, y: 240 }
     ];
@@ -332,16 +314,7 @@ class MarioGame {
         key: 'game',
         preload: function() {
           const scene = this;
-          // Disable crossOrigin to prevent browser security blocks on local URIs
           scene.load.crossOrigin = undefined;
-          
-          // If Base64 images were NOT pre-loaded in memory, let Phaser load the local PNG files as fallback!
-          if (!self.loadedImages) {
-            scene.load.image('player', 'assets/img/martina_full_body_1778904544807.png');
-            scene.load.image('enemy', 'assets/img/peoncito_1778904557723.png');
-            scene.load.image('background', 'assets/img/mundo_magico_1778904597376.png');
-            scene.load.image('castle', 'assets/img/rey_blanco_entrenamiento_1779139099201.png');
-          }
         },
         create: function() {
           const scene = this;
@@ -361,20 +334,303 @@ class MarioGame {
           ctx.fill();
           scene.textures.addCanvas('sparkle', canvas);
           
-          const loaded = self.loadedImages || {};
-          if (loaded.player && loaded.enemy && loaded.background && loaded.castle) {
-            scene.textures.addImage('player', loaded.player);
-            scene.textures.addImage('enemy', loaded.enemy);
-            scene.textures.addImage('background', loaded.background);
-            scene.textures.addImage('castle', loaded.castle);
-          } else if (!scene.textures.exists('player')) {
-            // Safe fallback: generate colored shape textures if not preloaded and Phaser's loader failed
-            var g = scene.add.graphics();
-            g.fillStyle(0xf4a261); g.fillRect(0, 0, 32, 48); g.generateTexture('player', 32, 48); g.clear();
-            g.fillStyle(0xe76f51); g.fillRect(0, 0, 32, 42); g.generateTexture('enemy', 32, 42); g.clear();
-            g.fillStyle(0x5c94fc); g.fillRect(0, 0, 800, 450); g.generateTexture('background', 800, 450); g.clear();
-            g.fillStyle(0xfacc15); g.fillRect(0, 0, 120, 160); g.generateTexture('castle', 120, 160);
-            g.destroy();
+          if (!scene.textures.exists('player')) {
+            // 1. Martina Canvas (size 32x48)
+            const pCanvas = document.createElement('canvas');
+            pCanvas.width = 32;
+            pCanvas.height = 48;
+            const pCtx = pCanvas.getContext('2d');
+            
+            // Hair back (behind the face)
+            pCtx.fillStyle = '#3f1d0b'; // Dark brown
+            pCtx.beginPath();
+            pCtx.arc(16, 17, 9, Math.PI, 0); // top half
+            pCtx.rect(7, 17, 18, 13); // back locks
+            pCtx.fill();
+            
+            // Head (skin tone)
+            pCtx.fillStyle = '#fed7aa'; // Soft peach skin
+            pCtx.beginPath();
+            pCtx.arc(16, 16, 7, 0, Math.PI * 2);
+            pCtx.fill();
+            
+            // Hair bangs (front)
+            pCtx.fillStyle = '#3f1d0b';
+            pCtx.beginPath();
+            pCtx.arc(16, 13, 7, Math.PI * 1.1, Math.PI * 1.9);
+            pCtx.fill();
+            
+            // Glasses (Black frames, signature Martina!)
+            pCtx.lineWidth = 1.5;
+            pCtx.strokeStyle = '#000000';
+            // Left eye lens
+            pCtx.strokeRect(10, 14, 5, 4);
+            // Right eye lens
+            pCtx.strokeRect(17, 14, 5, 4);
+            // Bridge
+            pCtx.beginPath();
+            pCtx.moveTo(15, 16);
+            pCtx.lineTo(17, 16);
+            pCtx.stroke();
+            // Glare highlight in glasses
+            pCtx.fillStyle = 'rgba(255,255,255,0.6)';
+            pCtx.fillRect(11, 15, 3, 2);
+            pCtx.fillRect(18, 15, 3, 2);
+            
+            // White Polo Shirt (Body)
+            pCtx.fillStyle = '#ffffff';
+            pCtx.beginPath();
+            pCtx.moveTo(12, 23);
+            pCtx.lineTo(20, 23);
+            pCtx.lineTo(22, 33);
+            pCtx.lineTo(10, 33);
+            pCtx.closePath();
+            pCtx.fill();
+            
+            // Red emblem on chest
+            pCtx.fillStyle = '#ef4444';
+            pCtx.fillRect(15, 26, 2, 2);
+            
+            // Blue Voley Shorts
+            pCtx.fillStyle = '#1d4ed8'; // Royal blue
+            pCtx.fillRect(10, 33, 12, 5);
+            
+            // Legs (Skin tone)
+            pCtx.fillStyle = '#fed7aa';
+            pCtx.fillRect(12, 38, 3, 6);
+            pCtx.fillRect(17, 38, 3, 6);
+            
+            // White Socks
+            pCtx.fillStyle = '#ffffff';
+            pCtx.fillRect(12, 42, 3, 2);
+            pCtx.fillRect(17, 42, 3, 2);
+            
+            // Red Sneakers
+            pCtx.fillStyle = '#dc2626';
+            pCtx.fillRect(11, 44, 4, 3);
+            pCtx.fillRect(17, 44, 4, 3);
+            pCtx.fillStyle = '#000000'; // Sole
+            pCtx.fillRect(10, 47, 5, 1);
+            pCtx.fillRect(16, 47, 5, 1);
+            
+            // Sleeves & Hands
+            pCtx.fillStyle = '#ffffff'; // Sleeves
+            pCtx.fillRect(8, 23, 2, 4);
+            pCtx.fillRect(22, 23, 2, 4);
+            pCtx.fillStyle = '#fed7aa'; // Hands
+            pCtx.beginPath();
+            pCtx.arc(9, 28, 2, 0, Math.PI*2);
+            pCtx.arc(23, 28, 2, 0, Math.PI*2);
+            pCtx.fill();
+            
+            scene.textures.addCanvas('player', pCanvas);
+
+            // 2. Peoncito Canvas (size 32x42)
+            const eCanvas = document.createElement('canvas');
+            eCanvas.width = 32;
+            eCanvas.height = 42;
+            const eCtx = eCanvas.getContext('2d');
+            
+            // Draw shiny crystal pawn body (Gradient)
+            const bodyGrad = eCtx.createLinearGradient(8, 20, 24, 38);
+            bodyGrad.addColorStop(0, '#93c5fd'); // Light shiny blue
+            bodyGrad.addColorStop(0.5, '#3b82f6'); // Medium blue
+            bodyGrad.addColorStop(1, '#1d4ed8'); // Deep blue
+            eCtx.fillStyle = bodyGrad;
+            
+            eCtx.beginPath();
+            eCtx.moveTo(12, 19);
+            eCtx.lineTo(20, 19);
+            eCtx.quadraticCurveTo(23, 29, 24, 38);
+            eCtx.lineTo(8, 38);
+            eCtx.quadraticCurveTo(9, 29, 12, 19);
+            eCtx.closePath();
+            eCtx.fill();
+            
+            // Base plate
+            eCtx.fillStyle = '#1e3a8a';
+            eCtx.fillRect(6, 38, 20, 3);
+            eCtx.fillStyle = '#60a5fa'; // shine
+            eCtx.fillRect(6, 38, 20, 1);
+            
+            // Head ring
+            eCtx.fillStyle = '#2563eb';
+            eCtx.beginPath();
+            eCtx.ellipse(16, 19, 5, 1.5, 0, 0, Math.PI*2);
+            eCtx.fill();
+            
+            // Pawn Head (Shiny Crystal Sphere)
+            const headGrad = eCtx.createRadialGradient(14, 11, 1, 16, 12, 8);
+            headGrad.addColorStop(0, '#ffffff'); // Glare center
+            headGrad.addColorStop(0.3, '#bfdbfe'); // Soft blue
+            headGrad.addColorStop(0.8, '#3b82f6'); // Base blue
+            headGrad.addColorStop(1, '#1e3a8a'); // Border dark blue
+            eCtx.fillStyle = headGrad;
+            eCtx.beginPath();
+            eCtx.arc(16, 12, 7.5, 0, Math.PI * 2);
+            eCtx.fill();
+            
+            // Cute tiny eyes
+            eCtx.fillStyle = '#ffffff';
+            eCtx.beginPath();
+            eCtx.arc(13, 11, 1.5, 0, Math.PI*2);
+            eCtx.arc(19, 11, 1.5, 0, Math.PI*2);
+            eCtx.fill();
+            eCtx.fillStyle = '#000000';
+            eCtx.beginPath();
+            eCtx.arc(13, 11, 0.75, 0, Math.PI*2);
+            eCtx.arc(19, 11, 0.75, 0, Math.PI*2);
+            eCtx.fill();
+            
+            // THE BIGOTE (Curly black mustache, Peoncito's signature!)
+            eCtx.fillStyle = '#000000';
+            eCtx.beginPath();
+            // Left curl
+            eCtx.moveTo(16, 15);
+            eCtx.bezierCurveTo(12, 14, 7, 16, 5, 19);
+            eCtx.bezierCurveTo(6, 22, 11, 19, 16, 16.5);
+            // Right curl
+            eCtx.moveTo(16, 15);
+            eCtx.bezierCurveTo(20, 14, 25, 16, 27, 19);
+            eCtx.bezierCurveTo(26, 22, 21, 19, 16, 16.5);
+            eCtx.closePath();
+            eCtx.fill();
+            // Center mustache dot
+            eCtx.beginPath();
+            eCtx.arc(16, 15.5, 1, 0, Math.PI*2);
+            eCtx.fill();
+            
+            scene.textures.addCanvas('enemy', eCanvas);
+
+            // 3. Castle Canvas (size 120x160)
+            const cCanvas = document.createElement('canvas');
+            cCanvas.width = 120;
+            cCanvas.height = 160;
+            const cCtx = cCanvas.getContext('2d');
+            
+            // Gold gradient
+            const castGrad = cCtx.createLinearGradient(20, 20, 100, 160);
+            castGrad.addColorStop(0, '#fbbf24'); // Yellow Amber
+            castGrad.addColorStop(0.5, '#f59e0b'); // Warm Gold
+            castGrad.addColorStop(1, '#b45309'); // Warm bronze gold
+            
+            cCtx.fillStyle = castGrad;
+            cCtx.beginPath();
+            cCtx.moveTo(30, 40);
+            cCtx.lineTo(90, 40);
+            cCtx.lineTo(98, 150);
+            cCtx.lineTo(22, 150);
+            cCtx.closePath();
+            cCtx.fill();
+            
+            // Base pedestal
+            cCtx.fillStyle = '#78350f';
+            cCtx.fillRect(14, 150, 92, 10);
+            cCtx.fillStyle = '#fbbf24';
+            cCtx.fillRect(14, 150, 92, 2);
+            
+            // Ramparts
+            cCtx.fillStyle = castGrad;
+            cCtx.fillRect(26, 20, 14, 20);
+            cCtx.fillRect(53, 20, 14, 20);
+            cCtx.fillRect(80, 20, 14, 20);
+            cCtx.fillRect(26, 35, 68, 8);
+            
+            // Door
+            cCtx.fillStyle = '#1e3a8a';
+            cCtx.beginPath();
+            cCtx.moveTo(48, 150);
+            cCtx.lineTo(48, 110);
+            cCtx.arc(60, 110, 12, Math.PI, 0);
+            cCtx.lineTo(72, 150);
+            cCtx.closePath();
+            cCtx.fill();
+            
+            // Golden door frame
+            cCtx.strokeStyle = '#facc15';
+            cCtx.lineWidth = 3;
+            cCtx.stroke();
+            
+            // Windows
+            cCtx.fillStyle = '#1e3a8a';
+            cCtx.fillRect(44, 60, 8, 14);
+            cCtx.fillRect(68, 60, 8, 14);
+            
+            // Flagpole and white flag
+            cCtx.fillStyle = '#d1d5db';
+            cCtx.fillRect(59, 0, 3, 20);
+            cCtx.fillStyle = '#ffffff';
+            cCtx.beginPath();
+            cCtx.moveTo(62, 2);
+            cCtx.lineTo(82, 8);
+            cCtx.lineTo(62, 14);
+            cCtx.closePath();
+            cCtx.fill();
+            cCtx.fillStyle = '#fbbf24'; // crown symbol
+            cCtx.beginPath();
+            cCtx.arc(68, 8, 2, 0, Math.PI*2);
+            cCtx.fill();
+            
+            scene.textures.addCanvas('castle', cCanvas);
+
+            // 4. Background Sky Canvas (size 800x450)
+            const bgCanvas = document.createElement('canvas');
+            bgCanvas.width = 800;
+            bgCanvas.height = 450;
+            const bgCtx = bgCanvas.getContext('2d');
+            
+            // Cosmic gradient
+            const skyGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
+            skyGrad.addColorStop(0, '#090514'); // Deep cosmic void
+            skyGrad.addColorStop(0.4, '#170b3b'); // Magical twilight purple
+            skyGrad.addColorStop(0.8, '#4c1d95'); // Dream violet
+            skyGrad.addColorStop(1, '#6d28d9'); // Soft lilac horizon
+            bgCtx.fillStyle = skyGrad;
+            bgCtx.fillRect(0, 0, 800, 450);
+            
+            // Twinkling stars
+            bgCtx.fillStyle = '#ffffff';
+            for (let i = 0; i < 60; i++) {
+              const x = Math.random() * 800;
+              const y = Math.random() * 320;
+              const size = Math.random() * 1.5 + 0.5;
+              bgCtx.beginPath();
+              bgCtx.arc(x, y, size, 0, Math.PI * 2);
+              bgCtx.fill();
+            }
+            
+            // Glowing chess grid in the sky
+            bgCtx.strokeStyle = 'rgba(139, 92, 246, 0.15)';
+            bgCtx.lineWidth = 1;
+            for (let x = 0; x < 800; x += 100) {
+              bgCtx.beginPath();
+              bgCtx.moveTo(x, 0);
+              bgCtx.lineTo(x + 50, 450);
+              bgCtx.stroke();
+            }
+            for (let y = 0; y < 450; y += 40) {
+              bgCtx.beginPath();
+              bgCtx.moveTo(0, y);
+              bgCtx.lineTo(800, y);
+              bgCtx.stroke();
+            }
+            
+            // Clouds
+            bgCtx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+            const drawCloud = (cx, cy, r) => {
+              bgCtx.beginPath();
+              bgCtx.arc(cx, cy, r, 0, Math.PI * 2);
+              bgCtx.arc(cx - r*0.7, cy + r*0.2, r*0.8, 0, Math.PI * 2);
+              bgCtx.arc(cx + r*0.7, cy + r*0.2, r*0.8, 0, Math.PI * 2);
+              bgCtx.closePath();
+              bgCtx.fill();
+            };
+            drawCloud(150, 100, 30);
+            drawCloud(450, 160, 40);
+            drawCloud(680, 80, 25);
+            drawCloud(300, 60, 20);
+            
+            scene.textures.addCanvas('background', bgCanvas);
           }
           
           // 1. Double Parallax magical background
@@ -425,6 +681,8 @@ class MarioGame {
           scene.player.setDisplaySize(38, 56);
           scene.player.body.setGravityY(100); // stable arcade physics gravity
           scene.player.invincibility = 0;
+          scene.player.wasOnGround = true;
+          scene.player.landingSquashTimer = 0;
           
           self.player = scene.player;
 
@@ -612,9 +870,13 @@ class MarioGame {
             });
           });
 
+
           // 9. Camera setup
           scene.cameras.main.setBounds(0, 0, 2400, 450);
           scene.cameras.main.startFollow(scene.player, true, 0.1, 0.1);
+          
+          // 9.5 Physics world bounds setup (fixes the first abyss blocking bug!)
+          scene.physics.world.setBounds(0, 0, 2400, 450);
           
           // 10. Inputs binder
           scene.cursors = scene.input.keyboard.createCursorKeys();
@@ -640,6 +902,10 @@ class MarioGame {
           scene.enemies.getChildren().forEach(enemy => {
             if (enemy.dead) return;
             
+            // Wobble patrol walk!
+            const wobble = Math.sin(scene.time.now * 0.01 + enemy.x) * 6;
+            enemy.setAngle(wobble);
+            
             if (enemy.x <= enemy.leftBound) {
               enemy.body.setVelocityX(enemy.speed);
               enemy.setFlipX(true);
@@ -659,6 +925,10 @@ class MarioGame {
               scene.player.setPosition(scene.player.x < 950 ? 80 : 1050, 150);
               scene.player.body.setVelocity(0, 0);
               scene.player.invincibility = 60;
+              scene.player.wasOnGround = true;
+              scene.player.landingSquashTimer = 0;
+              scene.player.setDisplaySize(38, 56);
+              scene.player.setAngle(0);
             } else {
               self.gameOver();
             }
@@ -690,6 +960,54 @@ class MarioGame {
           if (jumpPressed && scene.player.body.touching.down) {
             scene.player.body.setVelocityY(-405); // high enough to reach all platforms easily!
             self.synthesizeSound('jump');
+            
+            // Trigger jump stretch!
+            scene.player.setDisplaySize(30, 68);
+          }
+
+          // --- SQUASH AND STRETCH ORGANIC JUICE ---
+          // Detect landing
+          if (scene.player.body.touching.down && !scene.player.wasOnGround) {
+            scene.player.landingSquashTimer = 10; // squash for 10 frames
+          }
+          scene.player.wasOnGround = scene.player.body.touching.down;
+
+          // Apply deformation math
+          if (scene.player.landingSquashTimer > 0) {
+            scene.player.landingSquashTimer--;
+            // Squash body on landing (Y goes down, X goes up)
+            const squash = 0.8 + (10 - scene.player.landingSquashTimer) * 0.02;
+            const invSquash = 1.2 - (10 - scene.player.landingSquashTimer) * 0.02;
+            scene.player.setDisplaySize(38 * invSquash, 56 * squash);
+            scene.player.setAngle(0);
+          } else if (!scene.player.body.touching.down) {
+            // Airborn: stretch dynamically based on vertical velocity
+            const vY = scene.player.body.velocity.y;
+            const stretch = 1 + Math.min(0.2, Math.abs(vY) / 2000);
+            const invStretch = 2 - stretch;
+            scene.player.setDisplaySize(38 * invStretch, 56 * stretch);
+            
+            // Slight tilt in direction of movement
+            if (scene.player.body.velocity.x < 0) {
+              scene.player.setAngle(-6);
+            } else if (scene.player.body.velocity.x > 0) {
+              scene.player.setAngle(6);
+            } else {
+              scene.player.setAngle(0);
+            }
+          } else if (moveLeft || moveRight) {
+            // Running on the ground: run tilt and height wobble!
+            const runWobble = Math.sin(scene.time.now * 0.015) * 8;
+            scene.player.setAngle(runWobble);
+            
+            const bounceY = 1 + Math.sin(scene.time.now * 0.03) * 0.04;
+            const bounceX = 1 - Math.sin(scene.time.now * 0.03) * 0.04;
+            scene.player.setDisplaySize(38 * bounceX, 56 * bounceY);
+          } else {
+            // Standing Idle: breathe slowly
+            const breath = 1 + Math.sin(scene.time.now * 0.003) * 0.02;
+            scene.player.setDisplaySize(38, 56 * breath);
+            scene.player.setAngle(0);
           }
         }
       }
