@@ -2634,16 +2634,17 @@ class MarioGame {
               const camX = scene.cameras.main.scrollX;
               const rx = bd.roomLeft - camX;
               const rw = bd.roomRight - bd.roomLeft;
+              const ry = 82, rh = 348;
               scene.bossOverlay.clear();
-              // Fill everything dark, then punch a hole for the room using path
               scene.bossOverlay.fillStyle(0x040010, 0.5);
-              scene.bossOverlay.beginPath();
-              scene.bossOverlay.rect(0, 0, 800, 450); // outer full screen (clockwise)
-              scene.bossOverlay.rect(rx, 82, rw, 348); // inner room hole (clockwise = same winding)
-              scene.bossOverlay.fill(); // Phaser fills with evenodd by default → hole punched
-              // Neon border around the room
+              // Draw 4 rectangles around the room instead of trying to punch a hole
+              scene.bossOverlay.fillRect(0, 0, 800, ry);                    // top
+              scene.bossOverlay.fillRect(0, ry + rh, 800, 450 - ry - rh);   // bottom
+              scene.bossOverlay.fillRect(0, ry, rx, rh);                     // left
+              scene.bossOverlay.fillRect(rx + rw, ry, 800 - rx - rw, rh);   // right
+              // Neon border
               scene.bossOverlay.lineStyle(2.5, 0xa855f7, 0.85);
-              scene.bossOverlay.strokeRect(rx, 82, rw, 348);
+              scene.bossOverlay.strokeRect(rx, ry, rw, rh);
             };
 
             scene.createBossWalls = function() {
