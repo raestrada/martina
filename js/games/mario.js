@@ -305,6 +305,9 @@ class MarioGame {
           debug: false
         }
       },
+      loader: {
+        imageLoadType: 'HTMLImageElement'
+      },
       scene: {
         preload: function() {
           // Preload actual cuento assets from Base64 to bypass local file CORS policy!
