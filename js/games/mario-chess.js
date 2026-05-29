@@ -24,45 +24,48 @@ window.ChessDuel = class ChessDuel {
 
   // --- ENGINE: Find best move for opponent (~300 ELO) ---
   findOpponentMove() {
-    const legalMoves = this.getAllLegalMoves('b');
-    if (legalMoves.length === 0) return null;
-    
-    // 300 ELO behavior: 40% random, 60% semi-smart
-    if (Math.random() < 0.40) {
-      return legalMoves[Math.floor(Math.random() * legalMoves.length)];
-    }
-    
-    // Evaluate each move with depth 1
-    let bestMove = legalMoves[0];
-    let bestScore = -Infinity;
-    
-    for (const move of legalMoves) {
-      // Try the move
-      const savedFEN = this.fen;
-      const savedHistory = [...this.moveHistory];
-      const savedTurn = this.turn;
+    try {
+      const legalMoves = this.getAllLegalMoves('b');
+      if (legalMoves.length === 0) return null;
       
-      this.executeMoveRaw(move);
-      const score = this.evaluateBoard('b');
-      
-      // Undo
-      this.fen = savedFEN;
-      this.moveHistory = savedHistory;
-      this.turn = savedTurn;
-      
-      if (score > bestScore) {
-        bestScore = score;
-        bestMove = move;
+      // 300 ELO: 40% random, 60% semi-smart
+      if (Math.random() < 0.40) {
+        return legalMoves[Math.floor(Math.random() * legalMoves.length)];
       }
+      
+      let bestMove = legalMoves[0];
+      let bestScore = -Infinity;
+      
+      for (const move of legalMoves) {
+        const savedFEN = this.fen;
+        const savedHistory = [...this.moveHistory];
+        const savedTurn = this.turn;
+        
+        this.executeMoveRaw(move);
+        const score = this.evaluateBoard('b');
+        
+        this.fen = savedFEN;
+        this.moveHistory = savedHistory;
+        this.turn = savedTurn;
+        
+        if (score > bestScore) {
+          bestScore = score;
+          bestMove = move;
+        }
+      }
+      
+      // 15% blunder: pick second-best
+      if (Math.random() < 0.15 && legalMoves.length > 1) {
+        const others = legalMoves.filter(m => m !== bestMove);
+        return others[Math.floor(Math.random() * others.length)];
+      }
+      
+      return bestMove || legalMoves[0];
+    } catch(e) {
+      console.error('Engine error:', e);
+      const legalMoves = this.getAllLegalMoves('b');
+      return legalMoves.length > 0 ? legalMoves[Math.floor(Math.random() * legalMoves.length)] : null;
     }
-    
-    // 15% chance of picking second-best (blunder)
-    if (Math.random() < 0.15 && legalMoves.length > 1) {
-      const others = legalMoves.filter(m => m !== bestMove);
-      return others[Math.floor(Math.random() * others.length)];
-    }
-    
-    return bestMove;
   }
 
   // --- Simple board evaluation (material + position) ---
@@ -345,15 +348,20 @@ window.ChessDuel = class ChessDuel {
         const light = (r+c)%2===0;
         sq.style.cssText = `
           width:50px;height:50px;
-          background:${light?'#e8d5b7':'#8B6914'};
+          background:${light?'#f0d9b5':'#b58863'};
           display:flex;align-items:center;justify-content:center;
-          font-size:34px;cursor:pointer;user-select:none;
+          font-size:38px;cursor:pointer;user-select:none;
+          font-weight:700;
         `;
         sq.dataset.r=r; sq.dataset.c=c;
         const piece = board[r][c];
         if (piece) {
           sq.textContent = sym[piece]||'';
-          sq.style.color = piece===piece.toUpperCase()?'#1a1a1a':'#2d2d2d';
+          // White pieces: bright ivory with dark shadow, Black: dark charcoal
+          sq.style.color = piece===piece.toUpperCase()?'#fffef0':'#1a1a1a';
+          sq.style.textShadow = piece===piece.toUpperCase()
+            ? '0 2px 3px rgba(0,0,0,0.4)'
+            : '0 1px 2px rgba(255,255,255,0.15)';
         }
         sq.addEventListener('click', ()=>this.handleClick(r,c));
         boardEl.appendChild(sq);

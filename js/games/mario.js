@@ -2248,37 +2248,74 @@ class MarioGame {
             // Wild knight texture (L-jump hazard for level 4)
             if (!scene.textures.exists('wild_knight')) {
               const wkCanvas = document.createElement('canvas');
-              wkCanvas.width = 40;
-              wkCanvas.height = 44;
+              wkCanvas.width = 44;
+              wkCanvas.height = 48;
               const wkCtx = wkCanvas.getContext('2d');
-              // Knight body
-              wkCtx.fillStyle = '#5c3a1e';
+              // Horse body — brown with mane
+              wkCtx.fillStyle = '#8B4513';
+              // Body
               wkCtx.beginPath();
-              wkCtx.moveTo(20, 44);
-              wkCtx.quadraticCurveTo(14, 30, 18, 20);
-              wkCtx.quadraticCurveTo(12, 10, 14, 4);
-              wkCtx.lineTo(18, 0);
-              wkCtx.lineTo(21, 10);
-              wkCtx.quadraticCurveTo(30, 8, 34, 14);
-              wkCtx.quadraticCurveTo(38, 18, 36, 24);
-              wkCtx.lineTo(28, 24);
-              wkCtx.quadraticCurveTo(26, 34, 28, 44);
+              wkCtx.ellipse(22, 28, 14, 9, 0, 0, Math.PI*2);
+              wkCtx.fill();
+              // Neck
+              wkCtx.fillStyle = '#7a3b10';
+              wkCtx.beginPath();
+              wkCtx.moveTo(12, 24); wkCtx.quadraticCurveTo(8, 12, 12, 4);
+              wkCtx.lineTo(18, 4); wkCtx.quadraticCurveTo(16, 14, 20, 24);
               wkCtx.closePath();
+              wkCtx.fill();
+              // Head
+              wkCtx.fillStyle = '#8B4513';
+              wkCtx.beginPath();
+              wkCtx.ellipse(15, 6, 7, 5, -0.2, 0, Math.PI*2);
+              wkCtx.fill();
+              // Snout
+              wkCtx.fillStyle = '#a0522d';
+              wkCtx.beginPath();
+              wkCtx.ellipse(10, 5, 4, 3.5, 0, 0, Math.PI*2);
               wkCtx.fill();
               // Eye
               wkCtx.fillStyle = '#fff';
-              wkCtx.beginPath(); wkCtx.arc(26, 12, 2.5, 0, Math.PI*2); wkCtx.fill();
+              wkCtx.beginPath(); wkCtx.arc(17, 4, 2, 0, Math.PI*2); wkCtx.fill();
               wkCtx.fillStyle = '#000';
-              wkCtx.beginPath(); wkCtx.arc(26, 12, 1.2, 0, Math.PI*2); wkCtx.fill();
-              // Mane
-              wkCtx.fillStyle = '#3a1f0a';
+              wkCtx.beginPath(); wkCtx.arc(17, 4, 1.2, 0, Math.PI*2); wkCtx.fill();
+              // Ear
+              wkCtx.fillStyle = '#6b3410';
               wkCtx.beginPath();
-              wkCtx.moveTo(14, 4); wkCtx.quadraticCurveTo(8, 8, 10, 16);
-              wkCtx.quadraticCurveTo(12, 12, 14, 4);
-              wkCtx.fill();
-              // Red glow (hazard indicator)
-              wkCtx.fillStyle = 'rgba(255,60,30,0.4)';
-              wkCtx.beginPath(); wkCtx.arc(20, 22, 16, 0, Math.PI*2); wkCtx.fill();
+              wkCtx.moveTo(18, 2); wkCtx.lineTo(16, -1); wkCtx.lineTo(14, 3);
+              wkCtx.closePath(); wkCtx.fill();
+              // Mane
+              wkCtx.strokeStyle = '#3a1f0a';
+              wkCtx.lineWidth = 1.5;
+              for (let i=0; i<5; i++) {
+                wkCtx.beginPath();
+                wkCtx.moveTo(12-i*0.5, 2+i*3);
+                wkCtx.quadraticCurveTo(8-i, 4+i*3, 12-i*0.5, 8+i*3);
+                wkCtx.stroke();
+              }
+              // Legs
+              wkCtx.fillStyle = '#6b3410';
+              wkCtx.fillRect(14, 35, 3, 10);
+              wkCtx.fillRect(18, 35, 3, 10);
+              wkCtx.fillRect(25, 35, 3, 10);
+              wkCtx.fillRect(30, 35, 3, 10);
+              // Hooves
+              wkCtx.fillStyle = '#2a1508';
+              wkCtx.fillRect(13, 43, 4, 3);
+              wkCtx.fillRect(17, 43, 4, 3);
+              wkCtx.fillRect(24, 43, 4, 3);
+              wkCtx.fillRect(29, 43, 4, 3);
+              // Tail
+              wkCtx.strokeStyle = '#3a1f0a';
+              wkCtx.lineWidth = 2;
+              wkCtx.beginPath();
+              wkCtx.moveTo(35, 26);
+              wkCtx.quadraticCurveTo(40, 24, 38, 32);
+              wkCtx.quadraticCurveTo(40, 36, 36, 34);
+              wkCtx.stroke();
+              // Red glow hazard
+              wkCtx.fillStyle = 'rgba(255,40,20,0.3)';
+              wkCtx.beginPath(); wkCtx.arc(22, 24, 20, 0, Math.PI*2); wkCtx.fill();
               
               scene.textures.addCanvas('wild_knight', wkCanvas);
             }
@@ -3722,7 +3759,8 @@ class MarioGame {
                       scene.bossOverlay.setVisible(false);
                       
                       // Restore level music
-                      self.stopMusic();
+              self.stopMusic();
+              self.startChessMusic();
                       self.startMusic();
                       
                       // Boss death + wall removal
@@ -3856,6 +3894,7 @@ class MarioGame {
                     }
                     self.chessDuel = null;
                     scene.player.invincibility = 60;
+                    self.stopMusic();
                     self.startMusic();
                     // Show goal
                     if (!scene.whiteQueen) {
@@ -3901,6 +3940,7 @@ class MarioGame {
                     self.synthesizeSound('damage');
                     scene.doDamageAnim();
                     scene.chessActive = false;
+                    self.stopMusic();
                     self.startMusic();
                     if (self.lives <= 0) self.gameOver();
                   }
@@ -4476,6 +4516,10 @@ class MarioGame {
       clearInterval(this.musicInterval);
       this.musicInterval = null;
     }
+    if (this._chessTickInterval) {
+      clearInterval(this._chessTickInterval);
+      this._chessTickInterval = null;
+    }
     this.synthNotes.forEach(osc => {
       try {
         osc.stop();
@@ -4544,6 +4588,91 @@ class MarioGame {
         bGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
         bOsc.connect(bGain); bGain.connect(audioCtx.destination);
         bOsc.start(now); bOsc.stop(now + 0.12);
+        this.synthNotes.push(bOsc);
+      }
+      step = (step + 1) % melody.length;
+      if (this.synthNotes.length > 80) this.synthNotes.splice(0, 40);
+    }, tempo);
+  }
+
+  // --- CHESS DUEL MUSIC (tension, clock ticking, increasing pressure) ---
+  startChessMusic() {
+    this.stopMusic();
+    if (!this.musicEnabled) return;
+    window.GameAudio.init();
+    const audioCtx = window.GameAudio.ctx;
+    if (!audioCtx) return;
+    
+    // Tension theme: minor, repetitive, clock-like
+    const melody = [
+      311.13, 0, 311.13, 349.23, 311.13, 293.66, 261.63, 0,
+      311.13, 0, 311.13, 349.23, 369.99, 349.23, 311.13, 0,
+      293.66, 0, 293.66, 311.13, 293.66, 261.63, 246.94, 0,
+      293.66, 0, 293.66, 311.13, 349.23, 311.13, 293.66, 0,
+      233.08, 0, 233.08, 261.63, 233.08, 220.00, 207.65, 0,
+      233.08, 0, 233.08, 261.63, 293.66, 261.63, 233.08, 0,
+      311.13, 349.23, 369.99, 415.30, 369.99, 349.23, 311.13, 0,
+      349.23, 369.99, 415.30, 466.16, 415.30, 369.99, 349.23, 311.13
+    ];
+    const bass = [
+      77.78, 0, 0, 0, 77.78, 0, 0, 0,
+      77.78, 0, 0, 0, 77.78, 0, 0, 0,
+      73.42, 0, 0, 0, 73.42, 0, 0, 0,
+      73.42, 0, 0, 0, 73.42, 0, 0, 0,
+      58.27, 0, 0, 0, 58.27, 0, 0, 0,
+      58.27, 0, 0, 0, 58.27, 0, 0, 0,
+      77.78, 0, 0, 0, 77.78, 0, 0, 0,
+      77.78, 0, 0, 0, 77.78, 0, 0, 0
+    ];
+    const tempo = 180;
+    let step = 0;
+    
+    // Tick-tock percussion layer
+    const tickInterval = setInterval(() => {
+      if (this.gameState !== 'playing' || !this.musicEnabled || !this.chessDuel) {
+        clearInterval(tickInterval);
+        return;
+      }
+      const now2 = audioCtx.currentTime;
+      const tOsc = audioCtx.createOscillator();
+      const tGain = audioCtx.createGain();
+      tOsc.type = 'square';
+      tOsc.frequency.setValueAtTime(step % 2 === 0 ? 800 : 600, now2);
+      tGain.gain.setValueAtTime(0.03, now2);
+      tGain.gain.exponentialRampToValueAtTime(0.001, now2 + 0.05);
+      tOsc.connect(tGain); tGain.connect(audioCtx.destination);
+      tOsc.start(now2); tOsc.stop(now2 + 0.05);
+    }, 1000);
+    this._chessTickInterval = tickInterval;
+    
+    this.musicInterval = setInterval(() => {
+      if (this.gameState !== 'playing' || !this.musicEnabled) {
+        this.stopMusic();
+        return;
+      }
+      const now = audioCtx.currentTime;
+      const leadFreq = melody[step];
+      if (leadFreq > 0) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(leadFreq, now);
+        gain.gain.setValueAtTime(0.04, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(now); osc.stop(now + 0.16);
+        this.synthNotes.push(osc);
+      }
+      const bassFreq = bass[step];
+      if (bassFreq > 0) {
+        const bOsc = audioCtx.createOscillator();
+        const bGain = audioCtx.createGain();
+        bOsc.type = 'sine';
+        bOsc.frequency.setValueAtTime(bassFreq, now);
+        bGain.gain.setValueAtTime(0.05, now);
+        bGain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+        bOsc.connect(bGain); bGain.connect(audioCtx.destination);
+        bOsc.start(now); bOsc.stop(now + 0.16);
         this.synthNotes.push(bOsc);
       }
       step = (step + 1) % melody.length;
