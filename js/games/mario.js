@@ -3799,8 +3799,7 @@ class MarioGame {
                       scene.bossOverlay.setVisible(false);
                       
                       // Restore level music
-              self.stopMusic();
-              self.startChessMusic();
+                      self.stopMusic();
                       self.startMusic();
                       
                       // Boss death + wall removal
@@ -3986,6 +3985,7 @@ class MarioGame {
                   }
                 );
                 self.chessDuel.start();
+                self.startChessMusic();
               }, 1200);
             }
           }
@@ -4669,7 +4669,7 @@ class MarioGame {
     
     // Tick-tock percussion layer
     const tickInterval = setInterval(() => {
-      if (this.gameState !== 'playing' || !this.musicEnabled || !this.chessDuel) {
+      if (this.gameState !== 'playing' || !this.musicEnabled) {
         clearInterval(tickInterval);
         return;
       }

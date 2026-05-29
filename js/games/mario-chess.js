@@ -126,11 +126,29 @@ window.ChessDuel = class ChessDuel {
     const toR = 8 - parseInt(uciMove[3]);
     
     const { board, turn, castling, enPassant } = this.parseFEN();
-    board[toR][toC] = board[fromR][fromC];
+    
+    // Execute move
+    const piece = board[fromR][fromC];
+    board[toR][toC] = piece;
     board[fromR][fromC] = null;
     
+    // Castling: move rook too
+    if (piece && piece.toLowerCase() === 'k' && Math.abs(fromC - toC) === 2) {
+      if (toC === 6) { // kingside
+        board[toR][5] = board[toR][7];
+        board[toR][7] = null;
+      } else { // queenside
+        board[toR][3] = board[toR][0];
+        board[toR][0] = null;
+      }
+    }
+    
+    // Promotion
     if (uciMove.length > 4) {
       board[toR][toC] = turn === 'w' ? uciMove[4].toUpperCase() : uciMove[4].toLowerCase();
+    } else if (piece && piece.toLowerCase() === 'p' && (toR === 0 || toR === 7)) {
+      // Auto-promote to queen if not specified
+      board[toR][toC] = turn === 'w' ? 'Q' : 'q';
     }
     
     let fenRows = [];
@@ -217,9 +235,47 @@ window.ChessDuel = class ChessDuel {
       case 'q': slide(1,0);slide(-1,0);slide(0,1);slide(0,-1);slide(1,1);slide(1,-1);slide(-1,1);slide(-1,-1); break;
       case 'k':
         for (const [dr,dc] of [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]) add(r+dr,c+dc);
+        // Castling
+        if (color === 'w' && r === 7 && c === 4) {
+          // Kingside
+          if (this.getPiece(7,7)==='R' && !this.getPiece(7,5) && !this.getPiece(7,6)
+              && !this.isSquareAttacked(7,4,'b') && !this.isSquareAttacked(7,5,'b') && !this.isSquareAttacked(7,6,'b')) {
+            moves.push({ r:7, c:6, castle: 'kingside' });
+          }
+          // Queenside
+          if (this.getPiece(7,0)==='R' && !this.getPiece(7,1) && !this.getPiece(7,2) && !this.getPiece(7,3)
+              && !this.isSquareAttacked(7,4,'b') && !this.isSquareAttacked(7,3,'b') && !this.isSquareAttacked(7,2,'b')) {
+            moves.push({ r:7, c:2, castle: 'queenside' });
+          }
+        }
+        if (color === 'b' && r === 0 && c === 4) {
+          if (this.getPiece(0,7)==='r' && !this.getPiece(0,5) && !this.getPiece(0,6)
+              && !this.isSquareAttacked(0,4,'w') && !this.isSquareAttacked(0,5,'w') && !this.isSquareAttacked(0,6,'w')) {
+            moves.push({ r:0, c:6, castle: 'kingside' });
+          }
+          if (this.getPiece(0,0)==='r' && !this.getPiece(0,1) && !this.getPiece(0,2) && !this.getPiece(0,3)
+              && !this.isSquareAttacked(0,4,'w') && !this.isSquareAttacked(0,3,'w') && !this.isSquareAttacked(0,2,'w')) {
+            moves.push({ r:0, c:2, castle: 'queenside' });
+          }
+        }
         break;
     }
     return moves;
+  }
+
+  // Check if a square is attacked by any piece of the given color
+  isSquareAttacked(r, c, byColor) {
+    for (let rr=0; rr<8; rr++) {
+      for (let cc=0; cc<8; cc++) {
+        const piece = this.getPiece(rr, cc);
+        if (!piece) continue;
+        const pCol = piece === piece.toUpperCase() ? 'w' : 'b';
+        if (pCol !== byColor) continue;
+        const moves = this.generateMoves(rr, cc);
+        if (moves.some(m => m.r === r && m.c === c && !m.castle)) return true;
+      }
+    }
+    return false;
   }
 
   // --- GET ALL LEGAL MOVES ---
@@ -234,7 +290,10 @@ window.ChessDuel = class ChessDuel {
         this.generateMoves(r,c).forEach(to => {
           const from = String.fromCharCode(97+c)+(8-r);
           const toSq = String.fromCharCode(97+to.c)+(8-to.r);
-          moves.push(from+toSq);
+          let move = from+toSq;
+          // Add promotion piece
+          if (piece.toLowerCase()==='p' && (to.r===0||to.r===7)) move += 'q';
+          moves.push(move);
         });
       }
     }
@@ -444,8 +503,12 @@ window.ChessDuel = class ChessDuel {
       if (moves.some(m=>m.r===r&&m.c===c)) {
         const from=String.fromCharCode(97+fc)+(8-fr);
         const to=String.fromCharCode(97+c)+(8-r);
+        // Auto-promote pawn to queen
+        const piece = this.getPiece(fr, fc);
+        let uci = from+to;
+        if (piece && piece.toLowerCase()==='p' && (r===0||r===7)) uci += 'q';
         this.selectedSquare=null;
-        this.executeMove(from+to, true);
+        this.executeMove(uci, true);
         return;
       }
       this.selectedSquare=null;
