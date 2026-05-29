@@ -94,13 +94,11 @@ class ChessBoxGame {
       audioCtx.resume();
     }
 
-    // === BOXING: Play Inner Light OGG rendered from original MIDI with GM SoundFont ===
+    // === BOXING: Try Inner Light OGG, with synth fallback ===
+    // Synthesis runs immediately. OGG loads in background and replaces it when ready.
     if (type === 'boxing') {
-      this._playInnerLightOGG(audioCtx);
-      return;
+      this._playInnerLightOGG(audioCtx); // async, will stop synth when OGG starts
     }
-
-    // === CHESS: Keep synthesized tension music ===
     // Overdrive Distortion WaveShaper node for realistic electric guitar sound
     let distNode = window.GameAudio.distNode;
     if (!distNode) {
@@ -497,6 +495,13 @@ class ChessBoxGame {
     this._stopOGG();
   }
 
+  _stopSynth() {
+    if (this.musicInterval) {
+      clearInterval(this.musicInterval);
+      this.musicInterval = null;
+    }
+  }
+
   _stopOGG() {
     if (this.oggSource) {
       try { this.oggSource.stop(); } catch(e) {}
@@ -536,10 +541,11 @@ class ChessBoxGame {
       this.oggSource.loop = true;
       this.oggSource.connect(this.oggGain);
       this.oggSource.start(0);
+
+      // OGG loaded successfully — stop the synthesized fallback
+      this._stopSynth();
     } catch(e) {
-      console.warn('Could not play Inner Light OGG, falling back to synth:', e);
-      // Don't fallback — the old startMusic would have been called, but we returned early.
-      // Just silently fail.
+      // OGG failed (e.g. file:// CORS) — synthesis continues as fallback, silent ignore
     }
   }
 
