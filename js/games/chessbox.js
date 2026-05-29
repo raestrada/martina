@@ -112,7 +112,7 @@ class ChessBoxGame {
 
     let melody = [];
     let bass = [];
-    let tempo = 120; // 120ms per step (Fast-paced, heavy rock tempo)
+    let tempo = 160; // 160ms per step (Heavier, slower chugging metal tempo)
 
     if (type === 'boxing') {
       // High-energy epic heavy metal anthem in A minor (Hajime no Ippo style chord progression)
@@ -478,6 +478,8 @@ class ChessBoxGame {
     this.playerHealth = 100;
     this.opponentHealth = 100;
     this.score = 0;
+    this.playerSuperPower = 0;
+    this.opponentSuperPower = 0;
     
     // Set chess clocks based on level ELO & difficulty (increased to enable real, deep chess play!)
     let timeBase = 480000; // 480s base (Medium - 8 minutes)
@@ -690,10 +692,28 @@ class ChessBoxGame {
           <!-- Phaser Canvas container -->
           <div class="mario-canvas-container" id="phaser-boxing-parent" style="border: 4px solid #ef4444; border-radius: 16px; width: 800px; height: 450px; background: #000; overflow:hidden; position:relative;">
             
+            <!-- Super Power HUD Overlays -->
+            <div style="position: absolute; top: 12px; left: 12px; width: 170px; background: rgba(15,23,42,0.85); padding: 6px 10px; border-radius: 8px; border: 1.5px solid rgba(56, 189, 248, 0.4); text-align: left; font-family: 'Outfit', sans-serif; pointer-events: none; z-index: 10; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
+              <span style="font-size: 0.68rem; color: #38bdf8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; display:block;">⚡ DEMPSEY ROLL</span>
+              <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden; margin-top: 4px; border: 1px solid rgba(255,255,255,0.05);">
+                <div id="super-player-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #2563eb); transition: width 0.15s ease-out;"></div>
+              </div>
+              <span id="super-player-ready" style="font-size: 0.63rem; color: #fbbf24; display: none; font-weight: 900; animation: pulse 0.8s infinite alternate; margin-top: 3px;">⚡ ¡LISTO! PULSA [S]</span>
+            </div>
+
+            <div style="position: absolute; top: 12px; right: 12px; width: 170px; background: rgba(15,23,42,0.85); padding: 6px 10px; border-radius: 8px; border: 1.5px solid rgba(239, 68, 68, 0.4); text-align: right; font-family: 'Outfit', sans-serif; pointer-events: none; z-index: 10; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
+              <span style="font-size: 0.68rem; color: #f87171; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; display:block;">🏰 ENROQUE DESTRUCTOR</span>
+              <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden; margin-top: 4px; border: 1px solid rgba(255,255,255,0.05); direction: rtl;">
+                <div id="super-opponent-bar" style="width: 0%; height: 100%; background: linear-gradient(270deg, #ef4444, #b91c1c); transition: width 0.15s ease-out;"></div>
+              </div>
+              <span id="super-opponent-ready" style="font-size: 0.63rem; color: #f43f5e; display: none; font-weight: 900; animation: pulse 0.8s infinite alternate; margin-top: 3px;">🔥 ¡SÚPER ENEMIGO!</span>
+            </div>
+
             <!-- Mobile overlay controllers -->
-            <div class="mario-touch-pad" style="opacity: 0.85;">
+            <div class="mario-touch-pad" style="opacity: 0.85; z-index: 15;">
               <div class="touch-btn" id="btn-dodge-l" style="background: rgba(56, 189, 248, 0.25); border-color: #0284c7;">Q</div>
               <div class="touch-btn" id="btn-punch-l" style="background: rgba(244, 63, 94, 0.25); border-color: #e11d48;">A</div>
+              <div class="touch-btn" id="btn-super" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.4), rgba(217, 119, 6, 0.6)); border-color: #fbbf24; color: #fff; font-weight: 900; display: none; text-shadow: 0 0 5px #f59e0b; box-shadow: 0 0 10px rgba(245,158,11,0.5); animation: pulse 0.8s infinite alternate;">S</div>
               <div class="touch-btn" id="btn-block-guard" style="background: rgba(74, 222, 128, 0.25); border-color: #16a34a;">W</div>
               <div class="touch-btn" id="btn-punch-r" style="background: rgba(244, 63, 94, 0.25); border-color: #e11d48;">D</div>
               <div class="touch-btn" id="btn-dodge-r" style="background: rgba(56, 189, 248, 0.25); border-color: #0284c7;">E</div>
@@ -701,7 +721,7 @@ class ChessBoxGame {
           </div>
           
           <p style="font-size: 0.82rem; color: #94a3b8; margin-top: 8px;">
-            <b>Teclado</b>: <kbd>Q</kbd> Esquivar Izq | <kbd>E</kbd> Esquivar Der | <kbd>W</kbd> Bloquear | <kbd>A</kbd> Golpe Izq | <kbd>D</kbd> Golpe Der
+            <b>Teclado</b>: <kbd>Q</kbd> Esquivar Izq | <kbd>E</kbd> Esquivar Der | <kbd>W</kbd> Bloquear | <kbd>A</kbd> Golpe Izq | <kbd>D</kbd> Golpe Der | <kbd>S</kbd> ⚡ DEMPSEY ROLL
           </p>
         </div>
       </div>
@@ -790,7 +810,8 @@ class ChessBoxGame {
             dodgeR: Phaser.Input.Keyboard.KeyCodes.E,
             block: Phaser.Input.Keyboard.KeyCodes.W,
             punchL: Phaser.Input.Keyboard.KeyCodes.A,
-            punchR: Phaser.Input.Keyboard.KeyCodes.D
+            punchR: Phaser.Input.Keyboard.KeyCodes.D,
+            super: Phaser.Input.Keyboard.KeyCodes.S
           });
 
           // Touch inputs binders
@@ -807,15 +828,190 @@ class ChessBoxGame {
           bindTouch('btn-block-guard', () => scene.executePlayerAction('block'));
           bindTouch('btn-punch-l', () => scene.executePlayerAction('punchL'));
           bindTouch('btn-punch-r', () => scene.executePlayerAction('punchR'));
+          bindTouch('btn-super', () => scene.executePlayerAction('super'));
 
           // Opponent Attack cycle loops
           scene.nextAttackTime = scene.time.now + 1000 + Math.random() * 1500;
+
+          // Unleash Martina's legendary Super Dempsey Roll!
+          scene.executeDempseyRoll = () => {
+            self.playerSuperPower = 0;
+            scene.playerState = 'dempsey';
+            self.updateBoxingTopBar();
+            
+            window.GameAudio.playVictory(); // Triumphant bell sound!
+            scene.cameras.main.flash(200, 56, 189, 248, 0.4); // neon blue flash
+            scene.addTextEffect(400, 310, "🌀 ¡DEMPSEY ROLL! 🌀", "#38bdf8");
+            
+            // Phase 1: Rapid figure-8 evasive weaves!
+            scene.player.setTexture('player-dodge-l');
+            scene.tweens.add({
+              targets: scene.player,
+              x: 280, y: 360,
+              duration: 120,
+              yoyo: true,
+              onComplete: () => {
+                scene.player.setTexture('player-dodge-r');
+                scene.tweens.add({
+                  targets: scene.player,
+                  x: 520, y: 360,
+                  duration: 120,
+                  yoyo: true,
+                  onComplete: () => {
+                    // Phase 2: Unleash high-speed hook flurry!
+                    let punchCount = 0;
+                    const throwHook = () => {
+                      if (punchCount >= 5 || scene.opponentState === 'ko') {
+                        scene.player.setTexture('player-idle');
+                        scene.player.x = 400; scene.player.y = 350;
+                        scene.playerState = 'idle';
+                        self.updateBoxingTopBar();
+                        return;
+                      }
+                      
+                      punchCount++;
+                      const side = punchCount % 2 === 0 ? 'left' : 'right';
+                      scene.player.setTexture(side === 'left' ? 'player-punch-l' : 'player-punch-r');
+                      scene.player.x = side === 'left' ? 370 : 430;
+                      scene.player.y = 300;
+                      
+                      scene.cameras.main.shake(80, 0.015);
+                      
+                      // Massive unblockable damage!
+                      scene.opponentHP = Math.max(0, scene.opponentHP - 8.5);
+                      self.opponentHealth = Math.max(0, (scene.opponentHP / scene.opponentMaxHP) * 100);
+                      window.GameAudio.playSuccess();
+                      scene.spawnSparkleParticles(400, 160, '#38bdf8');
+                      scene.addTextEffect(400, 140, "🥊 FLURRY HOOK! 🥊", "#fbbf24");
+                      
+                      // Opponent recoil
+                      scene.opponentState = 'hit';
+                      scene.opponent.setTexture('opp-stunned');
+                      scene.tweens.add({
+                        targets: scene.opponent,
+                        x: 400 + (side === 'left' ? 30 : -30),
+                        y: 170,
+                        duration: 80,
+                        yoyo: true
+                      });
+                      
+                      self.updateBoxingTopBar();
+                      
+                      if (scene.opponentHP <= 0) {
+                        scene.triggerOpponentKO();
+                      } else {
+                        scene.time.delayedCall(120, throwHook);
+                      }
+                    };
+                    throwHook();
+                  }
+                });
+              }
+            });
+          };
+
+          // Unleash General's ultimate super: Enroque Destructor!
+          scene.executeOpponentEnroque = () => {
+            self.opponentSuperPower = 0;
+            scene.opponentState = 'enroque';
+            self.updateBoxingTopBar();
+            
+            window.GameAudio.playError(); // Alarm sound!
+            scene.cameras.main.flash(200, 239, 68, 68, 0.4); // neon red flash
+            scene.addTextEffect(400, 140, "🏰 ¡ENROQUE DESTRUCTOR! 🏰", "#f43f5e");
+            
+            // Phase 1: Retreat to defensive castle cover (castling depth!)
+            scene.tweens.add({
+              targets: scene.opponent,
+              y: 120,
+              scaleX: 0.45, scaleY: 0.45,
+              duration: 450,
+              onComplete: () => {
+                // Charge forward in unstoppable rook stampede crusher!
+                scene.opponent.setTexture('opp-idle'); // serious expression
+                scene.tweens.add({
+                  targets: scene.opponent,
+                  y: 260,
+                  scaleX: 0.85, scaleY: 0.85,
+                  duration: 200,
+                  yoyo: true,
+                  onComplete: () => {
+                    scene.opponent.y = 180;
+                    scene.opponent.setScale(0.6);
+                    if (scene.opponentState !== 'ko' && scene.opponentState !== 'stunned') {
+                      scene.opponentState = 'idle';
+                      scene.opponent.setTexture('opp-idle');
+                      scene.nextAttackTime = scene.time.now + 1500;
+                    }
+                  }
+                });
+                
+                // Impact calculations after charge delay
+                scene.time.delayedCall(160, () => {
+                  scene.checkEnroqueImpact();
+                });
+              }
+            });
+          };
+
+          // Check if Enroque Destructor hits player
+          scene.checkEnroqueImpact = () => {
+            if (scene.playerState === 'dodging-l' || scene.playerState === 'dodging-r') {
+              scene.addTextEffect(400, 310, "💨 ¡ESQUIVA CRÍTICA!", "#4ade80");
+              scene.spawnSparkleParticles(400, 340, '#4ade80');
+            } else if (scene.playerState === 'blocking') {
+              // Guard completely broken! Martina takes partial damage and brief recoil
+              self.playerHealth = Math.max(0, self.playerHealth - 12);
+              window.GameAudio.playError();
+              scene.addTextEffect(400, 310, "🛡️ ¡GUARDIA ROTA! (-12)", "#fbbf24");
+              scene.cameras.main.shake(120, 0.015);
+              
+              scene.playerState = 'hit';
+              scene.player.y = 370;
+              scene.tweens.add({
+                targets: scene.player,
+                y: 350,
+                duration: 350,
+                onComplete: () => { scene.playerState = 'idle'; }
+              });
+              
+              if (self.playerHealth <= 0) {
+                scene.playerState = 'stunned';
+                self.gameOver("¡Tu guardia fue destruida por el Enroque del General! 😞");
+              }
+            } else {
+              // Clean impact! Severe damage taken!
+              self.playerHealth = Math.max(0, self.playerHealth - 25);
+              window.GameAudio.playError();
+              scene.addTextEffect(400, 310, "💥 ¡IMPACTO CRÍTICO! (-25)", "#ef4444");
+              scene.cameras.main.shake(200, 0.035);
+              
+              scene.playerState = 'hit';
+              scene.player.y = 385; // knocked down heavily
+              scene.tweens.add({
+                targets: scene.player,
+                y: 350,
+                duration: 450,
+                onComplete: () => { scene.playerState = 'idle'; }
+              });
+              
+              if (self.playerHealth <= 0) {
+                scene.playerState = 'stunned';
+                self.gameOver("¡Fuiste noqueado por la apisonadora del Enroque Destructor! 😞");
+              }
+            }
+            self.updateBoxingTopBar();
+          };
 
           // Master Player Action controller
           scene.executePlayerAction = (action) => {
             if (scene.playerState !== 'idle') return;
             
-            if (action === 'dodgeL') {
+            if (action === 'super') {
+              if (self.playerSuperPower === 100) {
+                scene.executeDempseyRoll();
+              }
+            } else if (action === 'dodgeL') {
               scene.playerState = 'dodging-l';
               scene.player.setTexture('player-dodge-l');
               scene.tweens.add({
@@ -888,6 +1084,7 @@ class ChessBoxGame {
             if (scene.opponentState === 'stunned') {
               // Stunned opponent takes massive critical damage!
               scene.opponentHP -= 6;
+              self.playerSuperPower = Math.min(100, self.playerSuperPower + 12); // charge Dempsey
               self.hitsLandedThisRound++;
               self.totalPunchesLanded++;
               window.GameAudio.playSuccess();
@@ -919,9 +1116,11 @@ class ChessBoxGame {
               // Idle opponent blocks punches easily
               window.GameAudio.playMove();
               scene.addTextEffect(400, 140, "¡BLOQUEADO!", "#cbd5e1");
+              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 8); // charge opponent
             } else if (scene.opponentState === 'telegraphing-l' || scene.opponentState === 'telegraphing-r') {
               // Opponent gets interrupted if caught preparing a punch! Clean hit!
               scene.opponentHP -= 4;
+              self.playerSuperPower = Math.min(100, self.playerSuperPower + 15); // massive Dempsey charge
               self.hitsLandedThisRound++;
               self.totalPunchesLanded++;
               window.GameAudio.playSuccess();
@@ -1009,6 +1208,7 @@ class ChessBoxGame {
               // Block damage reduction
               scene.playerState = 'idle';
               self.playerHealth = Math.max(0, self.playerHealth - damage * 0.2);
+              self.playerSuperPower = Math.min(100, self.playerSuperPower + 10); // charge Dempsey
               window.GameAudio.playMove();
               scene.addTextEffect(400, 310, "🛡️ ¡BLOQUEADO!", "#38bdf8");
               scene.spawnSparkleParticles(400, 340, '#38bdf8');
@@ -1016,6 +1216,7 @@ class ChessBoxGame {
                        (side === 'right' && scene.playerState === 'dodging-r')) {
               // Dodged perfectly!
               scene.addTextEffect(400, 310, "💨 ¡ESQUIVADO!", "#4ade80");
+              self.playerSuperPower = Math.min(100, self.playerSuperPower + 20); // massive Dempsey dodge charge
               
               // Opponent gets stunned for counter-attack
               scene.opponentState = 'stunned';
@@ -1025,6 +1226,7 @@ class ChessBoxGame {
             } else {
               // Clean impact! Player takes damage and flinches!
               self.playerHealth = Math.max(0, self.playerHealth - damage);
+              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 15); // charge opponent super
               self.hitsReceivedThisRound++;
               self.totalPunchesReceived++;
               window.GameAudio.playError();
@@ -1076,6 +1278,7 @@ class ChessBoxGame {
             if (Phaser.Input.Keyboard.JustDown(scene.keys.block)) scene.executePlayerAction('block');
             if (Phaser.Input.Keyboard.JustDown(scene.keys.punchL)) scene.executePlayerAction('punchL');
             if (Phaser.Input.Keyboard.JustDown(scene.keys.punchR)) scene.executePlayerAction('punchR');
+            if (Phaser.Input.Keyboard.JustDown(scene.keys.super)) scene.executePlayerAction('super');
           }
 
           // Handle Opponent Stun or Hit state clock
@@ -1089,6 +1292,12 @@ class ChessBoxGame {
 
           // Handle Opponent Attack AI cycles
           if (scene.opponentState === 'idle' && time > scene.nextAttackTime) {
+            // Check if Opponent has full Super Power!
+            if (self.opponentSuperPower === 100) {
+              scene.executeOpponentEnroque();
+              return;
+            }
+
             const punchSide = Math.random() < 0.5 ? 'left' : 'right';
             scene.opponentState = punchSide === 'left' ? 'telegraphing-l' : 'telegraphing-r';
             scene.opponent.setTexture(punchSide === 'left' ? 'opp-punch-l' : 'opp-punch-r');
@@ -1933,6 +2142,39 @@ class ChessBoxGame {
     const pEl = document.getElementById('boxing-punches-val');
     if (pEl) {
       pEl.textContent = `L: ${this.hitsLandedThisRound} | R: ${this.hitsReceivedThisRound}`;
+    }
+    
+    // Update Super progress bars in DOM
+    const pBar = document.getElementById('super-player-bar');
+    if (pBar) {
+      pBar.style.width = `${this.playerSuperPower}%`;
+      if (this.playerSuperPower === 100) {
+        pBar.style.boxShadow = '0 0 10px #38bdf8';
+        const readyText = document.getElementById('super-player-ready');
+        if (readyText) readyText.style.display = 'block';
+        const btnSuper = document.getElementById('btn-super');
+        if (btnSuper) btnSuper.style.display = 'flex';
+      } else {
+        pBar.style.boxShadow = 'none';
+        const readyText = document.getElementById('super-player-ready');
+        if (readyText) readyText.style.display = 'none';
+        const btnSuper = document.getElementById('btn-super');
+        if (btnSuper) btnSuper.style.display = 'none';
+      }
+    }
+
+    const oBar = document.getElementById('super-opponent-bar');
+    if (oBar) {
+      oBar.style.width = `${this.opponentSuperPower}%`;
+      if (this.opponentSuperPower === 100) {
+        oBar.style.boxShadow = '0 0 10px #ef4444';
+        const oReady = document.getElementById('super-opponent-ready');
+        if (oReady) oReady.style.display = 'block';
+      } else {
+        oBar.style.boxShadow = 'none';
+        const oReady = document.getElementById('super-opponent-ready');
+        if (oReady) oReady.style.display = 'none';
+      }
     }
   }
 
