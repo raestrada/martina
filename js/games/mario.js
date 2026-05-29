@@ -3363,33 +3363,35 @@ class MarioGame {
             
             if (playerInRoom && !scene.bossRoomActive) {
               scene.bossRoomActive = true;
-              scene.bossActive = true;
+              scene.bossIntro = true; // dramatic pause before fight
               scene.bossHP = scene.boss.hp;
               
-              // Create walls NOW (not before)
+              // Create walls NOW
               scene.createBossWalls();
+              
+              // Pause player briefly
+              scene.player.body.setVelocity(0, 0);
               
               // Dramatic boss intro
               scene.boss.setVisible(true);
-              scene.boss.setPosition(bd.x, bd.y + 60);
+              scene.boss.setPosition(bd.x, bd.y + 80);
               scene.boss.setAlpha(0);
-              scene.boss.setScale(1.5);
+              scene.boss.setScale(1.6);
               
               // Darken area outside boss room
               scene.bossOverlay.setVisible(true);
+              const camX0 = scene.cameras.main.scrollX;
+              const rx0 = bd.roomLeft - camX0;
+              const rw0 = bd.roomRight - bd.roomLeft;
               scene.bossOverlay.clear();
-              scene.bossOverlay.fillStyle(0x000000, 0.55);
+              scene.bossOverlay.fillStyle(0x000000, 0.6);
               scene.bossOverlay.fillRect(0, 0, 800, 450);
               scene.bossOverlay.fillStyle(0x000000, 0);
-              // Cut out the room area
-              const camX = scene.cameras.main.scrollX;
-              const rx = bd.roomLeft - camX;
-              const rw = bd.roomRight - bd.roomLeft;
-              scene.bossOverlay.fillRect(rx, 80, rw, 350);
+              scene.bossOverlay.fillRect(rx0, 80, rw0, 350);
               
               // Camera zoom into boss room
-              scene.cameras.main.zoomTo(1.2, 600);
-              scene.cameras.main.pan(bd.roomLeft + rw/2, 260, 600);
+              scene.cameras.main.zoomTo(1.25, 500);
+              scene.cameras.main.pan(bd.roomLeft + rw0/2, 260, 500);
               
               // Boss drop-in animation
               scene.tweens.add({
@@ -3397,21 +3399,46 @@ class MarioGame {
                 y: bd.y,
                 scaleX: 1, scaleY: 1,
                 alpha: 1,
-                duration: 800,
+                duration: 1000,
                 ease: 'Bounce.easeOut'
               });
               
-              // Boss intro particles burst
-              for (let i=0;i<25;i++) {
-                scene.time.delayedCall(700 + i*30, () => {
-                  if (!scene.bossActive) return;
-                  const a = (i/25)*Math.PI*2;
-                  const sp = scene.add.circle(scene.boss.x, scene.boss.y, Math.random()*3+1.5, 0xa855f7, 0.8);
+              // DRAMATIC BOSS NAME TEXT
+              const bossName = scene.add.text(bd.roomLeft + rw0/2, 130, "ALFIL EXILIADO", {
+                fontFamily: "'Outfit', sans-serif",
+                fontSize: '28px',
+                fontStyle: 'bold',
+                fill: '#c084fc',
+                stroke: '#1a0030',
+                strokeThickness: 6,
+                align: 'center'
+              }).setOrigin(0.5).setDepth(10).setAlpha(0).setScale(2);
+              
+              scene.tweens.add({
+                targets: bossName,
+                alpha: 1, scaleX: 1, scaleY: 1,
+                duration: 600, ease: 'Back.easeOut',
+                onComplete: () => {
+                  scene.tweens.add({
+                    targets: bossName,
+                    alpha: 0, y: 100,
+                    duration: 800, delay: 1200,
+                    onComplete: () => bossName.destroy()
+                  });
+                }
+              });
+              
+              // Intro particles burst
+              for (let i=0;i<30;i++) {
+                scene.time.delayedCall(800 + i*25, () => {
+                  if (!scene.bossRoomActive) return;
+                  const a = (i/30)*Math.PI*2;
+                  const sp = scene.add.circle(scene.boss.x, scene.boss.y, Math.random()*3+2, 0xa855f7, 0.8);
                   sp.setDepth(6);
                   scene.tweens.add({
                     targets: sp, alpha: 0, scale: 0.05,
-                    x: sp.x+Math.cos(a)*80, y: sp.y+Math.sin(a)*80,
-                    duration: 500, onComplete: ()=>sp.destroy()
+                    x: sp.x+Math.cos(a)*90, y: sp.y+Math.sin(a)*90,
+                    duration: 600, onComplete: ()=>sp.destroy()
                   });
                 });
               }
@@ -3423,9 +3450,15 @@ class MarioGame {
               // Show health bar
               const hb = document.getElementById('boss-health-bar');
               if (hb) hb.style.display = 'block';
+              
+              // Start fight after dramatic pause
+              scene.time.delayedCall(1800, () => {
+                scene.bossIntro = false;
+                scene.bossActive = true;
+              });
             }
             
-            if (scene.bossActive) {
+            if (scene.bossActive && !scene.bossIntro) {
               // Update dark overlay to follow camera
               if (scene.bossOverlay && scene.bossOverlay.visible) {
                 const camX = scene.cameras.main.scrollX;
