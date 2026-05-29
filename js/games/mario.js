@@ -2630,7 +2630,7 @@ class MarioGame {
             scene.bossOverlay.setScrollFactor(0);
             scene.bossOverlay.setVisible(false);
             
-            function createBossWalls() {
+            scene.createBossWalls = function() {
               if (scene.bossWalls) return;
               scene.bossWalls = scene.physics.add.staticGroup();
               
@@ -3367,7 +3367,7 @@ class MarioGame {
               scene.bossHP = scene.boss.hp;
               
               // Create walls NOW (not before)
-              createBossWalls();
+              scene.createBossWalls();
               
               // Dramatic boss intro
               scene.boss.setVisible(true);
