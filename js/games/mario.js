@@ -2652,7 +2652,7 @@ class MarioGame {
               scene.bossWalls = scene.physics.add.staticGroup();
               const ww = 16;
               const rw = bd.roomRight - bd.roomLeft;
-              const wL = scene.add.rectangle(bd.roomLeft - ww/2, 250, ww, 340, 0x7c3aed, 0);
+              const wL = scene.add.rectangle(bd.roomLeft + 2, 250, ww, 340, 0x7c3aed, 0);
               scene.physics.add.existing(wL, true);
               wL.body.setSize(ww, 340);
               wL.setDepth(6);
@@ -3237,7 +3237,9 @@ class MarioGame {
           // Invincibility flashing timer
           if (scene.player.invincibility > 0) {
             scene.player.invincibility--;
-            scene.player.setAlpha(scene.player.invincibility % 4 === 0 ? 0.3 : 0.85);
+            if (!scene.player._bossIntroProtect) {
+              scene.player.setAlpha(scene.player.invincibility % 4 === 0 ? 0.3 : 0.85);
+            }
           } else {
             scene.player.setAlpha(1.0);
           }
@@ -3365,7 +3367,7 @@ class MarioGame {
           // --- BOSS SYSTEM UPDATE (Alfil Exiliado, level 3) ---
           if (biome === 'neon' && scene.boss && !scene.bossDefeated) {
             const bd = levelDef.bossData;
-            const playerInRoom = scene.player.x > bd.roomLeft && scene.player.x < bd.roomRight;
+            const playerInRoom = scene.player.x > bd.roomLeft + 30 && scene.player.x < bd.roomRight - 30;
             
             if (playerInRoom && !scene.bossRoomActive) {
               scene.bossRoomActive = true;
@@ -3388,6 +3390,11 @@ class MarioGame {
               scene.boss.setAlpha(0);
               scene.boss.setScale(1.6);
               scene.boss.body.enable = false;
+              
+              // Protect player during entire intro + 1 extra second
+              scene.player.invincibility = 250;
+              // Skip the flashing alpha effect for boss intro
+              scene.player._bossIntroProtect = true;
               
               const rw0 = bd.roomRight - bd.roomLeft;
               // Draw room overlay — darken outside, clear inside with neon border
@@ -3460,8 +3467,10 @@ class MarioGame {
               scene.time.delayedCall(1800, () => {
                 scene.bossIntro = false;
                 scene.bossActive = true;
-                scene.boss.body.enable = true; // enable collision
-                scene.bossInvincible = 30; // brief invincibility after intro
+                scene.boss.body.enable = true;
+                scene.bossInvincible = 30;
+                scene.player._bossIntroProtect = false;
+                scene.player.invincibility = 30; // brief post-intro protection
               });
             }
             
