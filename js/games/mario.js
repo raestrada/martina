@@ -2630,6 +2630,43 @@ class MarioGame {
             scene.bossOverlay.setScrollFactor(0);
             scene.bossOverlay.setVisible(false);
 
+            scene.createBossWalls = function() {
+              if (scene.bossWalls) return;
+              scene.bossWalls = scene.physics.add.staticGroup();
+              const ww = 16;
+              const rw = bd.roomRight - bd.roomLeft;
+              const wL = scene.add.rectangle(bd.roomLeft - ww/2, 250, ww, 340, 0x7c3aed, 0);
+              scene.physics.add.existing(wL, true);
+              wL.body.setSize(ww, 340);
+              wL.setDepth(6);
+              scene.bossWalls.add(wL);
+              const wR = scene.add.rectangle(bd.roomRight + ww/2, 250, ww, 340, 0x7c3aed, 0);
+              scene.physics.add.existing(wR, true);
+              wR.body.setSize(ww, 340);
+              wR.setDepth(6);
+              scene.bossWalls.add(wR);
+              const wT = scene.add.rectangle(bd.roomLeft + rw/2, 80, rw + ww*2, ww, 0x7c3aed, 0);
+              scene.physics.add.existing(wT, true);
+              wT.body.setSize(rw + ww*2, ww);
+              wT.setDepth(6);
+              scene.bossWalls.add(wT);
+              scene.bossWallGlow = scene.add.graphics();
+              scene.bossWallGlow.setDepth(5);
+              scene.bossWallGlow.lineStyle(3, 0xa855f7, 0.9);
+              scene.bossWallGlow.strokeRect(bd.roomLeft, 90, rw, 330);
+              scene.bossWallGlow.lineStyle(1, 0xc084fc, 0.4);
+              scene.bossWallGlow.strokeRect(bd.roomLeft+3, 93, rw-6, 324);
+              scene.tweens.add({
+                targets: scene.bossWallGlow,
+                alpha: 0.5,
+                duration: 800,
+                yoyo: true,
+                repeat: -1,
+                ease: 'Sine.easeInOut'
+              });
+              scene.physics.add.collider(scene.player, scene.bossWalls);
+            };
+
             // Boss projectiles group
             scene.bossProjectiles = scene.physics.add.group({ allowGravity: false });
             
