@@ -69,6 +69,12 @@ class MarioGame {
     // Ensure level 1 is always unlocked
     this.unlockedLevels[0] = true;
     
+    // Cap unlocked levels to only those that actually exist in MartinaLevels
+    const maxImplemented = (window.MartinaLevels && window.MartinaLevels.levels) ? window.MartinaLevels.levels.length : 1;
+    for (let i = maxImplemented; i < this.unlockedLevels.length; i++) {
+      this.unlockedLevels[i] = false;
+    }
+    
     // Calculate overall completion
     let totalPct = 0;
     let completedCount = 0;
@@ -1541,8 +1547,8 @@ class MarioGame {
             drawSquareCloud(240, 38, 65, 13);
             drawSquareCloud(520, 170, 80, 16);
             
-            scene.textures.addCanvas('background', bgCanvas);
             } // end biome background if/else
+            scene.textures.addCanvas('background', bgCanvas);
 
             // 5. Midground Parallax Canvas — biome-specific (size 800x450)
             const midCanvas = document.createElement('canvas');
@@ -1754,8 +1760,8 @@ class MarioGame {
             midCtx.lineTo(404, 158);
             midCtx.stroke();
             
-            scene.textures.addCanvas('bg_middle', midCanvas);
             } // end biome midground if/else
+            scene.textures.addCanvas('bg_middle', midCanvas);
 
             // 5.5. Foreground Decorative Canvas — floating magical particles & chess silhouettes
             const fgCanvas = document.createElement('canvas');
@@ -3345,6 +3351,7 @@ class MarioGame {
       tempo = 220;
     }
 
+    let step = 0;
     this.musicInterval = setInterval(() => {
       if (this.gameState !== 'playing' || !this.musicEnabled) {
         this.stopMusic();
