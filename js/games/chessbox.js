@@ -112,31 +112,31 @@ class ChessBoxGame {
 
     let melody = [];
     let bass = [];
-    let tempo = 140; // 140ms per step — fast, energetic Ippo pace
+    let tempo = 115; // 115ms per step — driving 8th-note punk-rock pace (Inner Light groove)
 
     if (type === 'boxing') {
-      // === HAJIME NO IPPO STYLE: Heroic brass anthem in A minor ===
-      // Chord progression: Am → F → G → E (classic epic anime progression)
-      // Octave 4 = middle, Octave 5 = high brass range
+      // === HAJIME NO IPPO — INNER LIGHT STYLE ===
+      // Key: E minor. Chord progression: Em → Em → C → D
+      // The iconic ascending-descending guitar riff, plus soaring brass chorus
       melody = [
-        // Bar 1: Am — Rising heroic arpeggio
-        440.00, 523.25, 659.25, 880.00, 659.25, 523.25, 440.00, 392.00,
-        // Bar 2: F — Majestic sweep
-        349.23, 440.00, 523.25, 698.46, 659.25, 523.25, 440.00, 349.23,
-        // Bar 3: G — Building tension
-        392.00, 493.88, 587.33, 783.99, 698.46, 587.33, 493.88, 392.00,
-        // Bar 4: E — Heroic climax
-        329.63, 415.30, 493.88, 659.25, 587.33, 493.88, 415.30, 329.63
+        // Bar 1: Em — THE iconic Inner Light ascending riff!
+        329.63, 392.00, 440.00, 493.88, 440.00, 392.00, 329.63, 293.66,
+        // Bar 2: Em — Extended ascent then descent
+        329.63, 392.00, 440.00, 493.88, 523.25, 493.88, 440.00, 392.00,
+        // Bar 3: C — Lift to the light
+        261.63, 329.63, 392.00, 523.25, 440.00, 392.00, 329.63, 293.66,
+        // Bar 4: D — Building back to the riff
+        293.66, 369.99, 440.00, 587.33, 493.88, 440.00, 392.00, 329.63
       ];
       bass = [
-        // Am — driving octave bass
-        110.00, 110.00, 110.00, 110.00, 110.00, 110.00, 110.00, 110.00,
-        // F
-        87.31,  87.31,  87.31,  87.31,  87.31,  87.31,  87.31,  87.31,
-        // G
-        98.00,  98.00,  98.00,  98.00,  98.00,  98.00,  98.00,  98.00,
-        // E
-        82.41,  82.41,  82.41,  82.41,  82.41,  82.41,  82.41,  82.41
+        // Em — relentless driving root
+        82.41, 82.41, 82.41, 82.41, 82.41, 82.41, 82.41, 82.41,
+        // Em
+        82.41, 82.41, 82.41, 82.41, 82.41, 82.41, 82.41, 82.41,
+        // C
+        65.41, 65.41, 65.41, 65.41, 65.41, 65.41, 65.41, 65.41,
+        // D
+        73.42, 73.42, 73.42, 73.42, 73.42, 73.42, 73.42, 73.42
       ];
     } else {
       // Chess tension music: Slow, ominous A-minor drone with woodblock ticking
@@ -359,7 +359,7 @@ class ChessBoxGame {
             // played with 3 detuned sawtooth waves to simulate heavy double-tracked guitars!
             const freqs = [leadFreq, leadFreq * 1.4983, leadFreq * 2.0];
             const detunes = [-12, 0, 12];
-            const volumes = [0.015, 0.012, 0.010]; // balanced volumes to prevent master clipping
+            const volumes = [0.028, 0.022, 0.018]; // LOUD driving rhythm guitars (Inner Light energy)
             
             freqs.forEach((f, idx) => {
               const osc = audioCtx.createOscillator();
@@ -369,7 +369,7 @@ class ChessBoxGame {
               osc.detune.setValueAtTime(detunes[idx], now);
               
               gain.gain.setValueAtTime(volumes[idx], now);
-              gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16); // sustain and quick decay
+              gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12); // tight palm-muted decay
               
               osc.connect(gain);
               gain.connect(distNode); // Route to overdrive distortion
