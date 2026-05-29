@@ -121,9 +121,9 @@ class MarioGame {
   loadBase64Images() {
     return new Promise((resolve) => {
       const assets = window.MartinaGameAssets;
-      if (!assets || !assets.martina) { this.loadedImages = null; resolve(); return; }
+      if (!assets || !assets['martina_full_body_1778904544807']) { this.loadedImages = null; resolve(); return; }
       const keys = ['player','enemy','background','castle'];
-      const b64keys = ['martina','peoncito','background','castle'];
+      const b64keys = ['martina_full_body_1778904544807','peoncito_1778904557723','mundo_magico_1778904597376','rey_blanco_entrenamiento_1779139099201'];
       let pending = 4;
       this.loadedImages = {};
       keys.forEach((key, i) => {
@@ -409,13 +409,11 @@ class MarioGame {
             block.strokeRect(p.x, p.y, p.w, p.h);
 
             // Generate physics body
-            const container = scene.add.container(0, 0);
-            container.add(block);
-            scene.physics.add.existing(container, true);
-            container.body.setSize(p.w, p.h);
-            container.body.setOffset(p.x, p.y);
+            scene.physics.add.existing(block, true);
+            block.body.setSize(p.w, p.h);
+            block.body.setOffset(p.x, p.y);
             
-            scene.platforms.add(container);
+            scene.platforms.add(block);
           });
 
           // 3. Create Player (Martina using the actual cuento illustration!)
@@ -443,10 +441,9 @@ class MarioGame {
           });
           scene.particles.startFollow(scene.player, -10, 16);
 
-          // 5. Collectible Chess Coins (Cromos)
           scene.coins = scene.physics.add.group();
           coinsData.forEach(c => {
-            const coin = scene.add.graphics();
+            const coin = scene.add.graphics({x: c.x, y: c.y});
             // Draw a beautiful rotating/pulsing gold star coin
             coin.fillStyle(0xfacc15, 1);
             coin.beginPath();
@@ -460,14 +457,13 @@ class MarioGame {
             coin.lineStyle(1.2, 0xe76f51, 1);
             coin.stroke();
 
-            const coinContainer = scene.add.container(c.x, c.y);
-            coinContainer.add(coin);
-            scene.physics.add.existing(coinContainer, true);
-            coinContainer.body.setCircle(10, -10, -10);
+            scene.physics.add.existing(coin, false);
+            coin.body.setCircle(10, -10, -10);
+            coin.body.allowGravity = false;
             
             // Add a floating animation loop to the coins!
             scene.tweens.add({
-              targets: coinContainer,
+              targets: coin,
               y: c.y - 6,
               duration: 1200 + Math.random()*400,
               yoyo: true,
@@ -475,7 +471,7 @@ class MarioGame {
               ease: 'Sine.easeInOut'
             });
 
-            scene.coins.add(coinContainer);
+            scene.coins.add(coin);
           });
 
           // 6. Chess Peoncito Enemies Group
