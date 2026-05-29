@@ -467,8 +467,8 @@ class SombraGame {
                 <li>Desplázate 1 casilla en cualquier dirección (como un Rey).</li>
                 <li>La Sombra moverá su cuerpo de forma invertida.</li>
                 <li>Si te bloqueas contra una pared o roca, ¡la Sombra seguirá moviéndose, desfasando sus posiciones!</li>
-                <li>Evita pisar lava 🔥 (resta vida) o cruzar los rayos púrpuras de clavada de la Sombra.</li>
-                <li>Si quedas clavada (⛓️), solo podrás moverte sobre el rayo de clavada.</li>
+                <li>Evita pisar lava 🔥 (resta vida).</li>
+                <li>Si te cruza un rayo de clavada (⛓️), ¡no podrás salvar Peoncitos ni cruzar el Portal hasta liberarte del rayo!</li>
                 <li>Rescata Peoncitos 🥸 y colócalos con <strong>🛡️ Escudo</strong> para cortar el rayo.</li>
               </ul>
             </div>
@@ -649,16 +649,6 @@ class SombraGame {
     // Adjacent legal steps (King movement)
     let legalMoves = this.getLegalSteps(this.martinaPos.r, this.martinaPos.c);
 
-    // Filter by pin constraint (collinearity)
-    if (this.isMartinaPinned && this.pinLine) {
-      legalMoves = legalMoves.filter(coord => {
-        const targetPos = this.nameToCoords(coord);
-        const dr = targetPos.r - this.martinaPos.r;
-        const dc = targetPos.c - this.martinaPos.c;
-        return dr * this.pinLine.dc === dc * this.pinLine.dr;
-      });
-    }
-
     // Filter by obstacle, placed shield and lava blocking
     legalMoves = legalMoves.filter(coord => {
       // Exclude obstacles, placed shields, and lava (which is lethal, especially with 1 life in Martina difficulty!)
@@ -831,31 +821,9 @@ class SombraGame {
     const dr = targetPos.r - this.martinaPos.r;
     const dc = targetPos.c - this.martinaPos.c;
 
-    // 1. PIN CHECK: If Martina is pinned, her movement step MUST be parallel to the pin line!
-    if (this.isMartinaPinned && this.pinLine) {
-      // Check if move direction {dr, dc} is collinear with {pinLine.dr, pinLine.dc}
-      // dr * pinLine.dc === dc * pinLine.dr
-      const isCollinear = dr * this.pinLine.dc === dc * this.pinLine.dr;
-      if (!isCollinear) {
-        // Blocks execution!
-        this.playClavada();
-        
-        // Shake square in DOM
-        const boardDOM = document.getElementById('chess-board-DOM');
-        if (boardDOM) {
-          const sq = boardDOM.querySelector(`[data-coord="${this.coordsToName(this.martinaPos.r, this.martinaPos.c)}"]`);
-          if (sq) {
-            sq.classList.add('shake');
-            setTimeout(() => sq.classList.remove('shake'), 400);
-          }
-        }
-        return;
-      }
-    }
-
     const level = this.levels[this.currentLevelIndex];
 
-    // 2. Compute Martina's movement and blocks
+    // 1. Compute Martina's movement and blocks
     let mTargetR = targetPos.r;
     let mTargetC = targetPos.c;
     let mBlocked = false;
@@ -867,7 +835,7 @@ class SombraGame {
       mBlocked = true;
     }
 
-    // 3. Compute Sombra's symmetrical mirrored movement in reverse!
+    // 2. Compute Sombra's symmetrical mirrored movement in reverse!
     let sTargetR = this.sombraPos.r - dr;
     let sTargetC = this.sombraPos.c - dc;
     let sBlocked = false;
@@ -905,16 +873,35 @@ class SombraGame {
     const newMartinaCoord = this.coordsToName(this.martinaPos.r, this.martinaPos.c);
     const newSombraCoord = this.coordsToName(this.sombraPos.r, this.sombraPos.c);
 
-    // 4. CHECK PEONCITO RESCUE: Martina steps on Peoncito
-    if (level.peoncitos.includes(newMartinaCoord) && !this.rescuedCoords.includes(newMartinaCoord)) {
-      this.rescuedCoords.push(newMartinaCoord);
-      this.peoncitosRescued++;
-      this.playCapture();
-      
-      this.updateStatsDisplay();
+    // Update beams and pin state immediately before checking rescues and victories
+    const wasPinned = this.isMartinaPinned;
+    this.updateBeamsState();
+    if (this.isMartinaPinned && !wasPinned) {
+      this.playClavada();
     }
 
-    // 5. CHECK LAVA DAMAGES: If either Martina or Sombra step on lava!
+    // 3. CHECK PEONCITO RESCUE: Martina steps on Peoncito
+    if (level.peoncitos.includes(newMartinaCoord) && !this.rescuedCoords.includes(newMartinaCoord)) {
+      if (this.isMartinaPinned) {
+        // If pinned, block rescue!
+        this.playClavada();
+        const boardDOM = document.getElementById('chess-board-DOM');
+        if (boardDOM) {
+          const sq = boardDOM.querySelector(`[data-coord="${newMartinaCoord}"]`);
+          if (sq) {
+            sq.classList.add('shake');
+            setTimeout(() => sq.classList.remove('shake'), 400);
+          }
+        }
+      } else {
+        this.rescuedCoords.push(newMartinaCoord);
+        this.peoncitosRescued++;
+        this.playCapture();
+        this.updateStatsDisplay();
+      }
+    }
+
+    // 4. CHECK LAVA DAMAGES: If either Martina or Sombra step on lava!
     if (level.lava.includes(newMartinaCoord) || level.lava.includes(newSombraCoord)) {
       this.lives--;
       if (window.GameAudio && typeof window.GameAudio.playError === 'function') {
@@ -939,18 +926,23 @@ class SombraGame {
       }
     }
 
-    // 6. CHECK EXIT PORTAL VICTORY
+    // 5. CHECK EXIT PORTAL VICTORY
     if (this.rescuedCoords.length === level.peoncitos.length && newMartinaCoord === level.exit) {
-      this.victory();
-      return;
-    }
-
-    // 7. RECALCULATE BEAMS AND PIN STATE
-    const wasPinned = this.isMartinaPinned;
-    this.updateBeamsState();
-
-    if (this.isMartinaPinned && !wasPinned) {
-      this.playClavada();
+      if (this.isMartinaPinned) {
+        // If pinned, block victory!
+        this.playClavada();
+        const boardDOM = document.getElementById('chess-board-DOM');
+        if (boardDOM) {
+          const sq = boardDOM.querySelector(`[data-coord="${newMartinaCoord}"]`);
+          if (sq) {
+            sq.classList.add('shake');
+            setTimeout(() => sq.classList.remove('shake'), 400);
+          }
+        }
+      } else {
+        this.victory();
+        return;
+      }
     }
 
     this.updateStatsDisplay();
