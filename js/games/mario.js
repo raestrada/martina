@@ -3470,16 +3470,13 @@ class MarioGame {
               } else scene.boss.setAlpha(1);
               
               scene.boss.moveTimer++;
-              if (scene.boss.moveTimer > 45) {
+              if (scene.boss.moveTimer > 80) {
                 scene.boss.moveTimer = 0;
-                // Track player: move toward Martina
-                const dx = scene.player.x - scene.boss.x;
-                const dy = scene.player.y - scene.boss.y;
-                scene.boss.moveDirX = dx > 0 ? 1 : -1;
-                scene.boss.moveDirY = dy > 0 ? 1 : -1;
+                scene.boss.moveDirX = Math.random() < 0.5 ? -1 : 1;
+                scene.boss.moveDirY = Math.random() < 0.5 ? -1 : 1;
               }
-              const bx = scene.boss.x + scene.boss.moveDirX * scene.boss.speed * 0.025;
-              const by = scene.boss.y + scene.boss.moveDirY * scene.boss.speed * 0.018;
+              const bx = scene.boss.x + scene.boss.moveDirX * scene.boss.speed * 0.018;
+              const by = scene.boss.y + scene.boss.moveDirY * scene.boss.speed * 0.012;
               scene.boss.x = Phaser.Math.Clamp(bx, scene.boss.minX, scene.boss.maxX);
               scene.boss.y = Phaser.Math.Clamp(by, scene.boss.minY, scene.boss.maxY);
               scene.boss.setFlipX(scene.boss.moveDirX < 0);
