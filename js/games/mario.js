@@ -47,7 +47,7 @@ class MarioGame {
     
     // Phaser game instance reference
     this.phaserGame = null;
-    this.touchInputs = { left: false, right: false, jump: false };
+    this.touchInputs = { left: false, right: false, jump: false, dash: false };
   }
 
   // --- WELCOME LEVEL SELECTOR SCREEN ---
@@ -192,6 +192,7 @@ class MarioGame {
             <div class="mario-touch-pad">
               <div class="touch-btn left" id="touch-left">◀</div>
               <div class="touch-btn right" id="touch-right">▶</div>
+              <div class="touch-btn dash" id="touch-dash" style="background: rgba(245,158,11,0.25); border-color: rgba(245,158,11,0.45); color: #fef08a;">B</div>
               <div class="touch-btn jump" id="touch-jump">A</div>
             </div>
           </div>
@@ -235,6 +236,7 @@ class MarioGame {
 
     bindTouch('touch-left', 'left');
     bindTouch('touch-right', 'right');
+    bindTouch('touch-dash', 'dash');
     bindTouch('touch-jump', 'jump');
   }
 
@@ -342,88 +344,156 @@ class MarioGame {
             const pCtx = pCanvas.getContext('2d');
             
             // Hair back (behind the face)
-            pCtx.fillStyle = '#3f1d0b'; // Dark brown
-            pCtx.beginPath();
-            pCtx.arc(16, 17, 9, Math.PI, 0); // top half
-            pCtx.rect(7, 17, 18, 13); // back locks
-            pCtx.fill();
+            const drawMartinaFrame = (frameType) => {
+              const pCanvas = document.createElement('canvas');
+              pCanvas.width = 32;
+              pCanvas.height = 48;
+              const pCtx = pCanvas.getContext('2d');
+              
+              // Hair back (behind the face)
+              pCtx.fillStyle = '#3f1d0b'; // Dark brown
+              pCtx.beginPath();
+              pCtx.arc(16, 17, 9, Math.PI, 0); // top half
+              pCtx.rect(7, 17, 18, 13); // back locks
+              pCtx.fill();
+              
+              // Head (skin tone)
+              pCtx.fillStyle = '#fed7aa'; // Soft peach skin
+              pCtx.beginPath();
+              pCtx.arc(16, 16, 7, 0, Math.PI * 2);
+              pCtx.fill();
+              
+              // Hair bangs (front)
+              pCtx.fillStyle = '#3f1d0b';
+              pCtx.beginPath();
+              pCtx.arc(16, 13, 7, Math.PI * 1.1, Math.PI * 1.9);
+              pCtx.fill();
+              
+              // Glasses (Black frames, signature Martina!)
+              pCtx.lineWidth = 1.5;
+              pCtx.strokeStyle = '#000000';
+              // Left eye lens
+              pCtx.strokeRect(10, 14, 5, 4);
+              // Right eye lens
+              pCtx.strokeRect(17, 14, 5, 4);
+              // Bridge
+              pCtx.beginPath();
+              pCtx.moveTo(15, 16);
+              pCtx.lineTo(17, 16);
+              pCtx.stroke();
+              // Glare highlight in glasses
+              pCtx.fillStyle = 'rgba(255,255,255,0.6)';
+              pCtx.fillRect(11, 15, 3, 2);
+              pCtx.fillRect(18, 15, 3, 2);
+              
+              // White Polo Shirt (Body)
+              pCtx.fillStyle = '#ffffff';
+              pCtx.beginPath();
+              pCtx.moveTo(12, 23);
+              pCtx.lineTo(20, 23);
+              pCtx.lineTo(22, 33);
+              pCtx.lineTo(10, 33);
+              pCtx.closePath();
+              pCtx.fill();
+              
+              // Red emblem on chest
+              pCtx.fillStyle = '#ef4444';
+              pCtx.fillRect(15, 26, 2, 2);
+              
+              // Blue Voley Shorts
+              pCtx.fillStyle = '#1d4ed8'; // Royal blue
+              pCtx.fillRect(10, 33, 12, 5);
+              
+              // Draw Arms
+              pCtx.fillStyle = '#ffffff'; // Sleeves
+              pCtx.fillRect(8, 23, 2, 4);
+              pCtx.fillRect(22, 23, 2, 4);
+              pCtx.fillStyle = '#fed7aa'; // Hands
+              pCtx.beginPath();
+              pCtx.arc(9, 28, 2, 0, Math.PI*2);
+              pCtx.arc(23, 28, 2, 0, Math.PI*2);
+              pCtx.fill();
+              
+              // --- ANCHOR DYNAMIC LEGS DRAWING BASED ON FRAMES ---
+              pCtx.fillStyle = '#fed7aa'; // Skin tone legs
+              if (frameType === 'idle') {
+                pCtx.fillRect(12, 38, 3, 6);
+                pCtx.fillRect(17, 38, 3, 6);
+                pCtx.fillStyle = '#ffffff'; // Socks
+                pCtx.fillRect(12, 42, 3, 2);
+                pCtx.fillRect(17, 42, 3, 2);
+                pCtx.fillStyle = '#dc2626'; // Sneakers
+                pCtx.fillRect(11, 44, 4, 3);
+                pCtx.fillRect(17, 44, 4, 3);
+                pCtx.fillStyle = '#000000'; // Sole
+                pCtx.fillRect(10, 47, 5, 1);
+                pCtx.fillRect(16, 47, 5, 1);
+              } else if (frameType === 'run1') {
+                // Left leg forward, right leg backward
+                pCtx.fillRect(10, 38, 3, 6);
+                pCtx.fillRect(19, 38, 3, 6);
+                pCtx.fillStyle = '#ffffff'; // Socks
+                pCtx.fillRect(10, 42, 3, 2);
+                pCtx.fillRect(19, 42, 3, 2);
+                pCtx.fillStyle = '#dc2626'; // Sneakers
+                pCtx.fillRect(9, 44, 4, 3);
+                pCtx.fillRect(19, 44, 4, 3);
+                pCtx.fillStyle = '#000000'; // Sole
+                pCtx.fillRect(8, 47, 5, 1);
+                pCtx.fillRect(18, 47, 5, 1);
+              } else if (frameType === 'run2') {
+                // Pass position: legs overlapping in center
+                pCtx.fillRect(13, 38, 3, 6);
+                pCtx.fillRect(16, 38, 3, 6);
+                pCtx.fillStyle = '#ffffff'; // Socks
+                pCtx.fillRect(13, 42, 3, 2);
+                pCtx.fillRect(16, 42, 3, 2);
+                pCtx.fillStyle = '#dc2626'; // Sneakers
+                pCtx.fillRect(12, 44, 4, 3);
+                pCtx.fillRect(16, 44, 4, 3);
+                pCtx.fillStyle = '#000000'; // Sole
+                pCtx.fillRect(11, 47, 5, 1);
+                pCtx.fillRect(15, 47, 5, 1);
+              } else if (frameType === 'run3') {
+                // Right leg forward, left leg backward
+                pCtx.fillRect(19, 38, 3, 6);
+                pCtx.fillRect(10, 38, 3, 6);
+                pCtx.fillStyle = '#ffffff'; // Socks
+                pCtx.fillRect(19, 42, 3, 2);
+                pCtx.fillRect(10, 42, 3, 2);
+                pCtx.fillStyle = '#dc2626'; // Sneakers
+                pCtx.fillRect(19, 44, 4, 3);
+                pCtx.fillRect(9, 44, 4, 3);
+                pCtx.fillStyle = '#000000'; // Sole
+                pCtx.fillRect(18, 47, 5, 1);
+                pCtx.fillRect(8, 47, 5, 1);
+              } else if (frameType === 'jump') {
+                // Legs bent slightly higher!
+                pCtx.fillRect(11, 38, 3, 4);
+                pCtx.fillRect(18, 38, 3, 4);
+                pCtx.fillStyle = '#ffffff'; // Socks
+                pCtx.fillRect(11, 40, 3, 2);
+                pCtx.fillRect(18, 40, 3, 2);
+                pCtx.fillStyle = '#dc2626'; // Sneakers
+                pCtx.fillRect(10, 42, 4, 3);
+                pCtx.fillRect(18, 42, 4, 3);
+                pCtx.fillStyle = '#000000'; // Sole
+                pCtx.fillRect(9, 45, 5, 1);
+                pCtx.fillRect(17, 45, 5, 1);
+              }
+              
+              return pCanvas;
+            };
             
-            // Head (skin tone)
-            pCtx.fillStyle = '#fed7aa'; // Soft peach skin
-            pCtx.beginPath();
-            pCtx.arc(16, 16, 7, 0, Math.PI * 2);
-            pCtx.fill();
+            // Register 5 individual frame textures
+            scene.textures.addCanvas('player-idle', drawMartinaFrame('idle'));
+            scene.textures.addCanvas('player-run-1', drawMartinaFrame('run1'));
+            scene.textures.addCanvas('player-run-2', drawMartinaFrame('run2'));
+            scene.textures.addCanvas('player-run-3', drawMartinaFrame('run3'));
+            scene.textures.addCanvas('player-jump', drawMartinaFrame('jump'));
             
-            // Hair bangs (front)
-            pCtx.fillStyle = '#3f1d0b';
-            pCtx.beginPath();
-            pCtx.arc(16, 13, 7, Math.PI * 1.1, Math.PI * 1.9);
-            pCtx.fill();
-            
-            // Glasses (Black frames, signature Martina!)
-            pCtx.lineWidth = 1.5;
-            pCtx.strokeStyle = '#000000';
-            // Left eye lens
-            pCtx.strokeRect(10, 14, 5, 4);
-            // Right eye lens
-            pCtx.strokeRect(17, 14, 5, 4);
-            // Bridge
-            pCtx.beginPath();
-            pCtx.moveTo(15, 16);
-            pCtx.lineTo(17, 16);
-            pCtx.stroke();
-            // Glare highlight in glasses
-            pCtx.fillStyle = 'rgba(255,255,255,0.6)';
-            pCtx.fillRect(11, 15, 3, 2);
-            pCtx.fillRect(18, 15, 3, 2);
-            
-            // White Polo Shirt (Body)
-            pCtx.fillStyle = '#ffffff';
-            pCtx.beginPath();
-            pCtx.moveTo(12, 23);
-            pCtx.lineTo(20, 23);
-            pCtx.lineTo(22, 33);
-            pCtx.lineTo(10, 33);
-            pCtx.closePath();
-            pCtx.fill();
-            
-            // Red emblem on chest
-            pCtx.fillStyle = '#ef4444';
-            pCtx.fillRect(15, 26, 2, 2);
-            
-            // Blue Voley Shorts
-            pCtx.fillStyle = '#1d4ed8'; // Royal blue
-            pCtx.fillRect(10, 33, 12, 5);
-            
-            // Legs (Skin tone)
-            pCtx.fillStyle = '#fed7aa';
-            pCtx.fillRect(12, 38, 3, 6);
-            pCtx.fillRect(17, 38, 3, 6);
-            
-            // White Socks
-            pCtx.fillStyle = '#ffffff';
-            pCtx.fillRect(12, 42, 3, 2);
-            pCtx.fillRect(17, 42, 3, 2);
-            
-            // Red Sneakers
-            pCtx.fillStyle = '#dc2626';
-            pCtx.fillRect(11, 44, 4, 3);
-            pCtx.fillRect(17, 44, 4, 3);
-            pCtx.fillStyle = '#000000'; // Sole
-            pCtx.fillRect(10, 47, 5, 1);
-            pCtx.fillRect(16, 47, 5, 1);
-            
-            // Sleeves & Hands
-            pCtx.fillStyle = '#ffffff'; // Sleeves
-            pCtx.fillRect(8, 23, 2, 4);
-            pCtx.fillRect(22, 23, 2, 4);
-            pCtx.fillStyle = '#fed7aa'; // Hands
-            pCtx.beginPath();
-            pCtx.arc(9, 28, 2, 0, Math.PI*2);
-            pCtx.arc(23, 28, 2, 0, Math.PI*2);
-            pCtx.fill();
-            
-            scene.textures.addCanvas('player', pCanvas);
+            // Map the base 'player' texture key to the idle frame for seamless compatibility!
+            scene.textures.addCanvas('player', drawMartinaFrame('idle'));
 
             // 2. Peoncito Canvas (size 32x42)
             const eCanvas = document.createElement('canvas');
@@ -631,12 +701,114 @@ class MarioGame {
             drawCloud(300, 60, 20);
             
             scene.textures.addCanvas('background', bgCanvas);
+
+            // 5. Intermediate Parallax Background Canvas (size 800x450)
+            const midCanvas = document.createElement('canvas');
+            midCanvas.width = 800;
+            midCanvas.height = 450;
+            const midCtx = midCanvas.getContext('2d');
+            
+            // Draw floating violet silhouette hills
+            midCtx.fillStyle = 'rgba(76, 29, 149, 0.3)'; // Semi-transparent dark violet hills
+            midCtx.beginPath();
+            midCtx.moveTo(0, 450);
+            midCtx.lineTo(0, 320);
+            midCtx.quadraticCurveTo(200, 280, 400, 350);
+            midCtx.quadraticCurveTo(600, 420, 800, 310);
+            midCtx.lineTo(800, 450);
+            midCtx.closePath();
+            midCtx.fill();
+            
+            // Draw a deeper, darker violet hill layer
+            midCtx.fillStyle = 'rgba(58, 28, 112, 0.2)';
+            midCtx.beginPath();
+            midCtx.moveTo(0, 450);
+            midCtx.lineTo(0, 260);
+            midCtx.quadraticCurveTo(250, 340, 500, 270);
+            midCtx.quadraticCurveTo(650, 240, 800, 290);
+            midCtx.lineTo(800, 450);
+            midCtx.closePath();
+            midCtx.fill();
+            
+            // Draw floating crystal rook silhouettes in background
+            midCtx.fillStyle = 'rgba(109, 40, 217, 0.25)';
+            midCtx.fillRect(180, 230, 20, 60);
+            midCtx.fillRect(520, 200, 16, 80);
+            
+            scene.textures.addCanvas('bg_middle', midCanvas);
+
+            // 6. Knight Double Jump Shockwave Canvas (size 64x64)
+            const kCanvas = document.createElement('canvas');
+            kCanvas.width = 64;
+            kCanvas.height = 64;
+            const kCtx = kCanvas.getContext('2d');
+            kCtx.fillStyle = '#22d3ee'; // Cian
+            kCtx.beginPath();
+            kCtx.moveTo(20, 52);
+            kCtx.quadraticCurveTo(18, 40, 24, 30); // neck back
+            kCtx.quadraticCurveTo(20, 20, 22, 16); // ear back
+            kCtx.lineTo(26, 12); // ear top
+            kCtx.lineTo(29, 20);
+            kCtx.lineTo(32, 16); // second ear
+            kCtx.lineTo(35, 12);
+            kCtx.lineTo(37, 20);
+            kCtx.quadraticCurveTo(46, 22, 48, 28); // snout forehead
+            kCtx.quadraticCurveTo(52, 32, 48, 36); // mouth
+            kCtx.lineTo(40, 36); // jaw
+            kCtx.quadraticCurveTo(34, 40, 34, 46); // chest
+            kCtx.lineTo(44, 52);
+            kCtx.closePath();
+            kCtx.fill();
+            
+            kCtx.fillStyle = '#ffffff';
+            kCtx.beginPath();
+            kCtx.arc(36, 24, 2.5, 0, Math.PI*2); // Eye
+            kCtx.fill();
+            
+            scene.textures.addCanvas('knight_burst', kCanvas);
+
+            // 7. Gold Crown Secret Collectible Canvas (size 32x32)
+            const crCanvas = document.createElement('canvas');
+            crCanvas.width = 32;
+            crCanvas.height = 32;
+            const crCtx = crCanvas.getContext('2d');
+            const crGrad = crCtx.createLinearGradient(4, 4, 28, 28);
+            crGrad.addColorStop(0, '#fbbf24'); // Yellow Amber
+            crGrad.addColorStop(1, '#d97706'); // Gold Bronze
+            crCtx.fillStyle = crGrad;
+            crCtx.beginPath();
+            crCtx.moveTo(4, 26);
+            crCtx.lineTo(28, 26);
+            crCtx.lineTo(26, 12);
+            crCtx.lineTo(20, 18);
+            crCtx.lineTo(16, 8); // center crown peak
+            crCtx.lineTo(12, 18);
+            crCtx.lineTo(6, 12);
+            crCtx.closePath();
+            crCtx.fill();
+            
+            // Ruby and sapphire jewels on crown peaks
+            crCtx.fillStyle = '#ef4444'; // Red center ruby
+            crCtx.beginPath();
+            crCtx.arc(16, 6, 2, 0, Math.PI*2);
+            crCtx.fill();
+            crCtx.fillStyle = '#3b82f6'; // Blue sapphires on side peaks
+            crCtx.beginPath();
+            crCtx.arc(6, 10, 1.5, 0, Math.PI*2);
+            crCtx.arc(26, 10, 1.5, 0, Math.PI*2);
+            crCtx.fill();
+            
+            scene.textures.addCanvas('crown_gold', crCanvas);
           }
           
-          // 1. Double Parallax magical background
+          // 1. Triple Parallax magical background
           scene.bg = scene.add.tileSprite(0, 0, 2400, 450, 'background').setOrigin(0, 0);
-          scene.bg.setAlpha(0.65);
-          scene.bg.setScrollFactor(0.25); // Parallax slow scroll
+          scene.bg.setAlpha(0.85);
+          scene.bg.setScrollFactor(0.05); // Far sky scrolls extremely slowly!
+          
+          scene.bgMid = scene.add.tileSprite(0, 0, 2400, 450, 'bg_middle').setOrigin(0, 0);
+          scene.bgMid.setAlpha(0.65);
+          scene.bgMid.setScrollFactor(0.15); // Middle mountains scroll at medium speed!
 
           // 2. Physics Static Platforms Group
           scene.platforms = scene.physics.add.staticGroup();
@@ -683,8 +855,42 @@ class MarioGame {
           scene.player.invincibility = 0;
           scene.player.wasOnGround = true;
           scene.player.landingSquashTimer = 0;
+          scene.player.doubleJumpAvailable = true;
+          scene.player.jumpKeyDebounce = 0;
+          scene.player.dashAvailable = true;
+          scene.player.isDashing = false;
+          scene.player.dashTimer = 0;
+          scene.player.dashCooldown = 0;
           
           self.player = scene.player;
+
+          // Register procedural animations for Martina (Hollow Knight / Celeste style)
+          if (!scene.anims.exists('martina-run')) {
+            scene.anims.create({
+              key: 'martina-run',
+              frames: [
+                { key: 'player-run-1' },
+                { key: 'player-run-2' },
+                { key: 'player-run-3' },
+                { key: 'player-run-2' }
+              ],
+              frameRate: 12,
+              repeat: -1
+            });
+            scene.anims.create({
+              key: 'martina-idle',
+              frames: [{ key: 'player-idle' }],
+              frameRate: 1
+            });
+            scene.anims.create({
+              key: 'martina-jump',
+              frames: [{ key: 'player-jump' }],
+              frameRate: 1
+            });
+          }
+          
+          // Start with idle animation
+          scene.player.play('martina-idle');
 
           // 4. Magical Sparkles Particle trail!
           scene.particles = scene.add.particles(0, 0, 'sparkle', {
@@ -749,6 +955,33 @@ class MarioGame {
             scene.enemies.add(enemy);
           });
 
+          // 6.5 Secret Gold Crowns group ( Celeste / Hollow Knight style collectibles )
+          const crownsData = [
+            { x: 890, y: 180 },
+            { x: 1380, y: 110 },
+            { x: 1790, y: 180 }
+          ];
+
+          scene.crowns = scene.physics.add.group();
+          crownsData.forEach(c => {
+            const crown = scene.add.sprite(c.x, c.y, 'crown_gold');
+            crown.setDisplaySize(24, 24);
+            scene.physics.add.existing(crown, false);
+            crown.body.allowGravity = false;
+            
+            // Floating bounce tween
+            scene.tweens.add({
+              targets: crown,
+              y: c.y - 8,
+              duration: 1000 + Math.random()*300,
+              yoyo: true,
+              repeat: -1,
+              ease: 'Sine.easeInOut'
+            });
+            
+            scene.crowns.add(crown);
+          });
+
           // 7. Goal Mástil and Castle Boss
           scene.flagpole = scene.add.graphics();
           scene.flagpole.fillStyle(0xdcdcdc, 1);
@@ -787,6 +1020,33 @@ class MarioGame {
             self.synthesizeSound('coin');
             
             document.getElementById('hud-coins').textContent = `🪙 x${self.coins.toString().padStart(2, '0')}`;
+            document.getElementById('hud-score').textContent = self.score.toString().padStart(5, '0');
+          });
+
+          // Collect secret crown overlap
+          scene.physics.add.overlap(scene.player, scene.crowns, (player, crown) => {
+            crown.destroy();
+            self.score += 1000;
+            self.synthesizeSound('victory'); // Fanfare for secret!
+            
+            // Create a massive burst of gold sparkles!
+            for (let i = 0; i < 12; i++) {
+              const p = scene.add.circle(crown.x, crown.y, Math.random() * 4 + 2, 0xfacc15, 0.9);
+              scene.physics.add.existing(p, false);
+              p.body.allowGravity = false;
+              p.body.setVelocity(
+                (Math.random() * 120 - 60),
+                (Math.random() * 120 - 60)
+              );
+              scene.tweens.add({
+                targets: p,
+                alpha: 0,
+                scale: 0.1,
+                duration: 600 + Math.random()*200,
+                onComplete: () => p.destroy()
+              });
+            }
+            
             document.getElementById('hud-score').textContent = self.score.toString().padStart(5, '0');
           });
 
@@ -883,7 +1143,9 @@ class MarioGame {
           scene.keysWASD = scene.input.keyboard.addKeys({
             up: Phaser.Input.Keyboard.KeyCodes.W,
             left: Phaser.Input.Keyboard.KeyCodes.A,
-            right: Phaser.Input.Keyboard.KeyCodes.D
+            right: Phaser.Input.Keyboard.KeyCodes.D,
+            dash: Phaser.Input.Keyboard.KeyCodes.SHIFT,
+            dash2: Phaser.Input.Keyboard.KeyCodes.C
           });
         },
         update: function() {
@@ -896,6 +1158,27 @@ class MarioGame {
             scene.player.setAlpha(scene.player.invincibility % 4 === 0 ? 0.3 : 0.85);
           } else {
             scene.player.setAlpha(1.0);
+          }
+
+          // Twinkling stars / shooting stars dynamic simulation in background!
+          if (Math.random() < 0.008) {
+            const startX = scene.cameras.main.scrollX + Math.random() * 800;
+            const startY = Math.random() * 150;
+            const star = scene.add.circle(startX, startY, Math.random() * 2 + 1, 0xffffff, 0.9);
+            scene.physics.add.existing(star, false);
+            star.body.allowGravity = false;
+            star.body.setVelocity(250, 180); // fly diagonally down-right!
+            star.setScrollFactor(1.0); // scroll with camera!
+            
+            // Draw a beautiful fade-out tail!
+            scene.tweens.add({
+              targets: star,
+              alpha: 0,
+              scaleX: 0.1,
+              scaleY: 0.1,
+              duration: 800,
+              onComplete: () => star.destroy()
+            });
           }
 
           // Enemy patrols update
@@ -927,8 +1210,15 @@ class MarioGame {
               scene.player.invincibility = 60;
               scene.player.wasOnGround = true;
               scene.player.landingSquashTimer = 0;
+              scene.player.doubleJumpAvailable = true;
+              scene.player.jumpKeyDebounce = 0;
+              scene.player.dashAvailable = true;
+              scene.player.isDashing = false;
+              scene.player.dashTimer = 0;
+              scene.player.dashCooldown = 0;
               scene.player.setDisplaySize(38, 56);
               scene.player.setAngle(0);
+              scene.player.play('martina-idle');
             } else {
               self.gameOver();
             }
@@ -942,33 +1232,161 @@ class MarioGame {
           const moveRight = scene.cursors.right.isDown || scene.keysWASD.right.isDown || self.touchInputs.right;
           const jumpPressed = scene.cursors.up.isDown || scene.cursors.space.isDown || scene.keysWASD.up.isDown || self.touchInputs.jump;
 
+          // --- CHESS DASH MECHANIC ---
+          if (scene.player.dashCooldown > 0) scene.player.dashCooldown--;
+          
+          const dashPressed = Phaser.Input.Keyboard.JustDown(scene.keysWASD.dash) || Phaser.Input.Keyboard.JustDown(scene.keysWASD.dash2) || self.touchInputs.dash;
+          
+          if (dashPressed && scene.player.dashAvailable && scene.player.dashCooldown === 0 && !scene.player.isDashing) {
+            scene.player.isDashing = true;
+            scene.player.dashAvailable = false;
+            scene.player.dashTimer = 10; // Dash lasts 10 frames (~160ms)
+            scene.player.dashCooldown = 60; // 1 second cooldown
+            scene.player.body.allowGravity = false;
+            
+            let dir = scene.player.flipX ? -1 : 1;
+            scene.player.body.setVelocityX(dir * 475);
+            scene.player.body.setVelocityY(0);
+            
+            self.synthesizeSound('coin'); // soft high speed dash chime
+            
+            // Dash sweep sound!
+            const audioCtx = window.GameAudio.ctx;
+            if (audioCtx && self.musicEnabled) {
+              const now = audioCtx.currentTime;
+              const osc = audioCtx.createOscillator();
+              const gain = audioCtx.createGain();
+              osc.type = 'sawtooth';
+              osc.frequency.setValueAtTime(300, now);
+              osc.frequency.linearRampToValueAtTime(1000, now + 0.15);
+              gain.gain.setValueAtTime(0.06, now);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+              osc.connect(gain);
+              gain.connect(audioCtx.destination);
+              osc.start(now);
+              osc.stop(now + 0.15);
+            }
+          }
+          
+          if (scene.player.isDashing) {
+            scene.player.dashTimer--;
+            scene.player.body.setVelocityY(0); // lock Y
+            
+            // Leave semi-transparent blue ghost trails!
+            if (scene.player.dashTimer % 2 === 0) {
+              const ghost = scene.add.sprite(scene.player.x, scene.player.y, scene.player.anims.currentFrame ? scene.player.anims.currentFrame.textureKey : 'player-idle');
+              ghost.setFlipX(scene.player.flipX);
+              ghost.setDisplaySize(38, 56);
+              ghost.setAlpha(0.45);
+              ghost.setTint(0x60a5fa); // Cool blue cian tint
+              scene.tweens.add({
+                targets: ghost,
+                alpha: 0,
+                duration: 250,
+                onComplete: () => ghost.destroy()
+              });
+            }
+            
+            if (scene.player.dashTimer <= 0) {
+              scene.player.isDashing = false;
+              scene.player.body.allowGravity = true;
+              scene.player.body.setVelocityX(scene.player.flipX ? -175 : 175);
+            }
+            return; // bypass standard movement while dashing!
+          }
+
+          // Reset dash on touching ground
+          if (scene.player.body.touching.down) {
+            scene.player.dashAvailable = true;
+          }
+
           // Horizontal movement
           if (moveLeft) {
             scene.player.body.setVelocityX(-175);
             scene.player.setFlipX(true); // flip sprite left
             scene.particles.start();
+            
+            if (scene.player.body.touching.down) {
+              scene.player.play('martina-run', true);
+            }
           } else if (moveRight) {
             scene.player.body.setVelocityX(175);
             scene.player.setFlipX(false); // standard flip right
             scene.particles.start();
+            
+            if (scene.player.body.touching.down) {
+              scene.player.play('martina-run', true);
+            }
           } else {
             scene.player.body.setVelocityX(0);
             scene.particles.stop();
+            
+            if (scene.player.body.touching.down) {
+              scene.player.play('martina-idle', true);
+            }
+          }
+
+          if (!scene.player.body.touching.down) {
+            scene.player.play('martina-jump', true);
           }
 
           // Jump physics ( Arcade jump physics are extremely stable! )
-          if (jumpPressed && scene.player.body.touching.down) {
-            scene.player.body.setVelocityY(-405); // high enough to reach all platforms easily!
-            self.synthesizeSound('jump');
-            
-            // Trigger jump stretch!
-            scene.player.setDisplaySize(30, 68);
+          if (scene.player.jumpKeyDebounce > 0) scene.player.jumpKeyDebounce--;
+
+          if (jumpPressed) {
+            if (scene.player.body.touching.down) {
+              scene.player.body.setVelocityY(-405); // high enough to reach all platforms easily!
+              self.synthesizeSound('jump');
+              scene.player.doubleJumpAvailable = true;
+              scene.player.jumpKeyDebounce = 15; // debounce for 250ms
+              
+              // Trigger jump stretch!
+              scene.player.setDisplaySize(30, 68);
+            } else if (scene.player.doubleJumpAvailable && scene.player.jumpKeyDebounce === 0) {
+              scene.player.body.setVelocityY(-405);
+              scene.player.doubleJumpAvailable = false;
+              self.synthesizeSound('victory'); // custom high pitch double jump chime!
+              
+              scene.player.jumpKeyDebounce = 15;
+              scene.player.setDisplaySize(30, 68);
+              
+              // Spawn the Knight/Horse shockwave silhouette!
+              const horse = scene.add.sprite(scene.player.x, scene.player.y, 'knight_burst');
+              horse.setAlpha(0.8);
+              horse.setScale(0.2);
+              horse.setTint(0x22d3ee); // Glowing Cyan
+              scene.tweens.add({
+                targets: horse,
+                scale: 2.2,
+                alpha: 0,
+                duration: 450,
+                onComplete: () => horse.destroy()
+              });
+            }
           }
 
           // --- SQUASH AND STRETCH ORGANIC JUICE ---
           // Detect landing
           if (scene.player.body.touching.down && !scene.player.wasOnGround) {
             scene.player.landingSquashTimer = 10; // squash for 10 frames
+            
+            // Spawn landing dust particles!
+            for (let i = 0; i < 6; i++) {
+              const dustX = scene.player.x + (Math.random() * 20 - 10);
+              const dustY = scene.player.y + 26;
+              const dust = scene.add.circle(dustX, dustY, Math.random() * 2.5 + 1, 0xffffff, 0.7);
+              scene.physics.add.existing(dust, false);
+              dust.body.allowGravity = false;
+              dust.body.setVelocityY(-Math.random() * 30 - 10);
+              dust.body.setVelocityX((Math.random() * 60 - 30));
+              scene.tweens.add({
+                targets: dust,
+                alpha: 0,
+                scale: 0.1,
+                duration: 350 + Math.random() * 150,
+                onComplete: () => dust.destroy()
+              });
+            }
           }
           scene.player.wasOnGround = scene.player.body.touching.down;
 
