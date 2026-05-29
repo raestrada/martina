@@ -49,6 +49,12 @@ class ChessBoxGame {
     this.synthNotes = [];
     this.activeMusicType = null; // 'boxing' or 'chess'
 
+    // OGG audio playback for Inner Light boxing music
+    this.oggBuffer = null;      // cached decoded AudioBuffer
+    this.oggSource = null;      // current AudioBufferSourceNode
+    this.oggGain = null;        // GainNode for volume/mute control
+    this._oggLoading = false;   // prevent concurrent fetches
+
     // 15 Progressive tournament levels
     this.levels = [
       { name: "El Calentamiento del Peón", elo: 400, hp: 80, punchSpeed: 1400, color: "#38bdf8", desc: "Enfréntate a un Peón Boxeador novato en el ring azul celeste. ¡Aprende los esquives básicos!" },
@@ -69,7 +75,7 @@ class ChessBoxGame {
     ];
   }
 
-  // --- INICIALIZAR MÚSICA CHIPTUNE DE BOXEO O AJEDREZ ---
+  // --- INICIALIZAR MÚSICA DE BOXEO (OGG real) O AJEDREZ (sintetizada) ---
   startMusic(type) {
     this.stopMusic();
     this.activeMusicType = type;
@@ -88,6 +94,13 @@ class ChessBoxGame {
       audioCtx.resume();
     }
 
+    // === BOXING: Play Inner Light OGG rendered from original MIDI with GM SoundFont ===
+    if (type === 'boxing') {
+      this._playInnerLightOGG(audioCtx);
+      return;
+    }
+
+    // === CHESS: Keep synthesized tension music ===
     // Overdrive Distortion WaveShaper node for realistic electric guitar sound
     let distNode = window.GameAudio.distNode;
     if (!distNode) {
@@ -480,6 +493,53 @@ class ChessBoxGame {
     if (this.musicInterval) {
       clearInterval(this.musicInterval);
       this.musicInterval = null;
+    }
+    this._stopOGG();
+  }
+
+  _stopOGG() {
+    if (this.oggSource) {
+      try { this.oggSource.stop(); } catch(e) {}
+      this.oggSource = null;
+    }
+  }
+
+  // --- Play Inner Light OGG (rendered from original MIDI with GM SoundFont) ---
+  async _playInnerLightOGG(audioCtx) {
+    try {
+      // Load and cache the OGG (only once)
+      if (!this.oggBuffer) {
+        if (this._oggLoading) return; // Already loading
+        this._oggLoading = true;
+        try {
+          const response = await fetch('assets/audio/inner_light.ogg');
+          if (!response.ok) throw new Error('OGG not found');
+          const arrayBuffer = await response.arrayBuffer();
+          this.oggBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+        } finally {
+          this._oggLoading = false;
+        }
+      }
+
+      this._stopOGG();
+
+      // Create gain node for volume/mute control
+      if (!this.oggGain) {
+        this.oggGain = audioCtx.createGain();
+        this.oggGain.gain.value = 0.65;
+        this.oggGain.connect(audioCtx.destination);
+      }
+
+      // Create and start looping source
+      this.oggSource = audioCtx.createBufferSource();
+      this.oggSource.buffer = this.oggBuffer;
+      this.oggSource.loop = true;
+      this.oggSource.connect(this.oggGain);
+      this.oggSource.start(0);
+    } catch(e) {
+      console.warn('Could not play Inner Light OGG, falling back to synth:', e);
+      // Don't fallback — the old startMusic would have been called, but we returned early.
+      // Just silently fail.
     }
   }
 
@@ -3671,6 +3731,7 @@ class ChessBoxGame {
 
   // --- CLEANUP TIMERS & WORKERS TO AVOID LEAKS ---
   destroy() {
+    this.stopMusic();
     this.destroyPhaserEngine();
     this.destroyWorker();
     clearInterval(this.chessClockInterval);
