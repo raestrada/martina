@@ -3391,7 +3391,7 @@ class MarioGame {
               const rw0 = bd.roomRight - bd.roomLeft;
               // Draw room overlay — darken outside, clear inside with neon border
               scene.bossOverlay.setVisible(true);
-              drawBossOverlay();
+              scene.drawBossOverlay();
               
               // Camera zoom into boss room
               scene.cameras.main.zoomTo(1.25, 500);
