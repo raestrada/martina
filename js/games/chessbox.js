@@ -1116,7 +1116,7 @@ class ChessBoxGame {
               // Idle opponent blocks punches easily
               window.GameAudio.playMove();
               scene.addTextEffect(400, 140, "¡BLOQUEADO!", "#cbd5e1");
-              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 20); // charge opponent
+              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 6); // charge opponent (balanced rate)
             } else if (scene.opponentState === 'telegraphing-l' || scene.opponentState === 'telegraphing-r') {
               // Opponent gets interrupted if caught preparing a punch! Clean hit!
               scene.opponentHP -= 4;
@@ -1226,7 +1226,7 @@ class ChessBoxGame {
             } else {
               // Clean impact! Player takes damage and flinches!
               self.playerHealth = Math.max(0, self.playerHealth - damage);
-              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 35); // charge opponent super faster
+              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 12); // charge opponent super (balanced rate)
               self.hitsReceivedThisRound++;
               self.totalPunchesReceived++;
               window.GameAudio.playError();
