@@ -1616,6 +1616,56 @@ class MarioGame {
                 midCtx.beginPath(); midCtx.arc(mx, my, Math.random()*1.2+0.3, 0, Math.PI*2); midCtx.fill();
               }
               
+            } else if (biome === 'neon') {
+              // Neon midground — floating geometric crystals and diagonal beams
+              // Dark crystal platforms
+              const drawCrystalPlatform = (x, y, w, h) => {
+                const grad = midCtx.createLinearGradient(x, y, x, y+h);
+                grad.addColorStop(0, 'rgba(109, 40, 217, 0.35)');
+                grad.addColorStop(1, 'rgba(30, 10, 60, 0.15)');
+                midCtx.fillStyle = grad;
+                midCtx.beginPath();
+                midCtx.moveTo(x, y); midCtx.lineTo(x+w, y);
+                midCtx.lineTo(x+w-10, y+h); midCtx.lineTo(x+10, y+h);
+                midCtx.closePath();
+                midCtx.fill();
+                midCtx.strokeStyle = 'rgba(139, 92, 246, 0.3)';
+                midCtx.lineWidth = 1;
+                midCtx.stroke();
+                // Neon edge glow
+                midCtx.strokeStyle = 'rgba(168, 85, 247, 0.15)';
+                midCtx.lineWidth = 2;
+                midCtx.beginPath(); midCtx.moveTo(x, y); midCtx.lineTo(x+w, y); midCtx.stroke();
+              };
+              drawCrystalPlatform(80, 330, 160, 18);
+              drawCrystalPlatform(420, 280, 200, 18);
+              drawCrystalPlatform(280, 200, 130, 14);
+              
+              // Floating neon diamonds
+              for (let i=0; i<8; i++) {
+                const dx = 100 + Math.random()*600;
+                const dy = 60 + Math.random()*280;
+                const ds = 3 + Math.random()*5;
+                midCtx.fillStyle = 'rgba(168, 85, 247, 0.2)';
+                midCtx.beginPath();
+                midCtx.moveTo(dx, dy-ds); midCtx.lineTo(dx+ds, dy);
+                midCtx.lineTo(dx, dy+ds); midCtx.lineTo(dx-ds, dy);
+                midCtx.closePath();
+                midCtx.fill();
+                midCtx.strokeStyle = 'rgba(192, 132, 252, 0.3)';
+                midCtx.lineWidth = 0.7;
+                midCtx.stroke();
+              }
+              
+              // Diagonal beam hints
+              midCtx.strokeStyle = 'rgba(139, 92, 246, 0.06)';
+              midCtx.lineWidth = 6;
+              for (let i=0; i<5; i++) {
+                const bx = i*180;
+                midCtx.beginPath();
+                midCtx.moveTo(bx, 0); midCtx.lineTo(bx+300, 400); midCtx.stroke();
+              }
+              
             } else {
             const drawIsland = (x, y, w, h, underH) => {
               // Island top surface with checkered pattern
@@ -1995,6 +2045,73 @@ class MarioGame {
               gCtx.beginPath(); gCtx.arc(cx, cy, 5, 0, Math.PI*2); gCtx.stroke();
               
               scene.textures.addCanvas('gear_wheel', gCanvas);
+            }
+            
+            // Boss texture: Alfil Exiliado (neon bishop boss, size 64x96)
+            if (!scene.textures.exists('boss_alfil')) {
+              const bCanvas = document.createElement('canvas');
+              bCanvas.width = 64;
+              bCanvas.height = 96;
+              const bCtx = bCanvas.getContext('2d');
+              // Dark body with neon glow
+              const bGrad = bCtx.createLinearGradient(16, 20, 48, 88);
+              bGrad.addColorStop(0, '#5b21b6');
+              bGrad.addColorStop(0.5, '#3b0764');
+              bGrad.addColorStop(1, '#1a0030');
+              bCtx.fillStyle = bGrad;
+              bCtx.beginPath();
+              bCtx.moveTo(18, 20); bCtx.lineTo(46, 20);
+              bCtx.quadraticCurveTo(52, 50, 48, 88);
+              bCtx.lineTo(16, 88);
+              bCtx.quadraticCurveTo(12, 50, 18, 20);
+              bCtx.closePath();
+              bCtx.fill();
+              // Neon outline
+              bCtx.strokeStyle = '#a855f7';
+              bCtx.lineWidth = 2;
+              bCtx.shadowColor = '#a855f7';
+              bCtx.shadowBlur = 10;
+              bCtx.stroke();
+              bCtx.shadowBlur = 0;
+              // Bishop mitre head
+              const hGrad = bCtx.createRadialGradient(30, 10, 2, 32, 14, 8);
+              hGrad.addColorStop(0, '#c084fc');
+              hGrad.addColorStop(0.7, '#7e22ce');
+              hGrad.addColorStop(1, '#3b0764');
+              bCtx.fillStyle = hGrad;
+              bCtx.beginPath(); bCtx.arc(32, 12, 8, 0, Math.PI*2); bCtx.fill();
+              // Mitre slot
+              bCtx.strokeStyle = '#1a0030';
+              bCtx.lineWidth = 1.5;
+              bCtx.shadowBlur = 0;
+              bCtx.beginPath(); bCtx.moveTo(32, 4); bCtx.lineTo(32, 20); bCtx.stroke();
+              // Glowing angry eyes
+              bCtx.fillStyle = '#ef4444';
+              bCtx.shadowColor = '#ef4444';
+              bCtx.shadowBlur = 6;
+              bCtx.beginPath(); bCtx.arc(27, 11, 2, 0, Math.PI*2); bCtx.fill();
+              bCtx.beginPath(); bCtx.arc(37, 11, 2, 0, Math.PI*2); bCtx.fill();
+              bCtx.shadowBlur = 0;
+              // Pointed mitre top
+              bCtx.fillStyle = '#c084fc';
+              bCtx.beginPath();
+              bCtx.moveTo(32, -2); bCtx.lineTo(28, 6); bCtx.lineTo(36, 6);
+              bCtx.closePath();
+              bCtx.fill();
+              // Exile marks (diagonal cross on body)
+              bCtx.strokeStyle = 'rgba(168,85,247,0.5)';
+              bCtx.lineWidth = 2;
+              bCtx.beginPath();
+              bCtx.moveTo(20, 30); bCtx.lineTo(42, 60);
+              bCtx.moveTo(42, 30); bCtx.lineTo(20, 60);
+              bCtx.stroke();
+              // Base
+              bCtx.fillStyle = '#3b0764';
+              bCtx.fillRect(12, 88, 40, 6);
+              bCtx.fillStyle = '#7e22ce';
+              bCtx.fillRect(12, 88, 40, 2);
+              
+              scene.textures.addCanvas('boss_alfil', bCanvas);
             }
           }
           
@@ -2397,7 +2514,28 @@ class MarioGame {
                   for (let sx = -toothW/2 + 2; sx < toothW/2; sx += 5) {
                     toothGfx.fillRect(sx, -toothH/2 - 5, 3, 6);
                   }
-                } else {
+            } else if (biome === 'neon') {
+              // Neon platform — dark crystal with glowing purple edge
+              block.fillStyle(0x1a1030, 0.9);
+              block.fillRect(p.x, p.y, p.w, p.h);
+              block.fillStyle(0x2d1855, 0.5);
+              block.fillRect(p.x, p.y + 2, p.w, p.h - 4);
+              // Glowing purple top edge
+              block.fillStyle(0x8b5cf6, 0.55);
+              block.fillRect(p.x, p.y, p.w, 4);
+              block.fillStyle(0xa855f7, 0.4);
+              block.fillRect(p.x, p.y, p.w, 1);
+              // Diagonal hash pattern
+              block.fillStyle(0x6d28d9, 0.15);
+              for (let dx = p.x; dx < p.x + p.w; dx += 12) {
+                block.fillRect(dx, p.y + 6, 6, 2);
+                block.fillRect(dx + 4, p.y + 10, 6, 2);
+              }
+              block.fillStyle(0x7c3aed, 0.2);
+              block.fillRect(p.x + 2, p.y + 5, p.w - 4, 1);
+              block.lineStyle(1.5, 0x8b5cf6, 0.7);
+              block.strokeRect(p.x, p.y, p.w, p.h);
+            } else {
                   toothGfx.fillStyle(0x5c4020, 0.9);
                   toothGfx.fillRect(-toothW/2, -toothH/2, toothW, toothH);
                   toothGfx.fillStyle(0x8a6d2f, 0.7);
@@ -2428,6 +2566,87 @@ class MarioGame {
                 visual: gearVis
               });
             });
+          }
+
+          // 6.9 Boss System — Alfil Exiliado (level 3 neon biome)
+          scene.bossActive = false;
+          scene.bossDefeated = false;
+          scene.bossRoomActive = false;
+          scene.bossHP = 0;
+          scene.bossInvincible = 0;
+          
+          if (biome === 'neon' && levelDef.bossData) {
+            const bd = levelDef.bossData;
+            
+            // Boss sprite (invisible until room activated)
+            scene.boss = scene.physics.add.sprite(bd.x, bd.y, 'boss_alfil');
+            scene.boss.setDisplaySize(56, 84);
+            scene.boss.setSize(40, 72);
+            scene.boss.setOffset(12, 12);
+            scene.boss.setDepth(4);
+            scene.boss.setVisible(false);
+            scene.boss.body.allowGravity = false;
+            scene.boss.body.setImmovable(true);
+            scene.boss.hp = bd.hp;
+            scene.boss.speed = bd.speed;
+            scene.boss.projInterval = bd.projectileInterval;
+            scene.boss.projTimer = 0;
+            scene.boss.state = 'idle'; // idle, moving, shooting
+            scene.boss.moveDir = 1;
+            scene.boss.moveTimer = 0;
+            scene.boss.minX = bd.roomLeft + 40;
+            scene.boss.maxX = bd.roomRight - 40;
+            scene.boss.minY = 180;
+            scene.boss.maxY = 340;
+            
+            // Boss room walls (hidden, appear when player enters room)
+            scene.bossWalls = scene.physics.add.staticGroup();
+            const wallW = 10;
+            // Left wall
+            const wallL = scene.add.graphics();
+            wallL.fillStyle(0x7c3aed, 0.0);
+            wallL.fillRect(bd.roomLeft - wallW, 100, wallW, 320);
+            scene.physics.add.existing(wallL, true);
+            wallL.body.setSize(wallW, 320);
+            wallL.body.setOffset(bd.roomLeft - wallW, 100);
+            wallL.setVisible(false);
+            scene.bossWalls.add(wallL);
+            // Right wall
+            const wallR = scene.add.graphics();
+            wallR.fillStyle(0x7c3aed, 0.0);
+            wallR.fillRect(bd.roomRight, 100, wallW, 320);
+            scene.physics.add.existing(wallR, true);
+            wallR.body.setSize(wallW, 320);
+            wallR.body.setOffset(bd.roomRight, 100);
+            wallR.setVisible(false);
+            scene.bossWalls.add(wallR);
+            // Ceiling
+            const wallT = scene.add.graphics();
+            wallT.fillStyle(0x7c3aed, 0.0);
+            wallT.fillRect(bd.roomLeft, 95, bd.roomRight - bd.roomLeft, wallW);
+            scene.physics.add.existing(wallT, true);
+            wallT.body.setSize(bd.roomRight - bd.roomLeft, wallW);
+            wallT.body.setOffset(bd.roomLeft, 95);
+            wallT.setVisible(false);
+            scene.bossWalls.add(wallT);
+            
+            // Neon wall visuals (appear with walls)
+            scene.bossWallGlow = scene.add.graphics();
+            scene.bossWallGlow.setDepth(5);
+            scene.bossWallGlow.setVisible(false);
+            
+            // Boss projectiles group
+            scene.bossProjectiles = scene.physics.add.group({ allowGravity: false });
+            
+            // Boss health bar HTML overlay
+            const healthBarHTML = document.createElement('div');
+            healthBarHTML.id = 'boss-health-bar';
+            healthBarHTML.style.cssText = 'display:none;position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:100;background:rgba(0,0,0,0.7);border:2px solid #8b5cf6;border-radius:10px;padding:6px 14px;color:#fff;font-family:Outfit,sans-serif;font-size:13px;font-weight:700;text-align:center;min-width:200px;';
+            healthBarHTML.innerHTML = '<span style="color:#c084fc;">Alfil Exiliado</span><div style="background:rgba(255,255,255,0.1);height:8px;border-radius:4px;margin-top:4px;overflow:hidden;"><div id="boss-hp-fill" style="background:linear-gradient(90deg,#ef4444,#a855f7);height:100%;width:100%;border-radius:4px;transition:width 0.3s;"></div></div>';
+            document.getElementById('phaser-game-parent').appendChild(healthBarHTML);
+            
+            // Collider: player vs boss walls
+            scene.physics.add.collider(scene.player, scene.bossWalls);
           }
 
           // 7. Goal — biome-specific (Portal+Queen for grass, Trophy for clockwork)
@@ -2463,9 +2682,79 @@ class MarioGame {
                 duration: 1200+Math.random()*600, yoyo: true, repeat: -1,
                 ease: 'Sine.easeInOut', delay: i*100
               });
-            }
-            
-          } else {
+              }
+              
+            } else if (biome === 'neon') {
+              // --- NEON BACKGROUND: Dark purple, glowing diagonals, frozen chess pieces ---
+              const nGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
+              nGrad.addColorStop(0, '#050010');
+              nGrad.addColorStop(0.4, '#0a0020');
+              nGrad.addColorStop(0.7, '#120835');
+              nGrad.addColorStop(1, '#0a0025');
+              bgCtx.fillStyle = nGrad;
+              bgCtx.fillRect(0, 0, 800, 450);
+              
+              // Neon purple grid
+              bgCtx.strokeStyle = 'rgba(139, 92, 246, 0.06)';
+              bgCtx.lineWidth = 0.5;
+              for (let i=0; i<20; i++) {
+                bgCtx.beginPath(); bgCtx.moveTo(i*40, 0); bgCtx.lineTo(i*40, 450); bgCtx.stroke();
+                bgCtx.beginPath(); bgCtx.moveTo(0, i*22.5); bgCtx.lineTo(800, i*22.5); bgCtx.stroke();
+              }
+              
+              // Glowing diagonal beams (a7-g1 diagonal motif)
+              const drawDiagBeam = (x, y, angle, len, color, alpha) => {
+                bgCtx.save();
+                bgCtx.globalAlpha = alpha;
+                bgCtx.strokeStyle = color;
+                bgCtx.lineWidth = 2.5;
+                bgCtx.shadowColor = color;
+                bgCtx.shadowBlur = 15;
+                bgCtx.beginPath();
+                bgCtx.moveTo(x, y);
+                bgCtx.lineTo(x+Math.cos(angle)*len, y+Math.sin(angle)*len);
+                bgCtx.stroke();
+                bgCtx.shadowBlur = 0;
+                bgCtx.restore();
+              };
+              const rad45 = Math.PI/4;
+              drawDiagBeam(50, 60, rad45, 350, '#7c3aed', 0.15);
+              drawDiagBeam(400, 30, rad45, 380, '#8b5cf6', 0.12);
+              drawDiagBeam(150, 200, rad45, 400, '#6d28d9', 0.10);
+              drawDiagBeam(500, 150, -rad45, 350, '#a855f7', 0.10);
+              drawDiagBeam(250, 320, rad45, 300, '#7c3aed', 0.08);
+              drawDiagBeam(600, 280, -rad45, 320, '#8b5cf6', 0.09);
+              
+              // Frozen piece silhouettes (pinned in place)
+              const drawFrozenPiece = (px, py, type) => {
+                bgCtx.fillStyle = 'rgba(139, 92, 246, 0.08)';
+                bgCtx.strokeStyle = 'rgba(167, 139, 250, 0.15)';
+                bgCtx.lineWidth = 1;
+                if (type==='pawn') {
+                  bgCtx.beginPath(); bgCtx.arc(px, py-6, 5, 0, Math.PI*2); bgCtx.fill(); bgCtx.stroke();
+                  bgCtx.beginPath(); bgCtx.moveTo(px-4,py-1); bgCtx.lineTo(px+4,py-1); bgCtx.lineTo(px+5,py+12); bgCtx.lineTo(px-5,py+12); bgCtx.closePath(); bgCtx.fill(); bgCtx.stroke();
+                } else if (type==='bishop') {
+                  bgCtx.beginPath(); bgCtx.arc(px, py-8, 5, 0, Math.PI*2); bgCtx.fill(); bgCtx.stroke();
+                  bgCtx.beginPath(); bgCtx.moveTo(px-4,py-3); bgCtx.lineTo(px+4,py-3); bgCtx.lineTo(px+5,py+14); bgCtx.lineTo(px-5,py+14); bgCtx.closePath(); bgCtx.fill(); bgCtx.stroke();
+                  bgCtx.beginPath(); bgCtx.moveTo(px,py-13); bgCtx.lineTo(px,py-3); bgCtx.stroke();
+                }
+              };
+              drawFrozenPiece(180, 150, 'pawn');
+              drawFrozenPiece(350, 100, 'bishop');
+              drawFrozenPiece(550, 180, 'pawn');
+              drawFrozenPiece(700, 130, 'bishop');
+              
+              // Neon pink accent glow spots
+              for (let i=0; i<12; i++) {
+                const nx = Math.random()*800, ny = Math.random()*400;
+                const ng = bgCtx.createRadialGradient(nx, ny, 0, nx, ny, 20);
+                ng.addColorStop(0, 'rgba(168,85,247,0.06)');
+                ng.addColorStop(1, 'transparent');
+                bgCtx.fillStyle = ng;
+                bgCtx.beginPath(); bgCtx.arc(nx, ny, 20, 0, Math.PI*2); bgCtx.fill();
+              }
+              
+            } else {
           // 7. Chess-Themed Goal: The Magical Portal, Majestic White Queen and friendly Peoncito!
           // 7.1. Portal of the 64 Casillas (Magical spinning gateway in the background)
           scene.portal = scene.add.sprite(2150, 245, 'portal_texture');
@@ -3094,6 +3383,116 @@ class MarioGame {
             });
           }
 
+          // --- BOSS SYSTEM UPDATE (Alfil Exiliado, level 3) ---
+          if (biome === 'neon' && scene.boss && !scene.bossDefeated) {
+            const bd = levelDef.bossData;
+            const playerInRoom = scene.player.x > bd.roomLeft && scene.player.x < bd.roomRight;
+            
+            if (playerInRoom && !scene.bossRoomActive) {
+              scene.bossRoomActive = true;
+              scene.bossActive = true;
+              scene.bossHP = scene.boss.hp;
+              scene.boss.setVisible(true);
+              scene.boss.setPosition(bd.x, bd.y);
+              scene.bossWalls.getChildren().forEach(w => w.setVisible(true));
+              scene.bossWallGlow.setVisible(true);
+              scene.bossWallGlow.clear();
+              scene.bossWallGlow.lineStyle(3, 0xa855f7, 0.9);
+              scene.bossWallGlow.strokeRect(bd.roomLeft, 100, bd.roomRight-bd.roomLeft, 315);
+              scene.bossWallGlow.lineStyle(1, 0xc084fc, 0.4);
+              scene.bossWallGlow.strokeRect(bd.roomLeft+3, 103, bd.roomRight-bd.roomLeft-6, 309);
+              const hb = document.getElementById('boss-health-bar');
+              if (hb) hb.style.display = 'block';
+            }
+            
+            if (scene.bossActive) {
+              if (scene.bossInvincible > 0) {
+                scene.bossInvincible--;
+                scene.boss.setAlpha(scene.bossInvincible%4<2?0.4:1);
+              } else scene.boss.setAlpha(1);
+              
+              scene.boss.moveTimer++;
+              if (scene.boss.moveTimer > 90) { scene.boss.moveTimer = 0; scene.boss.moveDir = Math.random()<0.5?-1:1; }
+              const bx = scene.boss.x + scene.boss.moveDir*scene.boss.speed*0.015;
+              const by = scene.boss.y + scene.boss.moveDir*scene.boss.speed*0.01;
+              scene.boss.x = Phaser.Math.Clamp(bx, scene.boss.minX, scene.boss.maxX);
+              scene.boss.y = Phaser.Math.Clamp(by, scene.boss.minY, scene.boss.maxY);
+              scene.boss.setFlipX(scene.boss.moveDir<0);
+              
+              scene.boss.projTimer++;
+              if (scene.boss.projTimer >= scene.boss.projInterval) {
+                scene.boss.projTimer = 0;
+                const dirs = [Math.PI/4, -Math.PI/4, Math.PI-Math.PI/4, -(Math.PI-Math.PI/4)];
+                const dir = dirs[Math.floor(Math.random()*dirs.length)];
+                const proj = scene.add.circle(scene.boss.x, scene.boss.y, 5, 0xa855f7, 0.9);
+                scene.physics.add.existing(proj, false);
+                proj.body.allowGravity = false;
+                proj.body.setVelocity(Math.cos(dir)*bd.projectileSpeed, Math.sin(dir)*bd.projectileSpeed);
+                scene.bossProjectiles.add(proj);
+                proj.setBlendMode('ADD');
+                scene.tweens.add({targets:proj, alpha:0.2, scale:0.1, duration:2000, onComplete:()=>proj.destroy()});
+              }
+              
+              scene.bossProjectiles.getChildren().forEach(proj => {
+                if (proj.x<bd.roomLeft-50||proj.x>bd.roomRight+50||proj.y<50||proj.y>440) proj.destroy();
+              });
+              
+              if (scene.bossInvincible === 0) {
+                const dx = scene.player.x-scene.boss.x, dy = scene.player.y-scene.boss.y;
+                if (Math.sqrt(dx*dx+dy*dy) < 42) {
+                  if (scene.player.body.velocity.y>0 && scene.player.y<scene.boss.y) {
+                    scene.bossHP--;
+                    scene.bossInvincible = 40;
+                    scene.player.body.setVelocityY(-380);
+                    self.synthesizeSound('stomp');
+                    const fill = document.getElementById('boss-hp-fill');
+                    if (fill) fill.style.width = `${(scene.bossHP/scene.boss.hp)*100}%`;
+                    for (let i=0;i<15;i++) {
+                      const a=(i/15)*Math.PI*2;
+                      const sp=scene.add.circle(scene.boss.x, scene.boss.y, Math.random()*3+1.5, 0xa855f7, 0.8);
+                      sp.setDepth(5);
+                      scene.tweens.add({targets:sp, alpha:0, scale:0.1, x:sp.x+Math.cos(a)*60, y:sp.y+Math.sin(a)*60, duration:400, onComplete:()=>sp.destroy()});
+                    }
+                    if (scene.bossHP <= 0) {
+                      scene.bossActive = false; scene.bossDefeated = true;
+                      self.synthesizeSound('victory');
+                      const hb = document.getElementById('boss-health-bar');
+                      if (hb) hb.style.display = 'none';
+                      scene.tweens.add({targets:scene.boss, alpha:0, scaleX:0.1, scaleY:0.1, angle:720, duration:1000, onComplete:()=>scene.boss.destroy()});
+                      scene.bossWalls.getChildren().forEach(w=>{scene.tweens.add({targets:w, alpha:0, duration:400, onComplete:()=>w.destroy()});});
+                      scene.bossWallGlow.setVisible(false);
+                      for (let i=0;i<40;i++) {
+                        scene.time.delayedCall(i*20, ()=>{
+                          const cp=scene.add.circle(bd.roomLeft+Math.random()*(bd.roomRight-bd.roomLeft), 150+Math.random()*250, Math.random()*3+1.5, i%2===0?0xc084fc:0xfbbf24, 0.8);
+                          scene.tweens.add({targets:cp, alpha:0, scale:0.1, y:cp.y-60, duration:800+Math.random()*400, onComplete:()=>cp.destroy()});
+                        });
+                      }
+                    }
+                  } else if (scene.player.invincibility===0) {
+                    self.lives--; scene.player.invincibility=60;
+                    scene.player.body.setVelocityX(scene.player.x<scene.boss.x?-220:220);
+                    scene.player.body.setVelocityY(-180);
+                    self.synthesizeSound('damage'); scene.doDamageAnim();
+                    document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
+                    if (self.lives<=0) self.gameOver();
+                  }
+                }
+              }
+              scene.bossProjectiles.getChildren().forEach(proj => {
+                const pdx=scene.player.x-proj.x, pdy=scene.player.y-proj.y;
+                if (Math.sqrt(pdx*pdx+pdy*pdy)<22 && scene.player.invincibility===0) {
+                  proj.destroy();
+                  self.lives--; scene.player.invincibility=60;
+                  scene.player.body.setVelocityX(scene.player.x<proj.x?-160:160);
+                  scene.player.body.setVelocityY(-100);
+                  self.synthesizeSound('damage'); scene.doDamageAnim();
+                  document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
+                  if (self.lives<=0) self.gameOver();
+                }
+              });
+            }
+          }
+
           // Spin the magical chess portal of the 64 squares!
           if (scene.portal) {
             scene.portal.angle += 0.6; // smooth rotation
@@ -3525,6 +3924,29 @@ class MarioGame {
         82.41, 0, 0, 0, 82.41, 0, 0, 0
       ];
       tempo = 160; // Faster tempo for mechanical feel
+    } else if (this.currentLevelIndex === 2) {
+      // Level 3 — Neon mysterious theme (D minor, dark ambient with sharp stabs)
+      melody = [
+        293.66, 0, 349.23, 0, 440.00, 349.23, 293.66, 0,
+        293.66, 349.23, 440.00, 0, 523.25, 440.00, 349.23, 0,
+        261.63, 0, 329.63, 0, 392.00, 329.63, 261.63, 0,
+        261.63, 329.63, 392.00, 0, 493.88, 392.00, 329.63, 0,
+        220.00, 0, 293.66, 0, 349.23, 293.66, 220.00, 0,
+        220.00, 293.66, 349.23, 0, 440.00, 349.23, 293.66, 0,
+        349.23, 0, 440.00, 523.25, 659.25, 523.25, 440.00, 0,
+        440.00, 523.25, 659.25, 783.99, 659.25, 523.25, 440.00, 349.23
+      ];
+      bass = [
+        73.42, 0, 0, 0, 73.42, 0, 0, 0,
+        73.42, 0, 0, 0, 73.42, 0, 0, 0,
+        65.41, 0, 0, 0, 65.41, 0, 0, 0,
+        65.41, 0, 0, 0, 65.41, 0, 0, 0,
+        55.00, 0, 0, 0, 55.00, 0, 0, 0,
+        55.00, 0, 0, 0, 55.00, 0, 0, 0,
+        87.31, 0, 0, 0, 87.31, 0, 0, 0,
+        87.31, 0, 0, 0, 87.31, 0, 0, 0
+      ];
+      tempo = 190;
     } else {
       // Level 1 — Dreamy, ethereal, minor-mode fairy tale chords
       melody = [

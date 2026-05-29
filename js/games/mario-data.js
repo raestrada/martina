@@ -5,8 +5,9 @@ window.MartinaLevels = {
 
   // Max possible score per level index (coins + burst + enemies + crowns)
   maxScore: {
-    0: 9900,  // Level 1
-    1: 9900   // Level 2
+    0: 9900,
+    1: 9900,
+    2: 9900
   },
 
   levels: [
@@ -186,6 +187,114 @@ window.MartinaLevels = {
           hazardIndices: [1, 4, 7]
         }
       ]
+    },
+
+    // ================================================================
+    // LEVEL 3 — "La Clavada del Alfil Exiliado" — Neon Diagonal
+    // ================================================================
+    {
+      biome: 'neon',
+      worldWidth: 2600,
+      backgroundColor: '#0a0020',
+
+      platformsData: [
+        // Ground — neon-edged platforms
+        { x: 0, y: 410, w: 650, h: 40 },
+        { x: 800, y: 410, w: 550, h: 40 },
+        { x: 1500, y: 410, w: 520, h: 40 },
+        // Boss room floor
+        { x: 2100, y: 410, w: 400, h: 40 },
+        // Goal platform
+        { x: 2550, y: 410, w: 50, h: 40 },
+
+        // Floating neon platforms — diagonal arrangement
+        { x: 200, y: 320, w: 110, h: 18 },
+        { x: 440, y: 230, w: 90, h: 18 },
+        { x: 640, y: 320, w: 100, h: 18 },
+        { x: 880, y: 290, w: 120, h: 18 },
+        { x: 1080, y: 220, w: 100, h: 18 },
+        { x: 1280, y: 310, w: 110, h: 18 },
+        { x: 1450, y: 250, w: 80, h: 18 },
+        { x: 1620, y: 310, w: 100, h: 18 },
+        { x: 1780, y: 270, w: 80, h: 18 },
+        { x: 1920, y: 310, w: 100, h: 18 },
+        // Inside boss room — small platforms
+        { x: 2150, y: 290, w: 75, h: 18 },
+        { x: 2320, y: 300, w: 70, h: 18 },
+        { x: 2450, y: 280, w: 80, h: 18 }
+      ],
+
+      coinsData: [
+        { x: 230, y: 270 }, { x: 260, y: 270 }, { x: 290, y: 270 },
+        { x: 500, y: 180 },
+        { x: 690, y: 270 }, { x: 720, y: 270 },
+        { x: 920, y: 240 }, { x: 950, y: 240 },
+        { x: 1120, y: 170 },
+        { x: 1320, y: 260 }, { x: 1350, y: 260 },
+        { x: 1500, y: 200 },
+        { x: 1660, y: 260 }, { x: 1690, y: 260 },
+        { x: 1830, y: 220 },
+        // Ground coins
+        { x: 180, y: 370 }, { x: 220, y: 370 }, { x: 260, y: 370 },
+        { x: 360, y: 370 }, { x: 400, y: 370 },
+        { x: 540, y: 370 }, { x: 580, y: 370 },
+        { x: 880, y: 370 }, { x: 920, y: 370 }, { x: 960, y: 370 },
+        { x: 1100, y: 370 }, { x: 1140, y: 370 },
+        { x: 1280, y: 370 }, { x: 1320, y: 370 },
+        { x: 1600, y: 370 }, { x: 1640, y: 370 }, { x: 1680, y: 370 },
+        { x: 1800, y: 370 }, { x: 1840, y: 370 },
+        // Boss room coins
+        { x: 2180, y: 370 }, { x: 2220, y: 370 },
+        { x: 2360, y: 370 }, { x: 2400, y: 370 },
+        // Goal approach
+        { x: 2520, y: 360 }, { x: 2540, y: 360 }
+      ],
+
+      enemiesData: [
+        { x: 340, y: 360, left: 120, right: 520, speed: 75 },
+        { x: 600, y: 360, left: 480, right: 650, speed: 65 },
+        { x: 1050, y: 360, left: 840, right: 1300, speed: 85 },
+        { x: 1450, y: 360, left: 1320, right: 1600, speed: 70 },
+        { x: 1750, y: 360, left: 1620, right: 1920, speed: 80 }
+      ],
+
+      airEnemiesData: [
+        { x: 460, y: 150, pattern: 'horizontal', minX: 360, maxX: 600, speed: 80 },
+        { x: 1100, y: 140, pattern: 'diagonal', minX: 980, maxX: 1280, minY: 100, maxY: 200, speed: 75, speedY: 50 },
+        { x: 1650, y: 160, pattern: 'sinusoidal', minX: 1550, maxX: 1780, baseY: 160, ampY: 40, speed: 80 }
+      ],
+
+      crownsData: [
+        { x: 910, y: 170 },
+        { x: 1120, y: 100 },
+        { x: 2200, y: 200 }
+      ],
+
+      // Pin rays — diagonal hazard beams (stun on contact)
+      pinRaysData: [
+        { x: 380, y: 80, angle: 45, length: 280, pulseSpeed: 0.03 },
+        { x: 700, y: 100, angle: -45, length: 300, pulseSpeed: 0.04 },
+        { x: 1200, y: 70, angle: 45, length: 320, pulseSpeed: 0.035 },
+        { x: 1600, y: 90, angle: -45, length: 260, pulseSpeed: 0.045 }
+      ],
+
+      // Boss: Alfil Exiliado
+      bossData: {
+        type: 'alfil_exiliado',
+        hp: 3,
+        roomLeft: 2080,
+        roomRight: 2510,
+        x: 2300, y: 280,
+        speed: 65,
+        projectileSpeed: 220,
+        projectileInterval: 90  // frames between shots
+      },
+
+      // Goal after defeating boss
+      goal: {
+        type: 'neon_portal',
+        portalX: 2550, portalY: 245
+      }
     }
   ]
 };
