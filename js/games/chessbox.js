@@ -526,16 +526,18 @@ class ChessBoxGame {
       // Create gain node for volume/mute control
       if (!this.oggGain) {
         this.oggGain = audioCtx.createGain();
-        this.oggGain.gain.value = 0.65;
+        this.oggGain.gain.value = 1.0;
         this.oggGain.connect(audioCtx.destination);
       }
 
-      // Create and start looping source
+      // Create and start looping source — skip slow intro, start at energetic band entry
       this.oggSource = audioCtx.createBufferSource();
       this.oggSource.buffer = this.oggBuffer;
       this.oggSource.loop = true;
+      this.oggSource.loopStart = 28.0; // skip slow intro, loop from where the band kicks in
+      this.oggSource.loopEnd = this.oggBuffer.duration;
       this.oggSource.connect(this.oggGain);
-      this.oggSource.start(0);
+      this.oggSource.start(0, 28.0);
     } catch(e) {
       // OGG failed (e.g. file:// CORS) — synthesis continues as fallback, silent ignore
     }
