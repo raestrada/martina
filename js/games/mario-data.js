@@ -201,11 +201,9 @@ window.MartinaLevels = {
         // Ground — neon-edged platforms
         { x: 0, y: 410, w: 650, h: 40 },
         { x: 800, y: 410, w: 550, h: 40 },
-        { x: 1500, y: 410, w: 520, h: 40 },
-        // Boss room floor
-        { x: 2100, y: 410, w: 400, h: 40 },
-        // Goal platform
-        { x: 2550, y: 410, w: 50, h: 40 },
+        { x: 1500, y: 410, w: 600, h: 40 },  // extends to boss room
+        // Boss room floor — spans to goal
+        { x: 2100, y: 410, w: 500, h: 40 },
 
         // Floating neon platforms — diagonal arrangement
         { x: 200, y: 320, w: 110, h: 18 },
