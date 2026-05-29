@@ -103,7 +103,7 @@ class ChessBoxGame {
           }
           return curve;
         };
-        distNode.curve = makeDistortionCurve(120); // heavy metal clipping!
+        distNode.curve = makeDistortionCurve(135); // intense heavy metal overdrive distortion!
         distNode.oversample = '4x';
         distNode.connect(audioCtx.destination);
         window.GameAudio.distNode = distNode;
@@ -112,23 +112,23 @@ class ChessBoxGame {
 
     let melody = [];
     let bass = [];
-    let tempo = 180;
+    let tempo = 120; // 120ms per step (Fast-paced, heavy rock tempo)
 
     if (type === 'boxing') {
-      // High-energy Hajime no Ippo driving metal rock theme in A minor
+      // High-energy epic heavy metal anthem in A minor (Hajime no Ippo style chord progression)
+      // A minor -> F Major -> G Major -> E Major
       melody = [
-        440.00, 440.00, 523.25, 587.33, 659.25, 659.25, 587.33, 523.25,
-        493.88, 493.88, 587.33, 659.25, 698.46, 698.46, 659.25, 587.33,
-        659.25, 659.25, 783.99, 880.00, 987.77, 987.77, 880.00, 783.99,
-        880.00, 0,      880.00, 0,      880.00, 783.99, 659.25, 587.33
+        440.00, 440.00, 440.00, 523.25, 587.33, 523.25, 440.00, 392.00, // A minor riff
+        349.23, 349.23, 349.23, 440.00, 523.25, 440.00, 349.23, 329.63, // F Major riff
+        392.00, 392.00, 392.00, 493.88, 587.33, 493.88, 392.00, 329.63, // G Major riff
+        329.63, 329.63, 329.63, 415.30, 493.88, 415.30, 493.88, 659.25  // E Major crescendo
       ];
       bass = [
-        110.00, 110.00, 110.00, 110.00, 130.81, 130.81, 130.81, 130.81,
-        98.00,  98.00,  98.00,  98.00,  82.41,  82.41,  82.41,  82.41,
-        110.00, 110.00, 110.00, 110.00, 130.81, 130.81, 130.81, 130.81,
-        146.83, 146.83, 146.83, 146.83, 164.81, 164.81, 164.81, 164.81
+        110.00, 110.00, 110.00, 110.00, 110.00, 110.00, 110.00, 110.00, // A2
+        87.31,  87.31,  87.31,  87.31,  87.31,  87.31,  87.31,  87.31,  // F2
+        98.00,  98.00,  98.00,  98.00,  98.00,  98.00,  98.00,  98.00,  // G2
+        82.41,  82.41,  82.41,  82.41,  82.41,  82.41,  82.41,  82.41   // E2
       ];
-      tempo = 135; // Fast driving heavy metal tempo (135ms per step)
     } else {
       // Chess tension music: Slow, ominous A-minor drone with woodblock ticking
       melody = [
@@ -155,29 +155,31 @@ class ChessBoxGame {
 
       const now = audioCtx.currentTime;
 
-      // 1. DYNAMIC DRUM CHANNEL (Kick, Snare, Hi-hat Chiptunes) for boxing
+      // 1. DYNAMIC DRUM CHANNEL (Relentless Double Bass Metal drums) for boxing
       if (type === 'boxing') {
         const beat = step % 8;
-        if (beat === 0 || beat === 1 || beat === 4) {
-          // A. Synthesize a powerful double-kick drum sweeps
+        // Kick Drum: Relentless heavy double kick metal beat (steps 0, 1, 3, 4, 5)
+        if (beat === 0 || beat === 1 || beat === 3 || beat === 4 || beat === 5) {
           try {
             const kOsc = audioCtx.createOscillator();
             const kGain = audioCtx.createGain();
             kOsc.type = 'sine';
-            kOsc.frequency.setValueAtTime(170, now);
-            kOsc.frequency.exponentialRampToValueAtTime(0.01, now + 0.1);
-            kGain.gain.setValueAtTime(0.18, now); // punchy heavy bass drum
-            kGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
+            kOsc.frequency.setValueAtTime(150, now);
+            kOsc.frequency.exponentialRampToValueAtTime(30, now + 0.08); // high punch pitch sweep
+            kGain.gain.setValueAtTime(0.24, now); // loud driving bass drum
+            kGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
             kOsc.connect(kGain);
             kGain.connect(audioCtx.destination);
             kOsc.start(now);
-            kOsc.stop(now + 0.11);
+            kOsc.stop(now + 0.1);
             this.synthNotes.push(kOsc);
           } catch(e) {}
-        } else if (beat === 2 || beat === 6) {
-          // B. Synthesize a sharp, heavy metal Snare crack
+        }
+        
+        // Snare Drum: Loud cracking high-sustain snare on beats 2 and 6
+        if (beat === 2 || beat === 6) {
           try {
-            const bufferSize = audioCtx.sampleRate * 0.12; // 120ms snare blast
+            const bufferSize = audioCtx.sampleRate * 0.15; // 150ms snare blast
             const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
             const data = buffer.getChannelData(0);
             for (let i = 0; i < bufferSize; i++) {
@@ -187,30 +189,56 @@ class ChessBoxGame {
             noise.buffer = buffer;
             const filter = audioCtx.createBiquadFilter();
             filter.type = 'bandpass';
-            filter.frequency.value = 1200;
+            filter.frequency.value = 1000;
+            filter.Q.value = 1.0;
             const noiseGain = audioCtx.createGain();
-            noiseGain.gain.setValueAtTime(0.08, now);
-            noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.11);
+            noiseGain.gain.setValueAtTime(0.18, now); // loud snare crack
+            noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
             noise.connect(filter);
             filter.connect(noiseGain);
             noiseGain.connect(audioCtx.destination);
             noise.start(now);
-            noise.stop(now + 0.12);
+            noise.stop(now + 0.15);
             this.synthNotes.push(noise);
           } catch(e) {}
-        } else {
-          // C. Hi-hat ticks
+        }
+
+        // Cymbals: Crash cymbal on step 0, crisp closed hi-hats on odd beats
+        if (beat === 0) {
+          try {
+            const bufferSize = audioCtx.sampleRate * 0.4; // 400ms crash
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+              data[i] = Math.random() * 2 - 1;
+            }
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.value = 8000;
+            const noiseGain = audioCtx.createGain();
+            noiseGain.gain.setValueAtTime(0.06, now); // metallic crash
+            noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.38);
+            noise.connect(filter);
+            filter.connect(noiseGain);
+            noiseGain.connect(audioCtx.destination);
+            noise.start(now);
+            noise.stop(now + 0.4);
+            this.synthNotes.push(noise);
+          } catch(e) {}
+        } else if (beat % 2 === 1) {
           try {
             const hOsc = audioCtx.createOscillator();
             const hGain = audioCtx.createGain();
             hOsc.type = 'square';
-            hOsc.frequency.setValueAtTime(10000, now);
-            hGain.gain.setValueAtTime(0.008, now);
-            hGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.035);
+            hOsc.frequency.setValueAtTime(12000, now);
+            hGain.gain.setValueAtTime(0.012, now); // crisp closed hi-hat
+            hGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
             hOsc.connect(hGain);
             hGain.connect(audioCtx.destination);
             hOsc.start(now);
-            hOsc.stop(now + 0.04);
+            hOsc.stop(now + 0.045);
             this.synthNotes.push(hOsc);
           } catch(e) {}
         }
@@ -218,7 +246,6 @@ class ChessBoxGame {
 
       // 2. CHESS DRONE - Deep, ominous A-minor drone with woodblock ticking
       if (type === 'chess') {
-        // Synthesize slow, spooky A-minor chord drone sweeps every 8 steps (~2.8s)
         if (step % 8 === 0) {
           const droneNotes = [110.00, 130.81, 164.81, 220.00]; // A2, C3, E3, A3
           droneNotes.forEach(freq => {
@@ -227,7 +254,6 @@ class ChessBoxGame {
               const dGain = audioCtx.createGain();
               dOsc.type = 'sine';
               dOsc.frequency.setValueAtTime(freq, now);
-              // Slowly swell and decay
               dGain.gain.setValueAtTime(0.001, now);
               dGain.gain.linearRampToValueAtTime(0.012, now + 0.8);
               dGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.8);
@@ -245,13 +271,10 @@ class ChessBoxGame {
           const tickOsc = audioCtx.createOscillator();
           const tickGain = audioCtx.createGain();
           tickOsc.type = 'triangle';
-          
-          // Speed warning: higher pitch when time is running out!
           const isDanger = this.playerChessClock < 10000;
           tickOsc.frequency.setValueAtTime(step % 2 === 0 ? (isDanger ? 1600 : 1200) : (isDanger ? 1100 : 800), now);
           tickGain.gain.setValueAtTime(isDanger ? 0.03 : 0.015, now);
           tickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03);
-          
           tickOsc.connect(tickGain);
           tickGain.connect(audioCtx.destination);
           tickOsc.start(now);
@@ -260,35 +283,46 @@ class ChessBoxGame {
         } catch(e) {}
       }
 
-      // 3. Lead melody track (Distorted Electric Guitar for boxing, Sine for chess)
+      // 3. Lead melody track (Distorted Electric Guitar Power Chords for boxing, Sine for chess)
       const leadFreq = melody[step];
       if (leadFreq > 0) {
         try {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          
           if (type === 'boxing' && distNode) {
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(leadFreq, now);
-            // detune for a thick overdriven double-tracked guitar sound
-            osc.detune.setValueAtTime(-5, now); 
-            gain.gain.setValueAtTime(0.012, now); // slightly lower gain since WaveShaper amplifies
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.15);
+            // Polyphonic Power Chords: Root + Perfect Fifth + Octave
+            // played with 3 detuned sawtooth waves to simulate heavy double-tracked guitars!
+            const freqs = [leadFreq, leadFreq * 1.4983, leadFreq * 2.0];
+            const detunes = [-12, 0, 12];
+            const volumes = [0.015, 0.012, 0.010]; // balanced volumes to prevent master clipping
             
-            osc.connect(gain);
-            gain.connect(distNode); // Route through overdrive distortion curve!
+            freqs.forEach((f, idx) => {
+              const osc = audioCtx.createOscillator();
+              const gain = audioCtx.createGain();
+              osc.type = 'sawtooth';
+              osc.frequency.setValueAtTime(f, now);
+              osc.detune.setValueAtTime(detunes[idx], now);
+              
+              gain.gain.setValueAtTime(volumes[idx], now);
+              gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16); // sustain and quick decay
+              
+              osc.connect(gain);
+              gain.connect(distNode); // Route to overdrive distortion
+              osc.start(now);
+              osc.stop(now + 0.17);
+              this.synthNotes.push(osc);
+            });
           } else {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
             osc.type = 'sine';
             osc.frequency.setValueAtTime(leadFreq, now);
             gain.gain.setValueAtTime(0.035, now);
             gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
             osc.connect(gain);
             gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.4);
+            this.synthNotes.push(osc);
           }
-          
-          osc.start(now);
-          osc.stop(now + (type === 'boxing' ? 0.15 : 0.4));
-          this.synthNotes.push(osc);
         } catch(e) {}
       }
 
@@ -300,10 +334,8 @@ class ChessBoxGame {
           const bGain = audioCtx.createGain();
           bOsc.type = 'triangle';
           bOsc.frequency.setValueAtTime(bassFreq, now);
-          
           bGain.gain.setValueAtTime(type === 'boxing' ? 0.05 : 0.06, now);
           bGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
-          
           bOsc.connect(bGain);
           bGain.connect(audioCtx.destination);
           bOsc.start(now);
@@ -315,8 +347,8 @@ class ChessBoxGame {
       step = (step + 1) % melody.length;
 
       // Prevent memory accumulation leaks
-      if (this.synthNotes.length > 40) {
-        this.synthNotes.splice(0, 20);
+      if (this.synthNotes.length > 60) {
+        this.synthNotes.splice(0, 30);
       }
     }, tempo);
   }
@@ -448,10 +480,10 @@ class ChessBoxGame {
     this.score = 0;
     
     // Set chess clocks based on level ELO & difficulty (increased to enable real, deep chess play!)
-    let timeBase = 300000; // 300s base (Medium - 5 minutes)
-    if (this.selectedDifficulty === 'easy') timeBase = 360000; // 360s (Easy - 6 minutes)
-    if (this.selectedDifficulty === 'hard') timeBase = 240000; // 240s (Hard - 4 minutes)
-    if (this.selectedDifficulty === 'martina') timeBase = 180000; // 180s (Martina - 3 minutes)
+    let timeBase = 480000; // 480s base (Medium - 8 minutes)
+    if (this.selectedDifficulty === 'easy') timeBase = 600000; // 600s (Easy - 10 minutes)
+    if (this.selectedDifficulty === 'hard') timeBase = 360000; // 360s (Hard - 6 minutes)
+    if (this.selectedDifficulty === 'martina') timeBase = 300000; // 300s (Martina - 5 minutes)
     
     this.playerChessClock = timeBase;
     this.opponentChessClock = timeBase;
@@ -564,9 +596,9 @@ class ChessBoxGame {
         const playerPenalty = this.hitsReceivedThisRound * 0.5;
         const opponentPenalty = this.hitsLandedThisRound * 0.5;
         
-        // Apply penalties to clocks (ensure clocks don't drop below 45 seconds floor!)
-        this.playerChessClock = Math.max(45000, this.playerChessClock - playerPenalty * 1000);
-        this.opponentChessClock = Math.max(45000, this.opponentChessClock - opponentPenalty * 1000);
+        // Apply penalties to clocks (ensure clocks don't drop below 90 seconds floor!)
+        this.playerChessClock = Math.max(90000, this.playerChessClock - playerPenalty * 1000);
+        this.opponentChessClock = Math.max(90000, this.opponentChessClock - opponentPenalty * 1000);
 
         connectionStatsHTML = `
           <div style="background: rgba(239,68,68,0.06); border: 2px dashed rgba(239,68,68,0.25); border-radius: 15px; padding: 15px; margin-bottom: 20px; text-align: left;">
@@ -1960,10 +1992,10 @@ class ChessBoxGame {
               <div id="chessbox-history" style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; color: #94a3b8; font-family: monospace;"></div>
             </div>
 
-            <!-- Boxing round duration timer (A Chess round lasts 90s, then bell rings and switches to boxing!) -->
+            <!-- Boxing round duration timer (A Chess round lasts 180s, then bell rings and switches to boxing!) -->
             <div class="recipe-instruction-card" style="border-color: #fbbf24; margin-top:10px; padding: 8px 12px; text-align:center;">
               <span style="font-size: 0.75rem; color:#94a3b8; text-transform:uppercase;">Duración del Asalto de Ajedrez</span>
-              <div style="font-size: 1.5rem; font-weight:800; color:#fbbf24;" id="chessbox-round-timer-val">90s</div>
+              <div style="font-size: 1.5rem; font-weight:800; color:#fbbf24;" id="chessbox-round-timer-val">180s</div>
             </div>
           </div>
         </div>
@@ -1988,7 +2020,7 @@ class ChessBoxGame {
     const opponentClockVal = document.getElementById('chess-opponent-clock-val');
     const roundTimerVal = document.getElementById('chess-box-round-timer-val') || document.getElementById('chessbox-round-timer-val');
     
-    let chessRoundSecondsLeft = 90; // 90s chess round limit
+    let chessRoundSecondsLeft = 180; // 180s chess round limit
     
     // Set initial text
     if (playerClockVal) playerClockVal.textContent = this.formatClock(this.playerChessClock);
