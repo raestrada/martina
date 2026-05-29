@@ -578,7 +578,17 @@ class ReinaGame {
     }
 
     if (this.sneezeTimer === 0) {
-      this.triggerSneezeDetonation();
+      // 1. Immediately render Peoncito on his new square so he is visually there before explosion
+      this.updateStatsDisplay();
+      this.renderBoard();
+      
+      // 2. Block moves immediately during transition
+      this.isExploding = true;
+      
+      // 3. Detonate sneeze asynchronously after 150ms to allow a clean render cycle!
+      setTimeout(() => {
+        this.triggerSneezeDetonation();
+      }, 150);
     } else {
       this.updateStatsDisplay();
       this.renderBoard();
@@ -589,10 +599,6 @@ class ReinaGame {
     this.isExploding = true;
     const level = this.levels[this.currentLevelIndex];
     const dangerSquares = this.getSneezeWarningSquares(level, this.coordsToName(this.reinaPos.r, this.reinaPos.c));
-
-    // First render Peoncito on his target square so he is visually there before explosion
-    this.renderBoard();
-    this.updateStatsDisplay();
 
     // Play sound
     this.playSneezeSound();
@@ -642,6 +648,9 @@ class ReinaGame {
       this.lives--;
       window.GameAudio.playError();
 
+      // Reset position to level start
+      this.peoncitoPos = this.nameToCoords(level.startPos);
+
       // Show red screen flash
       const flash = document.createElement('div');
       flash.className = 'screen-flash-red';
@@ -662,7 +671,7 @@ class ReinaGame {
         this.renderBoard();
         this.updateStatsDisplay();
       }
-    }, 600); // Wait for animations to complete before letting the player move again
+    }, 450); // Snappy explosion duration
   }
 
   // --- CUSTOM AUDIO SYNTH FOR SNEEZE (ACHÚÚS!) ---
