@@ -3369,14 +3369,19 @@ class MarioGame {
               // Create walls NOW
               scene.createBossWalls();
               
-              // Pause player briefly
+              // Clear any old projectiles
+              scene.bossProjectiles.getChildren().forEach(p => p.destroy());
+              
+              // Pause player and give invincibility during intro
               scene.player.body.setVelocity(0, 0);
+              scene.player.invincibility = 200; // ~3.3 seconds, covers intro
               
               // Dramatic boss intro
               scene.boss.setVisible(true);
               scene.boss.setPosition(bd.x, bd.y + 80);
               scene.boss.setAlpha(0);
               scene.boss.setScale(1.6);
+              scene.boss.body.enable = false; // no collision during intro
               
               // Darken area outside boss room
               scene.bossOverlay.setVisible(true);
@@ -3455,6 +3460,8 @@ class MarioGame {
               scene.time.delayedCall(1800, () => {
                 scene.bossIntro = false;
                 scene.bossActive = true;
+                scene.boss.body.enable = true; // enable collision
+                scene.bossInvincible = 30; // brief invincibility after intro
               });
             }
             
