@@ -175,8 +175,15 @@ window.MartinaLevels = {
           centerX: 600, centerY: 280,
           radius: 76,
           numTeeth: 8,
-          speed: 0.55,       // degrees per frame
-          hazardIndices: [2, 6]  // which teeth deal damage (0-indexed)
+          speed: 0.55,
+          hazardIndices: [2, 6]
+        },
+        {
+          centerX: 1850, centerY: 280,
+          radius: 85,
+          numTeeth: 10,
+          speed: 0.72,
+          hazardIndices: [1, 4, 7]
         }
       ]
     }
