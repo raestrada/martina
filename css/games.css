@@ -25,6 +25,41 @@
   cursor: pointer;
 }
 
+/* === Featured game card (Super Martina) === */
+.game-card-featured {
+  border: 2px solid var(--gold) !important;
+  box-shadow: 0 0 25px rgba(244,162,97,0.25), 0 0 60px rgba(244,162,97,0.1) !important;
+  position: relative;
+  overflow: hidden;
+  animation: featuredGlow 3s infinite ease-in-out;
+}
+.game-card-featured::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(244,162,97,0.06), transparent 50%, rgba(244,162,97,0.04));
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes featuredGlow {
+  0%, 100% { box-shadow: 0 0 25px rgba(244,162,97,0.25), 0 0 60px rgba(244,162,97,0.1); }
+  50% { box-shadow: 0 0 35px rgba(244,162,97,0.4), 0 0 80px rgba(244,162,97,0.18); }
+}
+.featured-ribbon {
+  position: absolute;
+  top: 10px;
+  right: -2px;
+  background: linear-gradient(135deg, var(--gold), #eab308);
+  color: var(--magic-dark);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 0.25rem 1.2rem 0.25rem 0.8rem;
+  border-radius: 4px 0 0 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 5;
+  letter-spacing: 0.5px;
+}
+
 .btn-orange {
   background: var(--rose) !important;
   box-shadow: 0 4px 10px rgba(231, 111, 81, 0.3);
@@ -1638,6 +1673,22 @@
   font-size: 2rem;
   margin-bottom: 0.8rem;
   transition: transform 0.2s ease;
+  position: relative;
+  display: inline-block;
+}
+
+.mario-node-trophy {
+  position: absolute;
+  top: -8px;
+  right: -12px;
+  font-size: 0.85rem;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+  animation: trophyBounce 2s infinite ease-in-out;
+}
+
+@keyframes trophyBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-4px) scale(1.15); }
 }
 
 .mario-stage-node.unlocked:hover .mario-node-badge {
@@ -1887,6 +1938,123 @@
 
 .touch-btn.jump:active {
   background: rgba(231, 111, 81, 0.55);
+}
+
+/* === Super Martina — Progress bars, trophies & stats === */
+
+.mario-overall-stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 0.8rem 1.2rem;
+  margin-top: 1rem;
+}
+.mario-overall-trophy {
+  font-size: 2.2rem;
+  flex-shrink: 0;
+}
+.mario-overall-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.mario-overall-label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.mario-overall-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.mario-overall-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #eab308, #fbbf24, #f59e0b);
+  border-radius: 4px;
+  transition: width 0.5s ease-out;
+}
+.mario-overall-pct {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+.mario-level-progress {
+  width: 100%;
+  margin-top: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.mario-level-bar-bg {
+  width: 100%;
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.mario-level-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22d3ee, #38bdf8);
+  border-radius: 3px;
+  transition: width 0.4s ease-out;
+}
+.mario-level-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.mario-level-score {
+  color: #fbbf24;
+}
+.mario-level-pct {
+  color: #38bdf8;
+}
+.mario-level-cta {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.mario-victory-progress {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mario-progress-bar-bg {
+  width: 100%;
+  height: 10px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.mario-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b, #eab308);
+  border-radius: 5px;
+  transition: width 0.6s ease-out;
+}
+.mario-progress-pct {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #fbbf24;
+}
+.mario-new-record {
+  color: #fbbf24;
+  font-weight: 800;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+  animation: trophyBounce 1.5s infinite ease-in-out;
 }
 
 

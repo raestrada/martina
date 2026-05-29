@@ -21,6 +21,13 @@ class MarioGame {
       this.unlockedLevels.push(false);
     }
 
+    // Best score per level tracking (for trophies & completion %)
+    this.bestScores = JSON.parse(localStorage.getItem('martina_mario_bestscores')) || {};
+    // Max possible score per level (coins + enemies + crowns + burst coins)
+    this.maxScores = {
+      0: 9900  // Level 1: ~34 coins × 100 + 25 burst × 100 + 5 enemies × 200 + 3 crowns × 1000
+    };
+
     // Chapters levels information
     this.levels = [
       { num: 1, name: "El Primer Movimiento", icon: "👣", biome: "grass", unlocked: true, desc: "Pradera del Centro. El tablero mágico despierta entre campos verdes." },
@@ -59,30 +66,82 @@ class MarioGame {
     this.unlockedLevels = [true];
     while (this.unlockedLevels.length < 16) this.unlockedLevels.push(false);
     
+    // Calculate overall completion
+    let totalPct = 0;
+    let completedCount = 0;
+    
     let levelGridHTML = '';
     
     this.levels.forEach((level, idx) => {
       const isUnlocked = this.unlockedLevels[idx] === true;
+      const maxScore = this.maxScores[idx] || 9900;
+      const best = this.bestScores[idx] || 0;
+      const pct = maxScore ? Math.min(100, Math.round((best / maxScore) * 100)) : 0;
+      
+      if (best > 0) {
+        totalPct += pct;
+        completedCount++;
+      }
+      
+      const trophy = best > 0 
+        ? (pct >= 100 ? '🏆' : pct >= 75 ? '🥇' : pct >= 50 ? '🥈' : pct >= 25 ? '🥉' : '👣')
+        : '';
+      
       const displayDesc = idx === 0 ? level.desc : `${level.desc} (Próximamente)`;
+      
+      const statsHTML = isUnlocked ? `
+        <div class="mario-level-progress">
+          ${best > 0 ? `
+          <div class="mario-level-bar-bg">
+            <div class="mario-level-bar-fill" style="width:${pct}%"></div>
+          </div>
+          <div class="mario-level-stats">
+            <span class="mario-level-score">🏅 ${best.toLocaleString()} pts</span>
+            <span class="mario-level-pct">${pct}%</span>
+          </div>
+          ` : `
+          <span class="mario-level-cta">¡Sin jugar aún!</span>
+          `}
+        </div>
+      ` : '';
+      
+      const trophyBadge = trophy ? `<span class="mario-node-trophy">${trophy}</span>` : '';
+      
       levelGridHTML += `
         <div class="mario-stage-node ${isUnlocked ? 'unlocked' : ''}" data-level="${idx}">
           <div class="mario-node-lock">${isUnlocked ? '🔓' : '🔒'}</div>
-          <div class="mario-node-badge">${isUnlocked ? level.icon : '❓'}</div>
+          <div class="mario-node-badge">${isUnlocked ? level.icon : '❓'}${trophyBadge}</div>
           <div class="mario-node-num">Nivel ${level.num}</div>
           <div class="mario-node-name">${level.name}</div>
           <div class="mario-node-desc">${displayDesc}</div>
+          ${statsHTML}
           <div class="mario-node-status">${isUnlocked ? 'Disponible' : 'Bloqueado'}</div>
           <button class="mario-node-play-btn">Jugar ➔</button>
         </div>
       `;
     });
-
+    
+    const overallPct = completedCount > 0 ? Math.round(totalPct / completedCount) : 0;
+    const overallTrophy = overallPct >= 100 ? '🏆' : overallPct >= 75 ? '🥇' : overallPct >= 50 ? '🥈' : overallPct >= 25 ? '🥉' : '🔰';
+    
     this.container.innerHTML = `
       <div class="mario-outer-container">
         <div class="mario-map-container">
           <div class="mario-map-header">
             <h2>⭐️ Super Martina: El Salto Mágico ⭐️</h2>
             <p>¡Explora el primer capítulo del reino! Corre, salta sobre plataformas y despierta el tablero mágico.</p>
+            ${completedCount > 0 ? `
+            <div class="mario-overall-stats">
+              <div class="mario-overall-trophy">${overallTrophy}</div>
+              <div class="mario-overall-info">
+                <span class="mario-overall-label">Progreso total — ${completedCount} nivel(es) completado(s)</span>
+                <div class="mario-overall-bar-bg">
+                  <div class="mario-overall-bar-fill" style="width:${overallPct}%"></div>
+                </div>
+                <span class="mario-overall-pct">${overallPct}% promedio</span>
+              </div>
+            </div>
+            ` : ''}
           </div>
           <div class="mario-map-grid">
             ${levelGridHTML}
@@ -423,6 +482,8 @@ class MarioGame {
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-8px); }
         }
+
+        /* Progress, trophies & stats styles now in games.css */
       `;
       document.head.appendChild(styles);
     }
@@ -510,20 +571,50 @@ class MarioGame {
         create: function() {
           const scene = this;
           
-          // Generate a smooth particle sparkle texture dynamically inside create
-          const canvas = document.createElement('canvas');
-          canvas.width = 16;
-          canvas.height = 16;
-          const ctx = canvas.getContext('2d');
-          const grad = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
-          grad.addColorStop(0, 'rgba(255, 223, 0, 1)');
-          grad.addColorStop(0.3, 'rgba(255, 180, 0, 0.8)');
-          grad.addColorStop(1, 'rgba(255, 180, 0, 0)');
-          ctx.fillStyle = grad;
-          ctx.beginPath();
-          ctx.arc(8, 8, 8, 0, Math.PI * 2);
-          ctx.fill();
-          scene.textures.addCanvas('sparkle', canvas);
+          // Generate a smooth particle sparkle texture — dual color variant for variety
+          const sparkleCanvas = document.createElement('canvas');
+          sparkleCanvas.width = 16;
+          sparkleCanvas.height = 16;
+          const sctx = sparkleCanvas.getContext('2d');
+          const sgrad = sctx.createRadialGradient(8, 8, 0, 8, 8, 8);
+          sgrad.addColorStop(0, 'rgba(255, 223, 0, 1)');
+          sgrad.addColorStop(0.3, 'rgba(255, 180, 0, 0.8)');
+          sgrad.addColorStop(1, 'rgba(255, 180, 0, 0)');
+          sctx.fillStyle = sgrad;
+          sctx.beginPath();
+          sctx.arc(8, 8, 8, 0, Math.PI * 2);
+          sctx.fill();
+          scene.textures.addCanvas('sparkle', sparkleCanvas);
+          
+          // Cyan variant sparkle
+          const sparkleCyan = document.createElement('canvas');
+          sparkleCyan.width = 16;
+          sparkleCyan.height = 16;
+          const sctx2 = sparkleCyan.getContext('2d');
+          const sgrad2 = sctx2.createRadialGradient(8, 8, 0, 8, 8, 8);
+          sgrad2.addColorStop(0, 'rgba(34, 211, 238, 1)');
+          sgrad2.addColorStop(0.3, 'rgba(56, 189, 248, 0.8)');
+          sgrad2.addColorStop(1, 'rgba(56, 189, 248, 0)');
+          sctx2.fillStyle = sgrad2;
+          sctx2.beginPath();
+          sctx2.arc(8, 8, 8, 0, Math.PI * 2);
+          sctx2.fill();
+          scene.textures.addCanvas('sparkle_cyan', sparkleCyan);
+          
+          // Purple variant sparkle
+          const sparklePurple = document.createElement('canvas');
+          sparklePurple.width = 16;
+          sparklePurple.height = 16;
+          const sctx3 = sparklePurple.getContext('2d');
+          const sgrad3 = sctx3.createRadialGradient(8, 8, 0, 8, 8, 8);
+          sgrad3.addColorStop(0, 'rgba(167, 139, 250, 1)');
+          sgrad3.addColorStop(0.3, 'rgba(139, 92, 246, 0.8)');
+          sgrad3.addColorStop(1, 'rgba(139, 92, 246, 0)');
+          sctx3.fillStyle = sgrad3;
+          sctx3.beginPath();
+          sctx3.arc(8, 8, 8, 0, Math.PI * 2);
+          sctx3.fill();
+          scene.textures.addCanvas('sparkle_purple', sparklePurple);
           
           if (!scene.textures.exists('player')) {
             // 1. Martina Canvas (size 32x48)
@@ -1274,244 +1365,349 @@ class MarioGame {
             
             scene.textures.addCanvas('portal_texture', poCanvas);
 
-            // 4. Background Sky Canvas (size 800x450)
+            // 4. Background Sky Canvas — Premium cosmic dreamscape (size 800x450)
             const bgCanvas = document.createElement('canvas');
             bgCanvas.width = 800;
             bgCanvas.height = 450;
             const bgCtx = bgCanvas.getContext('2d');
             
-            // Cosmic twilight gradient
+            // Rich cosmic twilight gradient with multiple color bands
             const skyGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
-            skyGrad.addColorStop(0, '#090514'); // Deep void
-            skyGrad.addColorStop(0.4, '#170b3b'); // Twilight purple
-            skyGrad.addColorStop(0.8, '#4c1d95'); // Lilac horizon
-            skyGrad.addColorStop(1, '#2e1065'); // Deep magical horizon
+            skyGrad.addColorStop(0, '#020113');   // Near-black void
+            skyGrad.addColorStop(0.15, '#0a0525'); // Deep indigo
+            skyGrad.addColorStop(0.35, '#170b3b'); // Twilight purple
+            skyGrad.addColorStop(0.55, '#1e1050'); // Rich violet
+            skyGrad.addColorStop(0.75, '#2d1b69'); // Magical lilac
+            skyGrad.addColorStop(0.9, '#4c1d95');  // Bright horizon
+            skyGrad.addColorStop(1, '#1e0b3b');    // Deep magical base
             bgCtx.fillStyle = skyGrad;
             bgCtx.fillRect(0, 0, 800, 450);
             
-            // Tablero Invertido de Estrellas (aligned in chess board grid pattern!)
-            bgCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-            for (let row = 0; row < 12; row++) {
-              for (let col = 0; col < 20; col++) {
-                const x = col * 40 + 20;
-                const y = row * 22 + 15;
-                if ((row + col) % 2 === 0) {
+            // Nebula patches — soft color blends
+            bgCtx.globalAlpha = 0.04;
+            const drawNebula = (x, y, r, color) => {
+              const ng = bgCtx.createRadialGradient(x, y, 0, x, y, r);
+              ng.addColorStop(0, color);
+              ng.addColorStop(1, 'transparent');
+              bgCtx.fillStyle = ng;
+              bgCtx.beginPath();
+              bgCtx.arc(x, y, r, 0, Math.PI * 2);
+              bgCtx.fill();
+            };
+            drawNebula(200, 100, 160, '#22d3ee');
+            drawNebula(550, 180, 190, '#a855f7');
+            drawNebula(100, 250, 140, '#fbbf24');
+            drawNebula(700, 80, 130, '#38bdf8');
+            drawNebula(380, 130, 100, '#f472b6');
+            bgCtx.globalAlpha = 1;
+            
+            // Dense star field — 3 tiers of brightness
+            for (let r = 0; r < 16; r++) {
+              for (let c = 0; c < 26; c++) {
+                const sx = c * 31 + (Math.random() * 20 - 10);
+                const sy = r * 29 + (Math.random() * 20 - 10);
+                if (sy > 260) continue;
+                const dice = Math.random();
+                if (dice < 0.42) {
+                  const sz = dice < 0.08 ? 1.0 : dice < 0.22 ? 0.7 : 0.45;
+                  bgCtx.fillStyle = dice < 0.08 ? 'rgba(255,255,255,0.85)'
+                    : dice < 0.22 ? 'rgba(255,255,255,0.55)'
+                    : 'rgba(200,210,255,0.35)';
                   bgCtx.beginPath();
-                  bgCtx.arc(x, y, 0.8, 0, Math.PI * 2);
+                  bgCtx.arc(sx, sy, sz, 0, Math.PI * 2);
                   bgCtx.fill();
                 }
               }
             }
             
-            // Rebel star at h12 (column 12, row 3) with gorgeous diagonal sparkles
-            const rebelX = 12 * 40 + 20;
-            const rebelY = 3 * 22 + 15;
-            bgCtx.fillStyle = '#fbbf24'; // bright glowing gold
-            bgCtx.beginPath();
-            bgCtx.arc(rebelX, rebelY, 2.5, 0, Math.PI * 2);
-            bgCtx.fill();
-            bgCtx.strokeStyle = 'rgba(251, 191, 36, 0.55)';
-            bgCtx.lineWidth = 0.8;
-            bgCtx.beginPath();
-            bgCtx.moveTo(rebelX - 7, rebelY - 7);
-            bgCtx.lineTo(rebelX + 7, rebelY + 7);
-            bgCtx.moveTo(rebelX + 7, rebelY - 7);
-            bgCtx.lineTo(rebelX - 7, rebelY + 7);
-            bgCtx.stroke();
+            // Golden scattered stars (rarer, brighter, with cross sparkle)
+            const goldStars = [
+              {x:90,y:30},{x:210,y:60},{x:320,y:22},{x:430,y:55},
+              {x:178,y:95},{x:560,y:40},{x:620,y:85},{x:720,y:35},
+              {x:380,y:18},{x:660,y:58}
+            ];
+            goldStars.forEach((gs, i) => {
+              bgCtx.fillStyle = '#fbbf24';
+              bgCtx.shadowColor = 'rgba(251,191,36,0.7)';
+              bgCtx.shadowBlur = 3;
+              bgCtx.beginPath();
+              bgCtx.arc(gs.x, gs.y, 1.8, 0, Math.PI * 2);
+              bgCtx.fill();
+              bgCtx.shadowBlur = 0;
+              if (i % 3 === 0) {
+                bgCtx.strokeStyle = 'rgba(251,191,36,0.35)';
+                bgCtx.lineWidth = 0.6;
+                bgCtx.beginPath();
+                bgCtx.moveTo(gs.x - 5, gs.y);
+                bgCtx.lineTo(gs.x + 5, gs.y);
+                bgCtx.moveTo(gs.x, gs.y - 5);
+                bgCtx.lineTo(gs.x, gs.y + 5);
+                bgCtx.stroke();
+              }
+            });
             
-            // Flowing auroras of magical dream energy
-            bgCtx.strokeStyle = 'rgba(34, 211, 238, 0.08)'; // cyan aurora
-            bgCtx.lineWidth = 15;
-            bgCtx.beginPath();
-            bgCtx.moveTo(0, 150);
-            bgCtx.bezierCurveTo(200, 50, 400, 250, 800, 100);
-            bgCtx.stroke();
-            bgCtx.strokeStyle = 'rgba(167, 139, 250, 0.06)'; // violet aurora
-            bgCtx.lineWidth = 25;
-            bgCtx.beginPath();
-            bgCtx.moveTo(0, 100);
-            bgCtx.bezierCurveTo(300, 220, 500, 20, 800, 180);
-            bgCtx.stroke();
+            // Multi-layer auroras — dream energy waves
+            const drawAurora = (y0, y1, y2, y3, color, width, alpha) => {
+              bgCtx.globalAlpha = alpha;
+              bgCtx.strokeStyle = color;
+              bgCtx.lineWidth = width;
+              bgCtx.beginPath();
+              bgCtx.moveTo(0, y0);
+              bgCtx.bezierCurveTo(200, y1, 400, y2, 800, y3);
+              bgCtx.stroke();
+              bgCtx.globalAlpha = 1;
+            };
+            drawAurora(160, 40, 260, 90, 'rgba(34,211,238,0.07)', 22, 1);
+            drawAurora(120, 200, 30, 160, 'rgba(167,139,250,0.06)', 28, 1);
+            drawAurora(190, 110, 180, 140, 'rgba(251,191,36,0.04)', 16, 1);
+            drawAurora(70, 170, 90, 50, 'rgba(244,114,182,0.04)', 20, 1);
+            drawAurora(220, 150, 300, 170, 'rgba(56,189,248,0.03)', 18, 1);
 
-            // 3D Perspective Chessboard Grid stretching to the horizon Y=270!
-            bgCtx.strokeStyle = 'rgba(139, 92, 246, 0.16)';
-            bgCtx.lineWidth = 1;
+            // 3D Perspective Chessboard Grid stretching to the horizon Y=270 — refined lines
+            bgCtx.strokeStyle = 'rgba(139, 92, 246, 0.10)';
+            bgCtx.lineWidth = 0.7;
             const horizonY = 270;
             const vanishingX = 400;
-            
-            // Draw lines fanning out from vanishing point to the bottom of the screen
             for (let angle = -8; angle <= 8; angle++) {
               bgCtx.beginPath();
               bgCtx.moveTo(vanishingX, horizonY);
-              const bottomX = vanishingX + angle * 120;
-              bgCtx.lineTo(bottomX, 450);
+              bgCtx.lineTo(vanishingX + angle * 120, 450);
               bgCtx.stroke();
             }
-            
-            // Draw horizontal lines that get closer as they approach the horizon
             for (let i = 0; i < 20; i++) {
               const y = horizonY + Math.pow(i / 20, 2.5) * (450 - horizonY);
+              bgCtx.strokeStyle = `rgba(139,92,246,${0.06 + (20-i)*0.005})`;
               bgCtx.beginPath();
               bgCtx.moveTo(0, y);
               bgCtx.lineTo(800, y);
               bgCtx.stroke();
             }
             
-            // Nubes Cuadradas (Square Clouds from Cuento 1)
-            bgCtx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            // Square clouds — more ethereal, faint
+            bgCtx.fillStyle = 'rgba(255, 255, 255, 0.03)';
             const drawSquareCloud = (cx, cy, cw, ch) => {
               bgCtx.fillRect(cx, cy, cw, ch);
               bgCtx.fillRect(cx + cw * 0.2, cy - ch * 0.3, cw * 0.6, ch * 0.3);
               bgCtx.fillRect(cx - cw * 0.15, cy + ch * 0.2, cw * 0.3, ch * 0.6);
               bgCtx.fillRect(cx + cw * 0.85, cy + ch * 0.2, cw * 0.3, ch * 0.6);
             };
-            drawSquareCloud(100, 80, 80, 16);
-            drawSquareCloud(400, 140, 100, 20);
-            drawSquareCloud(650, 60, 70, 14);
-            drawSquareCloud(260, 50, 60, 12);
+            drawSquareCloud(60, 60, 90, 18);
+            drawSquareCloud(420, 100, 110, 22);
+            drawSquareCloud(670, 45, 75, 15);
+            drawSquareCloud(240, 38, 65, 13);
+            drawSquareCloud(520, 170, 80, 16);
             
             scene.textures.addCanvas('background', bgCanvas);
 
-            // 5. Intermediate Parallax Background Canvas (size 800x450)
+            // 5. Premium Midground Parallax Canvas (size 800x450)
             const midCanvas = document.createElement('canvas');
             midCanvas.width = 800;
             midCanvas.height = 450;
             const midCtx = midCanvas.getContext('2d');
             
-            // Island 1 (Left floating island - Checkered chess pattern + Torreta Rook Shop!)
-            midCtx.fillStyle = 'rgba(76, 29, 149, 0.4)';
+            const drawIsland = (x, y, w, h, underH) => {
+              // Island top surface with checkered pattern
+              const topGrad = midCtx.createLinearGradient(x, y, x, y + h);
+              topGrad.addColorStop(0, 'rgba(109,40,217,0.55)');
+              topGrad.addColorStop(1, 'rgba(76,29,149,0.35)');
+              midCtx.fillStyle = topGrad;
+              midCtx.beginPath();
+              midCtx.moveTo(x, y);
+              midCtx.lineTo(x + w, y);
+              midCtx.lineTo(x + w - 20, y + h);
+              midCtx.lineTo(x + 20, y + h);
+              midCtx.closePath();
+              midCtx.fill();
+              
+              // Chess checkers on surface
+              midCtx.fillStyle = 'rgba(139,92,246,0.25)';
+              for (let cx = x + 4; cx < x + w - 4; cx += 28) {
+                midCtx.fillRect(cx, y + 2, 14, 12);
+                midCtx.fillRect(cx + 14, y + 14, 14, 12);
+              }
+              
+              // Gold trim on edge
+              midCtx.strokeStyle = 'rgba(251,191,36,0.25)';
+              midCtx.lineWidth = 1;
+              midCtx.beginPath();
+              midCtx.moveTo(x, y);
+              midCtx.lineTo(x + w, y);
+              midCtx.stroke();
+              
+              // Underside shadow
+              const underGrad = midCtx.createLinearGradient(0, y + h, 0, y + h + underH);
+              underGrad.addColorStop(0, 'rgba(58,20,112,0.55)');
+              underGrad.addColorStop(1, 'rgba(30,10,60,0.15)');
+              midCtx.fillStyle = underGrad;
+              midCtx.beginPath();
+              midCtx.moveTo(x + 20, y + h);
+              midCtx.lineTo(x + w - 20, y + h);
+              midCtx.lineTo(x + w / 2, y + h + underH);
+              midCtx.closePath();
+              midCtx.fill();
+            };
+            
+            // Island 1 — Torreta Rook Shop
+            drawIsland(60, 320, 200, 20, 55);
+            midCtx.fillStyle = 'rgba(109, 40, 217, 0.5)';
+            midCtx.fillRect(135, 258, 30, 62);
+            midCtx.fillRect(130, 248, 40, 10);
+            // Crenellations with gold dots
+            midCtx.clearRect(140, 248, 4, 6);
+            midCtx.clearRect(156, 248, 4, 6);
+            midCtx.fillStyle = 'rgba(251,191,36,0.5)';
             midCtx.beginPath();
-            midCtx.moveTo(80, 320);
-            midCtx.lineTo(240, 320);
-            midCtx.lineTo(220, 340);
-            midCtx.lineTo(60, 340);
+            midCtx.arc(142, 250, 1.2, 0, Math.PI*2);
+            midCtx.arc(158, 250, 1.2, 0, Math.PI*2);
+            midCtx.fill();
+            // Canopy
+            midCtx.fillStyle = 'rgba(167,139,250,0.55)';
+            midCtx.beginPath();
+            midCtx.moveTo(120, 278);
+            midCtx.lineTo(150, 272);
+            midCtx.lineTo(180, 278);
+            midCtx.lineTo(170, 286);
+            midCtx.lineTo(130, 286);
             midCtx.closePath();
             midCtx.fill();
-            
-            // Checkered squares on top of Island 1
-            midCtx.fillStyle = 'rgba(139, 92, 246, 0.3)';
-            for (let x = 80; x < 240; x += 32) {
-              midCtx.fillRect(x, 320, 16, 20);
-            }
-            
-            // Underside of island (rocky base)
-            midCtx.fillStyle = 'rgba(58, 20, 112, 0.45)';
+            // Empanada sign with glow
+            midCtx.fillStyle = 'rgba(251,191,36,0.55)';
             midCtx.beginPath();
-            midCtx.moveTo(60, 340);
-            midCtx.lineTo(220, 340);
-            midCtx.lineTo(140, 390);
+            midCtx.arc(115, 290, 5, 0, Math.PI, true);
             midCtx.closePath();
             midCtx.fill();
-            
-            // Draw Torreta Rook Shop silhouette on Island 1!
-            midCtx.fillStyle = 'rgba(109, 40, 217, 0.45)';
-            midCtx.fillRect(135, 260, 30, 60); // main rook body
-            midCtx.fillRect(130, 250, 40, 10);  // crenellations support
-            midCtx.clearRect(140, 250, 4, 6);   // crenellation cut 1
-            midCtx.clearRect(156, 250, 4, 6);   // crenellation cut 2
-            
-            // Shop canopy
-            midCtx.fillStyle = 'rgba(167, 139, 250, 0.5)';
+            midCtx.fillStyle = 'rgba(251,191,36,0.25)';
             midCtx.beginPath();
-            midCtx.moveTo(125, 278);
-            midCtx.lineTo(150, 273);
-            midCtx.lineTo(175, 278);
-            midCtx.lineTo(165, 285);
-            midCtx.lineTo(135, 285);
-            midCtx.closePath();
+            midCtx.arc(115, 290, 8, 0, Math.PI*2);
             midCtx.fill();
             
-            // Empanada sign
-            midCtx.fillStyle = 'rgba(251, 191, 36, 0.5)';
+            // Island 2 — Giant Knight statue
+            drawIsland(450, 278, 230, 22, 55);
+            midCtx.fillStyle = 'rgba(109, 40, 217, 0.5)';
             midCtx.beginPath();
-            midCtx.arc(120, 292, 4, 0, Math.PI, true);
+            midCtx.moveTo(560, 278);
+            midCtx.quadraticCurveTo(554, 235, 570, 212);
+            midCtx.quadraticCurveTo(558, 185, 564, 174);
+            midCtx.lineTo(572, 164);
+            midCtx.lineTo(576, 185);
+            midCtx.quadraticCurveTo(594, 188, 598, 202);
+            midCtx.quadraticCurveTo(608, 214, 598, 226);
+            midCtx.lineTo(584, 226);
+            midCtx.quadraticCurveTo(574, 238, 574, 260);
+            midCtx.lineTo(594, 278);
             midCtx.closePath();
             midCtx.fill();
-
-            // Island 2 (Right floating island - Checkered chess pattern + Giant Chess Knight!)
-            midCtx.fillStyle = 'rgba(76, 29, 149, 0.4)';
+            // Knight eye glow
+            midCtx.fillStyle = 'rgba(34,211,238,0.45)';
             midCtx.beginPath();
-            midCtx.moveTo(480, 280);
-            midCtx.lineTo(680, 280);
-            midCtx.lineTo(650, 300);
-            midCtx.lineTo(450, 300);
-            midCtx.closePath();
+            midCtx.arc(586, 202, 2.5, 0, Math.PI*2);
             midCtx.fill();
             
-            // Checkered squares on top of Island 2
-            midCtx.fillStyle = 'rgba(139, 92, 246, 0.3)';
-            for (let x = 480; x < 680; x += 32) {
-              midCtx.fillRect(x, 280, 16, 20);
-            }
-            
-            // Underside of island 2
-            midCtx.fillStyle = 'rgba(58, 20, 112, 0.45)';
+            // Island 3 — Peoncito & giant mustache
+            drawIsland(275, 198, 130, 16, 30);
+            midCtx.fillStyle = 'rgba(109, 40, 217, 0.5)';
             midCtx.beginPath();
-            midCtx.moveTo(450, 300);
-            midCtx.lineTo(650, 300);
-            midCtx.lineTo(550, 350);
+            midCtx.arc(340, 170, 7.5, 0, Math.PI*2);
+            midCtx.fill();
+            midCtx.beginPath();
+            midCtx.moveTo(331, 198);
+            midCtx.quadraticCurveTo(333, 179, 340, 174);
+            midCtx.quadraticCurveTo(347, 179, 349, 198);
             midCtx.closePath();
             midCtx.fill();
-
-            // Draw giant Chess Knight silhouette standing on Island 2!
-            midCtx.fillStyle = 'rgba(109, 40, 217, 0.45)';
+            // Giant mustache with highlight
+            midCtx.fillStyle = 'rgba(167,139,250,0.5)';
             midCtx.beginPath();
-            midCtx.moveTo(550, 280);
-            midCtx.quadraticCurveTo(545, 240, 560, 220); // neck back
-            midCtx.quadraticCurveTo(550, 195, 555, 185); // ear back
-            midCtx.lineTo(562, 175); // ear top
-            midCtx.lineTo(566, 195);
-            midCtx.quadraticCurveTo(582, 198, 586, 210); // snout
-            midCtx.quadraticCurveTo(595, 220, 586, 230); // mouth
-            midCtx.lineTo(574, 230); // jaw
-            midCtx.quadraticCurveTo(566, 240, 566, 260); // chest
-            midCtx.lineTo(582, 280);
+            midCtx.moveTo(340, 159);
+            midCtx.quadraticCurveTo(318, 148, 312, 165);
+            midCtx.quadraticCurveTo(323, 177, 340, 169);
+            midCtx.quadraticCurveTo(357, 177, 368, 165);
+            midCtx.quadraticCurveTo(362, 148, 340, 159);
             midCtx.closePath();
+            midCtx.fill();
+            midCtx.fillStyle = 'rgba(251,191,36,0.15)';
+            midCtx.beginPath();
+            midCtx.arc(340, 162, 4, 0, Math.PI*2);
             midCtx.fill();
             
-            // Island 3 (Center small floating island - Peoncito and giant mustache silhouette!)
-            midCtx.fillStyle = 'rgba(76, 29, 149, 0.4)';
+            // Floating crystal decorations
+            midCtx.fillStyle = 'rgba(34,211,238,0.12)';
             midCtx.beginPath();
-            midCtx.moveTo(300, 200);
-            midCtx.lineTo(400, 200);
-            midCtx.lineTo(385, 212);
-            midCtx.lineTo(285, 212);
-            midCtx.closePath();
+            midCtx.arc(180, 280, 4, 0, Math.PI*2);
+            midCtx.arc(530, 238, 3.5, 0, Math.PI*2);
+            midCtx.arc(400, 160, 5, 0, Math.PI*2);
             midCtx.fill();
-            
-            // Underside of Island 3
-            midCtx.fillStyle = 'rgba(58, 20, 112, 0.45)';
+            midCtx.strokeStyle = 'rgba(34,211,238,0.2)';
+            midCtx.lineWidth = 0.6;
             midCtx.beginPath();
-            midCtx.moveTo(285, 212);
-            midCtx.lineTo(385, 212);
-            midCtx.lineTo(335, 240);
-            midCtx.closePath();
-            midCtx.fill();
-            
-            // Peoncito body silhouette
-            midCtx.fillStyle = 'rgba(109, 40, 217, 0.45)';
-            midCtx.beginPath();
-            midCtx.arc(335, 172, 7, 0, Math.PI * 2); // Head
-            midCtx.fill();
-            midCtx.beginPath();
-            midCtx.moveTo(327, 200);
-            midCtx.quadraticCurveTo(329, 182, 335, 177);
-            midCtx.quadraticCurveTo(341, 182, 343, 200);
-            midCtx.closePath();
-            midCtx.fill();
-            
-            // Giant comical fake mustache silhouette floating above Peoncito!
-            midCtx.fillStyle = 'rgba(167, 139, 250, 0.45)';
-            midCtx.beginPath();
-            midCtx.moveTo(335, 162);
-            midCtx.quadraticCurveTo(315, 152, 310, 167);
-            midCtx.quadraticCurveTo(320, 177, 335, 170);
-            midCtx.quadraticCurveTo(350, 177, 360, 167);
-            midCtx.quadraticCurveTo(355, 152, 335, 162);
-            midCtx.closePath();
-            midCtx.fill();
+            midCtx.moveTo(176, 286);
+            midCtx.lineTo(184, 278);
+            midCtx.moveTo(526, 244);
+            midCtx.lineTo(534, 236);
+            midCtx.moveTo(396, 166);
+            midCtx.lineTo(404, 158);
+            midCtx.stroke();
             
             scene.textures.addCanvas('bg_middle', midCanvas);
+
+            // 5.5. Foreground Decorative Canvas — floating magical particles & chess silhouettes
+            const fgCanvas = document.createElement('canvas');
+            fgCanvas.width = 2400;
+            fgCanvas.height = 450;
+            const fgCtx = fgCanvas.getContext('2d');
+            
+            // Semi-transparent chess piece silhouettes scattered across the level
+            const fgSilhouettes = [
+              {x:180, y:350, type:'pawn'}, {x:420, y:280, type:'knight'},
+              {x:700, y:340, type:'bishop'}, {x:960, y:260, type:'rook'},
+              {x:1200, y:330, type:'pawn'}, {x:1450, y:290, type:'pawn'},
+              {x:1700, y:350, type:'knight'}, {x:1950, y:270, type:'bishop'},
+              {x:2200, y:340, type:'rook'}
+            ];
+            fgSilhouettes.forEach(s => {
+              fgCtx.fillStyle = 'rgba(109,40,217,0.08)';
+              fgCtx.beginPath();
+              if (s.type === 'pawn') {
+                fgCtx.arc(s.x, s.y, 9, 0, Math.PI*2);
+                fgCtx.moveTo(s.x - 7, s.y);
+                fgCtx.quadraticCurveTo(s.x - 7, s.y + 18, s.x - 8, s.y + 24);
+                fgCtx.lineTo(s.x + 8, s.y + 24);
+                fgCtx.quadraticCurveTo(s.x + 7, s.y + 18, s.x + 7, s.y);
+              } else if (s.type === 'knight') {
+                fgCtx.moveTo(s.x + 5, s.y + 20);
+                fgCtx.quadraticCurveTo(s.x + 5, s.y + 5, s.x + 2, s.y - 4);
+                fgCtx.lineTo(s.x + 6, s.y - 8);
+                fgCtx.lineTo(s.x + 8, s.y - 4);
+                fgCtx.quadraticCurveTo(s.x + 14, s.y, s.x + 16, s.y + 6);
+                fgCtx.lineTo(s.x + 10, s.y + 24);
+              } else if (s.type === 'bishop') {
+                fgCtx.arc(s.x, s.y - 8, 6, 0, Math.PI*2);
+                fgCtx.moveTo(s.x - 5, s.y - 2);
+                fgCtx.quadraticCurveTo(s.x - 6, s.y + 10, s.x - 8, s.y + 24);
+                fgCtx.lineTo(s.x + 8, s.y + 24);
+                fgCtx.quadraticCurveTo(s.x + 6, s.y + 10, s.x + 5, s.y - 2);
+              } else if (s.type === 'rook') {
+                fgCtx.fillRect(s.x - 8, s.y - 4, 16, 28);
+                fgCtx.fillRect(s.x - 10, s.y - 10, 20, 6);
+                fgCtx.clearRect(s.x - 6, s.y - 10, 3, 4);
+                fgCtx.clearRect(s.x, s.y - 10, 3, 4);
+                fgCtx.clearRect(s.x + 5, s.y - 10, 3, 4);
+              }
+              fgCtx.fill();
+            });
+            
+            // Magical floating spark dots across the level
+            for (let i = 0; i < 80; i++) {
+              const fx = Math.random() * 2400;
+              const fy = Math.random() * 400;
+              const fs = Math.random() * 1.5 + 0.4;
+              fgCtx.fillStyle = `rgba(167,139,250,${Math.random() * 0.2 + 0.05})`;
+              fgCtx.beginPath();
+              fgCtx.arc(fx, fy, fs, 0, Math.PI*2);
+              fgCtx.fill();
+            }
+            
+            scene.textures.addCanvas('bg_foreground', fgCanvas);
 
             // 6. Knight Double Jump Shockwave Canvas (size 64x64)
             const kCanvas = document.createElement('canvas');
@@ -1586,6 +1782,10 @@ class MarioGame {
           scene.bgMid.setAlpha(0.65);
           scene.bgMid.setScrollFactor(0.15); // Middle mountains scroll at medium speed!
 
+          scene.bgFg = scene.add.tileSprite(0, 0, 2400, 450, 'bg_foreground').setOrigin(0, 0);
+          scene.bgFg.setAlpha(0.50);
+          scene.bgFg.setScrollFactor(0.3); // Foreground decorations scroll faster for depth
+
           // 2. Physics Static Platforms Group
           scene.platforms = scene.physics.add.staticGroup();
 
@@ -1593,43 +1793,79 @@ class MarioGame {
             const block = scene.add.graphics();
             
             if (p.x === 1850) {
-              // Draw a highly detailed checkered white-and-gold marble ceremonial runway!
-              block.fillStyle(0xf8fafc, 0.95); // white-grey marble base
+              // Highly detailed white-and-gold marble ceremonial runway
+              // Marble base gradient effect
+              block.fillStyle(0xf1f5f9, 0.95);
               block.fillRect(p.x, p.y, p.w, p.h);
+              block.fillStyle(0xe2e8f0, 0.6);
+              block.fillRect(p.x, p.y, p.w, p.h / 2);
               
-              // Gold top border line
+              // Thick gold top border
               block.fillStyle(0xfacc15, 1);
               block.fillRect(p.x, p.y, p.w, 4);
+              block.fillStyle(0xfef08a, 0.7);
+              block.fillRect(p.x, p.y, p.w, 1);
               
-              // Draw 3D gold checkered plates on the marble face
-              block.fillStyle(0xfef08a, 0.4); // soft golden checkers
+              // 3D gold checkered plates on marble face
+              block.fillStyle(0xfef08a, 0.35);
               for (let x = p.x; x < p.x + p.w; x += 32) {
                 block.fillRect(x, p.y + 4, 16, 16);
                 block.fillRect(x + 16, p.y + 20, 16, 16);
               }
               
-              // Inner glowing gold line
+              // Gold glitter specks scattered across
+              block.fillStyle(0xfef08a, 0.45);
+              for (let i = 0; i < 30; i++) {
+                const gx = p.x + 4 + Math.random() * (p.w - 8);
+                const gy = p.y + 6 + Math.random() * (p.h - 8);
+                block.fillRect(gx, gy, Math.random() * 2 + 1, Math.random() * 2 + 1);
+              }
+              
+              // Glowing gold outline
               block.lineStyle(2, 0xfacc15, 0.85);
               block.strokeRect(p.x, p.y, p.w, p.h);
+              block.lineStyle(1, 0xfef08a, 0.4);
+              block.strokeRect(p.x + 2, p.y + 2, p.w - 4, p.h - 4);
             } else {
-              // Draw textured, professional chess-themed green platform
-              // Forest grass top
-              block.fillStyle(0x38bdf8, 0.45); // light magical cyan glow
+              // Premium chess-themed platform block
+              // Base body — deep magical blue
+              const bodyGrad = [0x1e3a8a, 0x1e40af, 0x1d4ed8]; // subtle gradient via layers
+              block.fillStyle(bodyGrad[0], 0.85);
               block.fillRect(p.x, p.y, p.w, p.h);
+              block.fillStyle(bodyGrad[1], 0.45);
+              block.fillRect(p.x, p.y + 2, p.w, p.h - 4);
               
-              block.fillStyle(0x1e3a8a, 0.85); // deep magical royal blue dirt
-              block.fillRect(p.x, p.y + 6, p.w, p.h - 6);
-              
-              block.fillStyle(0x60a5fa, 0.95); // glowing cyan neon grass edge
+              // Glowing cyan neon grass edge (thick)
+              block.fillStyle(0x38bdf8, 0.55);
               block.fillRect(p.x, p.y, p.w, 6);
-
-              // Draw checkered grid details directly on platforms!
-              block.fillStyle(0x1d4ed8, 0.25);
-              for (let x = p.x; x < p.x + p.w; x += 16) {
-                block.fillRect(x, p.y + 6, 8, 6);
+              block.fillStyle(0x7dd3fc, 0.45);
+              block.fillRect(p.x, p.y, p.w, 2);
+              
+              // Grass blade tufts along the top
+              block.fillStyle(0x34d399, 0.35);
+              for (let gx = p.x + 2; gx < p.x + p.w - 4; gx += 6) {
+                const bh = 2 + Math.random() * 3;
+                block.fillRect(gx + Math.random(), p.y - bh, 1.5, bh);
               }
-
-              block.lineStyle(2, 0x1d4ed8, 1);
+              
+              // Checkered grid detail on body
+              block.fillStyle(0x1d4ed8, 0.20);
+              for (let x = p.x; x < p.x + p.w; x += 16) {
+                block.fillRect(x, p.y + 8, 8, 6);
+                block.fillRect(x + 8, p.y + 14, 8, 6);
+              }
+              
+              // Bevel highlight (top-left inner)
+              block.fillStyle(0x93c5fd, 0.12);
+              block.fillRect(p.x + 2, p.y + 6, p.w - 4, 1);
+              block.fillRect(p.x + 1, p.y + 6, 1, p.h - 8);
+              
+              // Bevel shadow (bottom-right inner)
+              block.fillStyle(0x0f172a, 0.15);
+              block.fillRect(p.x + 2, p.y + p.h - 2, p.w - 4, 1);
+              
+              // Crisp outline
+              block.lineStyle(1.5, 0x1d4ed8, 0.8);
               block.strokeRect(p.x, p.y, p.w, p.h);
             }
 
@@ -1698,18 +1934,23 @@ class MarioGame {
           // Start with idle animation
           scene.player.play('martina-idle');
 
-          // 4. Magical Sparkles Particle trail!
+          // 4. Magical multi-color Sparkles Particle trail
+          scene.particleFrameIdx = 0;
+          scene.particleTextures = ['sparkle', 'sparkle_cyan', 'sparkle_purple'];
           scene.particles = scene.add.particles(0, 0, 'sparkle', {
             speed: { min: 10, max: 40 },
             angle: { min: 140, max: 220 },
-            scale: { start: 0.8, end: 0.1 },
-            alpha: { start: 0.8, end: 0 },
-            lifespan: 400,
-            frequency: 60,
+            scale: { start: 0.85, end: 0.05 },
+            alpha: { start: 0.75, end: 0 },
+            lifespan: 380,
+            frequency: 50,
             quantity: 1,
             blendMode: 'ADD'
           });
           scene.particles.startFollow(scene.player, -10, 16);
+          
+          // Cycling texture for particle trail (toggle every few frames in update)
+          scene.particleFrameCounter = 0;
 
           scene.coins = scene.physics.add.group({ allowGravity: false, immovable: true });
           coinsData.forEach(c => {
@@ -1844,13 +2085,34 @@ class MarioGame {
           scene.whiteQueen.body.setOffset(8, 0);
           scene.whiteQueen.setDepth(2);
           
-          // Add a soft golden glow behind the White Queen!
+           // Add a soft golden glow behind the White Queen!
           scene.queenGlow = scene.add.graphics();
-          scene.queenGlow.fillStyle(0xfacc15, 0.15); // Warm gold glow
+          scene.queenGlow.fillStyle(0xfacc15, 0.08);
           scene.queenGlow.beginPath();
-          scene.queenGlow.arc(2150, 245, 80, 0, Math.PI * 2);
+          scene.queenGlow.arc(2150, 245, 90, 0, Math.PI * 2);
           scene.queenGlow.fill();
           scene.queenGlow.setDepth(1);
+          
+          // Floating ambient sparkles around the Queen & portal
+          for (let i = 0; i < 18; i++) {
+            const sa = (i * Math.PI * 2) / 18;
+            const sr = 65 + Math.random() * 45;
+            const sx = 2150 + Math.cos(sa) * sr;
+            const sy = 245 + Math.sin(sa) * sr;
+            const sc = scene.add.circle(sx, sy, Math.random() * 1.8 + 0.8, i % 3 === 0 ? 0xfef08a : 0x22d3ee, 0.4);
+            sc.setDepth(3);
+            scene.tweens.add({
+              targets: sc,
+              y: sy - 10,
+              alpha: 0.15,
+              scale: 0.5,
+              duration: 1200 + Math.random() * 600,
+              yoyo: true,
+              repeat: -1,
+              ease: 'Sine.easeInOut',
+              delay: i * 100
+            });
+          }
           
           // 7.3. Friendly Translucent Crystal Peoncito Goal Sprite!
           scene.peoncitoGoal = scene.add.sprite(2070, 290, 'peoncito_friendly');
@@ -2105,15 +2367,15 @@ class MarioGame {
             scene.cameras.main.zoomTo(1.35, 2200);
             
             // Display beautiful floating text: "¡JAQUE MATE! Despertando..."
-            const victoryText = scene.add.text(scene.player.x, scene.player.y - 80, "¡JAQUE MATE!\nDespertando...", {
+            const victoryText = scene.add.text(scene.player.x, scene.player.y - 130, "¡JAQUE MATE!\nDespertando...", {
               fontFamily: "'Outfit', 'Inter', sans-serif",
-              fontSize: '20px',
+              fontSize: '22px',
               fontStyle: 'bold',
               fill: '#fbbf24', // Gold
               stroke: '#1e0b3b',
               strokeThickness: 5,
               align: 'center'
-            }).setOrigin(0.5);
+            }).setOrigin(0.5).setDepth(10);
             
             // Spiral sparkles vortex around Martina as she floats up!
             for (let i = 0; i < 40; i++) {
@@ -2162,6 +2424,43 @@ class MarioGame {
           scene.cameras.main.setBounds(0, 0, 2400, 450);
           scene.cameras.main.startFollow(scene.player, true, 0.1, 0.1);
           
+          // 9.2 Cinematic vignette — canvas-based full-viewport overlay
+          const vignetteCanvas = document.createElement('canvas');
+          vignetteCanvas.width = 800;
+          vignetteCanvas.height = 450;
+          const vctx = vignetteCanvas.getContext('2d');
+          // Left-to-right gradient: dark at edges, clear at center
+          for (let x = 0; x < 800; x++) {
+            const edgeDist = Math.min(x, 800 - x) / 400; // 0 at edges, 1 at center
+            const alpha = (1 - edgeDist) * (1 - edgeDist) * 0.35;
+            vctx.fillStyle = `rgba(2,1,19,${alpha})`;
+            vctx.fillRect(x, 0, 1, 450);
+          }
+          // Top and bottom bands
+          for (let y = 0; y < 450; y++) {
+            const edgeDist = Math.min(y, 450 - y) / 225;
+            const alpha = (1 - edgeDist) * (1 - edgeDist) * 0.2;
+            vctx.fillStyle = `rgba(2,1,19,${alpha})`;
+            vctx.fillRect(0, y, 800, 1);
+          }
+          scene.textures.addCanvas('vignette_tex', vignetteCanvas);
+          const vignette = scene.add.image(400, 225, 'vignette_tex').setDepth(20).setScrollFactor(0);
+          
+          // Light rays emanating from portal area (visible when near)
+          const lightRays = scene.add.graphics();
+          lightRays.setScrollFactor(1);
+          lightRays.setDepth(1);
+          for (let i = 0; i < 12; i++) {
+            const angle = (i * 30) * Math.PI / 180;
+            lightRays.fillStyle(0xfacc15, 0.04);
+            lightRays.beginPath();
+            lightRays.moveTo(2150, 245);
+            lightRays.lineTo(2150 + Math.cos(angle - 0.15) * 300, 245 + Math.sin(angle - 0.15) * 300);
+            lightRays.lineTo(2150 + Math.cos(angle + 0.15) * 300, 245 + Math.sin(angle + 0.15) * 300);
+            lightRays.closePath();
+            lightRays.fill();
+          }
+          
           // 9.5 Physics world bounds setup (fixes the first abyss blocking bug!)
           scene.physics.world.setBounds(0, 0, 2400, 450);
           
@@ -2178,6 +2477,37 @@ class MarioGame {
         update: function() {
           const scene = this;
           if (self.gameState !== 'playing') return;
+
+          // Cycle particle textures for rainbow trail effect
+          if (scene.particleTextures && scene.particles) {
+            scene.particleFrameCounter++;
+            if (scene.particleFrameCounter >= 8) {
+              scene.particleFrameCounter = 0;
+              scene.particleFrameIdx = (scene.particleFrameIdx + 1) % 3;
+              scene.particles.setTexture(scene.particleTextures[scene.particleFrameIdx]);
+            }
+          }
+
+          // Ambient fireflies — magical floating lights
+          if (Math.random() < 0.025) {
+            const ffX = scene.cameras.main.scrollX + Math.random() * 800;
+            const ffY = 300 + Math.random() * 150;
+            const ffColors = [0xfacc15, 0x22d3ee, 0xa855f7, 0xf472b6];
+            const ffColor = ffColors[Math.floor(Math.random() * ffColors.length)];
+            const ff = scene.add.circle(ffX, ffY, Math.random() * 2.5 + 1.5, ffColor, 0.5);
+            ff.setScrollFactor(0.6);
+            ff.setDepth(-1);
+            scene.tweens.add({
+              targets: ff,
+              y: ffY - 40 - Math.random() * 30,
+              x: ffX + (Math.random() - 0.5) * 60,
+              alpha: 0,
+              scale: 0.1,
+              duration: 2500 + Math.random() * 1500,
+              ease: 'Sine.easeOut',
+              onComplete: () => ff.destroy()
+            });
+          }
 
           // Invincibility flashing timer
           if (scene.player.invincibility > 0) {
@@ -2274,6 +2604,27 @@ class MarioGame {
           // Spin the magical chess portal of the 64 squares!
           if (scene.portal) {
             scene.portal.angle += 0.6; // smooth rotation
+            
+            // Orbital particle ring around the portal
+            if (!scene.portalOrbitTimer) scene.portalOrbitTimer = 0;
+            scene.portalOrbitTimer++;
+            if (scene.portalOrbitTimer % 6 === 0) {
+              const orbAngle = (scene.portalOrbitTimer * 0.08) % (Math.PI * 2);
+              const orbR = 88;
+              const pox = 2150 + Math.cos(orbAngle) * orbR;
+              const poy = 245 + Math.sin(orbAngle) * orbR;
+              const orbColors = [0xfacc15, 0x22d3ee, 0xa855f7, 0xfef08a];
+              const orb = scene.add.circle(pox, poy, Math.random() * 1.8 + 1, orbColors[Math.floor(Math.random() * orbColors.length)], 0.7);
+              orb.setDepth(2);
+              scene.tweens.add({
+                targets: orb,
+                alpha: 0,
+                scale: 0.1,
+                y: poy - 25,
+                duration: 700 + Math.random() * 400,
+                onComplete: () => orb.destroy()
+              });
+            }
           }
 
           // Out of bounds pit checks
@@ -2350,17 +2701,23 @@ class MarioGame {
             scene.player.dashTimer--;
             scene.player.body.setVelocityY(0); // lock Y
             
-            // Leave semi-transparent blue ghost trails!
+            // Leave semi-transparent blue ghost trails with cycling tints!
             if (scene.player.dashTimer % 2 === 0) {
+              const dashColors = [0x60a5fa, 0x22d3ee, 0xa855f7, 0x38bdf8];
+              if (!scene._dashColorIdx) scene._dashColorIdx = 0;
+              scene._dashColorIdx = (scene._dashColorIdx + 1) % dashColors.length;
               const ghost = scene.add.sprite(scene.player.x, scene.player.y, scene.player.anims.currentFrame ? scene.player.anims.currentFrame.textureKey : 'player-idle');
               ghost.setFlipX(scene.player.flipX);
               ghost.setDisplaySize(38, 56);
-              ghost.setAlpha(0.45);
-              ghost.setTint(0x60a5fa); // Cool blue cian tint
+              ghost.setAlpha(0.4);
+              ghost.setTint(dashColors[scene._dashColorIdx]);
+              ghost.setBlendMode('ADD');
               scene.tweens.add({
                 targets: ghost,
                 alpha: 0,
-                duration: 250,
+                scaleX: 1.3,
+                scaleY: 1.3,
+                duration: 300,
                 onComplete: () => ghost.destroy()
               });
             }
@@ -2810,23 +3167,42 @@ class MarioGame {
 
   // --- LEVEL COMPLETE HANDLER ---
   completeLevel() {
-    // Only working on level 1, do NOT unlock any next levels!
     this.gameState = 'victory';
     this.synthesizeSound('victory');
+    
+    // Save best score for this level
+    const levelKey = this.currentLevelIndex;
+    const prev = this.bestScores[levelKey] || 0;
+    if (this.score > prev) {
+      this.bestScores[levelKey] = this.score;
+      localStorage.setItem('martina_mario_bestscores', JSON.stringify(this.bestScores));
+    }
   }
 
   // --- VICTORY SCREEN ---
   showVictoryScreen(replayLevel) {
     this.stopMusic();
     
-    // Create premium victory overlay element
+    const maxScore = this.maxScores[this.currentLevelIndex] || 9900;
+    const pct = Math.min(100, Math.round((this.score / maxScore) * 100));
+    const prev = this.bestScores[this.currentLevelIndex] || 0;
+    const isNewRecord = this.score >= prev && this.score > 0;
+    const trophyEmoji = pct >= 100 ? '🏆' : pct >= 75 ? '🥇' : pct >= 50 ? '🥈' : pct >= 25 ? '🥉' : '👣';
+    
     const victoryOverlay = document.createElement('div');
     victoryOverlay.className = 'mario-victory-overlay';
     victoryOverlay.innerHTML = `
       <div class="mario-victory-panel">
-        <div class="mario-victory-crown">👑</div>
+        <div class="mario-victory-crown">${trophyEmoji}</div>
         <h2>¡Nivel Completado!</h2>
         <p class="mario-victory-msg">Martina ha despertado con éxito del Reino de las 64 Casillas con su bigote y táctica impecables.</p>
+        
+        <div class="mario-victory-progress">
+          <div class="mario-progress-bar-bg">
+            <div class="mario-progress-bar-fill" style="width:${pct}%"></div>
+          </div>
+          <span class="mario-progress-pct">${pct}% completado</span>
+        </div>
         
         <div class="mario-victory-stats">
           <div class="mario-stat-box">
@@ -2839,7 +3215,14 @@ class MarioGame {
             <span class="mario-stat-num">${this.score}</span>
             <span class="mario-stat-name">Puntaje</span>
           </div>
+          <div class="mario-stat-box">
+            <span class="mario-stat-icon">🎯</span>
+            <span class="mario-stat-num">${maxScore}</span>
+            <span class="mario-stat-name">Máximo</span>
+          </div>
         </div>
+        
+        ${isNewRecord ? '<p class="mario-new-record">✨ ¡Nuevo récord personal! ✨</p>' : ''}
         
         <div class="mario-victory-buttons">
           <button class="mario-vic-btn btn-replay" id="vic-btn-replay">Repetir Nivel 🔄</button>
@@ -2850,7 +3233,6 @@ class MarioGame {
     
     this.container.appendChild(victoryOverlay);
     
-    // Bind buttons
     document.getElementById('vic-btn-replay').addEventListener('click', () => {
       window.GameAudio.playMove();
       victoryOverlay.remove();
