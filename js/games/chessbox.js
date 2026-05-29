@@ -51,20 +51,20 @@ class ChessBoxGame {
 
     // 15 Progressive tournament levels
     this.levels = [
-      { name: "El Calentamiento del Peón", elo: 400, hp: 80, punchSpeed: 1000, color: "#38bdf8", desc: "Enfréntate a un Peón Boxeador novato en el ring azul celeste. ¡Aprende los esquives básicos!" },
-      { name: "La Guardia de la Torre", elo: 600, hp: 100, punchSpeed: 900, color: "#4ade80", desc: "El General Torreón adopta una postura defensiva firme. Rompe su bloqueo." },
-      { name: "El Galope del Caballo", elo: 800, hp: 110, punchSpeed: 800, color: "#fbbf24", desc: "Un Caballo ágil lanza golpes rápidos en L. Esquiva con reflejos felinos." },
-      { name: "El Ataque del Alfil", elo: 1000, hp: 120, punchSpeed: 750, color: "#f43f5e", desc: "Ataques en diagonal muy veloces. Presta atención a las advertencias." },
-      { name: "Duelo en el Río Central", elo: 1200, hp: 130, punchSpeed: 700, color: "#a855f7", desc: "El combate se calienta en la d4 del ring. El tiempo se reduce velozmente." },
-      { name: "La Furia de la Reina Negra", elo: 1400, hp: 140, punchSpeed: 650, color: "#ec4899", desc: "Ganchos brutales de la monarca del sur. Mantén la concentración." },
-      { name: "El Enroque de Acero", elo: 1600, hp: 150, punchSpeed: 600, color: "#06b6d4", desc: "Un General sumamente resistente. Tendrás que boxear al contragolpe perfecto." },
-      { name: "Blitz de Contraataque", elo: 1800, hp: 160, punchSpeed: 550, color: "#3b82f6", desc: "El rival ataca sin cesar. Bloquea y responde con ganchos al mentón." },
-      { name: "La Sombra del Ring", elo: 2000, hp: 170, punchSpeed: 500, color: "#6366f1", desc: "Tu propia Sombra de boxeo. Telegrafía muy poco y piensa al nivel de un maestro." },
-      { name: "Tensión en la Octava Fila", elo: 2200, hp: 180, punchSpeed: 460, color: "#14b8a6", desc: "Falta muy poco para la final. Un descuido en el ring arruinará tu enroque." },
-      { name: "El Templo de Fianchetto", elo: 2300, hp: 190, punchSpeed: 430, color: "#f59e0b", desc: "Música tensa y golpes cruzados. Tu rival tiene una precisión milimétrica." },
-      { name: "El Bosque Oscuro de Tal", elo: 2400, hp: 200, punchSpeed: 400, color: "#ef4444", desc: "Caos puro en el ring y sacrificios tácticos en el tablero. ¡Supera tus límites!" },
-      { name: "La Diagonal del Sacrificio", elo: 2500, hp: 210, punchSpeed: 380, color: "#8b5cf6", desc: "El rival reduce tu salud rápidamente. Conectar golpes es vital para restar su tiempo." },
-      { name: "El Desafío de Judit", elo: 2600, hp: 225, punchSpeed: 360, color: "#d946ef", desc: "Ataque calculado y demolición posicional. La penúltima muralla antes del título." },
+      { name: "El Calentamiento del Peón", elo: 400, hp: 80, punchSpeed: 1400, color: "#38bdf8", desc: "Enfréntate a un Peón Boxeador novato en el ring azul celeste. ¡Aprende los esquives básicos!" },
+      { name: "La Guardia de la Torre", elo: 600, hp: 100, punchSpeed: 1300, color: "#4ade80", desc: "El General Torreón adopta una postura defensiva firme. Rompe su bloqueo." },
+      { name: "El Galope del Caballo", elo: 800, hp: 110, punchSpeed: 1200, color: "#fbbf24", desc: "Un Caballo ágil lanza golpes rápidos en L. Esquiva con reflejos felinos." },
+      { name: "El Ataque del Alfil", elo: 1000, hp: 120, punchSpeed: 1100, color: "#f43f5e", desc: "Ataques en diagonal muy veloces. Presta atención a las advertencias." },
+      { name: "Duelo en el Río Central", elo: 1200, hp: 130, punchSpeed: 1000, color: "#a855f7", desc: "El combate se calienta en la d4 del ring. El tiempo se reduce velozmente." },
+      { name: "La Furia de la Reina Negra", elo: 1400, hp: 140, punchSpeed: 920, color: "#ec4899", desc: "Ganchos brutales de la monarca del sur. Mantén la concentración." },
+      { name: "El Enroque de Acero", elo: 1600, hp: 150, punchSpeed: 840, color: "#06b6d4", desc: "Un General sumamente resistente. Tendrás que boxear al contragolpe perfecto." },
+      { name: "Blitz de Contraataque", elo: 1800, hp: 160, punchSpeed: 760, color: "#3b82f6", desc: "El rival ataca sin cesar. Bloquea y responde con ganchos al mentón." },
+      { name: "La Sombra del Ring", elo: 2000, hp: 170, punchSpeed: 680, color: "#6366f1", desc: "Tu propia Sombra de boxeo. Telegrafía muy poco y piensa al nivel de un maestro." },
+      { name: "Tensión en la Octava Fila", elo: 2200, hp: 180, punchSpeed: 600, color: "#14b8a6", desc: "Falta muy poco para la final. Un descuido en el ring arruinará tu enroque." },
+      { name: "El Templo de Fianchetto", elo: 2300, hp: 190, punchSpeed: 540, color: "#f59e0b", desc: "Música tensa y golpes cruzados. Tu rival tiene una precisión milimétrica." },
+      { name: "El Bosque Oscuro de Tal", elo: 2400, hp: 200, punchSpeed: 480, color: "#ef4444", desc: "Caos puro en el ring y sacrificios tácticos en el tablero. ¡Supera tus límites!" },
+      { name: "La Diagonal del Sacrificio", elo: 2500, hp: 210, punchSpeed: 430, color: "#8b5cf6", desc: "El rival reduce tu salud rápidamente. Conectar golpes es vital para restar su tiempo." },
+      { name: "El Desafío de Judit", elo: 2600, hp: 225, punchSpeed: 380, color: "#d946ef", desc: "Ataque calculado y demolición posicional. La penúltima muralla antes del título." },
       { name: "La Corona de las 64 Casillas", elo: 2800, hp: 250, punchSpeed: 330, color: "#fbbf24", desc: "¡Combate definitivo por el Campeonato Mundial Mágico! Stockfish al 100% y golpes de trueno." }
     ];
   }
