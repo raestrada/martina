@@ -23,10 +23,8 @@ class MarioGame {
 
     // Best score per level tracking (for trophies & completion %)
     this.bestScores = JSON.parse(localStorage.getItem('martina_mario_bestscores')) || {};
-    // Max possible score per level (coins + enemies + crowns + burst coins)
-    this.maxScores = {
-      0: 9900  // Level 1: ~34 coins × 100 + 25 burst × 100 + 5 enemies × 200 + 3 crowns × 1000
-    };
+    // Max possible score per level
+    this.maxScores = (window.MartinaLevels && window.MartinaLevels.maxScore) || { 0: 9900 };
 
     // Chapters levels information
     this.levels = [
@@ -62,9 +60,14 @@ class MarioGame {
     this.gameState = 'welcome';
     this.stopMusic();
     
-    // Force only Level 1 to be unlocked! Ignore localStorage so Level 2 cannot be unlocked or bypassed.
-    this.unlockedLevels = [true];
-    while (this.unlockedLevels.length < 16) this.unlockedLevels.push(false);
+    // Load unlocked levels from localStorage (persist across sessions)
+    this.unlockedLevels = JSON.parse(localStorage.getItem('martina_mario_unlocked')) || [true];
+    while (this.unlockedLevels.length < 16) {
+      this.unlockedLevels.push(false);
+    }
+    
+    // Ensure level 1 is always unlocked
+    this.unlockedLevels[0] = true;
     
     // Calculate overall completion
     let totalPct = 0;
@@ -227,7 +230,7 @@ class MarioGame {
             <div class="mario-hud-group">
               <div class="mario-hud-item">
                 <span class="mario-hud-label">Mundo</span>
-                <span class="mario-hud-val" id="hud-chapter">1-1</span>
+                <span class="mario-hud-val" id="hud-chapter">${this.currentLevelIndex + 1}-1</span>
               </div>
               <div class="mario-hud-item">
                 <span class="mario-hud-label">Vidas</span>
@@ -496,65 +499,24 @@ class MarioGame {
 
     const self = this;
     
-    // Levels structure setup
-    const platformsData = [
-      // Standard Ground blocks
-      { x: 0, y: 410, w: 800, h: 40 },
-      { x: 980, y: 410, w: 750, h: 40 },
-      { x: 1850, y: 410, w: 600, h: 40 },
-      
-      // Floating Chapter 1 Grass Platforms
-      { x: 260, y: 310, w: 140, h: 20 },
-      { x: 460, y: 220, w: 100, h: 20 },
-      { x: 640, y: 300, w: 120, h: 20 },
-      
-      // Midground Platforms over first pit (Tuned heights for easy jumping!)
-      { x: 830, y: 310, w: 120, h: 20 },
-      
-      // Second Segment floating platforms
-      { x: 1080, y: 310, w: 160, h: 20 },
-      { x: 1320, y: 220, w: 120, h: 20 },
-      { x: 1540, y: 310, w: 100, h: 20 },
-      
-      // Intermediate bridges over second pit
-      { x: 1730, y: 310, w: 120, h: 20 }
-    ];
-
-    const coinsData = [
-      { x: 300, y: 260 }, { x: 330, y: 260 }, { x: 360, y: 260 },
-      { x: 510, y: 170 },
-      { x: 680, y: 250 }, { x: 710, y: 250 },
-      { x: 860, y: 260 },
-      { x: 1120, y: 260 }, { x: 1150, y: 260 },
-      { x: 1380, y: 170 },
-      { x: 1590, y: 260 },
-      // Over second pit arches
-      { x: 1750, y: 260 }, { x: 1790, y: 260 },
-      // Ground incentives to drop down and stomp patrolling peons!
-      { x: 220, y: 370 }, { x: 250, y: 370 }, { x: 280, y: 370 },
-      { x: 380, y: 370 }, { x: 410, y: 370 }, { x: 440, y: 370 },
-      { x: 580, y: 370 }, { x: 610, y: 370 }, { x: 640, y: 370 },
-      { x: 1060, y: 370 }, { x: 1090, y: 370 }, { x: 1120, y: 370 },
-      { x: 1200, y: 370 }, { x: 1230, y: 370 }, { x: 1260, y: 370 },
-      { x: 1460, y: 370 }, { x: 1490, y: 370 }, { x: 1520, y: 370 },
-      // Portal approach rewards (on the flat final pathway!)
-      { x: 1960, y: 360 }, { x: 2010, y: 360 }, { x: 2060, y: 360 }
-    ];
-
-    const enemiesData = [
-      { x: 380, y: 360, left: 180, right: 600, speed: 70 },
-      { x: 650, y: 360, left: 450, right: 750, speed: 60 },
-      { x: 1200, y: 360, left: 1020, right: 1500, speed: 80 },
-      { x: 1520, y: 360, left: 1350, right: 1680, speed: 70 },
-      { x: 1950, y: 360, left: 1880, right: 2120, speed: 90 }
-    ];
+    // Get current level definition from data module
+    const levelDef = (window.MartinaLevels && window.MartinaLevels.levels[self.currentLevelIndex]) || null;
+    if (!levelDef) {
+      console.error('No level definition found for index', self.currentLevelIndex);
+      return;
+    }
+    
+    const biome = levelDef.biome;
+    const platformsData = levelDef.platformsData;
+    const coinsData = levelDef.coinsData;
+    const enemiesData = levelDef.enemiesData;
 
     const config = {
       type: Phaser.AUTO,
       width: 800,
       height: 450,
       parent: 'phaser-game-parent',
-      backgroundColor: '#5c94fc',
+      backgroundColor: levelDef.backgroundColor,
       physics: {
         default: 'arcade',
         arcade: {
@@ -1365,13 +1327,95 @@ class MarioGame {
             
             scene.textures.addCanvas('portal_texture', poCanvas);
 
-            // 4. Background Sky Canvas — Premium cosmic dreamscape (size 800x450)
+            // 4. Background Sky Canvas — biome-specific (size 800x450)
             const bgCanvas = document.createElement('canvas');
             bgCanvas.width = 800;
             bgCanvas.height = 450;
             const bgCtx = bgCanvas.getContext('2d');
             
-            // Rich cosmic twilight gradient with multiple color bands
+            if (biome === 'clockwork') {
+              // --- CLOCKWORK BACKGROUND: Dark mechanical, gears, clock faces ---
+              const cwGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
+              cwGrad.addColorStop(0, '#0a0810');
+              cwGrad.addColorStop(0.3, '#14101e');
+              cwGrad.addColorStop(0.6, '#1a1425');
+              cwGrad.addColorStop(0.85, '#241f2e');
+              cwGrad.addColorStop(1, '#1a1020');
+              bgCtx.fillStyle = cwGrad;
+              bgCtx.fillRect(0, 0, 800, 450);
+              
+              const ambGlow = bgCtx.createRadialGradient(400, 40, 10, 400, 220, 420);
+              ambGlow.addColorStop(0, 'rgba(200,170,120,0.07)');
+              ambGlow.addColorStop(1, 'transparent');
+              bgCtx.fillStyle = ambGlow;
+              bgCtx.fillRect(0, 0, 800, 450);
+              
+              const drawBgGear = (cx, cy, outerR, innerR, teeth, alpha) => {
+                bgCtx.save();
+                bgCtx.globalAlpha = alpha;
+                bgCtx.strokeStyle = '#c9a84c';
+                bgCtx.lineWidth = 1.5;
+                bgCtx.beginPath(); bgCtx.arc(cx, cy, outerR, 0, Math.PI*2); bgCtx.stroke();
+                bgCtx.beginPath(); bgCtx.arc(cx, cy, innerR, 0, Math.PI*2); bgCtx.stroke();
+                for (let t = 0; t < teeth; t++) {
+                  const a = (t/teeth)*Math.PI*2;
+                  bgCtx.beginPath();
+                  bgCtx.moveTo(cx+Math.cos(a)*innerR, cy+Math.sin(a)*innerR);
+                  bgCtx.lineTo(cx+Math.cos(a)*outerR, cy+Math.sin(a)*outerR);
+                  bgCtx.stroke();
+                }
+                bgCtx.fillStyle = '#c9a84c';
+                bgCtx.beginPath(); bgCtx.arc(cx, cy, 4, 0, Math.PI*2); bgCtx.fill();
+                bgCtx.restore();
+              };
+              drawBgGear(150, 120, 85, 55, 12, 0.08);
+              drawBgGear(550, 90, 110, 70, 16, 0.06);
+              drawBgGear(380, 200, 75, 45, 10, 0.07);
+              drawBgGear(700, 160, 95, 60, 14, 0.05);
+              drawBgGear(250, 280, 65, 40, 8, 0.06);
+              
+              const drawBgClock = (cx, cy, r, alpha) => {
+                bgCtx.save();
+                bgCtx.globalAlpha = alpha;
+                bgCtx.strokeStyle = '#b8963c';
+                bgCtx.lineWidth = 2;
+                bgCtx.beginPath(); bgCtx.arc(cx, cy, r, 0, Math.PI*2); bgCtx.stroke();
+                bgCtx.lineWidth = 0.8;
+                bgCtx.beginPath(); bgCtx.arc(cx, cy, r-4, 0, Math.PI*2); bgCtx.stroke();
+                for (let i=0; i<12; i++) {
+                  const a = (i/12)*Math.PI*2 - Math.PI/2;
+                  const inner = i%3===0 ? r-10 : r-6;
+                  bgCtx.beginPath();
+                  bgCtx.moveTo(cx+Math.cos(a)*inner, cy+Math.sin(a)*inner);
+                  bgCtx.lineTo(cx+Math.cos(a)*(r-2), cy+Math.sin(a)*(r-2));
+                  bgCtx.stroke();
+                }
+                bgCtx.strokeStyle = '#c9a84c';
+                bgCtx.lineWidth = 2;
+                bgCtx.beginPath(); bgCtx.moveTo(cx, cy); bgCtx.lineTo(cx, cy-r*0.55); bgCtx.stroke();
+                bgCtx.lineWidth = 1.2;
+                bgCtx.beginPath(); bgCtx.moveTo(cx, cy); bgCtx.lineTo(cx+r*0.35, cy); bgCtx.stroke();
+                bgCtx.fillStyle = '#e2c868';
+                bgCtx.beginPath(); bgCtx.arc(cx, cy, 2.5, 0, Math.PI*2); bgCtx.fill();
+                bgCtx.restore();
+              };
+              drawBgClock(650, 60, 35, 0.1);
+              drawBgClock(120, 180, 28, 0.08);
+              drawBgClock(500, 260, 32, 0.07);
+              
+              bgCtx.strokeStyle = 'rgba(180,150,120,0.04)';
+              bgCtx.lineWidth = 0.5;
+              for (let i=0; i<14; i++) {
+                const y = 260 + Math.pow(i/14, 2)*190;
+                bgCtx.beginPath(); bgCtx.moveTo(0, y); bgCtx.lineTo(800, y); bgCtx.stroke();
+              }
+              for (let a=-6; a<=6; a++) {
+                bgCtx.beginPath();
+                bgCtx.moveTo(400, 260); bgCtx.lineTo(400+a*100, 450); bgCtx.stroke();
+              }
+              
+            } else {
+              // --- GRASS BACKGROUND: Magical realm dreamscape ---
             const skyGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
             skyGrad.addColorStop(0, '#020113');   // Near-black void
             skyGrad.addColorStop(0.15, '#0a0525'); // Deep indigo
@@ -1498,13 +1542,75 @@ class MarioGame {
             drawSquareCloud(520, 170, 80, 16);
             
             scene.textures.addCanvas('background', bgCanvas);
+            } // end biome background if/else
 
-            // 5. Premium Midground Parallax Canvas (size 800x450)
+            // 5. Midground Parallax Canvas — biome-specific (size 800x450)
             const midCanvas = document.createElement('canvas');
             midCanvas.width = 800;
             midCanvas.height = 450;
             const midCtx = midCanvas.getContext('2d');
             
+            if (biome === 'clockwork') {
+              // Mechanical floating gear-islands for clockwork biome
+              midCtx.fillStyle = 'rgba(30,20,40,0.0)';
+              midCtx.fillRect(0, 0, 800, 450);
+              
+              const drawMechIsland = (x, y, w, h, underH) => {
+                const topGrad = midCtx.createLinearGradient(x, y, x, y+h);
+                topGrad.addColorStop(0, 'rgba(120,90,50,0.4)');
+                topGrad.addColorStop(1, 'rgba(60,40,25,0.25)');
+                midCtx.fillStyle = topGrad;
+                midCtx.beginPath();
+                midCtx.moveTo(x, y); midCtx.lineTo(x+w, y);
+                midCtx.lineTo(x+w-15, y+h); midCtx.lineTo(x+15, y+h);
+                midCtx.closePath();
+                midCtx.fill();
+                midCtx.strokeStyle = 'rgba(200,160,80,0.3)';
+                midCtx.lineWidth = 1.2;
+                midCtx.stroke();
+                // Gear teeth on top
+                midCtx.fillStyle = 'rgba(200,160,80,0.2)';
+                for (let gx=x+6; gx<x+w-6; gx+=12) {
+                  midCtx.fillRect(gx, y-2, 6, 4);
+                }
+                // Underside
+                const underGrad = midCtx.createLinearGradient(0, y+h, 0, y+h+underH);
+                underGrad.addColorStop(0, 'rgba(40,25,15,0.45)');
+                underGrad.addColorStop(1, 'rgba(20,10,8,0.1)');
+                midCtx.fillStyle = underGrad;
+                midCtx.beginPath();
+                midCtx.moveTo(x+15, y+h); midCtx.lineTo(x+w-15, y+h);
+                midCtx.lineTo(x+w/2, y+h+underH);
+                midCtx.closePath();
+                midCtx.fill();
+              };
+              
+              drawMechIsland(60, 320, 200, 20, 55);
+              drawMechIsland(440, 275, 250, 22, 55);
+              drawMechIsland(260, 198, 144, 16, 30);
+              
+              // Floating clock faces in midground
+              midCtx.fillStyle = 'rgba(200,160,80,0.12)';
+              midCtx.beginPath(); midCtx.arc(180, 280, 14, 0, Math.PI*2); midCtx.fill();
+              midCtx.beginPath(); midCtx.arc(550, 235, 18, 0, Math.PI*2); midCtx.fill();
+              midCtx.strokeStyle = 'rgba(200,160,80,0.2)';
+              midCtx.lineWidth = 1;
+              midCtx.beginPath(); midCtx.arc(180, 280, 14, 0, Math.PI*2); midCtx.stroke();
+              midCtx.beginPath(); midCtx.arc(550, 235, 18, 0, Math.PI*2); midCtx.stroke();
+              // Clock hands
+              midCtx.strokeStyle = 'rgba(200,160,80,0.18)';
+              midCtx.lineWidth = 1.2;
+              midCtx.beginPath(); midCtx.moveTo(180, 280); midCtx.lineTo(180, 268); midCtx.stroke();
+              midCtx.beginPath(); midCtx.moveTo(550, 235); midCtx.lineTo(560, 235); midCtx.stroke();
+              
+              // Mechanical spark dots
+              for (let i=0; i<40; i++) {
+                const mx = Math.random()*800, my = Math.random()*400;
+                midCtx.fillStyle = `rgba(200,160,80,${Math.random()*0.15+0.05})`;
+                midCtx.beginPath(); midCtx.arc(mx, my, Math.random()*1.2+0.3, 0, Math.PI*2); midCtx.fill();
+              }
+              
+            } else {
             const drawIsland = (x, y, w, h, underH) => {
               // Island top surface with checkered pattern
               const topGrad = midCtx.createLinearGradient(x, y, x, y + h);
@@ -1649,6 +1755,7 @@ class MarioGame {
             midCtx.stroke();
             
             scene.textures.addCanvas('bg_middle', midCanvas);
+            } // end biome midground if/else
 
             // 5.5. Foreground Decorative Canvas — floating magical particles & chess silhouettes
             const fgCanvas = document.createElement('canvas');
@@ -1771,18 +1878,76 @@ class MarioGame {
             crCtx.fill();
             
             scene.textures.addCanvas('crown_gold', crCanvas);
+            
+            // 7.9. Tournament Trophy canvas (size 56x80) — for clockwork/real-world levels
+            if (!scene.textures.exists('trophy')) {
+              const tCanvas = document.createElement('canvas');
+              tCanvas.width = 56;
+              tCanvas.height = 80;
+              const tCtx = tCanvas.getContext('2d');
+              // Trophy cup body
+              const tGrad = tCtx.createLinearGradient(18, 10, 38, 70);
+              tGrad.addColorStop(0, '#fef3c7');
+              tGrad.addColorStop(0.3, '#fbbf24');
+              tGrad.addColorStop(0.7, '#d97706');
+              tGrad.addColorStop(1, '#92400e');
+              tCtx.fillStyle = tGrad;
+              tCtx.beginPath();
+              tCtx.moveTo(20, 8);
+              tCtx.lineTo(36, 8);
+              tCtx.quadraticCurveTo(40, 20, 42, 35);
+              tCtx.lineTo(42, 50);
+              tCtx.quadraticCurveTo(42, 56, 38, 56);
+              tCtx.lineTo(18, 56);
+              tCtx.quadraticCurveTo(14, 56, 14, 50);
+              tCtx.lineTo(14, 35);
+              tCtx.quadraticCurveTo(16, 20, 20, 8);
+              tCtx.closePath();
+              tCtx.fill();
+              // Handles
+              tCtx.strokeStyle = '#d97706';
+              tCtx.lineWidth = 3;
+              tCtx.beginPath();
+              tCtx.arc(15, 30, 9, Math.PI*0.7, Math.PI*1.3);
+              tCtx.stroke();
+              tCtx.beginPath();
+              tCtx.arc(41, 30, 9, -Math.PI*0.3, Math.PI*0.3);
+              tCtx.stroke();
+              // Base
+              tCtx.fillStyle = '#92400e';
+              tCtx.fillRect(10, 58, 36, 8);
+              tCtx.fillStyle = '#fbbf24';
+              tCtx.fillRect(10, 58, 36, 2);
+              // Star on cup
+              tCtx.fillStyle = '#fef3c7';
+              tCtx.beginPath();
+              for (let i=0; i<5; i++) {
+                const sa = (i*72-90)*Math.PI/180;
+                tCtx.lineTo(28+Math.cos(sa)*6, 30+Math.sin(sa)*6);
+                tCtx.lineTo(28+Math.cos(sa+Math.PI/5)*3, 30+Math.sin(sa+Math.PI/5)*3);
+              }
+              tCtx.closePath();
+              tCtx.fill();
+              // Glow highlight
+              tCtx.fillStyle = 'rgba(255,255,255,0.25)';
+              tCtx.beginPath();
+              tCtx.ellipse(32, 20, 8, 14, 0, 0, Math.PI*2);
+              tCtx.fill();
+              
+              scene.textures.addCanvas('trophy', tCanvas);
+            }
           }
           
           // 1. Triple Parallax magical background
-          scene.bg = scene.add.tileSprite(0, 0, 2400, 450, 'background').setOrigin(0, 0);
+          scene.bg = scene.add.tileSprite(0, 0, levelDef.worldWidth, 450, 'background').setOrigin(0, 0);
           scene.bg.setAlpha(0.85);
           scene.bg.setScrollFactor(0.05); // Far sky scrolls extremely slowly!
           
-          scene.bgMid = scene.add.tileSprite(0, 0, 2400, 450, 'bg_middle').setOrigin(0, 0);
+          scene.bgMid = scene.add.tileSprite(0, 0, levelDef.worldWidth, 450, 'bg_middle').setOrigin(0, 0);
           scene.bgMid.setAlpha(0.65);
           scene.bgMid.setScrollFactor(0.15); // Middle mountains scroll at medium speed!
 
-          scene.bgFg = scene.add.tileSprite(0, 0, 2400, 450, 'bg_foreground').setOrigin(0, 0);
+          scene.bgFg = scene.add.tileSprite(0, 0, levelDef.worldWidth, 450, 'bg_foreground').setOrigin(0, 0);
           scene.bgFg.setAlpha(0.50);
           scene.bgFg.setScrollFactor(0.3); // Foreground decorations scroll faster for depth
 
@@ -1792,8 +1957,32 @@ class MarioGame {
           platformsData.forEach(p => {
             const block = scene.add.graphics();
             
-            if (p.x === 1850) {
-              // Highly detailed white-and-gold marble ceremonial runway
+            if (p.x === 1850 || (biome === 'clockwork' && p.x === 1580)) {
+              // Highly detailed ceremonial runway / trophy podium
+              if (biome === 'clockwork') {
+                // Dark brass trophy podium
+                block.fillStyle(0x2a1f14, 0.95);
+                block.fillRect(p.x, p.y, p.w, p.h);
+                block.fillStyle(0x3d2e1a, 0.6);
+                block.fillRect(p.x, p.y, p.w, p.h / 2);
+                block.fillStyle(0xb8963c, 1);
+                block.fillRect(p.x, p.y, p.w, 4);
+                block.fillStyle(0xd4b84c, 0.7);
+                block.fillRect(p.x, p.y, p.w, 1);
+                block.fillStyle(0xc9a84c, 0.3);
+                for (let x = p.x; x < p.x + p.w; x += 28) {
+                  block.fillRect(x, p.y + 4, 14, 14);
+                  block.fillRect(x + 14, p.y + 18, 14, 14);
+                }
+                block.fillStyle(0xe2c868, 0.35);
+                for (let i = 0; i < 25; i++) {
+                  block.fillRect(p.x + 4 + Math.random()*(p.w-8), p.y + 6 + Math.random()*(p.h-8), Math.random()*2+1, Math.random()*2+1);
+                }
+                block.lineStyle(2, 0xb8963c, 0.85);
+                block.strokeRect(p.x, p.y, p.w, p.h);
+                block.lineStyle(1, 0xd4b84c, 0.4);
+                block.strokeRect(p.x + 2, p.y + 2, p.w - 4, p.h - 4);
+              } else {
               // Marble base gradient effect
               block.fillStyle(0xf1f5f9, 0.95);
               block.fillRect(p.x, p.y, p.w, p.h);
@@ -1826,6 +2015,30 @@ class MarioGame {
               block.strokeRect(p.x, p.y, p.w, p.h);
               block.lineStyle(1, 0xfef08a, 0.4);
               block.strokeRect(p.x + 2, p.y + 2, p.w - 4, p.h - 4);
+              } // end inner else (marble)
+            } else if (biome === 'clockwork') {
+              // Clockwork mechanical brass/copper platform
+              block.fillStyle(0x3d2e1a, 0.9);
+              block.fillRect(p.x, p.y, p.w, p.h);
+              block.fillStyle(0x4a3822, 0.5);
+              block.fillRect(p.x, p.y + 2, p.w, p.h - 4);
+              block.fillStyle(0xb8963c, 0.6);
+              block.fillRect(p.x, p.y, p.w, 5);
+              block.fillStyle(0xd4b84c, 0.4);
+              block.fillRect(p.x, p.y, p.w, 2);
+              block.fillStyle(0x8a6d2f, 0.35);
+              for (let gx = p.x + 3; gx < p.x + p.w - 4; gx += 8) {
+                block.fillRect(gx, p.y - 3, 4, 4);
+              }
+              block.fillStyle(0x6b5328, 0.3);
+              for (let rx = p.x + 8; rx < p.x + p.w - 8; rx += 20) {
+                block.fillRect(rx, p.y + 7, 3, 3);
+                block.fillRect(rx, p.y + p.h - 8, 3, 3);
+              }
+              block.fillStyle(0x8a7530, 0.15);
+              block.fillRect(p.x + 2, p.y + 5, p.w - 4, 1);
+              block.lineStyle(1.5, 0x6b5328, 0.8);
+              block.strokeRect(p.x, p.y, p.w, p.h);
             } else {
               // Premium chess-themed platform block
               // Base body — deep magical blue
@@ -2004,11 +2217,7 @@ class MarioGame {
           // 6.4. Airborne Flying Bishop Enemies (complicate jump paths with dynamic patrols!)
           scene.airEnemies = scene.physics.add.group({ allowGravity: false });
           
-          const airEnemiesData = [
-            { x: 500, y: 140, pattern: 'horizontal', minX: 400, maxX: 640, speed: 75 },
-            { x: 910, y: 220, pattern: 'diagonal', minX: 830, maxX: 980, minY: 160, maxY: 260, speed: 70, speedY: 55 },
-            { x: 1790, y: 200, pattern: 'sinusoidal', minX: 1700, maxX: 1880, baseY: 190, ampY: 45, speed: 80 }
-          ];
+          const airEnemiesData = levelDef.airEnemiesData || [];
           
           airEnemiesData.forEach(ae => {
             const airEnemy = scene.physics.add.sprite(ae.x, ae.y, 'flying_bishop_0');
@@ -2048,11 +2257,7 @@ class MarioGame {
           });
 
           // 6.5 Secret Gold Crowns group ( Celeste / Hollow Knight style collectibles )
-          const crownsData = [
-            { x: 890, y: 180 },
-            { x: 1380, y: 110 },
-            { x: 1790, y: 180 }
-          ];
+          const crownsData = levelDef.crownsData || [];
 
           scene.crowns = scene.physics.add.group({ allowGravity: false, immovable: true });
           crownsData.forEach(c => {
@@ -2064,6 +2269,42 @@ class MarioGame {
             // Crowns stay static and solemn as requested! No initial float animation.
           });
 
+          // 7. Goal — biome-specific (Portal+Queen for grass, Trophy for clockwork)
+          if (biome === 'clockwork') {
+            // Tournament Trophy goal (level 2 — Tic, Tac, Jaque Mate)
+            const tX = levelDef.goal.trophyX || 2180;
+            const tY = levelDef.goal.trophyY || 270;
+            
+            scene.trophyGoal = scene.physics.add.staticSprite(tX, tY, 'trophy');
+            scene.trophyGoal.setDisplaySize(52, 74);
+            scene.trophyGoal.body.setSize(40, 70);
+            scene.trophyGoal.body.setOffset(6, 4);
+            scene.trophyGoal.setDepth(2);
+            
+            // Golden glow behind trophy
+            scene.trophyGlow = scene.add.graphics();
+            scene.trophyGlow.fillStyle(0xfacc15, 0.1);
+            scene.trophyGlow.beginPath();
+            scene.trophyGlow.arc(tX, tY, 70, 0, Math.PI*2);
+            scene.trophyGlow.fill();
+            scene.trophyGlow.setDepth(1);
+            
+            // Ambient sparkles
+            for (let i=0; i<14; i++) {
+              const sa = (i*Math.PI*2)/14;
+              const sr = 50+Math.random()*35;
+              const sx = tX+Math.cos(sa)*sr;
+              const sy = tY+Math.sin(sa)*sr;
+              const sc = scene.add.circle(sx, sy, Math.random()*1.5+0.7, i%2===0?0xfef08a:0xd4b84c, 0.4);
+              sc.setDepth(3);
+              scene.tweens.add({
+                targets: sc, y: sy-10, alpha: 0.15, scale: 0.5,
+                duration: 1200+Math.random()*600, yoyo: true, repeat: -1,
+                ease: 'Sine.easeInOut', delay: i*100
+              });
+            }
+            
+          } else {
           // 7. Chess-Themed Goal: The Magical Portal, Majestic White Queen and friendly Peoncito!
           // 7.1. Portal of the 64 Casillas (Magical spinning gateway in the background)
           scene.portal = scene.add.sprite(2150, 245, 'portal_texture');
@@ -2139,6 +2380,8 @@ class MarioGame {
             repeat: -1,
             ease: 'Sine.easeInOut'
           });
+
+          } // end biome goal if/else
 
           // 8. Colliders and Overlaps configuration
           scene.physics.add.collider(scene.player, scene.platforms);
@@ -2351,6 +2594,56 @@ class MarioGame {
             }
           });
 
+          // Goal overlap — biome-specific (Queen for grass, Trophy for clockwork)
+          if (biome === 'clockwork' && scene.trophyGoal) {
+            scene.physics.add.overlap(scene.player, scene.trophyGoal, () => {
+              if (self.player.isAscending) return;
+              self.player.isAscending = true;
+              self.completeLevel();
+              
+              scene.particles.stop();
+              scene.player.body.setVelocityX(0);
+              scene.player.body.setVelocityY(0);
+              scene.player.body.allowGravity = false;
+              
+              // Victory text
+              const vicText = scene.add.text(scene.player.x, scene.player.y - 130, "¡TORNEO GANADO!\nTic, tac... ¡Jaque Mate!", {
+                fontFamily: "'Outfit', 'Inter', sans-serif",
+                fontSize: '20px',
+                fontStyle: 'bold',
+                fill: '#fbbf24',
+                stroke: '#1a1020',
+                strokeThickness: 5,
+                align: 'center'
+              }).setOrigin(0.5).setDepth(10);
+              
+              // Burst of particles around player
+              for (let i=0; i<30; i++) {
+                const angle = (i/30)*Math.PI*2;
+                const sp = scene.add.circle(scene.player.x, scene.player.y, Math.random()*2+1.5, i%3===0?0xfacc15:0xd4b84c, 0.8);
+                scene.physics.add.existing(sp, false);
+                sp.body.allowGravity = false;
+                sp.body.setVelocity(Math.cos(angle)*180, Math.sin(angle)*180-80);
+                scene.tweens.add({
+                  targets: sp, alpha: 0, scale: 0.1, duration: 700+Math.random()*300,
+                  onComplete: ()=>sp.destroy()
+                });
+              }
+              
+              // Martina jumps up in celebration then fades
+              scene.player.body.setVelocityY(-300);
+              scene.tweens.add({
+                targets: scene.player,
+                scaleX: 0.05, scaleY: 0.05, alpha: 0,
+                y: scene.player.y-80,
+                duration: 2000, ease: 'Quad.easeOut',
+                onComplete: () => {
+                  vicText.destroy();
+                  self.showVictoryScreen(true);
+                }
+              });
+            });
+          } else if (scene.whiteQueen) {
           // Goal White Queen overlap (Ascension to Wake Up from the dream!)
           scene.physics.add.overlap(scene.player, scene.whiteQueen, () => {
             if (self.player.isAscending) return;
@@ -2418,10 +2711,11 @@ class MarioGame {
               }
             });
           });
+          } // end goal overlap biome if/else
 
 
           // 9. Camera setup
-          scene.cameras.main.setBounds(0, 0, 2400, 450);
+          scene.cameras.main.setBounds(0, 0, levelDef.worldWidth, 450);
           scene.cameras.main.startFollow(scene.player, true, 0.1, 0.1);
           
           // 9.2 Cinematic vignette — canvas-based full-viewport overlay
@@ -2462,7 +2756,7 @@ class MarioGame {
           }
           
           // 9.5 Physics world bounds setup (fixes the first abyss blocking bug!)
-          scene.physics.world.setBounds(0, 0, 2400, 450);
+          scene.physics.world.setBounds(0, 0, levelDef.worldWidth, 450);
           
           // 10. Inputs binder
           scene.cursors = scene.input.keyboard.createCursorKeys();
@@ -3000,32 +3294,56 @@ class MarioGame {
     const audioCtx = window.GameAudio.ctx;
     if (!audioCtx) return;
 
-    // Dreamy, ethereal, minor-mode fairy tale chords:
-    // Bar 1-2: A minor | Bar 3-4: F major | Bar 5-6: C major | Bar 7-8: E major
-    const melody = [
-      440.00, 523.25, 659.25, 880.00, 659.25, 523.25, 440.00, 0,
-      440.00, 523.25, 659.25, 880.00, 659.25, 523.25, 659.25, 783.99,
-      349.23, 440.00, 523.25, 698.46, 523.25, 440.00, 349.23, 0,
-      349.23, 440.00, 523.25, 698.46, 523.25, 440.00, 523.25, 659.25,
-      261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 261.63, 0,
-      261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 392.00, 493.88,
-      329.63, 415.30, 493.88, 659.25, 493.88, 415.30, 329.63, 0,
-      329.63, 415.30, 493.88, 659.25, 783.99, 659.25, 587.33, 493.88
-    ];
-
-    const bass = [
-      110.00, 0, 110.00, 0, 110.00, 0, 110.00, 0,
-      110.00, 0, 110.00, 0, 110.00, 0, 110.00, 0,
-      87.31,  0, 87.31,  0, 87.31,  0, 87.31,  0,
-      87.31,  0, 87.31,  0, 87.31,  0, 87.31,  0,
-      130.81, 0, 130.81, 0, 130.81, 0, 130.81, 0,
-      130.81, 0, 130.81, 0, 130.81, 0, 130.81, 0,
-      82.41,  0, 82.41,  0, 82.41,  0, 82.41,  0,
-      82.41,  0, 82.41,  0, 82.41,  0, 82.41,  0
-    ];
-
-    let step = 0;
-    const tempo = 220; // 220ms per step, slower tempo for dreamy, magical vibe!
+    // Level-specific melodies
+    let melody, bass, tempo;
+    
+    if (this.currentLevelIndex === 1) {
+      // Level 2 — Clockwork mechanical theme (E minor, rhythmic, gears)
+      melody = [
+        329.63, 0, 329.63, 392.00, 329.63, 0, 293.66, 0,
+        329.63, 0, 329.63, 392.00, 440.00, 392.00, 329.63, 0,
+        293.66, 0, 293.66, 329.63, 293.66, 0, 261.63, 0,
+        293.66, 0, 293.66, 329.63, 392.00, 329.63, 293.66, 0,
+        246.94, 0, 246.94, 293.66, 246.94, 0, 220.00, 0,
+        246.94, 0, 246.94, 293.66, 329.63, 293.66, 246.94, 0,
+        329.63, 392.00, 440.00, 493.88, 440.00, 392.00, 329.63, 0,
+        392.00, 440.00, 493.88, 587.33, 493.88, 440.00, 392.00, 329.63
+      ];
+      bass = [
+        82.41, 0, 0, 0, 82.41, 0, 0, 0,
+        82.41, 0, 0, 0, 82.41, 0, 0, 0,
+        73.42, 0, 0, 0, 73.42, 0, 0, 0,
+        73.42, 0, 0, 0, 73.42, 0, 0, 0,
+        98.00, 0, 0, 0, 98.00, 0, 0, 0,
+        98.00, 0, 0, 0, 98.00, 0, 0, 0,
+        82.41, 0, 0, 0, 82.41, 0, 0, 0,
+        82.41, 0, 0, 0, 82.41, 0, 0, 0
+      ];
+      tempo = 160; // Faster tempo for mechanical feel
+    } else {
+      // Level 1 — Dreamy, ethereal, minor-mode fairy tale chords
+      melody = [
+        440.00, 523.25, 659.25, 880.00, 659.25, 523.25, 440.00, 0,
+        440.00, 523.25, 659.25, 880.00, 659.25, 523.25, 659.25, 783.99,
+        349.23, 440.00, 523.25, 698.46, 523.25, 440.00, 349.23, 0,
+        349.23, 440.00, 523.25, 698.46, 523.25, 440.00, 523.25, 659.25,
+        261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 261.63, 0,
+        261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 392.00, 493.88,
+        329.63, 415.30, 493.88, 659.25, 493.88, 415.30, 329.63, 0,
+        329.63, 415.30, 493.88, 659.25, 783.99, 659.25, 587.33, 493.88
+      ];
+      bass = [
+        110.00, 0, 110.00, 0, 110.00, 0, 110.00, 0,
+        110.00, 0, 110.00, 0, 110.00, 0, 110.00, 0,
+        87.31,  0, 87.31,  0, 87.31,  0, 87.31,  0,
+        87.31,  0, 87.31,  0, 87.31,  0, 87.31,  0,
+        130.81, 0, 130.81, 0, 130.81, 0, 130.81, 0,
+        130.81, 0, 130.81, 0, 130.81, 0, 130.81, 0,
+        82.41,  0, 82.41,  0, 82.41,  0, 82.41,  0,
+        82.41,  0, 82.41,  0, 82.41,  0, 82.41,  0
+      ];
+      tempo = 220;
+    }
 
     this.musicInterval = setInterval(() => {
       if (this.gameState !== 'playing' || !this.musicEnabled) {
@@ -3176,6 +3494,13 @@ class MarioGame {
     if (this.score > prev) {
       this.bestScores[levelKey] = this.score;
       localStorage.setItem('martina_mario_bestscores', JSON.stringify(this.bestScores));
+    }
+    
+    // Unlock next level
+    const nextIdx = levelKey + 1;
+    if (nextIdx < this.levels.length && !this.unlockedLevels[nextIdx]) {
+      this.unlockedLevels[nextIdx] = true;
+      localStorage.setItem('martina_mario_unlocked', JSON.stringify(this.unlockedLevels));
     }
   }
 
