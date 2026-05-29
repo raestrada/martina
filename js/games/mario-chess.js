@@ -15,6 +15,7 @@ window.ChessDuel = class ChessDuel {
     this.moveHistory = [];
     this.pieceValues = { p:1, n:3, b:3, r:5, q:9, k:0 };
     this.isThinking = false;
+    this.lastMove = null; // {from: 'e2', to: 'e4'}
   }
 
   start() {
@@ -25,32 +26,41 @@ window.ChessDuel = class ChessDuel {
   // --- ENGINE: Find best move for opponent (~300 ELO) ---
   findOpponentMove() {
     try {
-      const legalMoves = this.getAllLegalMoves('b');
-      if (legalMoves.length === 0) return null;
+      const allMoves = this.getAllLegalMoves('b');
+      if (allMoves.length === 0) return null;
       
-      // 300 ELO: 40% random, 60% semi-smart
-      if (Math.random() < 0.40) {
-        return legalMoves[Math.floor(Math.random() * legalMoves.length)];
+      // Filter: only moves that don't leave king in check
+      const validMoves = [];
+      for (const move of allMoves) {
+        const savedFEN = this.fen;
+        const savedHistory = [...this.moveHistory];
+        const savedTurn = this.turn;
+        this.executeMoveRaw(move);
+        if (!this.isKingInCheck('b')) {
+          validMoves.push(move);
+        }
+        this.fen = savedFEN;
+        this.moveHistory = savedHistory;
+        this.turn = savedTurn;
       }
       
-      let bestMove = legalMoves[0];
+      if (validMoves.length === 0) return null; // checkmate
+      
+      // 300 ELO: 40% random among valid moves
+      if (Math.random() < 0.40) {
+        return validMoves[Math.floor(Math.random() * validMoves.length)];
+      }
+      
+      // Evaluate each valid move
+      let bestMove = validMoves[0];
       let bestScore = -Infinity;
       
-      for (const move of legalMoves) {
+      for (const move of validMoves) {
         const savedFEN = this.fen;
         const savedHistory = [...this.moveHistory];
         const savedTurn = this.turn;
         
         this.executeMoveRaw(move);
-        
-        // Skip moves that leave own king in check
-        if (this.isKingInCheck('b')) {
-          this.fen = savedFEN;
-          this.moveHistory = savedHistory;
-          this.turn = savedTurn;
-          continue;
-        }
-        
         const score = this.evaluateBoard('b');
         
         this.fen = savedFEN;
@@ -63,17 +73,17 @@ window.ChessDuel = class ChessDuel {
         }
       }
       
-      // 15% blunder: pick second-best
-      if (Math.random() < 0.15 && legalMoves.length > 1) {
-        const others = legalMoves.filter(m => m !== bestMove);
+      // 15% blunder: pick suboptimal from valid moves
+      if (Math.random() < 0.15 && validMoves.length > 1) {
+        const others = validMoves.filter(m => m !== bestMove);
         return others[Math.floor(Math.random() * others.length)];
       }
       
-      return bestMove || legalMoves[0];
+      return bestMove;
     } catch(e) {
       console.error('Engine error:', e);
-      const legalMoves = this.getAllLegalMoves('b');
-      return legalMoves.length > 0 ? legalMoves[Math.floor(Math.random() * legalMoves.length)] : null;
+      const moves = this.getAllLegalMoves('b');
+      return moves.length > 0 ? moves[Math.floor(Math.random() * moves.length)] : null;
     }
   }
 
@@ -137,6 +147,7 @@ window.ChessDuel = class ChessDuel {
     this.fen = fenRows.join('/') + ' ' + newTurn + ' ' + castling + ' ' + enPassant + ' 0 1';
     this.turn = newTurn;
     this.moveHistory.push(uciMove);
+    this.lastMove = { from: uciMove.substring(0,2), to: uciMove.substring(2,4) };
   }
 
   // --- PARSE FEN ---
@@ -373,6 +384,16 @@ window.ChessDuel = class ChessDuel {
             : '0 1px 2px rgba(255,255,255,0.15)';
         }
         sq.addEventListener('click', ()=>this.handleClick(r,c));
+        // Highlight last move
+        if (this.lastMove) {
+          const fromCol = this.lastMove.from.charCodeAt(0) - 97;
+          const fromRow = 8 - parseInt(this.lastMove.from[1]);
+          const toCol = this.lastMove.to.charCodeAt(0) - 97;
+          const toRow = 8 - parseInt(this.lastMove.to[1]);
+          if ((r===fromRow && c===fromCol) || (r===toRow && c===toCol)) {
+            sq.style.background = (r+c)%2===0 ? '#c8d45a' : '#a8b440';
+          }
+        }
         boardEl.appendChild(sq);
       }
     }
