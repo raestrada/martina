@@ -1093,14 +1093,16 @@ class ChessBoxGame {
               scene.spawnSparkleParticles(400, 160, currentLevel.color);
 
               // Flash Opponent red and scale briefly
+              scene.opponent.setTint(0xff3333); // vibrant red hit flash
               scene.tweens.add({
                 targets: scene.opponent,
-                alpha: 0.3,
+                alpha: 0.85, // practically solid to prevent showing background ropes!
                 scaleX: 0.54, scaleY: 0.54,
                 duration: 60,
                 yoyo: true,
                 repeat: 2,
                 onComplete: () => {
+                  scene.opponent.clearTint(); // restore original colors!
                   if (scene.opponentState === 'stunned') {
                     scene.opponent.setScale(0.6);
                   }
@@ -2060,79 +2062,138 @@ class ChessBoxGame {
     g.fillStyle(0xffffff, 0.04);
     g.fillEllipse(400, 290, 420, 110); // broad light reflection glow covering the canvas
 
-    // 6. Padded Corner Cushions (drawn as thick vertical cylindrical capsules)
+    // 6. Premium 3D Padded Corner Cushions with metallic turnbuckles and cylindrical capsule style
     
     // Bottom-Left (Red Corner)
     g.fillStyle(0xb91c1c, 1); // Red base pad
-    g.fillRect(bL.x - 12, 230, 24, 185);
-    g.fillStyle(0xef4444, 1); // Highlight strip
-    g.fillRect(bL.x - 8, 230, 8, 185);
-    g.fillStyle(0x7f1d1d, 1); // Shadow strip
-    g.fillRect(bL.x, 230, 12, 185);
-    g.fillStyle(0x000000, 1); // Horizontal straps
+    g.fillRoundedRect(bL.x - 12, 230, 24, 185, 8);
+    g.fillStyle(0xef4444, 1); // Highlight cylinder strip
+    g.fillRoundedRect(bL.x - 8, 230, 8, 185, 4);
+    g.fillStyle(0x7f1d1d, 1); // Shadow cylinder strip
+    g.fillRoundedRect(bL.x, 230, 11, 185, 4);
+    
+    // Bottom-Left Top/Bottom steel caps
+    g.fillStyle(0x475569, 1);
+    g.fillEllipse(bL.x, 230, 26, 6);
+    g.fillEllipse(bL.x, 415, 26, 6);
+    g.fillStyle(0x94a3b8, 1);
+    g.fillEllipse(bL.x, 230, 16, 3);
+    
+    // Bottom-Left Leather tension straps
+    g.fillStyle(0x0f172a, 1);
     for (let sy = 250; sy < 400; sy += 45) {
       g.fillRect(bL.x - 14, sy, 28, 4);
     }
     
+    // Bottom-Left Chrome Bracket turnbuckles connecting to ropes
+    g.fillStyle(0x64748b, 1);
+    g.fillRect(bL.x - 15, 258, 30, 4);
+    g.fillRect(bL.x - 15, 308, 30, 4);
+    g.fillRect(bL.x - 15, 358, 30, 4);
+    g.fillStyle(0xe2e8f0, 1);
+    g.fillRect(bL.x - 17, 259, 3, 2); g.fillRect(bL.x + 14, 259, 3, 2);
+    g.fillRect(bL.x - 17, 309, 3, 2); g.fillRect(bL.x + 14, 309, 3, 2);
+    g.fillRect(bL.x - 17, 359, 3, 2); g.fillRect(bL.x + 14, 359, 3, 2);
+    
     // Bottom-Right (Blue Corner)
     g.fillStyle(0x1d4ed8, 1); // Blue base pad
-    g.fillRect(bR.x - 12, 230, 24, 185);
-    g.fillStyle(0x3b82f6, 1); // Highlight strip
-    g.fillRect(bR.x - 8, 230, 8, 185);
-    g.fillStyle(0x1e3a8a, 1); // Shadow strip
-    g.fillRect(bR.x, 230, 12, 185);
-    g.fillStyle(0x000000, 1); // Horizontal straps
+    g.fillRoundedRect(bR.x - 12, 230, 24, 185, 8);
+    g.fillStyle(0x3b82f6, 1); // Highlight cylinder strip
+    g.fillRoundedRect(bR.x - 8, 230, 8, 185, 4);
+    g.fillStyle(0x1e3a8a, 1); // Shadow cylinder strip
+    g.fillRoundedRect(bR.x, 230, 11, 185, 4);
+    
+    // Bottom-Right Top/Bottom steel caps
+    g.fillStyle(0x475569, 1);
+    g.fillEllipse(bR.x, 230, 26, 6);
+    g.fillEllipse(bR.x, 415, 26, 6);
+    g.fillStyle(0x94a3b8, 1);
+    g.fillEllipse(bR.x, 230, 16, 3);
+    
+    // Bottom-Right Leather tension straps
+    g.fillStyle(0x0f172a, 1);
     for (let sy = 250; sy < 400; sy += 45) {
       g.fillRect(bR.x - 14, sy, 28, 4);
     }
+    
+    // Bottom-Right Chrome Bracket turnbuckles connecting to ropes
+    g.fillStyle(0x64748b, 1);
+    g.fillRect(bR.x - 15, 258, 30, 4);
+    g.fillRect(bR.x - 15, 308, 30, 4);
+    g.fillRect(bR.x - 15, 358, 30, 4);
+    g.fillStyle(0xe2e8f0, 1);
+    g.fillRect(bR.x - 17, 259, 3, 2); g.fillRect(bR.x + 14, 259, 3, 2);
+    g.fillRect(bR.x - 17, 309, 3, 2); g.fillRect(bR.x + 14, 309, 3, 2);
+    g.fillRect(bR.x - 17, 359, 3, 2); g.fillRect(bR.x + 14, 359, 3, 2);
 
     // Top-Left (Neutral White Corner)
     g.fillStyle(0xd1d5db, 1); // White base pad
-    g.fillRect(tL.x - 8, tL.y - 40, 16, 60);
-    g.fillStyle(0xf3f4f6, 1); // Highlight strip
-    g.fillRect(tL.x - 6, tL.y - 40, 5, 60);
-    g.fillStyle(0x9ca3af, 1); // Shadow strip
-    g.fillRect(tL.x - 1, tL.y - 40, 9, 60);
-    g.fillStyle(0x000000, 1);
+    g.fillRoundedRect(tL.x - 8, tL.y - 40, 16, 60, 4);
+    g.fillStyle(0xf3f4f6, 1); // Highlight cylinder strip
+    g.fillRoundedRect(tL.x - 6, tL.y - 40, 5, 60, 2);
+    g.fillStyle(0x9ca3af, 1); // Shadow cylinder strip
+    g.fillRoundedRect(tL.x - 1, tL.y - 40, 7, 60, 2);
+    
+    // Top-Left top cap
+    g.fillStyle(0x475569, 1);
+    g.fillEllipse(tL.x, tL.y - 40, 18, 4);
+    
+    // Top-Left Leather tension straps and hooks
+    g.fillStyle(0x0f172a, 1);
     for (let sy = tL.y - 30; sy < tL.y + 20; sy += 18) {
       g.fillRect(tL.x - 10, sy, 20, 2);
     }
+    g.fillStyle(0x64748b, 1);
+    g.fillRect(tL.x - 10, 138, 20, 2);
+    g.fillRect(tL.x - 10, 163, 20, 2);
+    g.fillRect(tL.x - 10, 188, 20, 2);
 
     // Top-Right (Neutral White Corner)
     g.fillStyle(0xd1d5db, 1); // White base pad
-    g.fillRect(tR.x - 8, tR.y - 40, 16, 60);
-    g.fillStyle(0xf3f4f6, 1); // Highlight strip
-    g.fillRect(tR.x - 6, tR.y - 40, 5, 60);
-    g.fillStyle(0x9ca3af, 1); // Shadow strip
-    g.fillRect(tR.x - 1, tR.y - 40, 9, 60);
-    g.fillStyle(0x000000, 1);
+    g.fillRoundedRect(tR.x - 8, tR.y - 40, 16, 60, 4);
+    g.fillStyle(0xf3f4f6, 1); // Highlight cylinder strip
+    g.fillRoundedRect(tR.x - 6, tR.y - 40, 5, 60, 2);
+    g.fillStyle(0x9ca3af, 1); // Shadow cylinder strip
+    g.fillRoundedRect(tR.x - 1, tR.y - 40, 7, 60, 2);
+    
+    // Top-Right top cap
+    g.fillStyle(0x475569, 1);
+    g.fillEllipse(tR.x, tR.y - 40, 18, 4);
+    
+    // Top-Right Leather tension straps and hooks
+    g.fillStyle(0x0f172a, 1);
     for (let sy = tR.y - 30; sy < tR.y + 20; sy += 18) {
       g.fillRect(tR.x - 10, sy, 20, 2);
     }
+    g.fillStyle(0x64748b, 1);
+    g.fillRect(tR.x - 10, 138, 20, 2);
+    g.fillRect(tR.x - 10, 163, 20, 2);
+    g.fillRect(tR.x - 10, 188, 20, 2);
 
-    // 7. Glowing Ring Ropes (neon thematic color)
+    // 7. Glowing Dual-Pass Neon Ring Ropes (ultra premium light tube style)
     const neonCol = Phaser.Display.Color.HexStringToColor(colorHex).color;
     
-    // Shadow ropes for 3D depth
-    g.lineStyle(4, 0x000000, 0.65);
+    // Shadow ropes for 3D depth on the floor canvas
+    g.lineStyle(5, 0x000000, 0.45);
     g.beginPath();
     g.moveTo(bL.x, 264); g.lineTo(tL.x, horizonY - 16); g.lineTo(tR.x, horizonY - 16); g.lineTo(bR.x, 264);
     g.moveTo(bL.x, 314); g.lineTo(tL.x, horizonY + 9); g.lineTo(tR.x, horizonY + 9); g.lineTo(bR.x, 314);
     g.moveTo(bL.x, 364); g.lineTo(tL.x, horizonY + 34); g.lineTo(tR.x, horizonY + 34); g.lineTo(bR.x, 364);
     g.strokePath();
 
-    // Neon ropes
-    g.lineStyle(4, neonCol, 1);
-    // Top rope
+    // Pass 1: Glowing thick outer line (neon bloom glow)
+    g.lineStyle(9, neonCol, 0.45);
     g.beginPath();
     g.moveTo(bL.x, 260); g.lineTo(tL.x, horizonY - 20); g.lineTo(tR.x, horizonY - 20); g.lineTo(bR.x, 260);
-    g.strokePath();
-    // Middle rope
-    g.beginPath();
     g.moveTo(bL.x, 310); g.lineTo(tL.x, horizonY + 5); g.lineTo(tR.x, horizonY + 5); g.lineTo(bR.x, 310);
+    g.moveTo(bL.x, 360); g.lineTo(tL.x, horizonY + 30); g.lineTo(tR.x, horizonY + 30); g.lineTo(bR.x, 360);
     g.strokePath();
-    // Bottom rope
+
+    // Pass 2: Bright thin inner core (intense neon glow tube)
+    g.lineStyle(3, 0xffffff, 0.95);
     g.beginPath();
+    g.moveTo(bL.x, 260); g.lineTo(tL.x, horizonY - 20); g.lineTo(tR.x, horizonY - 20); g.lineTo(bR.x, 260);
+    g.moveTo(bL.x, 310); g.lineTo(tL.x, horizonY + 5); g.lineTo(tR.x, horizonY + 5); g.lineTo(bR.x, 310);
     g.moveTo(bL.x, 360); g.lineTo(tL.x, horizonY + 30); g.lineTo(tR.x, horizonY + 30); g.lineTo(bR.x, 360);
     g.strokePath();
   }
