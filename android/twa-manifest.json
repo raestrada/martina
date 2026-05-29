@@ -1,0 +1,28 @@
+{
+  "packageId": "com.martinachess.app",
+  "host": "martinachess.com",
+  "name": "Martina · Ajedrez y Cuentos",
+  "shortName": "Martina",
+  "display": "standalone",
+  "themeColor": "#012a4a",
+  "backgroundColor": "#012a4a",
+  "startUrl": "/",
+  "iconUrl": "https://martinachess.com/assets/img/icon-512.png",
+  "maskableIconUrl": "https://martinachess.com/assets/img/icon-192.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "martina"
+  },
+  "appVersionName": "1",
+  "appVersionCode": 1,
+  "orientation": "any",
+  "navigationColor": "#012a4a",
+  "navigationColorDark": "#012a4a",
+  "navigationDividerColor": "#012a4a",
+  "navigationDividerColorDark": "#012a4a",
+  "enableNotifications": false,
+  "features": {
+    "locationDelegation": { "enabled": false }
+  }
+}
