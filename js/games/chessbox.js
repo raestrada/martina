@@ -94,13 +94,9 @@ class ChessBoxGame {
       audioCtx.resume();
     }
 
-    // === BOXING: Inner Light OGG from production CDN ===
-    if (type === 'boxing') {
-      this._playInnerLightOGG(audioCtx);
-      return;
-    }
-
-    // === CHESS: Synthesized tension music ===
+    // === Inner Light OGG for both boxing and chess ===
+    this._playInnerLightOGG(audioCtx);
+    return;
     // Overdrive Distortion WaveShaper node for realistic electric guitar sound
     let distNode = window.GameAudio.distNode;
     if (!distNode) {
