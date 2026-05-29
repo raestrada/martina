@@ -759,7 +759,7 @@ class ChessBoxGame {
     if (this.selectedDifficulty === 'martina') { speedMod = 0.70; hpMod = 1.5; }
 
     const finalPunchSpeed = currentLevel.punchSpeed * speedMod;
-    const maxOpponentHP = Math.round(currentLevel.hp * hpMod * 1.25); // rebalanced from 3x to 1.25x for realistic KO opportunity!
+    const maxOpponentHP = Math.round(currentLevel.hp * hpMod * 2.0); // perfectly balanced to 2.0x for realistic yet challenging K.O. opportunity!
 
     const config = {
       type: Phaser.AUTO,
@@ -877,8 +877,8 @@ class ChessBoxGame {
                       
                       scene.cameras.main.shake(80, 0.015);
                       
-                      // Massive unblockable damage! (Increased from 8.5 to 16 for satisfying K.O. potential!)
-                      scene.opponentHP = Math.max(0, scene.opponentHP - 16);
+                      // Massive unblockable damage! (Balanced from 16 to 8 for satisfying yet fair K.O. potential!)
+                      scene.opponentHP = Math.max(0, scene.opponentHP - 8.0);
                       self.opponentHealth = Math.max(0, (scene.opponentHP / scene.opponentMaxHP) * 100);
                       window.GameAudio.playSuccess();
                       scene.spawnSparkleParticles(400, 160, '#38bdf8');
@@ -1082,9 +1082,9 @@ class ChessBoxGame {
           // Check if player punch lands on oponent
           scene.checkPunchHit = (side) => {
             if (scene.opponentState === 'stunned') {
-              // Stunned opponent takes massive critical damage! (increased from 6 to 12)
-              scene.opponentHP -= 12;
-              self.playerSuperPower = Math.min(100, self.playerSuperPower + 30); // charge Dempsey faster
+              // Stunned opponent takes massive critical damage! (balanced from 12 to 8)
+              scene.opponentHP -= 8;
+              self.playerSuperPower = Math.min(100, self.playerSuperPower + 16); // charge Dempsey (balanced rate)
               self.hitsLandedThisRound++;
               self.totalPunchesLanded++;
               window.GameAudio.playSuccess();
@@ -1118,11 +1118,11 @@ class ChessBoxGame {
               // Idle opponent blocks punches easily
               window.GameAudio.playMove();
               scene.addTextEffect(400, 140, "¡BLOQUEADO!", "#cbd5e1");
-              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 6); // charge opponent (balanced rate)
+              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 5); // charge opponent (balanced rate)
             } else if (scene.opponentState === 'telegraphing-l' || scene.opponentState === 'telegraphing-r') {
-              // Opponent gets interrupted if caught preparing a punch! Clean hit! (increased from 4 to 8)
-              scene.opponentHP -= 8;
-              self.playerSuperPower = Math.min(100, self.playerSuperPower + 35); // massive Dempsey charge
+              // Opponent gets interrupted if caught preparing a punch! Clean hit! (balanced from 8 to 6)
+              scene.opponentHP -= 6;
+              self.playerSuperPower = Math.min(100, self.playerSuperPower + 20); // massive Dempsey charge (balanced rate)
               self.hitsLandedThisRound++;
               self.totalPunchesLanded++;
               window.GameAudio.playSuccess();
@@ -1210,7 +1210,7 @@ class ChessBoxGame {
               // Block damage reduction
               scene.playerState = 'idle';
               self.playerHealth = Math.max(0, self.playerHealth - damage * 0.2);
-              self.playerSuperPower = Math.min(100, self.playerSuperPower + 25); // charge Dempsey faster
+              self.playerSuperPower = Math.min(100, self.playerSuperPower + 12); // charge Dempsey (balanced rate)
               window.GameAudio.playMove();
               scene.addTextEffect(400, 310, "🛡️ ¡BLOQUEADO!", "#38bdf8");
               scene.spawnSparkleParticles(400, 340, '#38bdf8');
@@ -1218,7 +1218,7 @@ class ChessBoxGame {
                        (side === 'right' && scene.playerState === 'dodging-r')) {
               // Dodged perfectly!
               scene.addTextEffect(400, 310, "💨 ¡ESQUIVADO!", "#4ade80");
-              self.playerSuperPower = Math.min(100, self.playerSuperPower + 45); // massive Dempsey dodge charge
+              self.playerSuperPower = Math.min(100, self.playerSuperPower + 25); // massive Dempsey dodge charge (balanced rate)
               
               // Opponent gets stunned for counter-attack
               scene.opponentState = 'stunned';
@@ -1228,7 +1228,7 @@ class ChessBoxGame {
             } else {
               // Clean impact! Player takes damage and flinches!
               self.playerHealth = Math.max(0, self.playerHealth - damage);
-              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 12); // charge opponent super (balanced rate)
+              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 10); // charge opponent super (balanced rate)
               self.hitsReceivedThisRound++;
               self.totalPunchesReceived++;
               window.GameAudio.playError();
