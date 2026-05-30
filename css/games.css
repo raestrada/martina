@@ -2082,7 +2082,20 @@
     border: none;
   }
   .game-modal-header {
-    display: none !important;  /* sin título ni barra superior */
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 10001;
+    background: transparent;
+    border: none;
+    padding: 4px 8px;
+    display: flex;
+    justify-content: flex-end;
+    pointer-events: none;
+    width: auto;
+  }
+  .game-modal-title {
+    display: none !important;
   }
   .game-modal-body {
     padding: 0 !important;
@@ -2102,12 +2115,9 @@
     overflow: hidden;
   }
 
-  /* --- Floating close button (pequeño, arriba-derecha) --- */
+  /* --- Floating close button (header posiciona) --- */
   .btn-close-modal {
-    position: fixed !important;
-    top: 6px !important;
-    right: 6px !important;
-    z-index: 10000 !important;
+    pointer-events: auto;
     font-size: 0.65rem !important;
     padding: 0.3rem 0.6rem !important;
     border-radius: 16px !important;
@@ -2281,19 +2291,37 @@
     margin: 3px !important;
   }
 
-  /* --- Mario --- */
-  #mario-game-container {
-    width: 100% !important;
-    height: 100% !important;
+  /* --- Mario level select: scrollable, compact cards --- */
+  .mario-outer-container {
+    max-width: 100% !important;
+    padding: 0.3rem !important;
   }
-  #mario-canvas-wrapper {
-    width: 100% !important;
-    height: auto !important;
-    aspect-ratio: 16/9;
+  .mario-map-container {
+    padding: 0.5rem !important;
+    max-height: 95vh;
+    max-height: 95dvh;
+    overflow-y: auto;
+    border-radius: 8px !important;
   }
-  #mario-game-ui {
-    display: none !important;  /* ocultar HUD de escritorio en mobile */
+  .mario-map-header h2 { font-size: 1rem !important; margin: 0.2rem 0 !important; }
+  .mario-map-header p { font-size: 0.65rem !important; }
+  .mario-overall-stats { padding: 0.3rem !important; margin-bottom: 0.3rem !important; }
+  .mario-overall-trophy { font-size: 2rem !important; }
+  .mario-map-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+    gap: 4px !important;
   }
+  .mario-stage-node {
+    padding: 6px !important;
+    border-radius: 8px !important;
+  }
+  .mario-node-badge { font-size: 1.4rem !important; }
+  .mario-node-num { font-size: 0.6rem !important; }
+  .mario-node-name { font-size: 0.7rem !important; }
+  .mario-node-desc { font-size: 0.55rem !important; }
+  .mario-node-play-btn { font-size: 0.65rem !important; padding: 0.2rem 0.5rem !important; }
+  .mario-level-progress { padding: 2px !important; }
+  .mario-level-stats { font-size: 0.55rem !important; }
 
   /* --- Landscape overlay --- */
   .landscape-overlay {
