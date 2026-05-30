@@ -2225,10 +2225,11 @@
   #phaser-game-parent {
     width: 100% !important;
     height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
     aspect-ratio: 16/9;
     border-radius: 0 !important;
     border: none !important;
-    min-height: 0 !important;
   }
   #phaser-game-parent canvas {
     width: 100% !important;
@@ -2238,7 +2239,7 @@
 
   /* --- ChessBox canvas: height-based (alto llena grid, ancho de 16:9) --- */
   #phaser-boxing-parent {
-    height: 100% !important;
+    height: 100%;
     width: auto !important;
     aspect-ratio: 16/9;
     margin: 0 auto;
