@@ -2062,10 +2062,11 @@
 /* ===================================================================
    MOBILE — minimal, fullscreen, sin chrome, solo el juego
    =================================================================== */
-@media (max-width: 1024px) {
-  /* --- Game modal: fullscreen, sin header --- */
+@media (max-width: 1024px), (max-height: 500px) {
+  /* --- Fullscreen modal with safe area for bottom nav bar --- */
   .game-modal {
     padding: 0 !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     overflow: hidden;
@@ -2113,6 +2114,7 @@
     flex-direction: column;
     overflow: hidden;
     background: #000;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   /* --- Floating close button (header posiciona) --- */
@@ -2152,9 +2154,9 @@
     width: 100%;
   }
 
-  /* --- Canvas: 16/9, llena el ancho, max-height evita recorte --- */
+  /* --- Canvas: 16/9 exacto, ancho limitado por altura para pantallas ultra-wide --- */
   .mario-canvas-container {
-    width: 100% !important;
+    width: min(100%, calc(100dvh * 16 / 9)) !important;
     aspect-ratio: 16/9;
     max-height: 100vh;
     max-height: 100dvh;

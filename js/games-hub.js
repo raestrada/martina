@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (gameType === 'chessbox') title = 'Chess Boxing: Duelo de Titanes';
     
     // Landscape overlay for landscape-only games on mobile
-    const isMobile = window.innerWidth < 768 || window.innerHeight < 500 || 'ontouchstart' in window;
+    const isMobile = window.innerWidth < 1024 || window.innerHeight < 500 || 'ontouchstart' in window;
     const needsLandscape = gameType === 'mario' || gameType === 'chessbox';
     if (isMobile && needsLandscape) {
       ensureLandscapeOverlay();

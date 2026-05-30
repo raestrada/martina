@@ -56,7 +56,7 @@ class ChessBoxGame {
     this._oggLoading = false;   // prevent concurrent fetches
 
     // Mobile detection
-    this.isMobile = window.innerWidth < 768 || window.innerHeight < 500 || 'ontouchstart' in window;
+    this.isMobile = window.innerWidth < 1024 || window.innerHeight < 500 || 'ontouchstart' in window;
 
     // 15 Progressive tournament levels
     this.levels = [
