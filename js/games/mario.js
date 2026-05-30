@@ -259,10 +259,14 @@ class MarioGame {
             
             <!-- Mobile Translucent Touch Gamepad -->
             <div class="mario-touch-pad">
-              <div class="touch-btn left" id="touch-left">◀</div>
-              <div class="touch-btn right" id="touch-right">▶</div>
-              <div class="touch-btn dash" id="touch-dash" style="background: rgba(245,158,11,0.25); border-color: rgba(245,158,11,0.45); color: #fef08a;">B</div>
-              <div class="touch-btn jump" id="touch-jump">A</div>
+              <div class="touch-group touch-group-left">
+                <div class="touch-btn left" id="touch-left">◀</div>
+                <div class="touch-btn dash" id="touch-dash" style="background: rgba(245,158,11,0.2); border-color: rgba(245,158,11,0.4); color: #fef08a;">B</div>
+                <div class="touch-btn right" id="touch-right">▶</div>
+              </div>
+              <div class="touch-group touch-group-right">
+                <div class="touch-btn jump" id="touch-jump">A</div>
+              </div>
             </div>
           </div>
 
