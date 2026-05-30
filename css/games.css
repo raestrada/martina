@@ -2402,6 +2402,21 @@
   }
   .mario-map-header h2 { font-size: 1rem !important; margin: 0.2rem 0 !important; }
   .mario-map-header p { font-size: 0.65rem !important; }
+  /* --- Mario HUD ultra-compact --- */
+  .mario-hud-bar {
+    padding: 0.2rem 0.4rem !important;
+    gap: 0.3rem !important;
+  }
+  .mario-hud-group { gap: 0.5rem !important; }
+  .mario-hud-item { font-size: 0.68rem !important; gap: 0.15rem !important; }
+  .mario-hud-label { display: none !important; }
+  .mario-hud-val { font-size: 0.7rem !important; }
+  .mario-hud-btn {
+    font-size: 0.55rem !important;
+    padding: 0.15rem 0.35rem !important;
+    border-radius: 6px !important;
+  }
+
   .mario-overall-stats { padding: 0.3rem !important; margin-bottom: 0.3rem !important; }
   .mario-overall-trophy { font-size: 2rem !important; }
   .mario-map-grid {

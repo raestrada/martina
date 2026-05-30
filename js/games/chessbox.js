@@ -1029,8 +1029,8 @@ class ChessBoxGame {
         ${this.isMobile ? `
         <!-- Mobile: floating mini-HUD inside canvas -->
         <div style="position: absolute; top: 4px; left: 50%; transform: translateX(-50%); z-index: 20; display: flex; gap: 6px; pointer-events: none;">
-          <span style="background: rgba(0,0,0,0.55); color: #fff; font-size: 0.6rem; padding: 2px 8px; border-radius: 8px; font-family: Outfit, sans-serif;" id="mobile-timer">⏱ 30s</span>
-          <span style="background: rgba(0,0,0,0.55); color: #f87171; font-size: 0.6rem; padding: 2px 8px; border-radius: 8px; font-family: Outfit, sans-serif;" id="mobile-punches">🥊 0/0</span>
+          <span style="background: rgba(0,0,0,0.35); color: #fff; font-size: 0.55rem; padding: 2px 6px; border-radius: 6px; font-family: Outfit, sans-serif;" id="mobile-timer">⏱ 30s</span>
+          <span style="background: rgba(0,0,0,0.35); color: #f87171; font-size: 0.55rem; padding: 2px 6px; border-radius: 6px; font-family: Outfit, sans-serif;" id="mobile-punches">🥊 0/0</span>
         </div>
         ` : ''}
 
@@ -1039,35 +1039,35 @@ class ChessBoxGame {
           <div class="mario-canvas-container" id="phaser-boxing-parent" style="border: 4px solid #ef4444; border-radius: 16px; width: 800px; height: 450px; background: #000; overflow:hidden; position:relative;">
             
             <!-- Super Power HUD Overlays -->
-            <div style="position: absolute; top: 12px; left: 12px; width: 195px; background: rgba(15,23,42,0.85); padding: 6px 10px; border-radius: 8px; border: 1.5px solid rgba(56, 189, 248, 0.4); text-align: left; font-family: 'Outfit', sans-serif; pointer-events: none; z-index: 10; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
-              <span style="font-size: 0.62rem; color: #38bdf8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; display:block; white-space: nowrap;">⚡ DEMPSEY ROLL</span>
-              <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden; margin-top: 4px; border: 1px solid rgba(255,255,255,0.05);">
+            <div style="position: absolute; top: ${this.isMobile ? '4px' : '12px'}; left: ${this.isMobile ? '4px' : '12px'}; width: ${this.isMobile ? '90px' : '195px'}; background: rgba(15,23,42,0.7); padding: ${this.isMobile ? '2px 4px' : '6px 10px'}; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.4); text-align: left; font-family: 'Outfit', sans-serif; pointer-events: none; z-index: 10;">
+              <span style="font-size: 0.55rem; color: #38bdf8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; display:${this.isMobile ? 'none' : 'block'}; white-space: nowrap;">⚡ DEMPSEY ROLL</span>
+              <div style="width: 100%; height: ${this.isMobile ? '5px' : '8px'}; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden; margin-top: ${this.isMobile ? '0' : '4px'}; border: 1px solid rgba(255,255,255,0.05);">
                 <div id="super-player-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #2563eb); transition: width 0.15s ease-out;"></div>
               </div>
-              <span id="super-player-ready" style="font-size: 0.63rem; color: #fbbf24; display: none; font-weight: 900; animation: pulse 0.8s infinite alternate; margin-top: 3px;">⚡ ¡LISTO! PULSA [ESPACIO]</span>
+              <span id="super-player-ready" style="font-size: 0.5rem; color: #fbbf24; display: none; font-weight: 900; animation: pulse 0.8s infinite alternate; margin-top: 2px;">⚡</span>
             </div>
 
-            <div style="position: absolute; top: 12px; right: 12px; width: 195px; background: rgba(15,23,42,0.85); padding: 6px 10px; border-radius: 8px; border: 1.5px solid rgba(239, 68, 68, 0.4); text-align: right; font-family: 'Outfit', sans-serif; pointer-events: none; z-index: 10; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
-              <span style="font-size: 0.62rem; color: #f87171; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; display:block; white-space: nowrap;">🏰 ENROQUE DESTRUCTOR</span>
-              <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden; margin-top: 4px; border: 1px solid rgba(255,255,255,0.05); direction: rtl;">
+            <div style="position: absolute; top: ${this.isMobile ? '4px' : '12px'}; right: ${this.isMobile ? '4px' : '12px'}; width: ${this.isMobile ? '90px' : '195px'}; background: rgba(15,23,42,0.7); padding: ${this.isMobile ? '2px 4px' : '6px 10px'}; border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.4); text-align: right; font-family: 'Outfit', sans-serif; pointer-events: none; z-index: 10;">
+              <span style="font-size: 0.55rem; color: #f87171; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; display:${this.isMobile ? 'none' : 'block'}; white-space: nowrap;">🏰 ENROQUE DESTRUCTOR</span>
+              <div style="width: 100%; height: ${this.isMobile ? '5px' : '8px'}; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden; margin-top: ${this.isMobile ? '0' : '4px'}; border: 1px solid rgba(255,255,255,0.05); direction: rtl;">
                 <div id="super-opponent-bar" style="width: 0%; height: 100%; background: linear-gradient(270deg, #ef4444, #b91c1c); transition: width 0.15s ease-out;"></div>
               </div>
-              <span id="super-opponent-ready" style="font-size: 0.63rem; color: #f43f5e; display: none; font-weight: 900; animation: pulse 0.8s infinite alternate; margin-top: 3px;">🔥 ¡SÚPER ENEMIGO!</span>
+              <span id="super-opponent-ready" style="font-size: 0.5rem; color: #f43f5e; display: none; font-weight: 900; animation: pulse 0.8s infinite alternate; margin-top: 2px;">🔥</span>
             </div>
 
-            <!-- Health Bars Overlay — compact, just thin bars under super bars -->
-            <div style="position: absolute; top: 62px; left: 12px; width: 170px; display: flex; align-items: center; gap: 6px; pointer-events: none; z-index: 10;">
-              <div style="flex: 1; height: 5px; background: rgba(0,0,0,0.5); border-radius: 3px; overflow: hidden; border: 1px solid rgba(74,222,128,0.2);">
-                <div id="health-player-bar" style="width: 100%; height: 100%; background: #4ade80; transition: width 0.3s ease-out; border-radius: 3px;"></div>
+            <!-- Health Bars Overlay — compact -->
+            <div style="position: absolute; top: ${this.isMobile ? '16px' : '62px'}; left: ${this.isMobile ? '4px' : '12px'}; width: ${this.isMobile ? '90px' : '170px'}; display: flex; align-items: center; gap: ${this.isMobile ? '3px' : '6px'}; pointer-events: none; z-index: 10;">
+              <div style="flex: 1; height: ${this.isMobile ? '3px' : '5px'}; background: rgba(0,0,0,0.5); border-radius: 2px; overflow: hidden; border: 1px solid rgba(74,222,128,0.2);">
+                <div id="health-player-bar" style="width: 100%; height: 100%; background: #4ade80; transition: width 0.3s ease-out; border-radius: 2px;"></div>
               </div>
-              <span id="health-player-text" style="font-size: 0.58rem; color: #4ade80; font-weight: 800; min-width: 30px; text-align: right;">100%</span>
+              <span id="health-player-text" style="font-size: 0.5rem; color: #4ade80; font-weight: 800; min-width: auto;">100%</span>
             </div>
 
-            <div style="position: absolute; top: 62px; right: 12px; width: 170px; display: flex; align-items: center; gap: 6px; flex-direction: row-reverse; pointer-events: none; z-index: 10;">
-              <div style="flex: 1; height: 5px; background: rgba(0,0,0,0.5); border-radius: 3px; overflow: hidden; border: 1px solid rgba(239,68,68,0.2);">
-                <div id="health-opponent-bar" style="width: 100%; height: 100%; background: #ef4444; transition: width 0.3s ease-out; border-radius: 3px;"></div>
+            <div style="position: absolute; top: ${this.isMobile ? '16px' : '62px'}; right: ${this.isMobile ? '4px' : '12px'}; width: ${this.isMobile ? '90px' : '170px'}; display: flex; align-items: center; gap: ${this.isMobile ? '3px' : '6px'}; flex-direction: row-reverse; pointer-events: none; z-index: 10;">
+              <div style="flex: 1; height: ${this.isMobile ? '3px' : '5px'}; background: rgba(0,0,0,0.5); border-radius: 2px; overflow: hidden; border: 1px solid rgba(239,68,68,0.2);">
+                <div id="health-opponent-bar" style="width: 100%; height: 100%; background: #ef4444; transition: width 0.3s ease-out; border-radius: 2px;"></div>
               </div>
-              <span id="health-opponent-text" style="font-size: 0.58rem; color: #f87171; font-weight: 800; min-width: 30px; text-align: left;">100%</span>
+              <span id="health-opponent-text" style="font-size: 0.5rem; color: #f87171; font-weight: 800; min-width: auto;">100%</span>
             </div>
 
             <!-- Mobile overlay controllers -->
