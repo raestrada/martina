@@ -1073,9 +1073,12 @@ class ChessBoxGame {
             <!-- Mobile overlay controllers — two-thumb layout -->
             <div class="mario-touch-pad chessbox-touch-pad" style="z-index: 15;">
               <div class="touch-group touch-group-left">
-                <div class="touch-btn touch-dodge-l" id="btn-dodge-l">◀<span class="touch-label">Esquivar</span></div>
-                <div class="touch-btn touch-block" id="btn-block-guard">🛡<span class="touch-label">Bloquear</span></div>
-                <div class="touch-btn touch-dodge-r" id="btn-dodge-r"><span class="touch-label">Esquivar</span>▶</div>
+                <div class="touch-dpad">
+                  <div class="touch-btn touch-block" id="btn-block-guard">🛡<span class="touch-label">Bloquear</span></div>
+                  <div class="touch-btn touch-dodge-l" id="btn-dodge-l">◀<span class="touch-label">Esquivar</span></div>
+                  <div class="touch-dpad-spacer"></div>
+                  <div class="touch-btn touch-dodge-r" id="btn-dodge-r"><span class="touch-label">Esquivar</span>▶</div>
+                </div>
               </div>
               <div class="touch-group touch-group-right">
                 <div class="touch-btn touch-punch-l" id="btn-punch-l">A<span class="touch-label">Jab</span></div>

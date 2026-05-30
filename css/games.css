@@ -2314,6 +2314,18 @@
   }
   .touch-group-right { justify-content: flex-end; }
 
+  /* ChessBox left group: D-pad layout (block top-center, dodge bottom) */
+  .touch-dpad {
+    display: grid;
+    grid-template-columns: 56px 56px 56px;
+    grid-template-rows: 56px 56px;
+    gap: 4px;
+  }
+  .touch-dpad .touch-block { grid-column: 2; grid-row: 1; }
+  .touch-dpad .touch-dodge-l { grid-column: 1; grid-row: 2; }
+  .touch-dpad .touch-dodge-r { grid-column: 3; grid-row: 2; }
+  .touch-dpad-spacer { display: none; }
+
   .touch-btn {
     width: 56px !important;
     height: 56px !important;
