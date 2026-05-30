@@ -165,48 +165,127 @@ Cada cuento sigue este arco narrativo, indistintamente del mundo:
 
 ## Formato técnico
 
-### Archivos
-- HTML estático en `cuentos/XX-titulo-del-cuento.html`
-- Nomenclatura: número de dos dígitos + guiones + título en minúsculas sin acentos
-- Ejemplo: `01-el-primer-movimiento.html`
+### Stack
+El sitio usa **[Eleventy](https://www.11ty.dev/)** (11ty) como generador de sitios estáticos. Las páginas se escriben en templates `.njk` (Nunjucks) y Eleventy las compila a HTML estático en `_site/`. Esto permite reutilizar el header, nav, footer y SEO compartidos sin duplicar código.
 
-### Plantilla HTML
-Cada cuento debe incluir:
-```html
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>[Título] — Martina · Cuentos para dormir</title>
-  <link rel="stylesheet" href="../css/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♕</text></svg>">
-</head>
-<body>
-  <!-- Mismo <header class="site-header"> que en cuentos existentes -->
-  <!-- Mismo <nav class="nav-bar"> que en cuentos existentes -->
-  <main>
-    <article class="story-body">
-      <header class="story-header">
-        <span class="story-number">Cuento [Nº]</span>
-        <h1>[Título]</h1>
-        <p class="story-subtitle">[Subtítulo ingenioso que adelanta el tono sin spoilear]</p>
-      </header>
-      <!-- Cuerpo del cuento con <p>, <div class="story-divider">, etc. -->
-      <!-- Final: botón volver al inicio -->
-    </article>
-  </main>
-  <!-- Mismo <footer class="site-footer"> que en cuentos existentes -->
-  <script src="../js/main.js"></script>
-</body>
-</html>
+### Comandos
+```bash
+npm run dev      # servidor local en http://localhost:8080 con live reload
+npm run build    # genera los HTML estáticos en _site/
+npm run clean    # borra _site/
 ```
 
+`_site/` está en `.gitignore`. Solo se editan los archivos `.njk`.
+
+### Estructura de archivos
+```
+_includes/
+  base.njk              # Layout principal: <head>, header, nav, footer, Google Analytics
+  disqus.njk            # Bloque de comentarios Disqus (reutilizado en cuentos, juegos, etc.)
+  story-footer.njk      # Share links + botón volver + Disqus (incluido al final de cada cuento)
+index.njk               # Homepage (hero + grid de cuentos)
+acerca-de.njk           # Página "Acerca de"
+album.njk               # Álbum de clavadas
+difundir.njk            # Página de difusión
+galeria.njk             # Galería de ilustraciones
+juegos.njk              # Hub de juegos
+cuentos/
+  XX-titulo-del-cuento.njk   # Cada cuento (16 existentes)
+  cuentos.11tydata.js        # Config de permalink para cuentos
+css/                    # CSS estático (copiado a _site/ tal cual)
+js/                     # JS estático (copiado a _site/ tal cual)
+assets/                 # Imágenes, video, audio (copiado a _site/ tal cual)
+```
+
+### Cómo crear un cuento nuevo
+
+1. Crear `cuentos/XX-titulo-del-cuento.njk` con este formato:
+```njk
+---
+layout: base.njk
+title: Título del Cuento — Martina · Cuentos de Ajedrez
+description: Descripción SEO del cuento.
+keywords: ajedrez, cuentos infantiles, concepto, Martina
+ogType: article
+ogImage: /assets/img/imagen-thumbnail.png
+activeNav: cuentos
+---
+
+<article class="story-body">
+
+  <header class="story-header">
+    <span class="story-number">Cuento XX</span>
+    <h1>Título del Cuento</h1>
+    <p class="story-subtitle">Subtítulo ingenioso</p>
+    <a href="#partida-real" class="jump-to-game fade-in stagger-3">♟️ Ver partida histórica ↓</a>
+  </header>
+
+  <details class="audiobook-container" style="margin: 2rem 0; padding: 1rem; background-color: var(--board-dark); border-radius: var(--radius); cursor: pointer;">
+    <summary style="color: var(--board-light); font-weight: bold; font-size: 1.1rem; text-align: center; outline: none;">
+      ▶️ ¿Prefieres escuchar la historia? Clic aquí para ver el Audiolibro Animado
+    </summary>
+    <div style="text-align: center; margin-top: 1.5rem; cursor: default;">
+      <video controls style="width: 100%; max-width: 800px; border-radius: var(--radius); box-shadow: var(--shadow-hover);">
+        <source src="/assets/video/cuento_XX_audiolibro.mp4" type="video/mp4">
+        Tu navegador no soporta el elemento de video.
+      </video>
+      <div style="margin-top: 1rem;">
+        <a href="/assets/video/cuento_XX_audiolibro.mp4" download class="btn" style="display: inline-block;">⬇️ Descargar Video (MP4)</a>
+      </div>
+    </div>
+  </details>
+
+  <!-- Cuerpo del cuento: <p>, <div class="story-divider">, <div class="story-image-wrapper">, etc. -->
+
+  <!-- Sección de la partida real (opcional) -->
+  <div id="partida-real" class="historical-epilogue fade-in">
+    <h3>🏛️ El Secreto detrás del Cuento</h3>
+    <p>Descripción de la partida histórica...</p>
+    <div class="chess-diagram-container" style="text-align: center;">
+      <iframe src="https://lichess.org/embed/XXXXX?theme=auto&bg=auto" width="100%" height="400" frameborder="0" style="max-width: 600px; border-radius: var(--radius); box-shadow: var(--shadow-hover);"></iframe>
+    </div>
+  </div>
+
+  {% include "story-footer.njk" %}
+
+</article>
+```
+
+El `{% include "story-footer.njk" %}` reemplaza todo el bloque de share links + botón volver + Disqus. No se copia manualmente.
+
+### Cómo editar elementos compartidos
+
+- **Header / Nav / Footer / SEO / Google Analytics**: editar `_includes/base.njk`. Afecta a todas las páginas.
+- **Comentarios Disqus**: editar `_includes/disqus.njk`. Afecta a cuentos, juegos, galería y álbum.
+- **Share links + volver**: editar `_includes/story-footer.njk`. Afecta a todos los cuentos.
+
 ### Actualizar índice
-Al crear un nuevo cuento, actualizar `index.html`:
-- Reemplazar el placeholder «Próximamente» si existe
-- Agregar una nueva `<div class="card">` en la sección de cuentos con enlace, número, título y excerpt
-- Si no hay placeholder, agregar una card placeholder para el siguiente
+
+Al crear un nuevo cuento, actualizar `index.njk`:
+- Agregar una nueva `<a class="story-card">` en el grid con enlace, número, título, excerpt e imagen
+- Si ocupaba el placeholder «Próximamente», reemplazarlo; si no, agregar un placeholder nuevo
+
+### Front matter de cada página
+
+Las variables disponibles en el front matter (YAML entre `---`):
+
+| Variable | Descripción |
+|----------|-------------|
+| `layout` | `base.njk` (obligatorio) |
+| `title` | Título de la página (etiqueta `<title>`) |
+| `description` | Meta description para SEO |
+| `keywords` | Meta keywords |
+| `ogImage` | Imagen para Open Graph (ruta absoluta: `/assets/img/...`) |
+| `ogType` | `website` o `article` (default: `website`) |
+| `ogTitle` | Título OG (opcional, usa `title` si no se especifica) |
+| `ogDescription` | Descripción OG (opcional, usa `description`) |
+| `activeNav` | Link activo en el nav: `inicio`, `cuentos`, `juegos`, `album`, `acerca-de`, `galeria`, `difundir` |
+| `extraCss` | Array de CSS adicionales (ej: `['/css/album.css']`) |
+| `extraJs` | Array de JS adicionales cargados antes de `main.js` |
+| `footerText` | Texto del footer (opcional, default: "Historias originales para Martina, por papá.") |
+| `footerQuote` | Cita del footer (opcional, default: cita de Mikhail Tal) |
+
+Las rutas a assets, CSS y JS usan **paths absolutos** (ej: `/css/style.css`, `/assets/img/...`). En el HTML generado dentro de `_site/` estos paths funcionan correctamente porque `_site/` es la raíz del servidor.
 
 ---
 

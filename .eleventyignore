@@ -1,0 +1,17 @@
+*.html
+node_modules/
+.git/
+.github/
+scripts/
+gradle/
+app/
+_site/
+.venv/
+__pycache__/
+README.md
+AGENTS.md
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+LICENSE
+SECURITY.md
+CITATION.cff

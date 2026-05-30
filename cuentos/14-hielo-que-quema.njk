@@ -1,61 +1,17 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="theme-color" content="#012a4a">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hielo que Quema — Martina · Cuentos de Ajedrez</title>
-  
-  <meta name="description" content="Martina conoce al rival que la Sombra le anunció: un chico silencioso que nunca celebra, nunca duda, y que llevaba años esperando a alguien como ella.">
-  <meta name="keywords" content="ajedrez, cuentos infantiles, ajedrez para niños, rivalidad, torneo abierto, respeto, cuentos para dormir, Martina">
-  <meta name="author" content="Papá de Martina">
-  <meta name="robots" content="index, follow">
-  
-  <meta property="og:type" content="article">
-  <meta property="og:title" content="Hielo que Quema — Martina · Cuentos de Ajedrez">
-  <meta property="og:description" content="Martina conoce al rival que la Sombra le anunció. Dos estilos. Un tablero.">
-  <meta property="og:image" content="../assets/img/martina_vs_leon_1780000000000.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Hielo que Quema — Martina · Cuentos de Ajedrez">
-  <meta name="twitter:description" content="Martina conoce al rival que la Sombra le anunció.">
-  <meta name="twitter:image" content="../assets/img/martina_vs_leon_1780000000000.png">
+---
+layout: base.njk
+title: Hielo que Quema — Martina · Cuentos de Ajedrez
+description: "Martina conoce al rival que la Sombra le anunció: un chico silencioso que nunca celebra, nunca duda, y que llevaba años esperando a alguien como ella."
+keywords: ajedrez, cuentos infantiles, ajedrez para niños, rivalidad, torneo abierto, respeto, cuentos para dormir, Martina
+ogType: article
+ogImage: /assets/img/martina_vs_leon_1780000000000.png
+ogTitle: Hielo que Quema — Martina · Cuentos de Ajedrez
+ogDescription: Martina conoce al rival que la Sombra le anunció. Dos estilos. Un tablero.
+activeNav: cuentos
+---
 
-  <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="../css/style.css">
-  <link rel="icon" type="image/png" href="../assets/img/martina_profile_1778904530237.png">
+<article class="story-body">
 
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8VT55Y2PFC"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8VT55Y2PFC');
-  </script>
-</head>
-<body>
-
-<header class="site-header-compact">
-  <div class="header-content-compact">
-    <div class="site-title-compact">
-      <span class="header-piece-compact">♕</span> <a href="../index.html">Martina</a>
-    </div>
-    <button class="hamburger-btn" id="hamburger-btn" aria-label="Menú">☰</button>
-      <nav class="nav-bar-compact">
-      <a href="../index.html" class="nav-link">Inicio</a>
-      <a href="../index.html#cuentos" class="nav-link active">Cuentos</a>
-      <a href="../juegos.html" class="nav-link">Juegos</a>
-      <a href="../album.html" class="nav-link">Álbum</a>
-      <a href="../acerca-de.html" class="nav-link">Acerca de</a>
-      <a href="../galeria.html" class="nav-link">Galería</a>
-      <a href="../difundir.html" class="nav-link">Difundir</a>
-    </nav>
-  </div>
-</header>
-
-<main>
-
-  <article class="story-body">
 
     <header class="story-header">
       <span class="story-number">Cuento 14</span>
@@ -70,11 +26,11 @@
       </summary>
       <div style="text-align: center; margin-top: 1.5rem; cursor: default;">
         <video controls style="width: 100%; max-width: 800px; border-radius: var(--radius); box-shadow: var(--shadow-hover);">
-          <source src="../assets/video/cuento_14_audiolibro.mp4" type="video/mp4">
+          <source src="/assets/video/cuento_14_audiolibro.mp4" type="video/mp4">
           Tu navegador no soporta el elemento de video.
         </video>
         <div style="margin-top: 1rem;">
-          <a href="../assets/video/cuento_14_audiolibro.mp4" download="Cuento_14_Hielo_Que_Quema.mp4" class="btn" style="display: inline-block;">⬇️ Descargar Video (MP4)</a>
+          <a href="/assets/video/cuento_14_audiolibro.mp4" download="Cuento_14_Hielo_Que_Quema.mp4" class="btn" style="display: inline-block;">⬇️ Descargar Video (MP4)</a>
         </div>
       </div>
     </details>
@@ -247,7 +203,7 @@
     </p>
 
     <div class="story-image-wrapper fade-in">
-      <img src="../assets/img/martina_vs_leon_1780000000000.png" alt="Martina y León concentrados en un intenso duelo de ajedrez entre el fuego y el hielo" class="story-image">
+      <img src="/assets/img/martina_vs_leon_1780000000000.png" alt="Martina y León concentrados en un intenso duelo de ajedrez entre el fuego y el hielo" class="story-image">
     </div>
 
     <div class="story-divider">❄️ ❄️ ❄️</div>
@@ -690,17 +646,6 @@
     </div>
 
     <div style="text-align:center;margin:2rem 0;">
-      <a href="../index.html" class="btn">← Volver al inicio</a>
+      <a href="/" class="btn">← Volver al inicio</a>
     </div>
-
-  </article>
-
-</main>
-
-<footer class="site-footer">
-  <p>Historias originales para Martina, por papá.<br>«Ganar sin esfuerzo es como comer sin hambre. Lo haces, pero no lo disfrutas.» — León</p>
-</footer>
-
-<script src="../js/main.js"></script>
-</body>
-</html>
+</article>

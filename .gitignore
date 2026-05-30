@@ -218,5 +218,35 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
-
 temp_*
+android.keystore
+
+_site/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Android & Bubblewrap build artifacts
+*.apk
+*.aab
+*.idsig
+manifest-checksum.txt
+.gradle/
+build/
+app/build/
+local.properties
+app/local.properties
+*.keystore
+*.jks
+
+# Eleventy
+_site/
+.cache/
+.11ty-cache/
+
+
+node_modules

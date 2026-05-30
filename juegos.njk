@@ -1,0 +1,223 @@
+---
+layout: base.njk
+permalink: /juegos.html
+title: El Tablero de Juegos — Martina · Cuentos de Ajedrez
+description: Diviértete con los juegos interactivos 100% JS de Martina. Practica aperturas de ajedrez, domina los saltos del caballo y pon a prueba tu táctica.
+keywords: ajedrez, juegos de ajedrez, ajedrez para niños, aprender ajedrez, minijuegos ajedrez, Martina, caballo ajedrez, aperturas ajedrez
+ogImage: /assets/img/juegos_banner_principal_1779376644977.png
+activeNav: juegos
+extraCss:
+  - /css/games.css
+extraJs:
+  - /js/games/assets_b64.js
+  - /js/games/mario-data.js
+  - /js/games/mario-chess.js
+footerText: Historias y juegos originales para Martina, por papá.
+---
+
+<section class="hero fade-in">
+  <div class="hero-image-container games-banner-container">
+    <img src="/assets/img/juegos_banner_principal_1779376644977.png" alt="Tablero Mágico de Juegos de Martina">
+  </div>
+  <div class="hero-text">
+    <h1>Tablero de Juegos</h1>
+    <p class="hero-subtitle">Pon a prueba tu instinto de ataque, tu velocidad con el reloj y tus saltos tácticos. ¡Diviértete y aprende ajedrez real!</p>
+    <a href="#juegos-seccion" onclick="event.preventDefault();document.getElementById('juegos-seccion').scrollIntoView({behavior:'smooth'});" class="btn" style="display:inline-block;margin-top:1rem;background:var(--rose);color:#fff;font-weight:800;padding:0.6rem 1.8rem;border-radius:20px;text-decoration:none;animation:bounce 2s infinite ease-in-out;">🎮 Ir a los Juegos ↓</a>
+  </div>
+</section>
+
+<!-- DASHBOARD DE LOGROS Y PROGRESO -->
+<section class="dashboard-section fade-in stagger-1">
+  <div class="dashboard-card">
+    <div class="dashboard-stats-grid">
+      <div class="dash-stat-item">
+        <div class="dash-stat-icon">🏆</div>
+        <div class="dash-stat-details">
+          <span class="dash-stat-label">Puntaje Mágico</span>
+          <span class="dash-stat-value" id="dash-magic-score">0 pts</span>
+        </div>
+      </div>
+      <div class="dash-stat-item">
+        <div class="dash-stat-icon">⭐</div>
+        <div class="dash-stat-details">
+          <span class="dash-stat-label">Estrellas Totales</span>
+          <span class="dash-stat-value" id="dash-total-stars">0 / 900</span>
+        </div>
+      </div>
+      <div class="dash-stat-item">
+        <div class="dash-stat-icon">🎒</div>
+        <div class="dash-stat-details">
+          <span class="dash-stat-label">Sobres en Mochila</span>
+          <span class="dash-stat-value" id="dash-card-packs">0</span>
+        </div>
+      </div>
+      <div class="dash-stat-item">
+        <div class="dash-stat-icon">📖</div>
+        <div class="dash-stat-details">
+          <span class="dash-stat-label">Álbum de Clavadas</span>
+          <span class="dash-stat-value" id="dash-album-stickers">0 / 24</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-rank-row">
+      <div class="rank-badge-wrapper">
+        <span class="rank-emoji" id="rank-emoji">🐣</span>
+        <span class="rank-title" id="rank-title">Cargando Rango...</span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="dashboard-progress-fill" style="width: 0%;"></div>
+      </div>
+      <span class="progress-text" id="dashboard-progress-text">0%</span>
+    </div>
+
+    <!-- INSIGNIAS DESBLOQUEADAS -->
+    <div class="badges-showcase">
+      <h4 class="showcase-title">🏅 Tus Insignias de Ajedrez</h4>
+      <div class="badges-row" id="badges-row">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="juegos-seccion" class="fade-in stagger-1" style="margin-top:2rem;">
+  <h2 style="margin-bottom:2rem; text-align: center; color: var(--rose);">🏆 Selecciona un Desafío 🏆</h2>
+
+  <div class="story-grid">
+
+    <!-- ⭐ JUEGO DESTACADO: Super Martina -->
+    <div class="story-card game-card game-card-featured" data-game="mario">
+      <div class="story-thumbnail">
+        <img src="/assets/img/super_martina_juego_1780024581060.png" alt="Super Martina: El Salto Mágico">
+        <span class="featured-ribbon">⭐ DESTACADO</span>
+      </div>
+      <div class="story-card-content">
+        <span class="card-meta" style="background: var(--gold); color: var(--magic-dark); font-weight: 800;">⭐ ¡Juego Estrella! ⭐</span>
+        <h3 class="card-title">⭐️ Super Martina: El Salto Mágico</h3>
+        <p class="card-excerpt">
+          ¡Corre, salta y explora el Reino de las 64 Casillas! Supera obstáculos en la Pradera con música retro de 8 bits y controles táctiles.
+        </p>
+        <button class="btn btn-block btn-start-game" style="background: var(--gold); color: var(--magic-dark); border-color: var(--gold); font-weight: 800;">¡Iniciar Aventura! ➔</button>
+      </div>
+    </div>
+    
+    <!-- 🥊 JUEGO DESTACADO: Chess Boxing -->
+    <div class="story-card game-card game-card-featured" data-game="chessbox">
+      <div class="story-thumbnail">
+        <img src="/assets/img/chessboxing_card_thumb.png" alt="Chess Boxing: Duelo de Titanes">
+        <span class="featured-ribbon" style="background: linear-gradient(135deg, #ef4444, #f59e0b); color: white;">🥊 NUEVO</span>
+      </div>
+      <div class="story-card-content">
+        <span class="card-meta" style="background: var(--gold); color: var(--magic-dark); font-weight: 800;">🥊 ¡Juego Estrella! 🥊</span>
+        <h3 class="card-title">🥊 Chess Boxing: Duelo de Titanes</h3>
+        <p class="card-excerpt">
+          ¡Alterna puños y mente! Esquiva los feroces ganchos del General Torreón en el ring y mantén la cabeza fría frente a Stockfish en el tablero.
+        </p>
+        <button class="btn btn-block btn-start-game" style="background: var(--gold); color: var(--magic-dark); border-color: var(--gold); font-weight: 800;">¡Subir al Ring! →</button>
+      </div>
+    </div>
+
+    <!-- Minijuego 1: Las Empanadas de Torreta -->
+    <div class="story-card game-card" data-game="torreta">
+      <div class="story-thumbnail">
+        <img src="/assets/img/juego_torreta_empanadas_1779376721444.png" alt="Empanadas de Torreta">
+      </div>
+      <div class="story-card-content">
+        <span class="card-meta btn-orange">Cocina & Memoria</span>
+        <h3 class="card-title">🥐 Las Empanadas de Torreta</h3>
+        <p class="card-excerpt">
+          Prepara deliciosas recetas en la casilla c3 realizando las primeras jugadas de aperturas famosas en el reloj. ¡Cuidado con quemarlas!
+        </p>
+        <button class="btn btn-block btn-start-game">Cocinar Aperturas →</button>
+      </div>
+    </div>
+
+    <!-- Minijuego 2: El Laberinto del Caballo de Ŋ -->
+    <div class="story-card game-card" data-game="caballo">
+      <div class="story-thumbnail">
+        <img src="/assets/img/juego_caballo_l_1779376737849.png" alt="Caballo de Ŋ">
+      </div>
+      <div class="story-card-content">
+        <span class="card-meta btn-green">Táctica & Coordinación</span>
+        <h3 class="card-title">🐴 El Laberinto del Caballo de Ŋ</h3>
+        <p class="card-excerpt">
+          Guía al caballo en su entrenamiento especial de saltos en L. Atrapa ricas zanahorias y esquiva las trampas heladas del tablero.
+        </p>
+        <button class="btn btn-block btn-start-game">Saltar en L →</button>
+      </div>
+    </div>
+
+    <!-- Minijuego 3: El Álbum de Clavadas -->
+    <div class="story-card game-card-link" onclick="window.location.href='/album.html'" style="cursor: pointer;">
+      <div class="story-thumbnail">
+        <img src="/assets/img/alfil_exiliado_1778944848314.png" alt="Alfil Exiliado">
+      </div>
+      <div class="story-card-content">
+        <span class="card-meta btn-blue" style="background: var(--magic-blue); color: white;">Colección & Táctica</span>
+        <h3 class="card-title">📖 Álbum de Clavadas</h3>
+        <p class="card-excerpt">
+          ¡Colecciona los 24 cromos de clavadas mágicas! Resuelve acertijos tácticos, abre sobres y pégalos en tu libreta de sueños.
+        </p>
+        <button class="btn btn-block" style="background: var(--gold); color: var(--magic-dark); font-weight: 800;">Abrir Álbum →</button>
+      </div>
+    </div>
+
+    <!-- Minijuego 4: El Estornudo de la Reina Negra -->
+    <div class="story-card game-card" data-game="reina">
+      <div class="story-thumbnail">
+        <img src="/assets/img/reina_estornudo_1779239591968.png" alt="Reina Negra Estornudando">
+      </div>
+      <div class="story-card-content">
+        <span class="card-meta" style="background: var(--rose); color: white;">Acción & Reflejos</span>
+        <h3 class="card-title">🤧 ¡Cuidado con el Estornudo!</h3>
+        <p class="card-excerpt">
+          Ayuda a Peoncito a deslizarse con elegancia por el tablero, coleccionar sus bigotes perdidos y escapar de las nubes de estornudos de la Reina Negra.
+        </p>
+        <button class="btn btn-block btn-start-game" style="background: var(--rose); border-color: var(--rose);">Esquivar Estornudos →</button>
+      </div>
+    </div>
+
+    <!-- Minijuego 5: Martina contra su Sombra -->
+    <div class="story-card game-card" data-game="sombra">
+      <div class="story-thumbnail">
+        <img src="/assets/img/martina_sombra_1779972341205.png" alt="Martina contra su Sombra">
+      </div>
+      <div class="story-card-content">
+        <span class="card-meta" style="background: #9d4edd; color: white;">Estrategia & Reflejos</span>
+        <h3 class="card-title">👥 Martina contra su Sombra</h3>
+        <p class="card-excerpt">
+          Coordina los movimientos de Martina y su Sombra en espejo. Evita los rayos de clavada de la Sombra y salva a los Peoncitos.
+        </p>
+        <button class="btn btn-block btn-start-game" style="background: #9d4edd; border-color: #9d4edd;">Vencer al Espejo →</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% include "disqus.njk" %}
+
+{% block afterMain %}
+<!-- MODAL DE PANTALLA COMPLETA PARA EL JUEGO -->
+<div id="game-modal" class="game-modal">
+  <div class="game-modal-content">
+    <header class="game-modal-header">
+      <div class="game-modal-title">
+        <span class="game-modal-icon">🎮</span> <span id="active-game-title">Juego</span>
+      </div>
+      <button class="btn-close-modal" id="btn-close-modal" aria-label="Cerrar juego">
+        Salir al Tablero ✕
+      </button>
+    </header>
+    
+    <div class="game-modal-body">
+      <div id="game-sandbox"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extraBodyEnd %}
+<script>if(!window.location.hash)window.scrollTo(0,0);</script>
+<script src="/js/games-hub.js"></script>
+{% endblock %}
