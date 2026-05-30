@@ -2411,7 +2411,7 @@
     padding: 0.5rem !important;
   }
   .transition-panel {
-    padding: 10px 15px !important;
+    padding: 6px 12px !important;
     max-width: 95% !important;
     width: 90% !important;
     max-width: 400px !important;
@@ -2419,39 +2419,39 @@
     overflow-y: auto !important;
     border-radius: 12px !important;
   }
-  .transition-panel h2 { font-size: 1rem !important; margin: 4px 0 !important; }
-  .transition-panel p { font-size: 0.68rem !important; margin-bottom: 6px !important; line-height: 1.3 !important; }
-  .transition-panel .round-badge { font-size: 0.6rem !important; }
+  .transition-panel h2 { font-size: 0.92rem !important; margin: 2px 0 !important; }
+  .transition-panel p { font-size: 0.64rem !important; margin-bottom: 4px !important; line-height: 1.25 !important; }
+  .transition-panel .round-badge { font-size: 0.55rem !important; padding: 2px 6px !important; }
   
   /* Selectores para anular estilos en línea en el panel de transición móvil */
   .transition-panel > div[style*="dashed"] {
-    padding: 8px !important;
-    margin-bottom: 8px !important;
-    border-radius: 8px !important;
+    padding: 4px 8px !important;
+    margin-bottom: 4px !important;
+    border-radius: 6px !important;
   }
   .transition-panel > div[style*="dashed"] h4 {
-    margin-bottom: 4px !important;
-    font-size: 0.8rem !important;
+    margin-bottom: 2px !important;
+    font-size: 0.72rem !important;
   }
   .transition-panel > div[style*="dashed"] div {
-    font-size: 0.7rem !important;
-    margin-bottom: 3px !important;
+    font-size: 0.65rem !important;
+    margin-bottom: 2px !important;
   }
   .transition-panel > div[style*="space-around"] {
-    padding: 6px !important;
-    margin-bottom: 10px !important;
-    border-radius: 8px !important;
+    padding: 4px !important;
+    margin-bottom: 6px !important;
+    border-radius: 6px !important;
   }
   .transition-panel > div[style*="space-around"] div span {
-    font-size: 0.85rem !important;
+    font-size: 0.75rem !important;
   }
   .transition-panel > div[style*="space-around"] div span[style*="uppercase"] {
-    font-size: 0.58rem !important;
+    font-size: 0.52rem !important;
   }
 
   /* --- Victory/Defeat --- */
   .game-screen {
-    padding: 10px 15px !important;
+    padding: 6px 12px !important;
     max-width: 95% !important;
     width: 90% !important;
     max-width: 400px !important;
@@ -2459,27 +2459,30 @@
     overflow-y: auto !important;
     border-radius: 12px !important;
   }
-  .game-screen h2 { font-size: 1rem !important; margin: 4px 0 !important; }
-  .game-screen p { font-size: 0.7rem !important; margin-bottom: 6px !important; }
-  .game-screen-img { width: 50px !important; height: 50px !important; margin-bottom: 8px !important; }
-  .game-screen-img div { font-size: 1.8rem !important; }
-  .game-screen-stats { gap: 4px !important; margin-bottom: 8px !important; }
-  .stat-item { padding: 0.3rem 0.5rem !important; font-size: 0.6rem !important; }
-  .stat-val { font-size: 0.85rem !important; }
+  .game-screen h2 { font-size: 0.92rem !important; margin: 2px 0 !important; }
+  .game-screen p { font-size: 0.65rem !important; margin-bottom: 4px !important; }
+  .game-screen-img { width: 40px !important; height: 40px !important; margin-bottom: 4px !important; }
+  .game-screen-img div { font-size: 1.4rem !important; }
+  .game-screen-stats { gap: 4px !important; margin-bottom: 6px !important; }
+  .stat-item { padding: 0.2rem 0.4rem !important; font-size: 0.55rem !important; }
+  .stat-val { font-size: 0.75rem !important; }
   .btn-game-screen {
-    font-size: 0.7rem !important;
-    padding: 0.4rem 0.8rem !important;
-    margin: 3px !important;
+    font-size: 0.65rem !important;
+    padding: 0.35rem 0.8rem !important;
+    margin: 2px !important;
   }
   .game-screen .star-filled,
   .game-screen .star-empty {
-    font-size: 1.8rem !important;
+    font-size: 1.5rem !important;
+  }
+  .game-screen div[style*="margin: 1rem 0"] {
+    margin: 4px 0 !important;
   }
 
   /* --- Mario Victory & GameOver Overlays on Mobile --- */
   .mario-victory-panel,
   .mario-gameover-panel {
-    padding: 10px 15px !important;
+    padding: 6px 12px !important;
     max-width: 95% !important;
     width: 90% !important;
     max-width: 400px !important;
@@ -2490,44 +2493,44 @@
   }
   .mario-victory-crown,
   .mario-gameover-skull {
-    font-size: 24px !important;
-    margin-bottom: 2px !important;
+    font-size: 20px !important;
+    margin-bottom: 1px !important;
   }
   .mario-victory-panel h2,
   .mario-gameover-panel h2 {
-    font-size: 1.1rem !important;
-    margin: 4px 0 !important;
+    font-size: 0.95rem !important;
+    margin: 2px 0 !important;
   }
   .mario-victory-msg,
   .mario-gameover-msg {
-    font-size: 0.72rem !important;
-    margin-bottom: 8px !important;
-    line-height: 1.3 !important;
+    font-size: 0.65rem !important;
+    margin-bottom: 6px !important;
+    line-height: 1.25 !important;
   }
   .mario-victory-stats,
   .mario-gameover-stats {
-    padding: 6px 8px !important;
-    margin-bottom: 10px !important;
-    gap: 8px !important;
+    padding: 4px 6px !important;
+    margin-bottom: 6px !important;
+    gap: 4px !important;
   }
   .mario-stat-icon {
-    font-size: 16px !important;
-    margin-bottom: 2px !important;
+    font-size: 14px !important;
+    margin-bottom: 1px !important;
   }
   .mario-stat-num {
-    font-size: 14px !important;
+    font-size: 12px !important;
   }
   .mario-stat-name {
-    font-size: 8px !important;
+    font-size: 7px !important;
     letter-spacing: 0.5px !important;
   }
   .mario-victory-buttons,
   .mario-gameover-buttons {
-    gap: 8px !important;
+    gap: 6px !important;
   }
   .mario-vic-btn {
-    padding: 6px 12px !important;
-    font-size: 11px !important;
+    padding: 4px 10px !important;
+    font-size: 10px !important;
     border-radius: 6px !important;
   }
 
@@ -2815,6 +2818,8 @@
     max-width: 860px !important;
     margin: auto !important;
     max-height: 96vh !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
   .game-modal-header {
     padding: 0.4rem 1rem !important;
@@ -2829,6 +2834,7 @@
   .game-modal-body {
     padding: 0.5rem !important;
     min-height: 0 !important;
+    overflow-y: auto !important;
   }
 
   /* --- Compact Mario (mario.js) on Laptops --- */
