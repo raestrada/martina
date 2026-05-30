@@ -2201,7 +2201,8 @@
     border-radius: 0 !important;
     width: 100%;
     max-width: 100% !important;
-    height: 100%;
+    flex: 1;
+    min-height: 0;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -2226,20 +2227,20 @@
   /* --- Canvas: 16/9 exacto, cabe todo sin recortar, padding abajo para touch --- */
   .mario-canvas-container {
     width: 100% !important;
-    max-width: calc((100dvh - 90px) * 16 / 9) !important;
     aspect-ratio: 16/9;
     max-height: calc(100dvh - 90px) !important;
     border-radius: 0 !important;
     border: none !important;
-    flex-shrink: 0;
+    flex: 1;
+    min-height: 0;
   }
   #phaser-boxing-parent {
     width: 100% !important;
-    max-width: calc((100dvh - 90px) * 16 / 9) !important;
     aspect-ratio: 16/9;
     max-height: calc(100dvh - 90px) !important;
     position: relative !important;
-    flex-shrink: 0;
+    flex: 1;
+    min-height: 0;
   }
   #phaser-boxing-parent canvas {
     width: 100% !important;
@@ -2356,16 +2357,6 @@
     width: 70px !important;
     height: 70px !important;
     font-size: 1.8rem !important;
-  }
-
-  /* Canvas: starts near top, fits above touch controls */
-  .mario-canvas-container {
-    max-height: calc(100dvh - 80px) !important;
-    max-width: calc((100dvh - 80px) * 16 / 9) !important;
-  }
-  #phaser-boxing-parent {
-    max-height: calc(100dvh - 80px) !important;
-    max-width: calc((100dvh - 80px) * 16 / 9) !important;
   }
 
   /* --- Keyboard hints ocultos --- */
