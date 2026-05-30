@@ -2222,12 +2222,17 @@
   }
 
   /* --- Canvas: 16/9 exacto, cabe todo sin recortar, padding abajo para touch --- */
-  .mario-canvas-container {
+  /* Mario: width-based aspect ratio (ancho llena, alto se calcula) */
+  .mario-canvas-container,
+  #phaser-game-parent {
     width: 100% !important;
+    height: auto !important;
     aspect-ratio: 16/9;
     border-radius: 0 !important;
     border: none !important;
   }
+
+  /* ChessBox: height-based aspect ratio (alto llena, ancho se calcula) */
   #phaser-boxing-parent {
     height: 100%;
     width: auto !important;
