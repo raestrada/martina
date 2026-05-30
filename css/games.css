@@ -2411,32 +2411,121 @@
     padding: 0.5rem !important;
   }
   .transition-panel {
-    padding: 10px !important;
+    padding: 10px 15px !important;
     max-width: 95% !important;
+    width: 320px !important;
+    max-height: 95dvh !important;
+    overflow-y: auto !important;
+    border-radius: 12px !important;
   }
-  .transition-panel h2 { font-size: 1rem !important; margin: 6px 0 !important; }
-  .transition-panel p { font-size: 0.7rem !important; margin-bottom: 8px !important; }
+  .transition-panel h2 { font-size: 1rem !important; margin: 4px 0 !important; }
+  .transition-panel p { font-size: 0.68rem !important; margin-bottom: 6px !important; line-height: 1.3 !important; }
   .transition-panel .round-badge { font-size: 0.6rem !important; }
+  
+  /* Selectores para anular estilos en línea en el panel de transición móvil */
+  .transition-panel > div[style*="dashed"] {
+    padding: 8px !important;
+    margin-bottom: 8px !important;
+    border-radius: 8px !important;
+  }
+  .transition-panel > div[style*="dashed"] h4 {
+    margin-bottom: 4px !important;
+    font-size: 0.8rem !important;
+  }
+  .transition-panel > div[style*="dashed"] div {
+    font-size: 0.7rem !important;
+    margin-bottom: 3px !important;
+  }
+  .transition-panel > div[style*="space-around"] {
+    padding: 6px !important;
+    margin-bottom: 10px !important;
+    border-radius: 8px !important;
+  }
+  .transition-panel > div[style*="space-around"] div span {
+    font-size: 0.85rem !important;
+  }
+  .transition-panel > div[style*="space-around"] div span[style*="uppercase"] {
+    font-size: 0.58rem !important;
+  }
 
   /* --- Victory/Defeat --- */
   .game-screen {
-    padding: 0.8rem !important;
-    max-width: 95vw !important;
-    max-height: 95dvh;
-    overflow-y: auto;
+    padding: 10px 15px !important;
+    max-width: 95% !important;
+    width: 320px !important;
+    max-height: 95dvh !important;
+    overflow-y: auto !important;
     border-radius: 12px !important;
   }
-  .game-screen h2 { font-size: 1rem !important; }
-  .game-screen p { font-size: 0.7rem !important; }
-  .game-screen-img { width: 60px !important; height: 60px !important; }
-  .game-screen-img div { font-size: 2rem !important; }
-  .game-screen-stats { gap: 4px !important; }
+  .game-screen h2 { font-size: 1rem !important; margin: 4px 0 !important; }
+  .game-screen p { font-size: 0.7rem !important; margin-bottom: 6px !important; }
+  .game-screen-img { width: 50px !important; height: 50px !important; margin-bottom: 8px !important; }
+  .game-screen-img div { font-size: 1.8rem !important; }
+  .game-screen-stats { gap: 4px !important; margin-bottom: 8px !important; }
   .stat-item { padding: 0.3rem 0.5rem !important; font-size: 0.6rem !important; }
   .stat-val { font-size: 0.85rem !important; }
   .btn-game-screen {
     font-size: 0.7rem !important;
     padding: 0.4rem 0.8rem !important;
     margin: 3px !important;
+  }
+  .game-screen .star-filled,
+  .game-screen .star-empty {
+    font-size: 1.8rem !important;
+  }
+
+  /* --- Mario Victory & GameOver Overlays on Mobile --- */
+  .mario-victory-panel,
+  .mario-gameover-panel {
+    padding: 10px 15px !important;
+    max-width: 95% !important;
+    width: 320px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
+    max-height: 95dvh !important;
+    overflow-y: auto !important;
+  }
+  .mario-victory-crown,
+  .mario-gameover-skull {
+    font-size: 24px !important;
+    margin-bottom: 2px !important;
+  }
+  .mario-victory-panel h2,
+  .mario-gameover-panel h2 {
+    font-size: 1.1rem !important;
+    margin: 4px 0 !important;
+  }
+  .mario-victory-msg,
+  .mario-gameover-msg {
+    font-size: 0.72rem !important;
+    margin-bottom: 8px !important;
+    line-height: 1.3 !important;
+  }
+  .mario-victory-stats,
+  .mario-gameover-stats {
+    padding: 6px 8px !important;
+    margin-bottom: 10px !important;
+    gap: 8px !important;
+  }
+  .mario-stat-icon {
+    font-size: 16px !important;
+    margin-bottom: 2px !important;
+  }
+  .mario-stat-num {
+    font-size: 14px !important;
+  }
+  .mario-stat-name {
+    font-size: 8px !important;
+    letter-spacing: 0.5px !important;
+  }
+  .mario-victory-buttons,
+  .mario-gameover-buttons {
+    gap: 8px !important;
+  }
+  .mario-vic-btn {
+    padding: 6px 12px !important;
+    font-size: 11px !important;
+    border-radius: 6px !important;
   }
 
   /* --- Mario level select: scrollable, compact cards --- */
