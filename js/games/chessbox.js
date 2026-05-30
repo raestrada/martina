@@ -1036,7 +1036,7 @@ class ChessBoxGame {
 
         <div class="empanadas-layout" style="flex-direction: column; align-items: center;">
           <!-- Phaser Canvas container -->
-          <div class="mario-canvas-container" id="phaser-boxing-parent" style="border: 4px solid #ef4444; border-radius: 16px; width: 800px; height: 450px; background: #000; overflow:hidden; position:relative;">
+          <div class="mario-canvas-container" id="phaser-boxing-parent" style="border: ${this.isMobile ? 'none' : '4px solid #ef4444'}; border-radius: ${this.isMobile ? '0' : '16px'}; background: #000; overflow:hidden; position:relative;">
             
             <!-- Super Power HUD Overlays -->
             <div style="position: absolute; top: ${this.isMobile ? '4px' : '12px'}; left: ${this.isMobile ? '4px' : '12px'}; width: ${this.isMobile ? '90px' : '195px'}; background: rgba(15,23,42,0.7); padding: ${this.isMobile ? '2px 4px' : '6px 10px'}; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.4); text-align: left; font-family: 'Outfit', sans-serif; pointer-events: none; z-index: 10;">

@@ -2294,6 +2294,38 @@
   .touch-group-left { justify-content: flex-start; }
   .touch-group-right { justify-content: flex-end; }
 
+  .touch-btn {
+    width: 56px !important;
+    height: 56px !important;
+    font-size: 1.3rem !important;
+    min-width: 56px !important;
+    min-height: 56px !important;
+    border-radius: 50% !important;
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    top: auto !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto !important;
+  }
+  .touch-btn:active { transform: scale(0.9); }
+  .touch-label {
+    font-size: 0.5rem;
+    font-weight: 600;
+    opacity: 0.7;
+    line-height: 1;
+    margin-top: 1px;
+  }
+  .touch-btn.jump {
+    width: 70px !important;
+    height: 70px !important;
+    font-size: 1.8rem !important;
+  }
+
   /* Canvas: starts near top, fits above touch controls */
   .mario-canvas-container {
     max-height: calc(100dvh - 80px) !important;
