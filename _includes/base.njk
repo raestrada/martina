@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="theme-color" content="#012a4a">
+  <meta name="theme-color" content="#012a4a" id="theme-color-meta">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ title }}</title>
   <meta name="description" content="{{ description }}">
@@ -13,15 +13,30 @@
   <meta property="og:title" content="{{ ogTitle or title }}">
   <meta property="og:description" content="{{ ogDescription or description }}">
   <meta property="og:image" content="{{ ogImage }}">
-  {% if twitterCard %}<meta name="twitter:card" content="{{ twitterCard }}">{% endif %}
-  {% if twitterTitle %}<meta name="twitter:title" content="{{ twitterTitle }}">{% endif %}
-  {% if twitterDescription %}<meta name="twitter:description" content="{{ twitterDescription }}">{% endif %}
-  {% if twitterImage %}<meta name="twitter:image" content="{{ twitterImage }}">{% endif %}
+  <meta name="twitter:card" content="{{ twitterCard or 'summary_large_image' }}">
+  <meta name="twitter:title" content="{{ twitterTitle or ogTitle or title }}">
+  <meta name="twitter:description" content="{{ twitterDescription or ogDescription or description }}">
+  <meta name="twitter:image" content="{{ twitterImage or ogImage }}">
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/css/style.css">
   {% for css in extraCss %}<link rel="stylesheet" href="{{ css }}">
   {% endfor %}
   <link rel="icon" type="image/png" href="/assets/img/martina_profile_1778904530237.png">
+  {% if ogType == 'article' %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "{{ ogTitle or title }}",
+    "description": "{{ ogDescription or description }}",
+    "image": "https://martinachess.com{{ ogImage }}",
+    "author": { "@type": "Person", "name": "Papá de Martina" },
+    "datePublished": "{{ page.date.toISOString() }}",
+    "dateModified": "{{ page.date.toISOString() }}"
+  }
+  </script>
+  {% endif %}
+  {% block structuredData %}{% endblock %}
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-8VT55Y2PFC"></script>
   <script>
@@ -34,21 +49,31 @@
 </head>
 <body>
 
+<div class="reading-progress" id="reading-progress" aria-hidden="true"></div>
+
 <header class="site-header-compact">
   <div class="header-content-compact">
     <div class="site-title-compact">
       <span class="header-piece-compact">♕</span> <a href="/">Martina</a>
     </div>
-    <button class="hamburger-btn" id="hamburger-btn" aria-label="Menú">☰</button>
-    <nav class="nav-bar-compact">
+    <nav class="nav-bar-compact" id="nav-bar">
       <a href="/" class="nav-link{% if activeNav == 'inicio' %} active{% endif %}">Inicio</a>
       <a href="/#cuentos" class="nav-link{% if activeNav == 'cuentos' %} active{% endif %}">Cuentos</a>
       <a href="/juegos.html" class="nav-link{% if activeNav == 'juegos' %} active{% endif %}">Juegos</a>
-      <a href="/album.html" class="nav-link{% if activeNav == 'album' %} active{% endif %}">Álbum</a>
-      <a href="/acerca-de.html" class="nav-link{% if activeNav == 'acerca-de' %} active{% endif %}">Acerca de</a>
-      <a href="/galeria.html" class="nav-link{% if activeNav == 'galeria' %} active{% endif %}">Galería</a>
-      <a href="/difundir.html" class="nav-link{% if activeNav == 'difundir' %} active{% endif %}">Difundir</a>
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-trigger{% if activeNav in ['album', 'galeria', 'acerca-de', 'difundir'] %} active{% endif %}" id="nav-more-btn" aria-expanded="false" aria-haspopup="true">Más ▾</button>
+        <div class="nav-dropdown-menu" id="nav-more-menu">
+          <a href="/album.html" class="nav-link{% if activeNav == 'album' %} active{% endif %}">Álbum</a>
+          <a href="/galeria.html" class="nav-link{% if activeNav == 'galeria' %} active{% endif %}">Galería</a>
+          <a href="/acerca-de.html" class="nav-link{% if activeNav == 'acerca-de' %} active{% endif %}">Acerca de</a>
+          <a href="/difundir.html" class="nav-link{% if activeNav == 'difundir' %} active{% endif %}">Difundir</a>
+        </div>
+      </div>
     </nav>
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Cambiar modo oscuro" title="Modo noche">🌙</button>
+      <button class="hamburger-btn" id="hamburger-btn" aria-label="Menú">☰</button>
+    </div>
   </div>
 </header>
 
@@ -59,11 +84,29 @@
 {% block afterMain %}{% endblock %}
 
 <footer class="site-footer">
-  <a href="https://github.com/raestrada/martina" target="_blank" rel="noopener noreferrer" class="github-link" aria-label="GitHub">
-    <svg viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-    Ver en GitHub
-  </a>
-  <p>{{ footerText or 'Historias originales para Martina, por papá.' }}<br>{{ footerQuote or '«El ajedrez es un cuento de hadas de la mente» — Mikhail Tal' }}</p>
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>Cuentos populares</h4>
+      <a href="/cuentos/01-el-primer-movimiento.html">El Primer Movimiento</a>
+      <a href="/cuentos/03-la-clavada-del-alfil-exiliado.html">La Clavada del Alfil Exiliado</a>
+      <a href="/cuentos/09-la-sombra-que-jugaba.html">La Sombra que Jugaba</a>
+      <a href="/cuentos/07-el-pescador-y-el-elegante.html">El Pescador y el Elegante</a>
+    </div>
+    <div class="footer-col">
+      <h4>Juegos</h4>
+      <a href="/juegos.html">El Tablero de Juegos</a>
+      <a href="/album.html">Álbum de Clavadas</a>
+      <a href="/difundir.html">Compartir</a>
+      <a href="/rss.xml">Feed RSS</a>
+    </div>
+    <div class="footer-col">
+      <h4>Comunidad</h4>
+      <a href="https://github.com/raestrada/martina" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="/acerca-de.html">Acerca de</a>
+      <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.es" target="_blank" rel="license noopener noreferrer">CC BY-NC 4.0</a>
+    </div>
+  </div>
+  <p class="footer-quote" id="footer-quote">{{ footerQuote or '«El ajedrez es un cuento de hadas de la mente» — Mikhail Tal' }}</p>
   <p style="font-size: 0.8rem; margin-top: 1rem; color: var(--board-dark); line-height: 1.4;">
     Esta obra (cuentos e ilustraciones) está bajo una <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.es" target="_blank" rel="license noopener noreferrer" style="color: inherit; text-decoration: underline;">Licencia Creative Commons Atribución-NoComercial 4.0 Internacional</a>.<br>
     El código de la web es de código abierto (MIT). <strong>Prohibida la monetización o uso comercial del contenido sin permiso explícito del autor.</strong>

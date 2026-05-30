@@ -8,6 +8,9 @@ ogImage: /assets/img/martina_vs_leon_victory_1780000000000.png
 ogTitle: Fuego Contra Todos — Martina · Cuentos de Ajedrez
 ogDescription: Martina llega a su primer torneo internacional. Revancha contra el tramposo. Victoria contra el genio.
 activeNav: cuentos
+prevCuento:
+  url: /cuentos/15-el-ultimo-capitulo.html
+  title: "El Último Capítulo"
 ---
 
 <article class="story-body">
@@ -20,20 +23,9 @@ activeNav: cuentos
       <a href="#partida-real" class="jump-to-game fade-in stagger-3">♟️ Ver el contraataque ↓</a>
     </header>
 
-    <details class="audiobook-container" style="margin: 2rem 0; padding: 1rem; background-color: var(--board-dark); border-radius: var(--radius); cursor: pointer;">
-      <summary style="color: var(--board-light); font-weight: bold; font-size: 1.1rem; text-align: center; outline: none;">
-        ▶️ ¿Prefieres escuchar la historia? Clic aquí para ver el Audiolibro Animado
-      </summary>
-      <div style="text-align: center; margin-top: 1.5rem; cursor: default;">
-        <video controls style="width: 100%; max-width: 800px; border-radius: var(--radius); box-shadow: var(--shadow-hover);">
-          <source src="/assets/video/cuento_16_audiolibro.mp4" type="video/mp4">
-          Tu navegador no soporta el elemento de video.
-        </video>
-        <div style="margin-top: 1rem;">
-          <a href="/assets/video/cuento_16_audiolibro.mp4" download="Cuento_16_Fuego_Contra_Todos.mp4" class="btn" style="display: inline-block;">⬇️ Descargar Video (MP4)</a>
-        </div>
-      </div>
-    </details>
+{% set videoSrc = '/assets/video/cuento_16_audiolibro.mp4' %}
+{% set downloadName = 'Cuento_16_Fuego_Contra_Todos.mp4' %}
+{% include "video-player.njk" %}
 
     <p class="dropcap">
       El polideportivo del torneo internacional no olía a piso trapeado

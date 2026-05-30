@@ -19,6 +19,12 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.ignores.add("**/*.html");
 
+  eleventyConfig.addCollection("sitemap", function (collectionApi) {
+    return collectionApi.getAll().filter(function (item) {
+      return item.url && !item.url.includes("404");
+    });
+  });
+
   return {
     dir: {
       input: ".",

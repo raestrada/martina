@@ -5,9 +5,17 @@
     <a href="#" class="share-wa" style="background:#25d366;">WhatsApp</a>
     <a href="#" class="share-fb" style="background:#1877f2;">Facebook</a>
     <a href="#" class="share-tg" style="background:#0088cc;">Telegram</a>
+    <a href="#" id="copy-link-btn" class="story-share-footer-link" style="background:var(--magic-blue);" onclick="navigator.clipboard.writeText(location.href);this.textContent='✓ ¡Copiado!';setTimeout(function(){document.getElementById('copy-link-btn').textContent='📋 Copiar enlace';},2000);return false;">📋 Copiar enlace</a>
   </div>
 </div>
 <script>(function(){var u=encodeURIComponent(location.href);var t=encodeURIComponent(document.title);var d=document.getElementById('story-share-links');d.querySelector('.share-tw').href='https://twitter.com/intent/tweet?text='+t+'&url='+u;d.querySelector('.share-wa').href='https://wa.me/?text='+t+'%20'+u;d.querySelector('.share-fb').href='https://www.facebook.com/sharer/sharer.php?u='+u;d.querySelector('.share-tg').href='https://t.me/share/url?url='+u+'&text='+t;})();</script>
+
+{% if prevCuento or nextCuento %}
+<div class="story-navigation">
+  {% if prevCuento %}<a href="{{ prevCuento.url }}" class="story-nav-link prev"><span class="nav-arrow">←</span><div class="story-nav-detail"><span class="story-nav-label">Anterior</span><div>{{ prevCuento.title }}</div></div></a>{% else %}<div></div>{% endif %}
+  {% if nextCuento %}<a href="{{ nextCuento.url }}" class="story-nav-link next"><div class="story-nav-detail"><span class="story-nav-label">Siguiente</span><div>{{ nextCuento.title }}</div></div><span class="nav-arrow">→</span></a>{% else %}<div></div>{% endif %}
+</div>
+{% endif %}
 
 <div style="text-align:center;margin:2rem 0;">
   <a href="/" class="btn">← Volver al inicio</a>
