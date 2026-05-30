@@ -11,7 +11,7 @@
     var themeToggle = document.getElementById('theme-toggle');
     var metaTheme = document.getElementById('theme-color-meta');
     var stored = localStorage.getItem('martina-theme');
-    if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    if (stored === 'dark') {
       document.documentElement.setAttribute('data-theme', 'dark');
       if (metaTheme) metaTheme.content = '#0d1b2a';
     }
@@ -125,6 +125,19 @@
         quoteEl.textContent = quotes[idx];
       }
     }
+
+    // === PLAYBACK SPEED CONTROLS ===
+    document.querySelectorAll('.speed-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var speed = parseFloat(this.dataset.speed);
+        var video = this.closest('.audiobook-body').querySelector('video');
+        if (video) {
+          video.playbackRate = speed;
+          this.parentElement.querySelectorAll('.speed-btn').forEach(function (b) { b.classList.remove('active'); });
+          this.classList.add('active');
+        }
+      });
+    });
 
     // === BREADCRUMBS & READING TIME for story pages ===
     var storyHeader = document.querySelector('.story-header');
