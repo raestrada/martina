@@ -2239,22 +2239,13 @@
     object-fit: contain;
   }
 
-  /* Mario: width-based, pero ancho limitado para que alto 16:9 no desborde */
+  /* Mario: width-based (ancho llena, alto de aspect-ratio) — min-height 0 para anular desktop */
   .mario-canvas-container:not(#phaser-boxing-parent) {
     width: min(100%, calc(100dvh * 16 / 9)) !important;
     height: auto !important;
     min-height: 0 !important;
     aspect-ratio: 16/9;
     max-height: 100vh;
-    max-height: 100dvh;
-    border-radius: 0 !important;
-    border: none !important;
-  }
-  #phaser-game-parent {
-    width: 100% !important;
-    height: auto !important;
-    min-height: 0 !important;
-    aspect-ratio: 16/9;
     max-height: 100dvh;
     border-radius: 0 !important;
     border: none !important;
