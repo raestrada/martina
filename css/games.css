@@ -2621,11 +2621,11 @@
   }
   .chessbox-chess-container .empanadas-top-bar {
     display: flex !important;
-    padding: 4px 8px !important;
+    padding: 6px 12px !important;
     gap: 8px !important;
     justify-content: space-between !important;
     align-items: center !important;
-    background: rgba(15, 23, 42, 0.9) !important;
+    background: rgba(15, 23, 42, 0.95) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     width: 100% !important;
     box-sizing: border-box !important;
@@ -2633,22 +2633,30 @@
     flex-shrink: 0 !important;
   }
   .chessbox-chess-container .empanadas-top-bar .timer-box {
-    padding: 0.25rem 0.5rem !important;
-    font-size: 0.7rem !important;
+    padding: 4px 8px !important;
+    font-size: 0.72rem !important;
     border-radius: 6px !important;
     margin: 0 !important;
-    gap: 3px !important;
+    gap: 4px !important;
     background: rgba(0,0,0,0.4) !important;
     border-color: rgba(255,255,255,0.12) !important;
     height: auto !important;
+    line-height: 1.2 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   .chessbox-chess-container .empanadas-top-bar .btn-close-modal {
-    padding: 0.25rem 0.5rem !important;
-    font-size: 0.7rem !important;
+    padding: 4px 8px !important;
+    font-size: 0.72rem !important;
     border-radius: 6px !important;
     margin: 0 !important;
     background: rgba(255,255,255,0.06) !important;
     border-color: rgba(255,255,255,0.12) !important;
+    line-height: 1.2 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   .chessbox-chess-container .empanadas-layout {
     display: flex !important;
@@ -2656,8 +2664,8 @@
     justify-content: center !important;
     align-items: center !important;
     width: 100% !important;
-    height: calc(100dvh - 36px) !important;
-    max-height: calc(100dvh - 36px) !important;
+    height: calc(100dvh - 38px) !important;
+    max-height: calc(100dvh - 38px) !important;
     min-height: 0 !important;
     gap: 16px !important;
     padding: 6px 12px !important;
