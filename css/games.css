@@ -2601,6 +2601,130 @@
   }
   .landscape-overlay h2 { font-size: 1.2rem; font-weight: 800; }
   .landscape-overlay p { color: #94a3b8; font-size: 0.8rem; }
+
+  /* --- Chessboxing Mobile Chess Round Layout Override --- */
+  .chessbox-chess-container {
+    height: 100% !important;
+    max-height: 100dvh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background: #000 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    overflow: hidden !important;
+  }
+  .chessbox-chess-container .empanadas-top-bar {
+    display: flex !important;
+    padding: 4px 8px !important;
+    gap: 8px !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    background: rgba(15, 23, 42, 0.9) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    z-index: 102 !important;
+    flex-shrink: 0 !important;
+  }
+  .chessbox-chess-container .empanadas-top-bar .timer-box {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.7rem !important;
+    border-radius: 6px !important;
+    margin: 0 !important;
+    gap: 3px !important;
+    background: rgba(0,0,0,0.4) !important;
+    border-color: rgba(255,255,255,0.12) !important;
+    height: auto !important;
+  }
+  .chessbox-chess-container .empanadas-top-bar .btn-close-modal {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.7rem !important;
+    border-radius: 6px !important;
+    margin: 0 !important;
+    background: rgba(255,255,255,0.06) !important;
+    border-color: rgba(255,255,255,0.12) !important;
+  }
+  .chessbox-chess-container .empanadas-layout {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    height: calc(100dvh - 36px) !important;
+    max-height: calc(100dvh - 36px) !important;
+    min-height: 0 !important;
+    gap: 16px !important;
+    padding: 6px 12px !important;
+    box-sizing: border-box !important;
+    flex: 1 !important;
+    overflow: hidden !important;
+  }
+  .chessbox-chess-container .cooking-station {
+    flex: 0 0 auto !important;
+    height: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .chessbox-chess-container .chess-board-wrapper {
+    height: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  .chessbox-chess-container .chess-board {
+    height: min(80vw, 80vh, 260px) !important;
+    width: min(80vw, 80vh, 260px) !important;
+    border: 3px solid #1a1c2e !important;
+    border-radius: 8px !important;
+    margin: 0 auto !important;
+  }
+  .chessbox-chess-container .chess-piece {
+    font-size: 1.6rem !important; /* Scale pieces down to avoid cutting off inside smaller mobile squares */
+  }
+  .chessbox-chess-container .maze-dashboard {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 0 1 220px !important;
+    width: 220px !important;
+    max-width: 220px !important;
+    height: min(80vw, 80vh, 260px) !important;
+    padding: 10px !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    font-size: 0.72rem !important;
+    border-radius: 12px !important;
+    background: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    justify-content: space-between !important;
+  }
+  .chessbox-chess-container .maze-dashboard h4 {
+    font-size: 0.85rem !important;
+    margin: 2px 0 !important;
+  }
+  .chessbox-chess-container .maze-dashboard p {
+    font-size: 0.65rem !important;
+    margin-top: 2px !important;
+    margin-bottom: 0 !important;
+  }
+  .chessbox-chess-container .maze-dashboard .round-badge {
+    font-size: 0.58rem !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+  }
+  .chessbox-chess-container .maze-dashboard div[style*="max-height: 120px"] {
+    max-height: 75px !important;
+    padding: 6px !important;
+    border-radius: 6px !important;
+    font-size: 0.65rem !important;
+    margin-top: 4px !important;
+  }
+  .chessbox-chess-container .maze-dashboard #chessbox-history {
+    font-size: 0.62rem !important;
+    gap: 2px !important;
+  }
 }
 
 /* ===================================================================

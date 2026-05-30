@@ -2812,7 +2812,7 @@ class ChessBoxGame {
         const dmgOpacity = ((65 - this.playerHealth) / 65 * 0.75 + 0.10).toFixed(2);
         bloodDropsHTML = `
           <!-- Cartoonish Battle Damage Overlays — kid-friendly! -->
-          <svg style="position: absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index: 101;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450">
+          <svg style="position: absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index: 101;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" preserveAspectRatio="none">
             <!-- Top-left: Comical band-aid -->
             <g transform="translate(25, 25) rotate(-15)" opacity="${dmgOpacity}">
               <rect x="0" y="0" width="60" height="22" rx="3" fill="#fed7aa" stroke="#d97706" stroke-width="1.5"/>
@@ -2856,7 +2856,7 @@ class ChessBoxGame {
     }
 
     this.container.innerHTML = `
-      <div class="empanadas-container" style="position: relative; overflow: hidden; border-radius: 20px;">
+      <div class="empanadas-container chessbox-chess-container" style="position: relative; overflow: hidden; border-radius: 20px;">
         ${vignetteOverlayHTML}
         ${bloodDropsHTML}
         <div class="empanadas-top-bar">
