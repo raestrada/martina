@@ -352,7 +352,26 @@ main {
   font-size: 1.05rem;
   color: var(--ink);
   line-height: 1.6;
+  flex: 1;
 }
+
+.story-card .btn-block {
+  margin-top: auto;
+  justify-self: flex-end;
+}
+
+/* Alternating card styles: odd = Mágico, even = Real */
+.story-card:nth-child(odd) .card-meta { background: var(--magic-purple); }
+.story-card:nth-child(odd):hover { border-color: var(--magic-purple); }
+.story-card:nth-child(odd) .story-thumbnail { background: var(--magic-purple); }
+
+.story-card:nth-child(even) .card-meta { background: var(--rose); }
+.story-card:nth-child(even):hover { border-color: var(--rose); }
+.story-card:nth-child(even) .story-thumbnail { background: var(--rose); }
+
+.story-card.story-locked .card-meta { background: var(--board-dark); }
+.story-card.story-locked:hover { border-color: transparent; }
+.story-card.story-locked .story-thumbnail { background: var(--board-dark); }
 
 /* === STORY CONTENT === */
 
