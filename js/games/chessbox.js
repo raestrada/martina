@@ -1070,14 +1070,18 @@ class ChessBoxGame {
               <span id="health-opponent-text" style="font-size: 0.5rem; color: #f87171; font-weight: 800; min-width: auto;">100%</span>
             </div>
 
-            <!-- Mobile overlay controllers -->
-            <div class="mario-touch-pad" style="opacity: 0.85; z-index: 15;">
-              <div class="touch-btn" id="btn-dodge-l" style="background: rgba(56, 189, 248, 0.25); border-color: #0284c7;">◀</div>
-              <div class="touch-btn" id="btn-punch-l" style="background: rgba(244, 63, 94, 0.25); border-color: #e11d48;">A</div>
-              <div class="touch-btn" id="btn-super" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.4), rgba(217, 119, 6, 0.6)); border-color: #fbbf24; color: #fff; font-weight: 900; display: none; text-shadow: 0 0 5px #f59e0b; box-shadow: 0 0 10px rgba(245,158,11,0.5); animation: pulse 0.8s infinite alternate;">⚡</div>
-              <div class="touch-btn" id="btn-block-guard" style="background: rgba(74, 222, 128, 0.25); border-color: #16a34a;">W</div>
-              <div class="touch-btn" id="btn-punch-r" style="background: rgba(244, 63, 94, 0.25); border-color: #e11d48;">D</div>
-              <div class="touch-btn" id="btn-dodge-r" style="background: rgba(56, 189, 248, 0.25); border-color: #0284c7;">▶</div>
+            <!-- Mobile overlay controllers — two-thumb layout -->
+            <div class="mario-touch-pad chessbox-touch-pad" style="z-index: 15;">
+              <div class="touch-group touch-group-left">
+                <div class="touch-btn touch-dodge-l" id="btn-dodge-l">◀<span class="touch-label">Esquivar</span></div>
+                <div class="touch-btn touch-block" id="btn-block-guard">🛡<span class="touch-label">Bloquear</span></div>
+                <div class="touch-btn touch-dodge-r" id="btn-dodge-r"><span class="touch-label">Esquivar</span>▶</div>
+              </div>
+              <div class="touch-group touch-group-right">
+                <div class="touch-btn touch-punch-l" id="btn-punch-l">A<span class="touch-label">Jab</span></div>
+                <div class="touch-btn touch-super" id="btn-super">⚡<span class="touch-label">Super</span></div>
+                <div class="touch-btn touch-punch-r" id="btn-punch-r">D<span class="touch-label">Cross</span></div>
+              </div>
             </div>
           </div>
           

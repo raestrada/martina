@@ -2264,30 +2264,45 @@
     transform-origin: top right;
   }
 
-  /* --- Touch controls siempre visibles y grandes --- */
+  /* --- Touch controls: two-thumb layout --- */
   .mario-touch-pad {
     display: flex !important;
     position: fixed;
-    bottom: calc(6px + env(safe-area-inset-bottom, 0px));
-    left: 50%;
-    transform: translateX(-50%);
-    justify-content: center;
-    gap: 8px;
-    padding: 4px 8px;
-    opacity: 0.8 !important;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    left: 0;
+    right: 0;
+    justify-content: space-between;
+    padding: 0 12px;
+    opacity: 0.85 !important;
     z-index: 10002;
-    pointer-events: auto;
+    pointer-events: none;
     background: transparent;
-    border-radius: 24px;
     box-shadow: none;
   }
+  .chessbox-touch-pad {
+    justify-content: space-between !important;
+  }
+  .touch-group {
+    display: flex;
+    gap: 6px;
+    pointer-events: auto;
+  }
+  .chessbox-touch-pad .touch-group-left {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+  .chessbox-touch-pad .touch-group-right {
+    flex-direction: row;
+    align-items: flex-end;
+  }
   .touch-btn {
-    width: 48px !important;
-    height: 48px !important;
-    font-size: 1.2rem !important;
-    min-width: 44px !important;
+    width: 56px !important;
+    height: 56px !important;
+    font-size: 1.3rem !important;
+    min-width: 56px !important;
+    min-height: 56px !important;
     border-radius: 50% !important;
-    position: static !important;
+    position: relative !important;
     left: auto !important;
     right: auto !important;
     bottom: auto !important;
@@ -2297,12 +2312,40 @@
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
   .touch-btn:active {
     background: rgba(244, 162, 97, 0.3) !important;
     border-color: var(--gold) !important;
     transform: scale(0.9);
   }
+  .touch-label {
+    font-size: 0.5rem;
+    font-weight: 600;
+    opacity: 0.6;
+    line-height: 1;
+    margin-top: 1px;
+  }
+  .touch-dodge-l,
+  .touch-dodge-r { border-color: rgba(56,189,248,0.5) !important; }
+  .touch-dodge-l:active,
+  .touch-dodge-r:active { background: rgba(56,189,248,0.3) !important; border-color: #0284c7 !important; }
+  .touch-block { border-color: rgba(74,222,128,0.4) !important; }
+  .touch-block:active { background: rgba(74,222,128,0.3) !important; border-color: #16a34a !important; }
+  .touch-punch-l,
+  .touch-punch-r { border-color: rgba(244,63,94,0.5) !important; }
+  .touch-punch-l:active,
+  .touch-punch-r:active { background: rgba(244,63,94,0.3) !important; border-color: #e11d48 !important; }
+  .touch-super {
+    width: 60px !important;
+    height: 60px !important;
+    border-color: rgba(245,158,11,0.7) !important;
+    font-size: 1.5rem !important;
+  }
+  .touch-super:active { background: rgba(245,158,11,0.4) !important; border-color: #fbbf24 !important; }
 
   /* --- Keyboard hints ocultos --- */
   .kb-hint { display: none !important; }
