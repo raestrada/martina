@@ -3930,9 +3930,17 @@ class MarioGame {
                   document.getElementById('phaser-game-parent'),
                   () => { // ON WIN — checkmate to opponent
                     scene.chessCompleted = true;
+                    scene.chessActive = false;
+                    // Place player safely on the chess room ground
+                    scene.player.setPosition(
+                      Phaser.Math.Clamp(scene.player.x, cr.roomLeft + 40, cr.roomRight - 40),
+                      360
+                    );
+                    scene.player.body.setVelocity(0, 0);
                     scene.player.body.allowGravity = true;
                     scene.player.setAlpha(1);
-                    scene.player.invincibility = 60;
+                    scene.player.invincibility = 120;
+                    scene.lastSafeX = scene.player.x;
                     self.stopMusic();
                     self.startMusic();
                     if (scene.chessWalls) {
@@ -3940,9 +3948,6 @@ class MarioGame {
                       scene.chessWalls = null;
                     }
                     self.chessDuel = null;
-                    scene.player.invincibility = 60;
-                    self.stopMusic();
-                    self.startMusic();
                     // Show goal
                     if (!scene.whiteQueen) {
                       const gx = (levelDef.goal && levelDef.goal.portalX) || 2330;
@@ -4031,7 +4036,7 @@ class MarioGame {
           }
 
           // Out of bounds pit checks — player fell into a gap and hit world bottom
-          if (scene.player.y > 405) {
+          if (scene.player.y > 405 && scene.player.invincibility === 0) {
             self.lives--;
             self.synthesizeSound('damage');
             scene.doDamageAnim();
