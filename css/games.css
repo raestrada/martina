@@ -2221,20 +2221,24 @@
     min-height: 0;
   }
 
-  /* --- Canvas: 16/9 exacto, cabe todo sin recortar, padding abajo para touch --- */
-  /* Mario: width-based aspect ratio (ancho llena, alto se calcula) */
-  .mario-canvas-container,
+  /* --- Mario canvas: width-based (ancho llena pantalla, alto de 16:9) --- */
   #phaser-game-parent {
     width: 100% !important;
     height: auto !important;
     aspect-ratio: 16/9;
     border-radius: 0 !important;
     border: none !important;
+    min-height: 0 !important;
+  }
+  #phaser-game-parent canvas {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain;
   }
 
-  /* ChessBox: height-based aspect ratio (alto llena, ancho se calcula) */
+  /* --- ChessBox canvas: height-based (alto llena grid, ancho de 16:9) --- */
   #phaser-boxing-parent {
-    height: 100%;
+    height: 100% !important;
     width: auto !important;
     aspect-ratio: 16/9;
     margin: 0 auto;
@@ -2244,17 +2248,6 @@
     overflow: hidden;
   }
   #phaser-boxing-parent canvas {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: contain;
-  }
-  #phaser-game-parent {
-    width: 100% !important;
-    height: 100% !important;
-    min-height: 0 !important;
-    position: relative !important;
-  }
-  #phaser-game-parent canvas {
     width: 100% !important;
     height: 100% !important;
     object-fit: contain;
