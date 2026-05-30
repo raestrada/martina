@@ -2843,6 +2843,10 @@
     padding: 0.5rem !important;
     min-height: 0 !important;
     overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
   }
 
   /* --- Compact Mario (mario.js) on Laptops --- */
