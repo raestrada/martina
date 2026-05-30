@@ -2225,11 +2225,8 @@
   .mario-canvas-container {
     width: 100% !important;
     aspect-ratio: 16/9;
-    max-height: 100% !important;
     border-radius: 0 !important;
     border: none !important;
-    flex: 1;
-    min-height: 0;
   }
   #phaser-boxing-parent {
     height: 100%;
@@ -2584,7 +2581,7 @@
 
 /* --- dvh fallback for older Safari --- */
 @supports not (height: 100dvh) {
-  .game-modal-content, .mario-canvas-container, .level-select-container, 
+  .game-modal-content, .level-select-container, 
   .mario-map-container, .landscape-overlay {
     min-height: 100vh;
     max-height: 100vh;
