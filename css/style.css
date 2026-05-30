@@ -276,6 +276,7 @@ main {
   border: 2px solid var(--border-color);
   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
   overflow: hidden;
+  height: 100%;
 }
 
 .story-card:hover {
@@ -368,12 +369,10 @@ main {
   font-size: 1.05rem;
   color: var(--ink);
   line-height: 1.6;
-  flex: 1;
 }
 
 .story-card .btn-block {
   margin-top: auto;
-  justify-self: flex-end;
 }
 
 /* Alternating card styles: odd = Mundo Mágico, even = Mundo Real */
