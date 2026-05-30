@@ -2234,10 +2234,10 @@
   .level-card-meta { font-size: 0.6rem !important; }
   .level-card-play-btn { font-size: 0.7rem !important; padding: 0.25rem 0.5rem !important; }
 
-  /* --- Chessboard: llena el espacio --- */
+  /* --- Chessboard: responsive, capped at 440px --- */
   .chess-board {
-    width: min(98vw, 98vh) !important;
-    height: min(98vw, 98vh) !important;
+    width: min(90vw, 90vh, 440px) !important;
+    height: min(90vw, 90vh, 440px) !important;
     border-width: 3px !important;
     border-radius: 6px !important;
   }
@@ -2516,79 +2516,7 @@
     min-width: 40px !important;
   }
 
-  /* --- Chessbox: super / health HUD compact --- */
-  #phaser-boxing-parent > div[style*="position: absolute"] {
-    transform: scale(0.80);
-    transform-origin: top left;
-  }
-  #phaser-boxing-parent > div[style*="position: absolute"][style*="right"] {
-    transform: scale(0.80);
-    transform-origin: top right;
-  }
 
-  /* --- Chessbox: chess phase --- */
-  .chess-board {
-    width: min(96vw, 96vh) !important;
-    height: min(96vw, 96vh) !important;
-    border-width: 4px !important;
-    border-radius: 8px !important;
-  }
-  .cooking-station {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  /* --- Chessbox: hide dashboard on mobile, show minimal --- */
-  .maze-dashboard {
-    display: none !important;
-  }
-
-  /* --- Chessbox: victory/defeat screens --- */
-  .game-screen {
-    padding: 1rem !important;
-    max-width: 100% !important;
-  }
-  .game-screen h2 { font-size: 1.2rem !important; }
-  .game-screen p { font-size: 0.8rem !important; }
-  .game-screen-img { width: 80px !important; height: 80px !important; }
-  .game-screen-img div { font-size: 2.5rem !important; }
-  .game-screen-stats { gap: 0.5rem !important; }
-  .stat-item { padding: 0.4rem 0.6rem !important; font-size: 0.7rem !important; }
-  .stat-val { font-size: 1rem !important; }
-  .btn-game-screen {
-    font-size: 0.8rem !important;
-    padding: 0.5rem 1rem !important;
-  }
-
-  /* --- Transition panel compact --- */
-  .transition-panel {
-    padding: 15px !important;
-    max-width: 95% !important;
-  }
-  .transition-panel h2 { font-size: 1.2rem !important; }
-  .transition-panel p { font-size: 0.75rem !important; }
-  .transition-panel .round-badge { font-size: 0.65rem !important; }
-
-  /* --- Mario game --- */
-  #mario-game-container {
-    width: 100% !important;
-    height: auto !important;
-  }
-  #mario-canvas-wrapper {
-    width: 100% !important;
-    height: auto !important;
-    aspect-ratio: 16/9;
-  }
-  #mario-game-ui {
-    flex-direction: column !important;
-    gap: 4px !important;
-  }
-  #mario-mobile-controls {
-    display: flex !important;
-  }
-}
 
 
 
