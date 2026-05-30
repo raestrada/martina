@@ -2175,10 +2175,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     overflow: hidden;
     background: #000;
-    padding: 8px;
+    padding: 0;
     box-sizing: border-box;
   }
 
@@ -2200,11 +2200,13 @@
     padding: 0 !important;
     border-radius: 0 !important;
     width: 100%;
+    max-width: 100% !important;
     height: 100%;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     background: #000 !important;
+    gap: 0 !important;
   }
   .empanadas-top-bar {
     display: none !important;  /* sin barra de timers/score en mobile */
@@ -2214,8 +2216,10 @@
     display: flex;
     flex-direction: column !important;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start !important;
+    gap: 0 !important;
     padding: 0 !important;
+    padding-top: 4px !important;
     width: 100%;
   }
 
@@ -2279,6 +2283,7 @@
     background: transparent;
     box-shadow: none;
     inset: auto !important;
+    top: auto !important;
   }
   .touch-group {
     display: flex;
@@ -2289,83 +2294,14 @@
   .touch-group-left { justify-content: flex-start; }
   .touch-group-right { justify-content: flex-end; }
 
-  /* Mario: left group (movement) + right group (jump/dash) */
-  .touch-btn {
-    width: 56px !important;
-    height: 56px !important;
-    font-size: 1.3rem !important;
-    min-width: 56px !important;
-    min-height: 56px !important;
-    border-radius: 50% !important;
-    position: relative !important;
-    left: auto !important;
-    right: auto !important;
-    bottom: auto !important;
-    top: auto !important;
-    background: rgba(255,255,255,0.08) !important;
-    border: 1px solid rgba(255,255,255,0.15) !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    pointer-events: auto !important;
-  }
-  .touch-btn:active {
-    background: rgba(244, 162, 97, 0.3) !important;
-    border-color: var(--gold) !important;
-    transform: scale(0.9);
-  }
-  .touch-label {
-    font-size: 0.5rem;
-    font-weight: 600;
-    opacity: 0.6;
-    line-height: 1;
-    margin-top: 1px;
-  }
-
-  /* Mario-specific: left row + right big jump */
-  .touch-btn.left,
-  .touch-btn.dash,
-  .touch-btn.right { pointer-events: auto !important; }
-  .touch-btn.jump {
-    width: 70px !important;
-    height: 70px !important;
-    font-size: 1.8rem !important;
-    background: rgba(231,111,81,0.18) !important;
-    border-color: rgba(231,111,81,0.4) !important;
-  }
-  .touch-btn.jump:active { background: rgba(231,111,81,0.45) !important; }
-
-  /* ChessBox-specific: dodge/punch/block colors */
-  .touch-dodge-l,
-  .touch-dodge-r { border-color: rgba(56,189,248,0.5) !important; }
-  .touch-dodge-l:active,
-  .touch-dodge-r:active { background: rgba(56,189,248,0.3) !important; }
-  .touch-block { border-color: rgba(74,222,128,0.4) !important; }
-  .touch-block:active { background: rgba(74,222,128,0.3) !important; }
-  .touch-punch-l,
-  .touch-punch-r { border-color: rgba(244,63,94,0.5) !important; }
-  .touch-punch-l:active,
-  .touch-punch-r:active { background: rgba(244,63,94,0.3) !important; }
-  .touch-super {
-    width: 60px !important;
-    height: 60px !important;
-    border-color: rgba(245,158,11,0.7) !important;
-    font-size: 1.5rem !important;
-  }
-  .touch-super:active { background: rgba(245,158,11,0.4) !important; }
-
-  /* Canvas: reduce wasted vertical space */
+  /* Canvas: starts near top, fits above touch controls */
   .mario-canvas-container {
-    max-height: calc(100dvh - 75px) !important;
-    max-width: calc((100dvh - 75px) * 16 / 9) !important;
+    max-height: calc(100dvh - 80px) !important;
+    max-width: calc((100dvh - 80px) * 16 / 9) !important;
   }
   #phaser-boxing-parent {
-    max-height: calc(100dvh - 75px) !important;
-    max-width: calc((100dvh - 75px) * 16 / 9) !important;
+    max-height: calc(100dvh - 80px) !important;
+    max-width: calc((100dvh - 80px) * 16 / 9) !important;
   }
 
   /* --- Keyboard hints ocultos --- */
