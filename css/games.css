@@ -2239,14 +2239,13 @@
     object-fit: contain;
   }
 
-  /* Mario: width-based (ancho llena, alto de aspect-ratio) — min-height 0 para anular desktop */
+  /* Mario: width-based (calculated from dynamic viewport height minus the 44px HUD height) */
   .mario-canvas-container:not(#phaser-boxing-parent) {
-    width: min(100%, calc(100dvh * 16 / 9)) !important;
+    width: min(100%, calc((100dvh - 44px) * 16 / 9)) !important;
     height: auto !important;
     min-height: 0 !important;
     aspect-ratio: 16/9;
-    max-height: 100vh;
-    max-height: 100dvh;
+    max-height: calc(100dvh - 44px) !important;
     border-radius: 0 !important;
     border: none !important;
   }
