@@ -709,7 +709,7 @@ class ReinaGame {
 
   // --- CUSTOM AUDIO SYNTH FOR SNEEZE (ACHÚÚS!) ---
   playSneezeSound() {
-    const audioCtx = window.GameAudio.ctx || window.activeAudioContext;
+    const audioCtx = window.GameAudio.ctx;
     if (!audioCtx) return;
     try {
       const now = audioCtx.currentTime;
@@ -764,10 +764,11 @@ class ReinaGame {
     this.gameActive = false;
     window.GameAudio.playVictory();
 
-    // Reward stars based on remaining lives
+    // Reward stars based on remaining lives — unified: ≥70% = 3★, ≥40% = 2★
     let starsWon = 1;
-    if (this.lives === this.maxLives) starsWon = 3;
-    else if (this.lives > 1) starsWon = 2;
+    const perf = this.lives / this.maxLives;
+    if (perf >= 0.70) starsWon = 3;
+    else if (perf >= 0.40) starsWon = 2;
 
     this.saveProgress(starsWon);
 

@@ -293,6 +293,8 @@ class CaballoGame {
     if (this.selectedDifficulty === 'martina') moveModifier = -4;
 
     this.movesLeft = currentLevel.moves + moveModifier;
+    this.undosLeft = this.selectedDifficulty === 'easy' ? 2 : (this.selectedDifficulty === 'medium' ? 1 : 0);
+    this.moveHistory = [];
     this.gameActive = true;
     this.trophyActive = false;
     this.carrotsCollected = [];
@@ -344,6 +346,9 @@ class CaballoGame {
               <div class="moves-count" id="moves-left-val">${this.movesLeft}</div>
             </div>
 
+            ${this.undosLeft > 0 ? `
+            <button class="btn" id="btn-undo-move" style="margin-top:0.75rem;background:var(--sage);font-size:0.85rem;width:100%;">↩ Deshacer (${this.undosLeft})</button>` : ''}
+
           </div>
 
         </div>
@@ -355,6 +360,26 @@ class CaballoGame {
       this.destroy();
       this.showWelcomeScreen();
     });
+
+    const undoBtn = document.getElementById('btn-undo-move');
+    if (undoBtn) undoBtn.addEventListener('click', () => this.undoMove());
+  }
+
+  undoMove() {
+    if (!this.gameActive || this.moveHistory.length === 0 || this.undosLeft <= 0) return;
+    const prev = this.moveHistory.pop();
+    this.horsePos = prev.horsePos;
+    this.carrotsCollected = prev.carrotsCollected;
+    this.trophyActive = prev.trophyActive;
+    this.score = prev.score;
+    this.movesLeft = prev.movesLeft;
+    this.undosLeft--;
+    document.getElementById('moves-left-val').textContent = this.movesLeft;
+    const undoBtn = document.getElementById('btn-undo-move');
+    if (undoBtn) undoBtn.textContent = `↩ Deshacer (${this.undosLeft})`;
+    if (this.undosLeft <= 0 && undoBtn) undoBtn.style.display = 'none';
+    window.GameAudio.playCapture();
+    this.renderBoard();
   }
 
   // --- RENDER CHESSBOARD ---
@@ -509,6 +534,15 @@ class CaballoGame {
 
     const currentLevel = this.levels[this.currentLevelIndex];
 
+    // Save state for undo
+    this.moveHistory.push({
+      horsePos: { ...this.horsePos },
+      carrotsCollected: [...this.carrotsCollected],
+      trophyActive: this.trophyActive,
+      score: this.score,
+      movesLeft: this.movesLeft
+    });
+
     // Deduct moves
     this.movesLeft--;
     document.getElementById('moves-left-val').textContent = this.movesLeft;
@@ -571,11 +605,12 @@ class CaballoGame {
     if (this.selectedDifficulty === 'martina') moveModifier = -4;
     const maxMoves = currentLevel.moves + moveModifier;
 
-    // Star calculation
+    // Star calculation — unified: ≥70% = 3★, ≥40% = 2★
     let starsWon = 1;
-    if (this.movesLeft >= maxMoves * 0.40) {
+    const perf = this.movesLeft / maxMoves;
+    if (perf >= 0.70) {
       starsWon = 3;
-    } else if (this.movesLeft >= maxMoves * 0.15) {
+    } else if (perf >= 0.40) {
       starsWon = 2;
     }
 

@@ -353,6 +353,7 @@ class TorretaGame {
     if (this.selectedDifficulty === 'martina') timeMultiplier = 0.50;
     
     this.timeLeft = Math.round(currentRecipe.targetTime * timeMultiplier);
+    this.retriesLeft = this.selectedDifficulty === 'easy' ? 2 : (this.selectedDifficulty === 'medium' ? 1 : 0);
     this.gameActive = true;
     this.currentStepIndex = 0;
     this.selectedSquare = null;
@@ -387,6 +388,7 @@ class TorretaGame {
           <div class="timer-box" id="timer-box">
             <span>⏱️ Reloj de Cocina:</span> <span id="timer-val">${this.timeLeft}s</span>
           </div>
+          ${this.retriesLeft > 0 ? `<div class="timer-box" style="background:var(--gold);color:var(--magic-dark);"><span>🔄 Reintentos:</span> <span id="retries-val">${this.retriesLeft}</span></div>` : ''}
         </div>
 
         <div class="empanadas-layout">
@@ -562,15 +564,22 @@ class TorretaGame {
         }
       }
     } else {
-      window.GameAudio.playError();
-      this.selectedSquare = null;
-      
-      const activeStepEl = document.querySelector('.move-active');
-      if (activeStepEl) {
-        activeStepEl.classList.add('shake');
-        setTimeout(() => activeStepEl.classList.remove('shake'), 400);
+      if (this.retriesLeft > 0) {
+        this.retriesLeft--;
+        this.updateTimerDisplay();
+        this.selectedSquare = null;
+        this.renderBoardDOM();
+        this.showToast(`¡Reintento! ${this.retriesLeft} más`, 'warning');
+      } else {
+        window.GameAudio.playError();
+        this.selectedSquare = null;
+        const activeStepEl = document.querySelector('.move-active');
+        if (activeStepEl) {
+          activeStepEl.classList.add('shake');
+          setTimeout(() => activeStepEl.classList.remove('shake'), 400);
+        }
+        this.renderBoardDOM();
       }
-      this.renderBoardDOM();
     }
   }
 
@@ -660,11 +669,12 @@ class TorretaGame {
     
     const maxTime = Math.round(currentRecipe.targetTime * timeMultiplier);
 
-    // Star calculation
+    // Star calculation — unified: ≥70% = 3★, ≥40% = 2★
     let starsWon = 1;
-    if (this.timeLeft >= maxTime * 0.55) {
+    const perf = this.timeLeft / maxTime;
+    if (perf >= 0.70) {
       starsWon = 3;
-    } else if (this.timeLeft >= maxTime * 0.25) {
+    } else if (perf >= 0.40) {
       starsWon = 2;
     }
 
@@ -775,6 +785,7 @@ class TorretaGame {
   // --- TIME ALERTS ---
   updateTimerDisplay() {
     const valEl = document.getElementById('timer-val');
+    const retryEl = document.getElementById('retries-val');
     const boxEl = document.getElementById('timer-box');
     if (valEl) {
       valEl.textContent = `${this.timeLeft}s`;
@@ -784,6 +795,23 @@ class TorretaGame {
         boxEl.classList.remove('timer-danger');
       }
     }
+    if (retryEl) retryEl.textContent = this.retriesLeft;
+  }
+
+  showToast(msg, type) {
+    let toast = document.getElementById('game-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'game-toast';
+      toast.style.cssText = 'position:fixed;top:60px;left:50%;transform:translateX(-50%);padding:0.5rem 1.5rem;border-radius:20px;font-family:Nunito,sans-serif;font-weight:700;font-size:0.9rem;z-index:10002;pointer-events:none;transition:all 0.3s ease;';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.background = type === 'warning' ? 'var(--gold)' : 'var(--sage)';
+    toast.style.color = 'var(--magic-dark)';
+    toast.style.opacity = '1';
+    toast.style.top = '60px';
+    setTimeout(() => { toast.style.opacity = '0'; toast.style.top = '40px'; }, 2000);
   }
 
   // --- GAME OVER ---

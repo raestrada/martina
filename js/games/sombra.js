@@ -1003,10 +1003,11 @@ class SombraGame {
       window.GameAudio.playVictory();
     }
 
-    // Stars won based on remaining lives
+    // Stars won based on remaining lives — unified: ≥70% = 3★, ≥40% = 2★
     let starsWon = 1;
-    if (this.lives === this.maxLives) starsWon = 3;
-    else if (this.lives > 1) starsWon = 2;
+    const perf = this.lives / this.maxLives;
+    if (perf >= 0.70) starsWon = 3;
+    else if (perf >= 0.40) starsWon = 2;
 
     this.saveProgress(starsWon);
 

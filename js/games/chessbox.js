@@ -876,7 +876,7 @@ class ChessBoxGame {
         console.warn("Failed to load Stockfish Web Worker. Falling back to inline Local Engine.", err);
         this.engineType = 'local';
         // Instantiate our inline ChessDuel engine fallback
-        this.localEngine = new window.ChessDuel(null, () => {}, () => {});
+        this.localEngine = new window.ChessDuel(null, this.onChessWin.bind(this), this.onChessLose.bind(this));
       });
   }
 

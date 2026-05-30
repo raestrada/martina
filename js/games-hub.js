@@ -12,7 +12,14 @@ const GameAudio = {
   init() {
     if (!this.ctx) {
       this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      this._masterGain = this.ctx.createGain();
+      this._masterGain.gain.value = 1;
+      this._masterGain.connect(this.ctx.destination);
     }
+  },
+
+  _out() {
+    return this._masterGain || this.ctx.destination;
   },
 
   playMove() {
@@ -29,7 +36,7 @@ const GameAudio = {
     gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
     
     osc.connect(gain);
-    gain.connect(this.ctx.destination);
+    gain.connect(this._out());
     
     osc.start();
     osc.stop(this.ctx.currentTime + 0.15);
@@ -55,7 +62,7 @@ const GameAudio = {
       gain.gain.exponentialRampToValueAtTime(0.01, now + index * 0.08 + 0.3);
       
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this._out());
       
       osc.start(now + index * 0.08);
       osc.stop(now + index * 0.08 + 0.3);
@@ -82,7 +89,7 @@ const GameAudio = {
     
     osc.connect(filter);
     filter.connect(gain);
-    gain.connect(this.ctx.destination);
+    gain.connect(this._out());
     
     osc.start();
     osc.stop(this.ctx.currentTime + 0.25);
@@ -110,13 +117,55 @@ const GameAudio = {
       gain.gain.exponentialRampToValueAtTime(0.01, now + timeOffset + durations[index]);
       
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this._out());
       
       osc.start(now + timeOffset);
       osc.stop(now + timeOffset + durations[index]);
       
       timeOffset += 0.12;
     });
+  },
+
+  playCapture() {
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    const notes = [523, 659, 784];
+    notes.forEach((freq, i) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.12, now + i * 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.12);
+      osc.connect(gain).connect(this._out());
+      osc.start(now + i * 0.06);
+      osc.stop(now + i * 0.06 + 0.12);
+    });
+  },
+
+  playMute() {
+    this.init();
+    if (!this.ctx) return;
+    this._muted = !this._muted;
+    if (this._muted) {
+      this._savedGain = this._masterGain ? this._masterGain.gain.value : 1;
+      if (this._masterGain) this._masterGain.gain.value = 0;
+    } else {
+      if (this._masterGain) this._masterGain.gain.value = this._savedGain || 1;
+    }
+    localStorage.setItem('martina_game_mute', this._muted ? '1' : '0');
+    return this._muted;
+  },
+
+  isMuted() {
+    return !!this._muted;
+  },
+
+  restoreMute() {
+    const muted = localStorage.getItem('martina_game_mute') === '1';
+    this._muted = muted;
+    return muted;
   }
 };
 
@@ -160,20 +209,43 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.classList.add('open');
     document.body.style.overflow = 'hidden'; // Lock background scroll
     
-    // Show Loading Spinner / Welcome Screen inside sandbox
+    // Show Loading Progress inside sandbox
+    const quotes = [
+      '«Cada peón es una reina dormida»',
+      '«El ajedrez es 99% táctica»',
+      '«Para jugar bien, solo necesitas imaginación»',
+      '«En el ajedrez, el mejor movimiento es siempre el siguiente»',
+      '«El que controla el centro, controla el reino»',
+    ];
+    const q = quotes[Math.floor(Math.random() * quotes.length)];
+
     sandbox.innerHTML = `
-      <div class="game-screen" style="animation: none;">
-        <div style="font-size: 3rem; margin-bottom: 1rem; animation: spin 1s infinite linear;">🪄</div>
-        <h2>Cargando tablero...</h2>
-        <p>Invocando piezas mágicas del reino.</p>
+      <div class="game-screen game-loading" style="animation: none;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">♕</div>
+        <h2>Invocando piezas...</h2>
+        <p style="font-style:italic;opacity:0.7;max-width:320px;margin:0 auto 1.5rem;font-size:0.85rem;">${q}</p>
+        <div class="loading-bar-track"><div class="loading-bar-fill" id="loading-fill" style="width:0%"></div></div>
+        <p style="font-size:0.75rem;opacity:0.5;margin-top:0.5rem;" id="loading-status">Preparando tablero...</p>
       </div>
     `;
+    let loadPct = 0;
+    const fillEl = document.getElementById('loading-fill');
+    const statusEl = document.getElementById('loading-status');
+    const loadInterval = setInterval(() => {
+      loadPct += Math.random() * 18;
+      if (loadPct > 88) loadPct = 88;
+      if (fillEl) fillEl.style.width = loadPct + '%';
+      if (statusEl && loadPct > 60) statusEl.textContent = 'Casi listo...';
+    }, 200);
 
     // Load Game Script dynamically
     const scriptId = `script-game-${gameType}`;
     let script = document.getElementById(scriptId);
 
     function instantiateGame() {
+      clearInterval(loadInterval);
+      if (fillEl) fillEl.style.width = '100%';
+      if (statusEl) statusEl.textContent = '¡Listo!';
       const GameClass = window.MartinaGames[gameType];
       if (GameClass) {
         sandbox.innerHTML = '';
@@ -310,7 +382,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const textEl = document.getElementById('dashboard-progress-text');
 
     if (rankTitleEl) rankTitleEl.textContent = `${rankEmoji} ${rankTitle}`;
-    if (barEl) barEl.style.width = `${rankProgress}%`;
+    if (barEl) {
+      const currentWidth = parseFloat(barEl.style.width) || 0;
+      barEl.style.width = currentWidth + '%';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => { barEl.style.width = `${rankProgress}%`; });
+      });
+    }
     if (textEl) textEl.textContent = `${Math.round(rankProgress)}%`;
 
     // Badges list definition (Rebalanced for 900 stars / 24 stickers)
@@ -368,8 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     sandbox.innerHTML = '';
-    // Reload dashboard in case progress was achieved
-    loadDashboardStats();
+    // Stats are updated on-demand by games via endGame callback — no need to reload here
   }
 
   // Set click events for cards
@@ -386,6 +463,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Close buttons
   closeBtn.addEventListener('click', closeGame);
+
+  // Mute button
+  const muteBtn = document.getElementById('btn-mute');
+  if (muteBtn) {
+    if (GameAudio.restoreMute()) {
+      muteBtn.textContent = '🔇';
+      muteBtn.classList.add('muted');
+    }
+    muteBtn.addEventListener('click', () => {
+      const nowMuted = GameAudio.playMute();
+      muteBtn.textContent = nowMuted ? '🔇' : '🔊';
+      muteBtn.classList.toggle('muted', nowMuted);
+    });
+  }
 
   // Close modal on Escape key
   window.addEventListener('keydown', (e) => {
