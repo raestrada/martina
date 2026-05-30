@@ -2234,12 +2234,14 @@
     min-height: 0;
   }
   #phaser-boxing-parent {
-    width: 100% !important;
+    height: calc(100% - 8px) !important;
+    width: auto !important;
     aspect-ratio: 16/9;
-    max-height: 100% !important;
+    margin: 0 auto;
     position: relative !important;
-    flex: 1;
-    min-height: 0;
+    flex-shrink: 0;
+    border-radius: 0 !important;
+    border: none !important;
   }
   #phaser-boxing-parent canvas {
     width: 100% !important;
