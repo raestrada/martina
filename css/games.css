@@ -2221,7 +2221,7 @@
     min-height: 0;
   }
 
-  /* ChessBox: grid layout + height-based canvas (commit 5af2116 exacto) */
+  /* ChessBox: grid layout + height-based canvas (commit 5af2116 exacto + min-height fix) */
   #phaser-boxing-parent {
     height: 100%;
     width: auto !important;
@@ -2231,6 +2231,7 @@
     border-radius: 0 !important;
     border: none !important;
     overflow: hidden;
+    min-height: 0 !important;
   }
   #phaser-boxing-parent canvas {
     width: 100% !important;
@@ -2238,10 +2239,11 @@
     object-fit: contain;
   }
 
-  /* Mario: width-based (ancho llena, alto de aspect-ratio) — NO flex:1, NO height:100% */
+  /* Mario: width-based (ancho llena, alto de aspect-ratio) — min-height 0 para anular desktop */
   .mario-canvas-container:not(#phaser-boxing-parent) {
     width: 100% !important;
     height: auto !important;
+    min-height: 0 !important;
     aspect-ratio: 16/9;
     max-height: 100vh;
     max-height: 100dvh;
@@ -2251,11 +2253,11 @@
   #phaser-game-parent {
     width: 100% !important;
     height: auto !important;
+    min-height: 0 !important;
     aspect-ratio: 16/9;
     max-height: 100dvh;
     border-radius: 0 !important;
     border: none !important;
-    min-height: auto !important;
   }
   #phaser-game-parent canvas {
     width: 100% !important;
