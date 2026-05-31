@@ -66,6 +66,7 @@
       <a href="/" class="nav-link{% if activeNav == 'inicio' %} active{% endif %}">Inicio</a>
       <a href="/#cuentos" class="nav-link{% if activeNav == 'cuentos' %} active{% endif %}">Cuentos</a>
       <a href="/juegos.html" class="nav-link{% if activeNav == 'juegos' %} active{% endif %}">Juegos</a>
+      <a href="/bots.html" class="nav-link{% if activeNav == 'bots' %} active{% endif %}">Bots</a>
       <div class="nav-dropdown">
         <button class="nav-dropdown-trigger{% if activeNav in ['album', 'galeria', 'acerca-de', 'difundir'] %} active{% endif %}" id="nav-more-btn" aria-expanded="false" aria-haspopup="true">Más ▾</button>
         <div class="nav-dropdown-menu" id="nav-more-menu">
@@ -124,8 +125,8 @@
 <script src="/js/main.js"></script>
 <script src="/js/offline.js"></script>
 <div id="offline-banner" class="offline-banner" role="status" aria-live="polite">
+  <span class="offline-spinner"></span>
   <span class="offline-banner-text"></span>
-  <span class="offline-progress-track"><span class="offline-progress-fill"></span></span>
 </div>
 {% block extraBodyEnd %}{% endblock %}
 </body>

@@ -53,7 +53,9 @@
     navigator.serviceWorker.addEventListener('message', onSWMessage);
 
     if (isMobile() && !isShellCached) {
-      showBanner('Preparando para leer sin conexion...');
+      showBanner();
+      // Safety timeout: never leave the banner stuck
+      bannerTimeout = setTimeout(finishAutoCache, 25000);
     }
 
     setupVideoButtons();
@@ -103,46 +105,51 @@
     }
   }
 
-  // ---- Auto-cache banner ----
+  // ---- Auto-cache pill (small, bottom-right, not intrusive) ----
 
   var bannerEl = null;
   var bannerTextEl = null;
-  var progressFillEl = null;
+  var bannerSpinnerEl = null;
+  var bannerTimeout = null;
 
   function getBannerElements() {
     if (bannerEl) return;
     bannerEl = document.getElementById('offline-banner');
     if (!bannerEl) return;
     bannerTextEl = bannerEl.querySelector('.offline-banner-text');
-    progressFillEl = bannerEl.querySelector('.offline-progress-fill');
+    bannerSpinnerEl = bannerEl.querySelector('.offline-spinner');
   }
 
-  function showBanner(text) {
+  function showBanner() {
     getBannerElements();
     if (!bannerEl) return;
-    if (bannerTextEl) bannerTextEl.textContent = text;
+    if (bannerTextEl) bannerTextEl.textContent = 'Preparando offline...';
     bannerEl.classList.add('visible');
   }
 
   function updateBannerProgress(percent) {
     getBannerElements();
-    if (bannerEl) bannerEl.classList.add('visible');
-    if (progressFillEl) progressFillEl.style.width = percent + '%';
-    if (bannerTextEl) bannerTextEl.textContent = 'Preparando para leer sin conexion... ' + percent + '%';
+    if (!bannerEl) return;
+    bannerEl.classList.add('visible');
+    if (bannerTextEl) bannerTextEl.textContent = 'Offline ' + percent + '%';
   }
 
   function finishAutoCache() {
+    if (bannerTimeout) { clearTimeout(bannerTimeout); bannerTimeout = null; }
     if (isShellCached) return;
     isShellCached = true;
     localStorage.setItem(SHELL_KEY, 'true');
+
     getBannerElements();
-    if (!bannerEl) return;
-    if (bannerTextEl) bannerTextEl.textContent = 'Listo para leer sin conexion';
-    if (progressFillEl) progressFillEl.style.width = '100%';
+    if (!bannerEl || !bannerTextEl) return;
+    if (bannerSpinnerEl) bannerSpinnerEl.style.display = 'none';
+    bannerTextEl.textContent = '\u2713 Listo';
+    bannerEl.classList.add('done');
     bannerEl.classList.add('visible');
     setTimeout(function () {
-      bannerEl.classList.remove('visible');
-    }, 3000);
+      bannerEl.classList.remove('visible', 'done');
+      if (bannerSpinnerEl) bannerSpinnerEl.style.display = '';
+    }, 2500);
   }
 
   // ---- SW update toast ----
@@ -179,13 +186,11 @@
         var src = btn.getAttribute('data-video-src');
         if (!src) return;
 
-        // Add file size to label on mobile
         var size = VIDEO_SIZES[src];
         if (size && isMobile()) {
           btn.innerHTML = '\u2B07\uFE0F Guardar offline (' + formatMB(size) + ')';
         }
 
-        // Check if already cached
         if (navigator.serviceWorker.controller) {
           navigator.serviceWorker.controller.postMessage({
             type: 'video-status',
@@ -193,7 +198,6 @@
           });
         }
 
-        // Intercept click
         btn.addEventListener('click', function (e) {
           e.preventDefault();
           var url = this.getAttribute('data-video-src');

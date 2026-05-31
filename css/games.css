@@ -2909,3 +2909,861 @@
     max-height: 90px !important;
   }
 }
+
+/* ===================================================================
+   BOTS DE AJEDREZ — Página de bots
+   =================================================================== */
+
+/* --- Hero --- */
+.bots-hero {
+  text-align: center;
+  padding: 2rem 1rem 1rem;
+}
+.bots-hero h1 {
+  font-family: 'Nunito', 'Outfit', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
+}
+.bots-hero-subtitle {
+  color: var(--warm-white);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0.5rem auto 0;
+}
+
+/* --- Bot Cards Grid --- */
+.bots-grid-section {
+  padding: 0 1rem 2rem;
+}
+.bots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.bot-card {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+.bot-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  border-color: var(--bot-color);
+}
+.bot-card-header {
+  padding: 1.25rem 1.25rem 0.75rem;
+  text-align: center;
+}
+.bot-card-emoji {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.35rem;
+}
+.bot-card-name {
+  font-family: 'Nunito', 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--warm-white);
+  margin: 0 0 0.4rem;
+}
+.bot-card-difficulty {
+  display: inline-block;
+  padding: 0.2rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #0a0a0a;
+}
+.bot-card-body {
+  padding: 0 1.25rem;
+  flex: 1;
+}
+.bot-card-elo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.elo-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--board-dark);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.elo-value {
+  font-family: 'Nunito', 'Outfit', sans-serif;
+  font-size: 2rem;
+  font-weight: 900;
+}
+.bot-card-desc {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  line-height: 1.45;
+  text-align: center;
+}
+.bot-card-footer {
+  padding: 1rem 1.25rem;
+  text-align: center;
+}
+.bot-card-btn {
+  padding: 0.55rem 2rem;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  width: 100%;
+}
+.bot-card-btn:hover {
+  filter: brightness(1.15);
+  transform: scale(1.03);
+}
+
+/* ===================================================================
+   BOTS VS INTRO SCREEN — Anime/Mega Man Style
+   =================================================================== */
+.bots-vs-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #050512;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  color: white;
+  animation: botsVsIn 0.3s ease-out;
+}
+@keyframes botsVsIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.bots-vs-warning {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 32px;
+  background: repeating-linear-gradient(-45deg, #dc2626, #dc2626 12px, #000 12px, #000 24px);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border-top: 2px solid #f43f5e;
+  border-bottom: 2px solid #f43f5e;
+  box-shadow: 0 0 20px rgba(244, 63, 94, 0.4);
+}
+.warning-top { top: 32px; }
+.bots-vs-scroller {
+  white-space: nowrap;
+  animation: botsVsScroll 14s linear infinite;
+  font-weight: 900;
+  font-size: 0.85rem;
+  color: #fff;
+  text-shadow: 1px 1px 2px #000, 0 0 5px #f43f5e;
+  letter-spacing: 2px;
+}
+@keyframes botsVsScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.bots-vs-speed-lines {
+  position: absolute;
+  inset: -100px;
+  background: repeating-radial-gradient(circle, transparent, transparent 8px, rgba(255,255,255,0.02) 8px, rgba(255,255,255,0.02) 16px);
+  animation: botsVsSpeed 0.18s linear infinite;
+  opacity: 0.25;
+  pointer-events: none;
+}
+@keyframes botsVsSpeed {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-4px, 4px) scale(1.015); }
+  100% { transform: translate(4px, -4px) scale(1); }
+}
+
+.bots-vs-split {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.bots-vs-panel {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bots-vs-left {
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.9), rgba(6, 182, 212, 0.95));
+  transform: skewX(-12deg) translateX(-100%);
+  animation: botsVsSlideLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  border-right: 4px solid #67e8f9;
+  box-shadow: 15px 0 35px rgba(6, 182, 212, 0.45);
+}
+.bots-vs-right {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(88, 28, 135, 0.9));
+  transform: skewX(-12deg) translateX(100%);
+  animation: botsVsSlideRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.08s;
+  border-left: 4px solid var(--opp-color);
+  box-shadow: -15px 0 35px rgba(124, 58, 237, 0.4);
+}
+@keyframes botsVsSlideLeft {
+  0% { transform: skewX(-12deg) translateX(-100%); }
+  100% { transform: skewX(-12deg) translateX(0); }
+}
+@keyframes botsVsSlideRight {
+  0% { transform: skewX(-12deg) translateX(100%); }
+  100% { transform: skewX(-12deg) translateX(0); }
+}
+
+.bots-vs-unskew {
+  transform: skewX(12deg);
+  width: 85%;
+  max-width: 360px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.bots-vs-card {
+  text-align: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: botsVsContentFade 0.5s ease-out 0.65s both;
+}
+@keyframes botsVsContentFade {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.bots-vs-badge {
+  display: inline-block;
+  padding: 5px 18px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.bots-vs-name {
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin: 5px 0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-family: 'Outfit', sans-serif;
+}
+.name-player {
+  color: #fff;
+  text-shadow: 0 0 15px rgba(6, 182, 212, 0.8);
+}
+.bots-vs-player-icon {
+  margin: 10px 0;
+}
+.bots-vs-emoji-big {
+  font-size: 4rem;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+}
+.bots-vs-elo {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #94a3b8;
+  margin: 6px 0;
+}
+.bots-vs-quote {
+  font-size: 0.8rem;
+  color: #e2e8f0;
+  font-style: italic;
+  margin-top: 8px;
+  max-width: 280px;
+  line-height: 1.4;
+}
+.bots-vs-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+}
+.bots-vs-vs {
+  font-family: 'Outfit', sans-serif;
+  font-size: 4.5rem;
+  font-weight: 900;
+  color: #fbbf24;
+  text-shadow: 0 0 40px rgba(251, 191, 36, 0.7), 0 4px 8px rgba(0, 0, 0, 0.6);
+  animation: botsVsPulse 0.8s ease-in-out infinite alternate;
+}
+@keyframes botsVsPulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
+}
+.bots-vs-skip {
+  position: absolute;
+  bottom: 28px;
+  right: 28px;
+  z-index: 200;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #94a3b8;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.bots-vs-skip:hover {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+.bots-vs-skip kbd {
+  background: #475569;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: white;
+  margin-left: 4px;
+}
+
+/* ===================================================================
+   BOTS GAME CONTAINER — Full chess experience
+   =================================================================== */
+.bots-game-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 60px);
+  height: calc(100dvh - 60px);
+  max-height: calc(100dvh - 60px);
+  background: #0a0a14;
+  border-radius: 12px;
+  overflow: hidden;
+  animation: botsGameIn 0.35s ease-out;
+}
+@keyframes botsGameIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Top bar */
+.bots-game-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: rgba(15, 23, 42, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  gap: 12px;
+}
+.bots-btn-resign {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+}
+.bots-btn-resign:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #fecaca;
+}
+.bots-opponent-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bots-opponent-emoji {
+  font-size: 2rem;
+}
+.bots-opponent-name {
+  display: block;
+  color: var(--warm-white);
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+.bots-opponent-elo {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.bots-move-counter {
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* Main game area */
+.bots-game-main {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  gap: 12px;
+  padding: 8px 12px;
+  align-items: stretch;
+}
+
+/* Left sidebar */
+.bots-sidebar-left {
+  flex: 0 0 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 8px;
+}
+.bots-captured-section {
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 8px;
+}
+.bots-captured-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.bots-captured-pieces {
+  font-size: 1.1rem;
+  min-height: 20px;
+  color: #94a3b8;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+/* Board wrapper */
+.bots-board-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+}
+.bots-board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  width: min(75vmin, 520px);
+  height: min(75vmin, 520px);
+  border: 3px solid #1a1c2e;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Chess square styles in bots */
+.bots-board .chess-square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  aspect-ratio: 1;
+}
+.bots-board .square-light {
+  background-color: #e8d5b7;
+}
+.bots-board .square-dark {
+  background-color: #7c5c3e;
+}
+.bots-board .chess-piece {
+  font-size: clamp(1.4rem, 4vmin, 3rem);
+  font-weight: 700;
+  user-select: none;
+  pointer-events: none;
+  line-height: 1;
+  text-align: center;
+}
+
+/* Status bar */
+.bots-status-bar {
+  width: min(75vmin, 520px);
+  padding: 8px 12px;
+  text-align: center;
+}
+.bots-status-text {
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.bots-status-text.thinking {
+  animation: botsDots 1.2s infinite;
+}
+@keyframes botsDots {
+  0%, 20% { opacity: 1; }
+  50% { opacity: 0.4; }
+  80%, 100% { opacity: 1; }
+}
+
+/* Right sidebar */
+.bots-sidebar-right {
+  flex: 0 0 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Bot comment bubble */
+.bots-comment-bubble {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  transition: all 0.25s ease;
+  min-height: 60px;
+}
+.bots-comment-avatar {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+.bots-comment-content {
+  flex: 1;
+  min-width: 0;
+}
+.bots-comment-name {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+}
+.bots-comment-text {
+  font-size: 0.75rem;
+  color: #cbd5e1;
+  margin: 0;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* History section */
+.bots-history-section {
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 8px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.bots-history-header {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+}
+.bots-history-list {
+  flex: 1;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 0.65rem;
+  color: #64748b;
+  min-height: 0;
+}
+.bots-history-list div:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* ===================================================================
+   BOTS RESULT OVERLAY
+   =================================================================== */
+.bots-result-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 2rem;
+  text-align: center;
+  border: 2px solid;
+  border-radius: 16px;
+  background: rgba(10, 10, 20, 0.95);
+  animation: botsResultIn 0.4s ease-out;
+}
+@keyframes botsResultIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+.bots-result-icon {
+  font-size: 4rem;
+  margin-bottom: 0.5rem;
+  animation: botsResultBounce 0.6s ease-out;
+}
+@keyframes botsResultBounce {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+.bots-result-title {
+  font-family: 'Nunito', 'Outfit', sans-serif;
+  font-size: 2rem;
+  font-weight: 900;
+  margin: 0 0 0.3rem;
+}
+.bots-result-reason {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  margin: 0 0 1rem;
+}
+.bots-result-vs {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  font-family: 'Outfit', sans-serif;
+}
+.result-player {
+  font-weight: 800;
+  color: #67e8f9;
+}
+.result-vs {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+.result-bot {
+  font-weight: 800;
+}
+.bots-result-quote {
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  font-style: italic;
+  margin: 0 0 1rem;
+  max-width: 320px;
+  line-height: 1.4;
+}
+.bots-result-stats {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.result-stat {
+  text-align: center;
+}
+.result-stat span {
+  display: block;
+  font-size: 0.65rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.result-stat strong {
+  font-size: 1.3rem;
+  color: var(--warm-white);
+}
+.bots-result-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+.bots-result-btn {
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.bots-result-btn:hover {
+  filter: brightness(1.15);
+  transform: scale(1.03);
+}
+.bots-result-btn.secondary {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--warm-white);
+}
+.bots-result-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ===================================================================
+   BOTS RESPONSIVE — Mobile
+   =================================================================== */
+@media (max-width: 768px) {
+  .bots-hero h1 {
+    font-size: 1.5rem;
+  }
+  .bots-hero-subtitle {
+    font-size: 0.8rem;
+  }
+  .bots-grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+
+  .bots-game-container {
+    height: calc(100dvh - 54px);
+    border-radius: 0;
+  }
+  .bots-game-topbar {
+    padding: 6px 8px;
+    gap: 6px;
+  }
+  .bots-btn-resign {
+    padding: 4px 10px;
+    font-size: 0.7rem;
+  }
+  .bots-opponent-emoji {
+    font-size: 1.4rem;
+  }
+  .bots-opponent-name {
+    font-size: 0.8rem;
+  }
+  .bots-opponent-elo {
+    font-size: 0.62rem;
+  }
+
+  .bots-game-main {
+    flex-direction: column;
+    padding: 4px 6px;
+    gap: 4px;
+  }
+
+  .bots-sidebar-left {
+    flex: 0 0 auto;
+    flex-direction: row;
+    padding-top: 0;
+  }
+  .bots-captured-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+  }
+  .bots-captured-label {
+    margin-bottom: 0;
+    white-space: nowrap;
+  }
+  .bots-captured-pieces {
+    font-size: 0.9rem;
+  }
+
+  .bots-board-wrapper {
+    flex: 1;
+  }
+  .bots-board {
+    width: min(92vmin, 380px);
+    height: min(92vmin, 380px);
+  }
+  .bots-status-bar {
+    width: min(92vmin, 380px);
+    padding: 4px 8px;
+  }
+  .bots-status-text {
+    font-size: 0.72rem;
+  }
+
+  .bots-sidebar-right {
+    flex: 0 0 auto;
+    flex-direction: row;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .bots-comment-bubble {
+    flex: 1 1 100%;
+    min-height: 44px;
+    padding: 6px 8px;
+  }
+  .bots-comment-text {
+    font-size: 0.68rem;
+  }
+  .bots-history-section {
+    flex: 1;
+    max-height: 80px;
+  }
+  .bots-history-list {
+    font-size: 0.58rem;
+  }
+  .bots-sidebar-right .bots-captured-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+  }
+
+  /* VS screen mobile */
+  .bots-vs-name {
+    font-size: 1.2rem;
+  }
+  .bots-vs-emoji-big {
+    font-size: 2.5rem;
+  }
+  .bots-vs-vs {
+    font-size: 2.5rem;
+  }
+  .bots-vs-badge {
+    font-size: 0.6rem;
+    padding: 3px 10px;
+  }
+  .bots-vs-quote {
+    font-size: 0.65rem;
+    max-width: 180px;
+  }
+  .bots-vs-skip {
+    bottom: 16px;
+    right: 12px;
+    font-size: 0.7rem;
+  }
+
+  /* Result screen mobile */
+  .bots-result-icon {
+    font-size: 2.5rem;
+  }
+  .bots-result-title {
+    font-size: 1.3rem;
+  }
+  .bots-result-actions {
+    flex-direction: column;
+    width: 100%;
+    max-width: 260px;
+  }
+  .bots-result-btn {
+    width: 100%;
+  }
+}
