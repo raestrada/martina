@@ -1601,8 +1601,6 @@ class ChessBoxGame {
     ctx.restore();
   }
 
-  }
-
   // --- MAP OPPONENT UNIQUE STORIES AND TACTICAL POWERS ---
   getOpponentTacticalPower(opponentName, tier) {
     const data = {
