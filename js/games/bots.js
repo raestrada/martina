@@ -1823,6 +1823,8 @@ class BotsGame {
     } else {
       this.initStockfishWorker().catch(err => {
         console.warn('Stockfish init failed:', err.message);
+        // Show error in UI
+        this.updateStatus('⚠️ Error: ' + err.message, 'check');
       });
     }
   }
