@@ -1862,7 +1862,6 @@ class BotsGame {
             <div class="bots-material-badge" id="bots-material-badge">
               <span id="bots-material-big">⚖ 0</span>
             </div>
-            </div>
             <div class="bots-commentator" id="bots-commentator" style="border-color: ${accent}44;">
               <div class="bots-commentator-header">
                 <span>🎙️ Comentarista</span>
