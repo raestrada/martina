@@ -1198,7 +1198,12 @@ class BotsGame {
 
         if (this.lastChessMove) {
           if (coord === this.lastChessMove.from || coord === this.lastChessMove.to) {
-            square.style.boxShadow = `inset 0 0 0 3px ${bot.color}88`;
+            const isFrom = coord === this.lastChessMove.from;
+            const pct = isFrom ? 0.25 : 0.45;
+            const r = parseInt(bot.color.slice(1,3), 16);
+            const g = parseInt(bot.color.slice(3,5), 16);
+            const b2 = parseInt(bot.color.slice(5,7), 16);
+            square.style.background = `linear-gradient(rgba(${r},${g},${b2},${pct}), rgba(${r},${g},${b2},${pct})), ${light ? bl : bd}`;
           }
         }
 
@@ -1329,8 +1334,10 @@ class BotsGame {
 
     if (nextTurn === 'b') {
       this.triggerEngineTurn();
+      if (moveCategories.includes('check')) this.updateStatus('⚡ ¡Jaque!', 'check');
     } else {
-      this.updateStatus('¡Tu turno!');
+      if (moveCategories.includes('check')) this.updateStatus('⚡ ¡Jaque!', 'check');
+      else this.updateStatus('● Tu turno', 'turn');
     }
 
     if (isPlayer) {
@@ -1379,8 +1386,16 @@ class BotsGame {
     const el = document.getElementById('bots-status');
     if (!el) return;
     el.textContent = msg;
-    el.className = 'bots-status-text';
-    if (type === 'thinking') el.className += ' thinking';
+    if (type === 'thinking') {
+      el.style.background = 'rgba(251, 191, 36, 0.2)';
+      el.style.color = '#fbbf24';
+    } else if (type === 'check') {
+      el.style.background = 'rgba(239, 68, 68, 0.18)';
+      el.style.color = '#f87171';
+    } else {
+      el.style.background = 'rgba(74, 222, 128, 0.12)';
+      el.style.color = '#4ade80';
+    }
   }
 
   updateHistoryDisplay() {
@@ -1667,7 +1682,7 @@ class BotsGame {
 
     this.initStockfishWorker();
     this.renderChessBoard();
-    this.updateStatus('¡Tu turno! Juegas con blancas.');
+    this.updateStatus('● Tu turno', 'turn');
     this.showBotComment(this.getBotQuote('greeting'));
 
     this.quoteInterval = setInterval(() => {
