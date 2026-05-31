@@ -801,7 +801,8 @@ class BotsGame {
       pitch: cfg.pitch,
       speed: cfg.speed,
       amplitude: 100,
-      wordgap: 3
+      wordgap: 3,
+      rawdata: 'data-url'
     }, (success, wav, isRaw) => {
       console.log('🔊 meSpeak callback:', { success, wavType: typeof wav, wavLen: wav?.length, voiceEnabled: this.voiceEnabled });
       if (success && wav && this.voiceEnabled) {
@@ -814,8 +815,11 @@ class BotsGame {
 
   _playWAV(wavData) {
     console.log('🔊 _playWAV, data type:', typeof wavData, 'preview:', typeof wavData === 'string' ? wavData.substring(0, 50) : 'not-string');
-    const ctx = this._resumeAudio();
-    if (!ctx) return;
+    
+    // Use independent AudioContext for voice (not tied to soundEnabled)
+    if (!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = this.audioCtx;
+    if (ctx.state === 'suspended') { ctx.resume(); console.log('🔊 AudioContext resumed'); }
 
     // meSpeak returns base64 data URI by default: "data:audio/wav;base64,..."
     let bytes;
@@ -832,17 +836,20 @@ class BotsGame {
     }
 
     // Decode WAV and play via AudioContext
+    console.log('🔊 decoding WAV, bytes length:', bytes.length);
     ctx.decodeAudioData(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), 
       (buffer) => {
+        console.log('🔊 WAV decoded OK, duration:', buffer.duration, 'sampleRate:', buffer.sampleRate);
         const src = ctx.createBufferSource();
         src.buffer = buffer;
         const gain = ctx.createGain();
-        gain.gain.value = 0.6;
+        gain.gain.value = 0.8;
         src.connect(gain);
         gain.connect(ctx.destination);
         src.start(0);
+        console.log('🔊 WAV playback started');
       },
-      (err) => console.log('🔊 decodeAudioData error:', err)
+      (err) => console.error('🔊 decodeAudioData FAILED:', err)
     );
   }
 
