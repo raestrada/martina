@@ -760,11 +760,13 @@ class BotsGame {
     if (window.meSpeak) {
       if (!this._voiceLoaded) {
         console.log('🔊 loading voice /js/mespeak-voice-es.json...');
+        // Put item back since we haven't processed it
+        this._speakQueue.unshift({ text, gender, profile });
+        this._speaking = false; // release queue while loading
         meSpeak.loadVoice('/js/mespeak-voice-es.json', (success, msg) => {
           console.log('🔊 voice loaded:', success, msg || '');
           this._voiceLoaded = !!success;
-          if (success) this._meSpeakSpeak(text, gender, profile);
-          else this._fallbackSpeak(text, gender, profile);
+          this._dequeueSpeak(); // restart queue with loaded voice
         });
         return;
       }
@@ -806,6 +808,7 @@ class BotsGame {
       if (success && data && this.voiceEnabled) {
         this._playPCM(data);
       }
+      this._speaking = false;
       setTimeout(() => this._dequeueSpeak(), 150);
     });
   }
