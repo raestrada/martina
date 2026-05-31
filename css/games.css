@@ -3273,7 +3273,7 @@
 .bots-game-container {
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  height: auto;
   max-height: 100dvh;
   background: linear-gradient(160deg, #161c2c, #1e2338 50%, #1a2030);
   overflow: hidden;
@@ -3356,11 +3356,10 @@
 /* Main game area */
 .bots-game-main {
   display: flex;
-  flex: 1;
   min-height: 0;
   gap: 6px;
   padding: 2px 4px;
-  align-items: stretch;
+  align-items: flex-start;
 }
 
 /* Left sidebar — both capture sections */
@@ -3405,10 +3404,10 @@
 
 /* Board wrapper */
 .bots-board-wrapper {
-  flex: 1;
+  flex: 0 0 auto;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-width: 0;
 }
 .bots-board {
@@ -3628,7 +3627,8 @@
   .bots-grid { grid-template-columns: 1fr; max-width: 400px; }
 
   .bots-game-container {
-    height: 100dvh;
+    height: auto;
+    max-height: 100dvh;
     border-radius: 0;
   }
   .bots-game-topbar {
