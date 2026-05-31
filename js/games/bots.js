@@ -1072,67 +1072,40 @@ class BotsGame {
   }
 
   initStockfishWorker() {
-    // Reuse cached worker if already loaded
     if (this._sfInitPromise) return this._sfInitPromise;
 
     this._sfInitPromise = new Promise((resolve, reject) => {
       this.stockfishReady = false;
-
       const bot = this.selectedBot;
       const skillLevel = Math.min(20, Math.max(0, Math.round((bot.elo / 2800) * 20)));
-      const stockfishUrl = 'https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js';
-      const wasmUrl = 'https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.wasm';
 
-      const failTimer = setTimeout(() => {
-        reject(new Error('timeout'));
-      }, 20000);
+      // Try CDN first, fall back to local file
+      const stockfishUrl = '/js/stockfish.js';
 
       fetch(stockfishUrl)
-        .then(res => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.text(); })
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.text();
+        })
         .then(scriptText => {
-          if (this.stockfishWorker) {
-            // Already loaded by a concurrent call
-            clearTimeout(failTimer);
-            resolve();
-            return;
-          }
+          if (this.stockfishWorker) { resolve(); return; }
 
-          const fullScript =
-            `var Module={locateFile:function(p){return'${wasmUrl}'}};\n` +
-            scriptText + '\n' +
-            'self.onmessage=function(e){StockFish.postMessage(e.data)};';
+          const blob = new Blob([
+            scriptText + '\nself.onmessage=function(e){StockFish.postMessage(e.data)};'
+          ], { type: 'application/javascript' });
 
-          const blob = new Blob([fullScript], { type: 'application/javascript' });
           this.stockfishWorker = new Worker(URL.createObjectURL(blob));
 
-          let uciOk = false;
-          this.stockfishWorker.onmessage = (e) => {
-            const line = e.data;
-            if (line === 'uciok') uciOk = true;
-            if (line === 'readyok') {
-              clearTimeout(failTimer);
-              this.stockfishReady = true;
-              this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
-              this.stockfishWorker.postMessage('ucinewgame');
-              setTimeout(resolve, 200);
-            }
-          };
           this.stockfishWorker.postMessage('uci');
           this.stockfishWorker.postMessage('isready');
+          this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
+          this.stockfishWorker.postMessage('ucinewgame');
 
-          // Fallback: if readyok never comes, resolve after uciok + delay
-          setTimeout(() => {
-            if (!this.stockfishReady && uciOk) {
-              this.stockfishReady = true;
-              clearTimeout(failTimer);
-              this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
-              this.stockfishWorker.postMessage('ucinewgame');
-              resolve();
-            }
-          }, 5000);
+          this.stockfishReady = true;
+          setTimeout(resolve, 500);
         })
         .catch(err => {
-          clearTimeout(failTimer);
+          console.warn('Stockfish load failed:', err.message);
           this._sfInitPromise = null;
           reject(err);
         });
