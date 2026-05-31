@@ -614,7 +614,6 @@ class BotsGame {
 
     this._speakQueue = null;
     this._speaking = false;
-    this._voiceLoaded = false;
 
     this._init();
   }
@@ -739,14 +738,13 @@ class BotsGame {
     } catch(e) {}
   }
 
-  // ========== SPEECH (meSpeak + AudioContext) ==========
+  // ========== SPEECH (Web Speech API) ==========
   speak(text, gender, profile) {
-    console.log('🔊 speak called:', { text: text.substring(0,40), gender, profile, voiceEnabled: this.voiceEnabled, hasMeSpeak: !!window.meSpeak });
-    if (!this.voiceEnabled || !text) return;
+    if (!this.voiceEnabled || !text || !window.speechSynthesis) return;
     if (!this._speakQueue) this._speakQueue = [];
     this._speakQueue.push({ text, gender, profile });
     if (!this._speaking) this._dequeueSpeak();
-  }
+  },
 
   _dequeueSpeak() {
     if (!this._speakQueue || this._speakQueue.length === 0 || !this.voiceEnabled) {
@@ -755,100 +753,20 @@ class BotsGame {
     }
     this._speaking = true;
     const { text, gender, profile } = this._speakQueue.shift();
-    console.log('🔊 _dequeueSpeak:', text.substring(0,40), 'meSpeak:', !!window.meSpeak, 'voiceLoaded:', this._voiceLoaded);
 
-    if (window.meSpeak) {
-      if (!this._voiceLoaded) {
-        console.log('🔊 loading voice /js/mespeak-voice-es.json...');
-        // Put item back since we haven't processed it
-        this._speakQueue.unshift({ text, gender, profile });
-        this._speaking = false; // release queue while loading
-        meSpeak.loadVoice('/js/mespeak-voice-es.json', (success, msg) => {
-          console.log('🔊 voice loaded:', success, msg || '');
-          this._voiceLoaded = !!success;
-          this._dequeueSpeak(); // restart queue with loaded voice
-        });
-        return;
-      }
-      this._meSpeakSpeak(text, gender, profile);
-    } else {
-      console.log('🔊 no meSpeak, using fallback');
-      this._fallbackSpeak(text, gender, profile);
-    }
-  }
-
-  _meSpeakSpeak(text, gender, profile) {
-    const femaleVariants = ['f1','f2','f3','f4'];
-    const maleVariants   = ['m1','m2','m3','m4','m5'];
-    const variants = gender === 'female' ? femaleVariants : maleVariants;
-
-    const map = {
-      high:  { v: gender === 'female' ? 'f2' : 'm3', pitch: 130, speed: 175 },
-      fast:  { v: gender === 'female' ? 'f4' : 'm4', pitch: 100, speed: 210 },
-      low:   { v: gender === 'female' ? 'f3' : 'm1', pitch: 60,  speed: 125 },
-      dry:   { v: gender === 'female' ? 'f1' : 'm2', pitch: 85,  speed: 140 },
-      deep:  { v: gender === 'female' ? 'f3' : 'm5', pitch: 40,  speed: 105 },
-      slow:  { v: gender === 'female' ? 'f1' : 'm1', pitch: 70,  speed: 115 },
-      male:  { v: 'm2', pitch: 95,  speed: 150 },
-      female:{ v: 'f2', pitch: 115, speed: 160 },
-    };
-    const cfg = map[profile] || map[gender === 'female' ? 'female' : 'male'];
-    const variant = cfg.v || variants[0];
-    console.log('🔊 meSpeak.speak:', text.substring(0,30), 'variant:', variant, 'pitch:', cfg.pitch, 'speed:', cfg.speed);
-
-    meSpeak.speak(text, {
-      variant: variant,
-      pitch: cfg.pitch,
-      speed: cfg.speed,
-      amplitude: 100,
-      wordgap: 3,
-      rawdata: 'data-url'
-    }, (success, wav, isRaw) => {
-      console.log('🔊 meSpeak callback:', { success, wavType: typeof wav, wavLen: wav?.length, voiceEnabled: this.voiceEnabled });
-      if (success && wav && this.voiceEnabled) {
-        this._playWAV(wav);
-      }
-      this._speaking = false;
-      setTimeout(() => this._dequeueSpeak(), 150);
-    });
-  }
-
-  _playWAV(wavData) {
-    console.log('🔊 _playWAV, data type:', typeof wavData, 'preview:', typeof wavData === 'string' ? wavData.substring(0, 50) : 'not-string');
-    
-    // Use independent AudioContext for voice (not tied to soundEnabled)
-    if (!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const ctx = this.audioCtx;
-    if (ctx.state === 'suspended') { ctx.resume(); console.log('🔊 AudioContext resumed'); }
-
-    // meSpeak returns base64 data URI by default: "data:audio/wav;base64,..."
-    let bytes;
-    if (typeof wavData === 'string' && wavData.startsWith('data:')) {
-      const base64 = wavData.split(',')[1];
-      const binary = atob(base64);
-      bytes = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    } else if (wavData.buffer) {
-      bytes = new Uint8Array(wavData.buffer);
-    } else {
-      console.log('🔊 unknown WAV format, skipping');
-      return;
-    }
-
-    // Decode WAV and play via AudioContext
-    console.log('🔊 decoding WAV, bytes length:', bytes.length);
-    ctx.decodeAudioData(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), 
-      (buffer) => {
-        console.log('🔊 WAV decoded OK, duration:', buffer.duration, 'sampleRate:', buffer.sampleRate);
-        const src = ctx.createBufferSource();
-        src.buffer = buffer;
-        const gain = ctx.createGain();
-        gain.gain.value = 0.8;
-        src.connect(gain);
-        gain.connect(ctx.destination);
-        src.start(0);
-        console.log('🔊 WAV playback started');
-      },
+    const utter = new SpeechSynthesisUtterance(text);
+    const voices = speechSynthesis.getVoices();
+    const wantFemale = gender === 'female';
+    let voice = voices.find(v => v.lang.startsWith('es') && (wantFemale ? /ónica|Paulina|female/i.test(v.name) : /Jorge|Diego|male/i.test(v.name)));
+    if (!voice) voice = voices.find(v => v.lang.startsWith('es'));
+    if (voice) utter.voice = voice;
+    const pm = {high:{p:1.8,r:1.3},fast:{p:1.0,r:1.7},low:{p:0.45,r:0.75},dry:{p:0.7,r:0.95},deep:{p:0.25,r:0.6},slow:{p:0.55,r:0.65},male:{p:0.85,r:0.95},female:{p:1.25,r:1.05}};
+    const pp = pm[profile] || pm[gender==='female'?'female':'male'];
+    utter.pitch = pp.p; utter.rate = pp.r; utter.volume = 0.8;
+    utter.onend = () => this._dequeueSpeak();
+    utter.onerror = () => { this._speaking = false; this._dequeueSpeak(); };
+    speechSynthesis.speak(utter);
+  },
       (err) => console.error('🔊 decodeAudioData FAILED:', err)
     );
   }
