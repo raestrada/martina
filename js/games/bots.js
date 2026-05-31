@@ -1076,24 +1076,31 @@ class BotsGame {
 
     this._sfInitPromise = new Promise((resolve, reject) => {
       this.stockfishReady = false;
-      const wasmUrl = 'https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.wasm';
 
       fetch('/js/stockfish.js')
         .then(res => res.text())
         .then(scriptText => {
+          // Serve WASM from same origin — no CDN, no CORS
           const blob = new Blob([
-            `var Module={locateFile:function(p){return p==='stockfish.wasm'?'${wasmUrl}':p}};\n`,
+            `var Module={locateFile:function(p){return'/js/'+p}};\n`,
             scriptText + '\n',
             'self.onmessage=function(e){StockFish.postMessage(e.data)};'
           ], { type: 'application/javascript' });
 
           this.stockfishWorker = new Worker(URL.createObjectURL(blob));
 
-          // Send init immediately — engine processes async
+          this.stockfishWorker.onerror = (e) => {
+            console.warn('Stockfish worker error:', e);
+            this._sfInitPromise = null;
+            this.stockfishWorker = null;
+            reject(new Error('Worker error'));
+          };
+
+          // Chessbox.js init pattern — no ucinewgame, no waiting
+          const skill = Math.min(20, Math.max(0, Math.round((this.selectedBot.elo / 2800) * 20)));
           this.stockfishWorker.postMessage('uci');
           this.stockfishWorker.postMessage('isready');
-          this.stockfishWorker.postMessage(`setoption name Skill Level value ${Math.min(20, Math.max(0, Math.round((this.selectedBot.elo / 2800) * 20)))}`);
-          this.stockfishWorker.postMessage('ucinewgame');
+          this.stockfishWorker.postMessage(`setoption name Skill Level value ${skill}`);
           this.stockfishReady = true;
           resolve();
         })
@@ -1129,27 +1136,16 @@ class BotsGame {
     this.updateStatus(`${bot.name} está pensando...`, 'thinking');
 
     if (!this.stockfishWorker || !this.stockfishReady) {
-      setTimeout(() => {
-        if (!this.gameActive) return;
-        this.triggerEngineTurn();
-      }, 300);
+      setTimeout(() => { if (this.gameActive) this.triggerEngineTurn(); }, 300);
       return;
     }
 
-    let responded = false;
-    const safetyTimer = setTimeout(() => {
-      if (!responded && this.gameActive) {
-        this.isThinking = false;
-        this.updateStatus('Reintentando...', 'thinking');
-        setTimeout(() => { if (this.gameActive) this.triggerEngineTurn(); }, 500);
-      }
-    }, 10000);
-
+    // Chessbox.js exact pattern: send commands first, then onmessage
+    this.stockfishWorker.postMessage(`position fen ${this.chessFEN}`);
+    this.stockfishWorker.postMessage('go movetime 1200');
     this.stockfishWorker.onmessage = (e) => {
       const line = e.data;
       if (line.includes('bestmove')) {
-        responded = true;
-        clearTimeout(safetyTimer);
         const move = line.split(' ')[1];
         if (move && move !== '(none)' && this.gameActive) {
           this.executeChessMove(move, false);
@@ -1160,8 +1156,6 @@ class BotsGame {
         }
       }
     };
-    this.stockfishWorker.postMessage(`position fen ${this.chessFEN}`);
-    this.stockfishWorker.postMessage('go movetime 1500');
   }
 
   // ========== BOARD RENDERING ==========
