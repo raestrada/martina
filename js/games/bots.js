@@ -598,9 +598,13 @@ class BotsGame {
 
     this.audioCtx = null;
     this.soundEnabled = localStorage.getItem('martina_bots_sound') !== 'false';
+    this.voiceEnabled = localStorage.getItem('martina_bots_voice') !== 'false';
 
     this.botQuoteTimer = null;
     this.quoteInterval = null;
+
+    this._voices = null;
+    this._lastSpeak = 0;
 
     this._init();
   }
@@ -723,6 +727,50 @@ class BotsGame {
         osc.stop(now + i * 0.15 + 0.3);
       });
     } catch(e) {}
+  }
+
+  // ========== SPEECH ==========
+  _getVoices() {
+    return new Promise(resolve => {
+      const voices = speechSynthesis.getVoices();
+      if (voices.length) { resolve(voices); return; }
+      speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices());
+    });
+  }
+
+  async _getSpanishVoice(preferFemale) {
+    if (!this._voices) this._voices = await this._getVoices();
+    // Prefer Spanish female/male
+    let voice = this._voices.find(v => v.lang.startsWith('es') && v.name.includes(preferFemale ? 'Mónica' : 'Jorge'));
+    if (!voice) voice = this._voices.find(v => v.lang.startsWith('es') && v.name.includes(preferFemale ? 'Paulina' : 'Diego'));
+    if (!voice) voice = this._voices.find(v => v.lang.startsWith('es'));
+    if (!voice) voice = this._voices.find(v => v.lang.startsWith('en'));
+    if (!voice) voice = this._voices[0];
+    return voice;
+  }
+
+  async speak(text, voiceProfile) {
+    if (!this.voiceEnabled || !text || !window.speechSynthesis) return;
+    const now = Date.now();
+    if (now - this._lastSpeak < 600) return; // debounce
+    this._lastSpeak = now;
+
+    speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.voice = await this._getSpanishVoice(voiceProfile === 'female');
+    utter.pitch = voiceProfile === 'high' ? 1.6 : voiceProfile === 'low' ? 0.7 : voiceProfile === 'deep' ? 0.5 : 1.0;
+    utter.rate = voiceProfile === 'fast' ? 1.3 : voiceProfile === 'slow' ? 0.75 : voiceProfile === 'dry' ? 0.9 : 1.05;
+    utter.volume = 0.8;
+    speechSynthesis.speak(utter);
+  }
+
+  getSpeakProfile(botId) {
+    const profiles = {
+      peoncito: 'high', caballo: 'fast', alfil: 'low',
+      torreta: 'dry', reinangra: 'high', sombra: 'slow',
+      martina: 'female', judit: 'female', sombrasuprema: 'deep'
+    };
+    return profiles[botId] || 'normal';
   }
 
   // ========== CHESS ENGINE ==========
@@ -1559,6 +1607,11 @@ class BotsGame {
     while (listEl.children.length > 25) {
       listEl.removeChild(listEl.lastChild);
     }
+
+    // Speak commentator
+    if (isOpponent && this.selectedBot) {
+      this.speak(comment, this.getSpeakProfile(this.selectedBot.id));
+    }
   }
 
   // ========== BOT COMMENTS ==========
@@ -1580,6 +1633,10 @@ class BotsGame {
       textEl.textContent = quote;
       textEl.style.transform = 'scale(1)';
     }, 80);
+    // Speak with bot's voice
+    if (this.selectedBot) {
+      this.speak(quote, this.getSpeakProfile(this.selectedBot.id));
+    }
   }
 
   updateStatus(msg, type) {
@@ -1837,6 +1894,7 @@ class BotsGame {
         <div class="bots-game-topbar" style="border-color: ${accent}55;">
           <button class="bots-btn-resign" id="bots-btn-resign">✕</button>
           <button class="bots-btn-mute" id="bots-btn-mute" title="${this.soundEnabled ? 'Silenciar' : 'Activar sonido'}">${this.soundEnabled ? '🔊' : '🔇'}</button>
+          <button class="bots-btn-mute" id="bots-btn-voice" title="${this.voiceEnabled ? 'Silenciar voz' : 'Activar voz'}">${this.voiceEnabled ? '🗣️' : '🔈'}</button>
           <div class="bots-opponent-info">
             <span class="bots-opponent-emoji">${bot.emoji}</span>
             <div>
@@ -1915,6 +1973,17 @@ class BotsGame {
       if (btn) {
         btn.textContent = this.soundEnabled ? '🔊' : '🔇';
         btn.title = this.soundEnabled ? 'Silenciar' : 'Activar sonido';
+      }
+    });
+
+    document.getElementById('bots-btn-voice').addEventListener('click', () => {
+      this.voiceEnabled = !this.voiceEnabled;
+      localStorage.setItem('martina_bots_voice', this.voiceEnabled ? 'true' : 'false');
+      if (!this.voiceEnabled) speechSynthesis.cancel();
+      const btn = document.getElementById('bots-btn-voice');
+      if (btn) {
+        btn.textContent = this.voiceEnabled ? '🗣️' : '🔈';
+        btn.title = this.voiceEnabled ? 'Silenciar voz' : 'Activar voz';
       }
     });
 
