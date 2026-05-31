@@ -3997,7 +3997,6 @@ class ChessBoxGame {
 
     osCtx.fillStyle = getGloveGrad(osCtx, 160, 156, 20);
     osCtx.beginPath(); osCtx.arc(160, 156, 20, 0, Math.PI*2); osCtx.fill();
-
     // COMICAL SPINNING GOLD STARS ORBIT
     osCtx.strokeStyle = 'rgba(251, 191, 36, 0.35)'; osCtx.lineWidth = 1.5;
     osCtx.beginPath(); osCtx.ellipse(96, 22, 44, 10, Math.PI / 12, 0, Math.PI * 2); osCtx.stroke();
@@ -4027,30 +4026,107 @@ class ChessBoxGame {
     const t = time ? time * 0.004 : 0;
     const horizonY = 160;
 
+    // Theme customization variables
+    let themePerspectiveColor = 0x151624;
+    let themePerspectiveAlpha = 0.7;
+    
+    let themeApronBase = 0x0a0c14;
+    let themeApronAccent = 0xb91c1c;
+
+    let colors = {
+      bL_base: 0xb91c1c, bL_glow: 0xef4444, bL_dark: 0x7f1d1d,
+      bR_base: 0x1d4ed8, bR_glow: 0x3b82f6, bR_dark: 0x1e3a8a,
+      tL_base: 0xd1d5db, tL_glow: 0xf3f4f6, tL_dark: 0x9ca3af,
+      tR_base: 0xd1d5db, tR_glow: 0xf3f4f6, tR_dark: 0x9ca3af
+    };
+
+    if (tier === 'pawn') {
+      themePerspectiveColor = 0x38bdf8;
+      themePerspectiveAlpha = 0.45;
+      themeApronBase = 0x0f172a;
+      themeApronAccent = 0xfbbf24;
+      colors = {
+        bL_base: 0xd97706, bL_glow: 0xfbbf24, bL_dark: 0x78350f,
+        bR_base: 0xe2e8f0, bR_glow: 0xffffff, bR_dark: 0x94a3b8,
+        tL_base: 0xd97706, tL_glow: 0xfbbf24, tL_dark: 0x78350f,
+        tR_base: 0xe2e8f0, tR_glow: 0xffffff, tR_dark: 0x94a3b8
+      };
+    } else if (tier === 'knight') {
+      themePerspectiveColor = 0x10b981;
+      themePerspectiveAlpha = 0.55;
+      themeApronBase = 0x022c22;
+      themeApronAccent = 0x34d399;
+      colors = {
+        bL_base: 0x059669, bL_glow: 0x34d399, bL_dark: 0x064e3b,
+        bR_base: 0x065f46, bR_glow: 0x10b981, bR_dark: 0x022c22,
+        tL_base: 0x059669, tL_glow: 0x34d399, tL_dark: 0x064e3b,
+        tR_base: 0x065f46, tR_glow: 0x10b981, tR_dark: 0x022c22
+      };
+    } else if (tier === 'bishop') {
+      themePerspectiveColor = 0xf59e0b;
+      themePerspectiveAlpha = 0.55;
+      themeApronBase = 0x1c1917;
+      themeApronAccent = 0xf97316;
+      colors = {
+        bL_base: 0xeab308, bL_glow: 0xfef08a, bL_dark: 0x854d0e,
+        bR_base: 0xc2410c, bR_glow: 0xf97316, bR_dark: 0x7c2d12,
+        tL_base: 0xeab308, tL_glow: 0xfef08a, tL_dark: 0x854d0e,
+        tR_base: 0xc2410c, tR_glow: 0xf97316, tR_dark: 0x7c2d12
+      };
+    } else if (tier === 'rook') {
+      themePerspectiveColor = 0x475569;
+      themePerspectiveAlpha = 0.65;
+      themeApronBase = 0x1e293b;
+      themeApronAccent = 0x94a3b8;
+      colors = {
+        bL_base: 0x334155, bL_glow: 0x475569, bL_dark: 0x1e293b,
+        bR_base: 0x475569, bR_glow: 0x64748b, bR_dark: 0x334155,
+        tL_base: 0x334155, tL_glow: 0x475569, tL_dark: 0x1e293b,
+        tR_base: 0x475569, tR_glow: 0x64748b, tR_dark: 0x334155
+      };
+    } else if (tier === 'queen') {
+      themePerspectiveColor = 0xd946ef;
+      themePerspectiveAlpha = 0.5;
+      themeApronBase = 0x2e1065;
+      themeApronAccent = 0xec4899;
+      colors = {
+        bL_base: 0x701a75, bL_glow: 0xf472b6, bL_dark: 0x4a044e,
+        bR_base: 0xd946ef, bR_glow: 0xfb7185, bR_dark: 0x701a75,
+        tL_base: 0x701a75, tL_glow: 0xf472b6, tL_dark: 0x4a044e,
+        tR_base: 0xd946ef, tR_glow: 0xfb7185, tR_dark: 0x701a75
+      };
+    } else if (tier === 'shadow') {
+      themePerspectiveColor = 0xa855f7;
+      themePerspectiveAlpha = 0.45;
+      themeApronBase = 0x020617;
+      themeApronAccent = 0x06b6d4;
+      colors = {
+        bL_base: 0x090d16, bL_glow: 0xa855f7, bL_dark: 0x020617,
+        bR_base: 0x1e1b4b, bR_glow: 0x06b6d4, bR_dark: 0x090d16,
+        tL_base: 0x090d16, tL_glow: 0xa855f7, tL_dark: 0x020617,
+        tR_base: 0x1e1b4b, tR_glow: 0x06b6d4, tR_dark: 0x090d16
+      };
+    }
+
     // 1. DYNAMIC SKIES & THEMES
     if (tier === 'pawn') {
-      // pawn: Santuario de Cristal, cielo azul espacial profundo
       g.fillStyle(0x020617, 1);
       g.fillRect(0, 0, 800, 450);
       
-      // Draw crystal pillars flanking the ring in the background (vector shapes)
       g.fillStyle(0x0f172a, 0.85);
       g.lineStyle(1.5, 0x38bdf8, 0.45);
-      // Pillar left
       g.beginPath();
       g.moveTo(40, 20); g.lineTo(80, 20); g.lineTo(80, horizonY); g.lineTo(40, horizonY); g.closePath();
       g.fill(); g.strokePath();
-      // Pillar right
+      
       g.beginPath();
       g.moveTo(720, 20); g.lineTo(760, 20); g.lineTo(760, horizonY); g.lineTo(720, horizonY); g.closePath();
       g.fill(); g.strokePath();
 
-      // Crystal facet highlights on pillars
       g.lineStyle(1, 0xffffff, 0.25);
       g.beginPath(); g.moveTo(60, 20); g.lineTo(60, horizonY); g.strokePath();
       g.beginPath(); g.moveTo(740, 20); g.lineTo(740, horizonY); g.strokePath();
       
-      // Floating golden/cyan sparkles drifting upwards
       g.fillStyle(0xfbbf24, 0.75);
       for (let i = 0; i < 20; i++) {
         const sx = ((i * 123 + time * 0.015) % 680) + 60;
@@ -4060,36 +4136,29 @@ class ChessBoxGame {
       }
       
     } else if (tier === 'knight') {
-      // knight: L-Matrix Grasslands, cielo verde oscuro neón
-      g.fillStyle(0x022c22, 1); // very dark emerald teal
+      g.fillStyle(0x022c22, 1);
       g.fillRect(0, 0, 800, 450);
       
-      // Falling matrix digital codes in the background ('L' and 'Ŋ' symbols)
-      g.fillStyle(0x10b981, 0.35); // glowing matrix green
+      g.fillStyle(0x10b981, 0.35);
       for (let col = 15; col < 800; col += 40) {
         const fallY = (time * 0.08 + col * 9) % (horizonY - 10);
         g.fillStyle(0x34d399, 0.4);
         g.fillCircle(col, fallY, 2.5);
         
-        // Draw little vector shapes resembling 'L' or 'N' characters
         g.lineStyle(1.5, 0x10b981, 0.35);
         g.beginPath();
-        // L shape
         g.moveTo(col - 3, fallY - 12); g.lineTo(col - 3, fallY - 4); g.lineTo(col + 3, fallY - 4);
         g.strokePath();
         
-        // N / Ŋ style shape slightly higher up
         g.beginPath();
         g.moveTo(col - 3, fallY - 28); g.lineTo(col - 3, fallY - 20); g.lineTo(col + 3, fallY - 28); g.lineTo(col + 3, fallY - 20);
         g.strokePath();
       }
       
     } else if (tier === 'bishop') {
-      // bishop: Domo Geométrico, láseres cruzados amarillos/ámbar y polígonos flotantes en rotación
-      g.fillStyle(0x1e1503, 1); // warm dark copper sky
+      g.fillStyle(0x1e1503, 1);
       g.fillRect(0, 0, 800, 450);
       
-      // Sunburst light rays from the center horizon
       g.fillStyle(0xfbbf24, 0.035);
       for (let angle = 0; angle < Math.PI; angle += Math.PI / 8) {
         const rx1 = 400 + Math.cos(angle) * 900;
@@ -4101,12 +4170,10 @@ class ChessBoxGame {
         g.fill();
       }
 
-      // Crossing neon laser lines in the sky
       g.lineStyle(2, 0xf59e0b, 0.25);
       g.beginPath(); g.moveTo(0, 20); g.lineTo(800, horizonY - 20); g.strokePath();
       g.beginPath(); g.moveTo(800, 20); g.lineTo(0, horizonY - 20); g.strokePath();
       
-      // Rotating geometric glowing diamond/triangle shapes
       g.fillStyle(0xfbbf24, 0.18);
       g.lineStyle(1, 0xf59e0b, 0.4);
       for (let i = 0; i < 6; i++) {
@@ -4126,32 +4193,26 @@ class ChessBoxGame {
       }
       
     } else if (tier === 'rook') {
-      // rook: Fortaleza de Piedra con almenas y columnas pesadas de ladrillo
-      g.fillStyle(0x0f1115, 1); // extremely dark charcoal gray
+      g.fillStyle(0x0f1115, 1);
       g.fillRect(0, 0, 800, 450);
       
-      // Castle battlements (almenas) along the horizon
       g.fillStyle(0x181c24, 1);
       g.fillRect(0, horizonY - 30, 800, 30);
       
-      // Draw crenellations (almenas gaps)
       g.fillStyle(0x0f1115, 1);
       for (let bx = 20; bx < 800; bx += 60) {
         g.fillRect(bx, horizonY - 30, 25, 12);
       }
       
-      // Heavy block stone pillars flanking the ring
       g.fillStyle(0x1f2937, 1);
       g.lineStyle(2, 0x374151, 1);
       
-      // Left massive pillar
       g.fillRect(10, 10, 50, horizonY - 10);
       g.strokeRect(10, 10, 50, horizonY - 10);
-      // Right massive pillar
+      
       g.fillRect(740, 10, 50, horizonY - 10);
       g.strokeRect(740, 10, 50, horizonY - 10);
 
-      // Horizontal brick lines inside the pillars
       g.lineStyle(1.5, 0x374151, 0.65);
       for (let py = 25; py < horizonY; py += 25) {
         g.beginPath(); g.moveTo(10, py); g.lineTo(60, py); g.strokePath();
@@ -4159,20 +4220,18 @@ class ChessBoxGame {
       }
       
     } else if (tier === 'queen') {
-      // queen: Tempestad de Tormenta con nubes negras y relámpagos parpadeantes
       const flashTrigger = (time || 0) % 5500;
       const isFlash = flashTrigger < 160;
       
       if (isFlash) {
         const flashIntensity = Math.sin((flashTrigger / 160) * Math.PI) * 0.85;
-        g.fillStyle(0x3e183a, 1 - flashIntensity * 0.4); // bright purple sky background
+        g.fillStyle(0x3e183a, 1 - flashIntensity * 0.4);
         g.fillRect(0, 0, 800, 450);
       } else {
-        g.fillStyle(0x180315, 1); // very dark storm purple/magenta sky
+        g.fillStyle(0x180315, 1);
         g.fillRect(0, 0, 800, 450);
       }
 
-      // Storm cloud outlines layered at the top
       g.fillStyle(0x0f010d, 0.9);
       g.fillCircle(120, 20, 90);
       g.fillCircle(240, 10, 80);
@@ -4180,7 +4239,6 @@ class ChessBoxGame {
       g.fillCircle(580, 10, 90);
       g.fillCircle(720, 30, 80);
       
-      // If lightning is flashing, draw lightning bolt
       if (isFlash && flashTrigger < 100) {
         g.lineStyle(3, 0xffffff, 0.95);
         g.beginPath();
@@ -4193,7 +4251,6 @@ class ChessBoxGame {
         g.strokePath();
       }
 
-      // Wind tissues
       g.lineStyle(1.5, 0xffffff, 0.22);
       for (let i = 0; i < 8; i++) {
         const wx = ((i * 187 + time * 0.28) % 900) - 100;
@@ -4206,7 +4263,6 @@ class ChessBoxGame {
       }
       
     } else if (tier === 'shadow') {
-      // shadow: Vacío Cósmico, estrellas y la majestuosa nebulosa giratoria
       g.fillStyle(0x03020c, 1);
       g.fillRect(0, 0, 800, 450);
       
@@ -4263,7 +4319,7 @@ class ChessBoxGame {
     g.moveTo(800, 0); g.lineTo(580 - Math.sin(t) * 35, 450); g.lineTo(340 - Math.sin(t) * 35, 450); g.closePath(); g.fill();
 
     // 4. Floor Perspective
-    g.lineStyle(2, 0x151624, 0.7);
+    g.lineStyle(2, themePerspectiveColor, themePerspectiveAlpha);
     for (let i = 0; i <= 20; i++) {
       const xStart = (i - 10) * 130 + 400;
       g.beginPath(); g.moveTo(xStart, 450); g.lineTo((i - 10) * 18 + 400, horizonY); g.strokePath();
@@ -4281,22 +4337,22 @@ class ChessBoxGame {
     const bL = { x: 50, y: 415 };
     const apronH = 15;
     
-    g.fillStyle(0x0a0c14, 1);
+    g.fillStyle(themeApronBase, 1);
     g.beginPath();
     g.moveTo(bL.x, bL.y); g.lineTo(bR.x, bR.y); g.lineTo(bR.x + 8, bR.y + apronH); g.lineTo(bL.x - 8, bL.y + apronH); g.closePath();
     g.fill();
     
-    g.fillStyle(0x06070a, 1);
+    g.fillStyle(themeApronBase, 0.8);
     g.beginPath();
     g.moveTo(tL.x, tL.y); g.lineTo(bL.x, bL.y); g.lineTo(bL.x - 8, bL.y + apronH); g.lineTo(tL.x - 4, tL.y + apronH); g.closePath();
     g.fill();
 
-    g.fillStyle(0x040507, 1);
+    g.fillStyle(themeApronBase, 0.6);
     g.beginPath();
     g.moveTo(tR.x, tR.y); g.lineTo(bR.x, bR.y); g.lineTo(bR.x + 8, bR.y + apronH); g.lineTo(tR.x + 4, tR.y + apronH); g.closePath();
     g.fill();
     
-    g.fillStyle(0xb91c1c, 0.95);
+    g.fillStyle(themeApronAccent, 0.95);
     g.fillRect(bL.x - 5, bL.y + 4, bR.x - bL.x + 10, 3);
 
     const getCanvasPt = (u, v) => {
@@ -4366,62 +4422,99 @@ class ChessBoxGame {
       g.beginPath(); g.moveTo(startV.x, startV.y); g.lineTo(endV.x, endV.y); g.strokePath();
     }
 
-    g.fillStyle(0x000000, 0.5);
-    g.fillEllipse(400, 198, 90, 24);
-    g.fillEllipse(400, 385, 140, 32);
-    
     g.fillStyle(activeColor, 0.035);
     g.fillEllipse(400, 290, 420, 110);
 
     // 8. 3D Cushions
     const drawCornerCushion = (pt, isLeft, colorHexBase, colorHexGlow, colorHexDark) => {
-      g.fillStyle(colorHexBase, 1);
-      g.fillRoundedRect(pt.x - 12, 230, 24, 185, 8);
-      g.fillStyle(colorHexGlow, 1);
-      g.fillRoundedRect(pt.x - 8, 230, 8, 185, 4);
-      g.fillStyle(colorHexDark, 1);
-      g.fillRoundedRect(pt.x, 230, 11, 185, 4);
-      
-      g.fillStyle(0x334155, 1);
-      g.fillEllipse(pt.x, 230, 26, 6); g.fillEllipse(pt.x, 415, 26, 6);
-      g.fillStyle(0x64748b, 1);
-      g.fillEllipse(pt.x, 230, 16, 3);
-      
-      g.fillStyle(0x090d16, 1);
-      for (let sy = 250; sy < 400; sy += 45) g.fillRect(pt.x - 14, sy, 28, 4);
-      
-      g.fillStyle(0x475569, 1);
-      g.fillRect(pt.x - 15, 258, 30, 4); g.fillRect(pt.x - 15, 308, 30, 4); g.fillRect(pt.x - 15, 358, 30, 4);
+      if (tier === 'rook') {
+        g.fillStyle(colorHexBase, 1);
+        g.fillRect(pt.x - 14, 230, 28, 185);
+        g.lineStyle(2, colorHexGlow, 0.8);
+        g.strokeRect(pt.x - 14, 230, 28, 185);
+        
+        g.lineStyle(1.5, colorHexDark, 0.9);
+        for (let sy = 260; sy < 415; sy += 30) {
+          g.beginPath(); g.moveTo(pt.x - 14, sy); g.lineTo(pt.x + 14, sy); g.strokePath();
+        }
+        
+        g.fillStyle(0x1e293b, 1);
+        g.fillRect(pt.x - 15, 258, 30, 5);
+        g.fillRect(pt.x - 15, 308, 30, 5);
+        g.fillRect(pt.x - 15, 358, 30, 5);
+      } else {
+        g.fillStyle(colorHexBase, 1);
+        g.fillRoundedRect(pt.x - 12, 230, 24, 185, 8);
+        g.fillStyle(colorHexGlow, 1);
+        g.fillRoundedRect(pt.x - 8, 230, 8, 185, 4);
+        g.fillStyle(colorHexDark, 1);
+        g.fillRoundedRect(pt.x, 230, 11, 185, 4);
+        
+        g.fillStyle(0x334155, 1);
+        g.fillEllipse(pt.x, 230, 26, 6); g.fillEllipse(pt.x, 415, 26, 6);
+        g.fillStyle(0x64748b, 1);
+        g.fillEllipse(pt.x, 230, 16, 3);
+        
+        g.fillStyle(0x090d16, 1);
+        for (let sy = 250; sy < 400; sy += 45) g.fillRect(pt.x - 14, sy, 28, 4);
+        
+        g.fillStyle(0x475569, 1);
+        g.fillRect(pt.x - 15, 258, 30, 4); g.fillRect(pt.x - 15, 308, 30, 4); g.fillRect(pt.x - 15, 358, 30, 4);
+      }
     };
 
-    drawCornerCushion(bL, true, 0xb91c1c, 0xef4444, 0x7f1d1d);
-    drawCornerCushion(bR, false, 0x1d4ed8, 0x3b82f6, 0x1e3a8a);
+    drawCornerCushion(bL, true, colors.bL_base, colors.bL_glow, colors.bL_dark);
+    drawCornerCushion(bR, false, colors.bR_base, colors.bR_glow, colors.bR_dark);
     
     // Top-Left (Neutral Corner)
-    g.fillStyle(0xd1d5db, 1);
-    g.fillRoundedRect(tL.x - 8, tL.y - 40, 16, 60, 4);
-    g.fillStyle(0xf3f4f6, 1);
-    g.fillRoundedRect(tL.x - 6, tL.y - 40, 5, 60, 2);
-    g.fillStyle(0x9ca3af, 1);
-    g.fillRoundedRect(tL.x - 1, tL.y - 40, 7, 60, 2);
-    g.fillStyle(0x334155, 1);
-    g.fillEllipse(tL.x, tL.y - 40, 18, 4);
-    g.fillStyle(0x090d16, 1);
-    for (let sy = tL.y - 30; sy < tL.y + 20; sy += 18) g.fillRect(tL.x - 10, sy, 20, 2);
+    if (tier === 'rook') {
+      g.fillStyle(colors.tL_base, 1);
+      g.fillRect(tL.x - 10, tL.y - 40, 20, 60);
+      g.lineStyle(1.5, colors.tL_glow, 0.7);
+      g.strokeRect(tL.x - 10, tL.y - 40, 20, 60);
+      
+      g.lineStyle(1, colors.tL_dark, 0.85);
+      for (let sy = tL.y - 30; sy < tL.y + 20; sy += 15) {
+        g.beginPath(); g.moveTo(tL.x - 10, sy); g.lineTo(tL.x + 10, sy); g.strokePath();
+      }
+    } else {
+      g.fillStyle(colors.tL_base, 1);
+      g.fillRoundedRect(tL.x - 8, tL.y - 40, 16, 60, 4);
+      g.fillStyle(colors.tL_glow, 1);
+      g.fillRoundedRect(tL.x - 6, tL.y - 40, 5, 60, 2);
+      g.fillStyle(colors.tL_dark, 1);
+      g.fillRoundedRect(tL.x - 1, tL.y - 40, 7, 60, 2);
+      g.fillStyle(0x334155, 1);
+      g.fillEllipse(tL.x, tL.y - 40, 18, 4);
+      g.fillStyle(0x090d16, 1);
+      for (let sy = tL.y - 30; sy < tL.y + 20; sy += 18) g.fillRect(tL.x - 10, sy, 20, 2);
+    }
     g.fillStyle(0x475569, 1);
     g.fillRect(tL.x - 10, 138, 20, 2); g.fillRect(tL.x - 10, 163, 20, 2); g.fillRect(tL.x - 10, 188, 20, 2);
 
     // Top-Right (Neutral Corner)
-    g.fillStyle(0xd1d5db, 1);
-    g.fillRoundedRect(tR.x - 8, tR.y - 40, 16, 60, 4);
-    g.fillStyle(0xf3f4f6, 1);
-    g.fillRoundedRect(tR.x - 6, tR.y - 40, 5, 60, 2);
-    g.fillStyle(0x9ca3af, 1);
-    g.fillRoundedRect(tR.x - 1, tR.y - 40, 7, 60, 2);
-    g.fillStyle(0x334155, 1);
-    g.fillEllipse(tR.x, tR.y - 40, 18, 4);
-    g.fillStyle(0x090d16, 1);
-    for (let sy = tR.y - 30; sy < tR.y + 20; sy += 18) g.fillRect(tR.x - 10, sy, 20, 2);
+    if (tier === 'rook') {
+      g.fillStyle(colors.tR_base, 1);
+      g.fillRect(tR.x - 10, tR.y - 40, 20, 60);
+      g.lineStyle(1.5, colors.tR_glow, 0.7);
+      g.strokeRect(tR.x - 10, tR.y - 40, 20, 60);
+      
+      g.lineStyle(1, colors.tR_dark, 0.85);
+      for (let sy = tR.y - 30; sy < tR.y + 20; sy += 15) {
+        g.beginPath(); g.moveTo(tR.x - 10, sy); g.lineTo(tR.x + 10, sy); g.strokePath();
+      }
+    } else {
+      g.fillStyle(colors.tR_base, 1);
+      g.fillRoundedRect(tR.x - 8, tR.y - 40, 16, 60, 4);
+      g.fillStyle(colors.tR_glow, 1);
+      g.fillRoundedRect(tR.x - 6, tR.y - 40, 5, 60, 2);
+      g.fillStyle(colors.tR_dark, 1);
+      g.fillRoundedRect(tR.x - 1, tR.y - 40, 7, 60, 2);
+      g.fillStyle(0x334155, 1);
+      g.fillEllipse(tR.x, tR.y - 40, 18, 4);
+      g.fillStyle(0x090d16, 1);
+      for (let sy = tR.y - 30; sy < tR.y + 20; sy += 18) g.fillRect(tR.x - 10, sy, 20, 2);
+    }
     g.fillStyle(0x475569, 1);
     g.fillRect(tR.x - 10, 138, 20, 2); g.fillRect(tR.x - 10, 163, 20, 2); g.fillRect(tR.x - 10, 188, 20, 2);
 
