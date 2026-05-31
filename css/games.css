@@ -3289,12 +3289,28 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 5px 12px;
+  padding: 3px 10px;
   background: rgba(26, 31, 46, 0.95);
   border-bottom: 1px solid var(--bot-accent, rgba(255, 255, 255, 0.1));
   flex-shrink: 0;
   gap: 8px;
+  font-size: 0.75rem;
 }
+.bots-btn-resign {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+}
+.bots-opponent-emoji { font-size: 1.4rem; }
+.bots-opponent-name { font-size: 0.8rem; }
+.bots-opponent-elo { font-size: 0.62rem; }
 .bots-btn-resign {
   background: rgba(239, 68, 68, 0.15);
   border: 1px solid rgba(239, 68, 68, 0.3);
@@ -3332,8 +3348,8 @@
   letter-spacing: 0.5px;
 }
 .bots-move-counter {
-  color: #94a3b8;
-  font-size: 0.78rem;
+  color: #a5b4cc;
+  font-size: 0.7rem;
   font-weight: 600;
 }
 
@@ -3369,30 +3385,47 @@
   display: flex;
   flex: 1;
   min-height: 0;
-  gap: 8px;
-  padding: 4px 8px;
+  gap: 6px;
+  padding: 3px 6px;
   align-items: stretch;
+}
+
+/* Left sidebar */
+.bots-sidebar-left {
+  flex: 0 0 55px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 2px;
+}
+
+/* Right sidebar */
+.bots-sidebar-right {
+  flex: 0 0 155px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 .bots-captured-section {
   background: rgba(40, 48, 70, 0.55);
   border: 1px solid var(--bot-accent, rgba(255, 255, 255, 0.2));
-  border-radius: 8px;
-  padding: 6px 8px;
+  border-radius: 6px;
+  padding: 3px 5px;
 }
 .bots-captured-label {
-  font-size: 0.58rem;
+  font-size: 0.5rem;
   font-weight: 700;
   color: #a5b4cc;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 .bots-captured-pieces {
-  font-size: 0.95rem;
-  min-height: 16px;
+  font-size: 0.8rem;
+  min-height: 14px;
   color: #dde4f0;
   word-break: break-all;
-  line-height: 1.3;
+  line-height: 1.2;
 }
 
 /* Board wrapper */
@@ -3478,16 +3511,16 @@
 .bots-comment-bubble {
   background: rgba(40, 48, 70, 0.6);
   border: 1px solid var(--bot-accent, rgba(255, 255, 255, 0.2));
-  border-radius: 10px;
-  padding: 6px 8px;
+  border-radius: 8px;
+  padding: 4px 6px;
   display: flex;
-  gap: 6px;
+  gap: 4px;
   align-items: flex-start;
   transition: all 0.25s ease;
-  min-height: 46px;
+  min-height: 38px;
 }
 .bots-comment-avatar {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   flex-shrink: 0;
 }
 .bots-comment-content {
@@ -3496,17 +3529,17 @@
 }
 .bots-comment-name {
   display: block;
-  font-size: 0.65rem;
+  font-size: 0.58rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 .bots-comment-text {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: #e2e8f0;
   margin: 0;
-  line-height: 1.35;
+  line-height: 1.3;
   font-style: italic;
 }
 
@@ -3514,27 +3547,27 @@
 .bots-history-section {
   background: rgba(40, 48, 70, 0.45);
   border: 1px solid var(--bot-accent, rgba(255, 255, 255, 0.18));
-  border-radius: 8px;
-  padding: 5px 7px;
+  border-radius: 6px;
+  padding: 3px 5px;
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
 }
 .bots-history-header {
-  font-size: 0.58rem;
+  font-size: 0.5rem;
   font-weight: 700;
   color: #a5b4cc;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
   flex-shrink: 0;
 }
 .bots-history-list {
   flex: 1;
   overflow-y: auto;
   font-family: monospace;
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   color: #b0bdd0;
   min-height: 0;
 }
@@ -3677,12 +3710,12 @@
     border-radius: 0;
   }
   .bots-game-topbar {
-    padding: 6px 8px;
-    gap: 6px;
+    padding: 4px 6px;
+    gap: 4px;
   }
   .bots-btn-resign {
-    padding: 4px 10px;
-    font-size: 0.7rem;
+    padding: 3px 8px;
+    font-size: 0.65rem;
   }
   .bots-opponent-emoji {
     font-size: 1.4rem;
@@ -3717,7 +3750,7 @@
     white-space: nowrap;
   }
   .bots-captured-pieces {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
   }
 
   .bots-board-wrapper {
