@@ -588,6 +588,7 @@ class BotsGame {
 
     this.stockfishWorker = null;
     this.stockfishReady = false;
+    this._sfInitPromise = null; // shared promise, loaded once
 
     this.capturedWhite = [];
     this.capturedBlack = [];
@@ -1071,8 +1072,10 @@ class BotsGame {
   }
 
   initStockfishWorker() {
-    return new Promise((resolve, reject) => {
-      this.destroyWorker();
+    // Reuse cached worker if already loaded
+    if (this._sfInitPromise) return this._sfInitPromise;
+
+    this._sfInitPromise = new Promise((resolve, reject) => {
       this.stockfishReady = false;
 
       const bot = this.selectedBot;
@@ -1081,59 +1084,74 @@ class BotsGame {
       const wasmUrl = 'https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.wasm';
 
       const failTimer = setTimeout(() => {
-        reject(new Error('Stockfish tardó demasiado en cargar'));
-      }, 15000);
+        reject(new Error('timeout'));
+      }, 20000);
 
       fetch(stockfishUrl)
-        .then(res => {
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          return res.text();
-        })
+        .then(res => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.text(); })
         .then(scriptText => {
-          if (!this.gameActive) { clearTimeout(failTimer); reject(new Error('cancelado')); return; }
+          if (this.stockfishWorker) {
+            // Already loaded by a concurrent call
+            clearTimeout(failTimer);
+            resolve();
+            return;
+          }
 
-          // Prepend Module config so stockfish finds its WASM
-          const fullScript = 
+          const fullScript =
             `var Module={locateFile:function(p){return'${wasmUrl}'}};\n` +
             scriptText + '\n' +
-            `self.onmessage=function(e){StockFish.postMessage(e.data)};`;
+            'self.onmessage=function(e){StockFish.postMessage(e.data)};';
 
           const blob = new Blob([fullScript], { type: 'application/javascript' });
           this.stockfishWorker = new Worker(URL.createObjectURL(blob));
 
-          let initStep = 0;
+          let uciOk = false;
           this.stockfishWorker.onmessage = (e) => {
             const line = e.data;
-            // After uci + isready, engine responds with uciok then readyok
-            if (line === 'uciok') initStep = 1;
+            if (line === 'uciok') uciOk = true;
             if (line === 'readyok') {
               clearTimeout(failTimer);
               this.stockfishReady = true;
               this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
               this.stockfishWorker.postMessage('ucinewgame');
-              // Small delay to let engine process
               setTimeout(resolve, 200);
             }
-            // Some versions don't emit readyok — if we got uciok and a few seconds pass, resolve
-            if (initStep === 1) {
-              setTimeout(() => {
-                if (!this.stockfishReady) {
-                  this.stockfishReady = true;
-                  clearTimeout(failTimer);
-                  resolve();
-                }
-              }, 3000);
-            }
           };
-
           this.stockfishWorker.postMessage('uci');
           this.stockfishWorker.postMessage('isready');
+
+          // Fallback: if readyok never comes, resolve after uciok + delay
+          setTimeout(() => {
+            if (!this.stockfishReady && uciOk) {
+              this.stockfishReady = true;
+              clearTimeout(failTimer);
+              this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
+              this.stockfishWorker.postMessage('ucinewgame');
+              resolve();
+            }
+          }, 5000);
         })
         .catch(err => {
           clearTimeout(failTimer);
+          this._sfInitPromise = null;
           reject(err);
         });
     });
+
+    return this._sfInitPromise;
+  }
+
+  _resetStockfishForNewGame() {
+    if (this.stockfishWorker && this.stockfishReady) {
+      const bot = this.selectedBot;
+      const skillLevel = Math.min(20, Math.max(0, Math.round((bot.elo / 2800) * 20)));
+      this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
+      this.stockfishWorker.postMessage('ucinewgame');
+    }
+  }
+
+  destroyWorker() {
+    // Don't destroy — cached across games
   }
 
   destroyWorker() {
@@ -1643,7 +1661,9 @@ class BotsGame {
   showBotSelect() {
     this.selectedBot = null;
     this.gameActive = false;
-    this.destroyWorker();
+
+    // Preload Stockfish in background (don't wait)
+    this.initStockfishWorker().catch(() => {});
 
     this.container.innerHTML = `
       <section class="bots-hero fade-in">
@@ -1824,7 +1844,14 @@ class BotsGame {
     const bot = this.selectedBot;
     const accent = bot.color;
 
-    // Show loading screen
+    // If Stockfish is already cached, render immediately
+    if (this.stockfishReady) {
+      this._resetStockfishForNewGame();
+      this._renderGameUI();
+      return;
+    }
+
+    // Show loading screen (first time only)
     this.container.innerHTML = `
       <div class="bots-game-container" style="--bot-accent: ${accent};">
         <div class="bots-loading-screen">
@@ -1834,12 +1861,11 @@ class BotsGame {
           <div class="bots-loading-bar-track">
             <div class="bots-loading-bar-fill" id="bots-loading-bar"></div>
           </div>
-          <p style="color:#64748b;font-size:0.8rem;" id="bots-loading-text">Cargando Stockfish...</p>
+          <p style="color:#64748b;font-size:0.8rem;" id="bots-loading-text">Cargando motor de ajedrez...</p>
         </div>
       </div>
     `;
 
-    // Animate progress bar
     const bar = document.getElementById('bots-loading-bar');
     const text = document.getElementById('bots-loading-text');
     let pct = 0;
@@ -1848,26 +1874,22 @@ class BotsGame {
       if (bar) bar.style.width = `${pct}%`;
     }, 300);
 
-    // Load Stockfish
-    const updateText = (msg) => { if (text) text.textContent = msg; };
-
     this.initStockfishWorker()
       .then(() => {
         clearInterval(barInterval);
         if (bar) bar.style.width = '100%';
-        updateText('¡Listo!');
+        if (text) text.textContent = '¡Listo!';
         setTimeout(() => this._renderGameUI(), 300);
       })
       .catch(err => {
         clearInterval(barInterval);
-        updateText('Error al cargar el motor');
         this.container.innerHTML = `
           <div class="bots-game-container" style="--bot-accent: ${accent};">
             <div class="bots-loading-screen">
               <div style="font-size:3rem;">⚠️</div>
               <h2 style="color:#f87171;">Error</h2>
-              <p style="color:#94a3b8;">No se pudo cargar Stockfish.</p>
-              <p style="color:#64748b;font-size:0.7rem;">Verifica tu conexión a internet.</p>
+              <p style="color:#94a3b8;">No se pudo cargar el motor.</p>
+              <p style="color:#64748b;font-size:0.7rem;">Verifica tu conexión.</p>
               <button class="bots-result-btn" id="bots-btn-retry" style="margin-top:1rem;background:#f87171;color:#fff;">Reintentar</button>
               <button class="bots-result-btn secondary" id="bots-btn-back" style="margin-top:0.5rem;">Volver</button>
             </div>
