@@ -1078,41 +1078,30 @@ class BotsGame {
       this.stockfishReady = false;
       const bot = this.selectedBot;
       const skillLevel = Math.min(20, Math.max(0, Math.round((bot.elo / 2800) * 20)));
+      const stockfishUrl = 'https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js';
 
-      try {
-        this.stockfishWorker = new Worker('/js/sf-worker.js');
+      fetch(stockfishUrl)
+        .then(res => res.text())
+        .then(scriptText => {
+          const blob = new Blob([
+            scriptText + '\nself.onmessage=function(e){StockFish.postMessage(e.data)};'
+          ], { type: 'application/javascript' });
 
-        let initTimeout;
-        this.stockfishWorker.onmessage = (e) => {
-          const line = e.data;
-          if (line === 'WORKER_READY') {
-            this.stockfishWorker.postMessage('uci');
-            this.stockfishWorker.postMessage('isready');
-            this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
-            this.stockfishWorker.postMessage('ucinewgame');
-            this.stockfishReady = true;
-            clearTimeout(initTimeout);
-            setTimeout(resolve, 500);
-          }
-          if (line && line.startsWith('ERROR:')) {
-            clearTimeout(initTimeout);
-            reject(new Error(line));
-          }
-        };
+          this.stockfishWorker = new Worker(URL.createObjectURL(blob));
 
-        this.stockfishWorker.onerror = (err) => {
-          clearTimeout(initTimeout);
-          reject(new Error('Worker error'));
-        };
+          this.stockfishWorker.postMessage('uci');
+          this.stockfishWorker.postMessage('isready');
+          this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
+          this.stockfishWorker.postMessage('ucinewgame');
 
-        initTimeout = setTimeout(() => {
-          reject(new Error('Worker timeout'));
-        }, 15000);
-
-      } catch (err) {
-        this._sfInitPromise = null;
-        reject(err);
-      }
+          this.stockfishReady = true;
+          resolve();
+        })
+        .catch(err => {
+          console.warn('Stockfish load failed:', err.message);
+          this._sfInitPromise = null;
+          reject(err);
+        });
     });
 
     return this._sfInitPromise;
@@ -1141,7 +1130,7 @@ class BotsGame {
     this.updateStatus(`${bot.name} está pensando...`, 'thinking');
 
     if (!this.stockfishWorker || !this.stockfishReady) {
-      // Should never happen, but safety net
+      this.updateStatus('Cargando motor...', 'thinking');
       setTimeout(() => {
         if (!this.gameActive) return;
         this.triggerEngineTurn();
@@ -1814,63 +1803,15 @@ class BotsGame {
     this.moveAnnotations = {};
     this.lastEval = 0;
 
-    const bot = this.selectedBot;
-    const accent = bot.color;
+    // Always render game immediately. Stockfish loads in background.
+    this._renderGameUI();
 
-    // If Stockfish is already cached, render immediately
+    // Load Stockfish (or reset if already loaded)
     if (this.stockfishReady) {
       this._resetStockfishForNewGame();
-      this._renderGameUI();
-      return;
+    } else {
+      this.initStockfishWorker().catch(() => {});
     }
-
-    // Show loading screen (first time only)
-    this.container.innerHTML = `
-      <div class="bots-game-container" style="--bot-accent: ${accent};">
-        <div class="bots-loading-screen">
-          <div class="bots-loading-emoji">${bot.emoji}</div>
-          <h2 style="color:${accent};">${bot.name}</h2>
-          <p style="color:#94a3b8;">ELO ${bot.elo}</p>
-          <div class="bots-loading-bar-track">
-            <div class="bots-loading-bar-fill" id="bots-loading-bar"></div>
-          </div>
-          <p style="color:#64748b;font-size:0.8rem;" id="bots-loading-text">Cargando motor de ajedrez...</p>
-        </div>
-      </div>
-    `;
-
-    const bar = document.getElementById('bots-loading-bar');
-    const text = document.getElementById('bots-loading-text');
-    let pct = 0;
-    const barInterval = setInterval(() => {
-      pct = Math.min(95, pct + Math.random() * 8);
-      if (bar) bar.style.width = `${pct}%`;
-    }, 300);
-
-    this.initStockfishWorker()
-      .then(() => {
-        clearInterval(barInterval);
-        if (bar) bar.style.width = '100%';
-        if (text) text.textContent = '¡Listo!';
-        setTimeout(() => this._renderGameUI(), 300);
-      })
-      .catch(err => {
-        clearInterval(barInterval);
-        this.container.innerHTML = `
-          <div class="bots-game-container" style="--bot-accent: ${accent};">
-            <div class="bots-loading-screen">
-              <div style="font-size:3rem;">⚠️</div>
-              <h2 style="color:#f87171;">Error</h2>
-              <p style="color:#94a3b8;">No se pudo cargar el motor.</p>
-              <p style="color:#64748b;font-size:0.7rem;">Verifica tu conexión.</p>
-              <button class="bots-result-btn" id="bots-btn-retry" style="margin-top:1rem;background:#f87171;color:#fff;">Reintentar</button>
-              <button class="bots-result-btn secondary" id="bots-btn-back" style="margin-top:0.5rem;">Volver</button>
-            </div>
-          </div>
-        `;
-        document.getElementById('bots-btn-retry').addEventListener('click', () => this.startGame());
-        document.getElementById('bots-btn-back').addEventListener('click', () => this.showBotSelect());
-      });
   }
 
   _renderGameUI() {
