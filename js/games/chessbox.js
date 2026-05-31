@@ -4782,71 +4782,69 @@ class ChessBoxGame {
       g.beginPath(); g.moveTo(60, 20); g.lineTo(60, horizonY); g.strokePath();
       g.beginPath(); g.moveTo(740, 20); g.lineTo(740, horizonY); g.strokePath();
       
-      g.fillStyle(0xfbbf24, 0.75);
+      // Floating glass crystal diamonds
+      g.fillStyle(0x38bdf8, 0.4);
+      g.lineStyle(0.8, 0xffffff, 0.3);
       for (let i = 0; i < 20; i++) {
         const sx = ((i * 123 + time * 0.015) % 680) + 60;
         const sy = (horizonY - 10) - ((i * 32 + time * 0.04) % (horizonY - 20));
-        const size = Math.abs(Math.sin(time * 0.003 + i)) * 3.5 + 1.5;
-        g.fillCircle(sx, sy, size);
+        const size = Math.abs(Math.sin(time * 0.003 + i)) * 4 + 2;
+        
+        g.beginPath();
+        g.moveTo(sx, sy - size);
+        g.lineTo(sx + size * 0.6, sy);
+        g.lineTo(sx, sy + size);
+        g.lineTo(sx - size * 0.6, sy);
+        g.closePath();
+        g.fill(); g.strokePath();
       }
-      
     } else if (tier === 'knight') {
-      g.fillStyle(0x022c22, 1);
+      g.fillStyle(0x021c12, 1);
       g.fillRect(0, 0, 800, 450);
       
-      g.fillStyle(0x10b981, 0.35);
-      for (let col = 15; col < 800; col += 40) {
-        const fallY = (time * 0.08 + col * 9) % (horizonY - 10);
-        g.fillStyle(0x34d399, 0.4);
-        g.fillCircle(col, fallY, 2.5);
+      // Emerald bioluminescent fireflies waving up
+      for (let i = 0; i < 25; i++) {
+        const sx = ((i * 157 + Math.sin(t + i) * 15) % 800);
+        const sy = (horizonY - 10) - ((i * 19 + time * 0.03) % (horizonY - 20));
+        const size = Math.abs(Math.cos(time * 0.002 + i)) * 3 + 1;
         
-        g.lineStyle(1.5, 0x10b981, 0.35);
-        g.beginPath();
-        g.moveTo(col - 3, fallY - 12); g.lineTo(col - 3, fallY - 4); g.lineTo(col + 3, fallY - 4);
-        g.strokePath();
-        
-        g.beginPath();
-        g.moveTo(col - 3, fallY - 28); g.lineTo(col - 3, fallY - 20); g.lineTo(col + 3, fallY - 28); g.lineTo(col + 3, fallY - 20);
-        g.strokePath();
+        g.fillStyle(0x34d399, 0.55 * (sy / horizonY));
+        g.fillCircle(sx, sy, size);
+        g.fillStyle(0x10b981, 0.15 * (sy / horizonY));
+        g.fillCircle(sx, sy, size * 2.5);
       }
-      
     } else if (tier === 'bishop') {
       g.fillStyle(0x1e1503, 1);
       g.fillRect(0, 0, 800, 450);
       
-      g.fillStyle(0xfbbf24, 0.035);
+      // Rotating golden geometric runes and sunbeams
+      g.fillStyle(0xfbbf24, 0.03);
       for (let angle = 0; angle < Math.PI; angle += Math.PI / 8) {
-        const rx1 = 400 + Math.cos(angle) * 900;
-        const ry1 = horizonY - Math.sin(angle) * 900;
-        const rx2 = 400 + Math.cos(angle + 0.1) * 900;
-        const ry2 = horizonY - Math.sin(angle + 0.1) * 900;
+        const rx1 = 400 + Math.cos(angle + t * 0.02) * 900;
+        const ry1 = horizonY - Math.sin(angle + t * 0.02) * 900;
+        const rx2 = 400 + Math.cos(angle + 0.1 + t * 0.02) * 900;
+        const ry2 = horizonY - Math.sin(angle + 0.1 + t * 0.02) * 900;
         g.beginPath();
         g.moveTo(400, horizonY); g.lineTo(rx1, ry1); g.lineTo(rx2, ry2); g.closePath();
         g.fill();
       }
 
-      g.lineStyle(2, 0xf59e0b, 0.25);
-      g.beginPath(); g.moveTo(0, 20); g.lineTo(800, horizonY - 20); g.strokePath();
-      g.beginPath(); g.moveTo(800, 20); g.lineTo(0, horizonY - 20); g.strokePath();
-      
-      g.fillStyle(0xfbbf24, 0.18);
-      g.lineStyle(1, 0xf59e0b, 0.4);
-      for (let i = 0; i < 6; i++) {
-        const cx = 100 + i * 120;
-        const cy = 60 + Math.sin(t + i) * 15;
-        const size = 12;
-        const rot = t * 1.5 + i;
-        
+      g.lineStyle(1.2, 0xf59e0b, 0.22);
+      g.fillStyle(0xeab308, 0.05);
+      for (let i = 0; i < 8; i++) {
+        const cx = 80 + i * 90 + Math.sin(t + i) * 10;
+        const cy = 40 + Math.cos(t * 0.5 + i) * 15;
+        const size = 10 + (i % 3) * 6;
+        const rot = t * 0.8 + i;
         g.beginPath();
-        for (let a = 0; a < 4; a++) {
-          const px = cx + Math.cos(rot + a * Math.PI / 2) * size;
-          const py = cy + Math.sin(rot + a * Math.PI / 2) * size * 0.6;
+        for (let a = 0; a < 3; a++) {
+          const px = cx + Math.cos(rot + a * Math.PI * 2 / 3) * size;
+          const py = cy + Math.sin(rot + a * Math.PI * 2 / 3) * size * 0.8;
           if (a === 0) g.moveTo(px, py); else g.lineTo(px, py);
         }
         g.closePath();
         g.fill(); g.strokePath();
       }
-      
     } else if (tier === 'rook') {
       g.fillStyle(0x0f1115, 1);
       g.fillRect(0, 0, 800, 450);
@@ -4873,7 +4871,20 @@ class ChessBoxGame {
         g.beginPath(); g.moveTo(10, py); g.lineTo(60, py); g.strokePath();
         g.beginPath(); g.moveTo(740, py); g.lineTo(790, py); g.strokePath();
       }
-      
+
+      // Industrial steam and fire sparks/embers
+      for (let i = 0; i < 20; i++) {
+        const side = i % 2 === 0 ? 1 : -1;
+        const startX = side === 1 ? 40 : 760;
+        const sx = startX + side * ((i * 45 + time * 0.05) % 120);
+        const sy = horizonY - 10 - ((i * 35 + time * 0.07) % (horizonY - 20));
+        const size = Math.abs(Math.sin(time * 0.005 + i)) * 3 + 1;
+        
+        g.fillStyle(0xf97316, 0.7 * (sy / horizonY));
+        g.fillCircle(sx, sy, size);
+        g.fillStyle(0xef4444, 0.25 * (sy / horizonY));
+        g.fillCircle(sx, sy, size * 2);
+      }
     } else if (tier === 'queen') {
       const flashTrigger = (time || 0) % 5500;
       const isFlash = flashTrigger < 160;
@@ -4906,21 +4917,25 @@ class ChessBoxGame {
         g.strokePath();
       }
 
-      g.lineStyle(1.5, 0xffffff, 0.22);
-      for (let i = 0; i < 8; i++) {
-        const wx = ((i * 187 + time * 0.28) % 900) - 100;
-        const wy = 30 + (i * 17) % 100;
-        const length = 45;
+      // Elegant purple/pink royal rose petals falling down
+      g.fillStyle(0xdb2777, 0.45);
+      g.lineStyle(0.8, 0xf472b6, 0.3);
+      for (let i = 0; i < 15; i++) {
+        const sx = ((i * 211 + time * 0.02) % 800);
+        const sy = ((i * 27 + time * 0.04) % (horizonY - 20));
+        const rx = 6 * Math.sin(t + i);
+        const ry = 4 * Math.cos(t + i * 0.5);
         
         g.beginPath();
-        g.moveTo(wx, wy); g.lineTo(wx + length, wy + length * 0.3);
-        g.strokePath();
+        g.ellipse(sx, sy, Math.abs(rx), Math.abs(ry), Math.PI / 4, 0, Math.PI * 2);
+        g.closePath();
+        g.fill(); g.strokePath();
       }
-      
     } else if (tier === 'shadow') {
       g.fillStyle(0x03020c, 1);
       g.fillRect(0, 0, 800, 450);
       
+      // Sparkling cosmic sky constellations
       for (let i = 0; i < 35; i++) {
         const sx = (i * 743) % 780 + 10;
         const sy = (i * 257) % (horizonY - 15) + 10;
@@ -4933,14 +4948,14 @@ class ChessBoxGame {
         g.strokePath();
       }
 
-      g.fillStyle(0xa855f7, 0.05);
-      for (let r = 10; r < 200; r += 20) {
-        const angle = t * 0.15 + r * 0.03;
+      // Twinkling cosmic purple nebula rings
+      g.fillStyle(0xa855f7, 0.04);
+      for (let r = 20; r < 240; r += 30) {
+        const angle = t * 0.12 + r * 0.04;
         const nx = 400 + Math.cos(angle) * r;
-        const ny = horizonY - 40 + Math.sin(angle) * r * 0.35;
-        g.fillCircle(nx, ny, r * 0.45);
+        const ny = horizonY - 60 + Math.sin(angle) * r * 0.3;
+        g.fillCircle(nx, ny, r * 0.5);
       }
-      
     } else {
       g.fillStyle(0x020617, 1);
       g.fillRect(0, 0, 800, 450);
@@ -5035,7 +5050,7 @@ class ChessBoxGame {
       }
     }
 
-    // 7. Chessboard pattern
+    // 7. Chessboard pattern with 3D texturing and 4-corner gradients
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
         const p0 = getCanvasPt(col / 8, row / 8);
@@ -5044,23 +5059,115 @@ class ChessBoxGame {
         const p3 = getCanvasPt(col / 8, (row + 1) / 8);
         const isDark = (row + col) % 2 === 1;
         
+        let c1, c2, c3, c4;
+        let alpha = 0.95;
+
         if (tier === 'shadow') {
-          g.fillStyle(isDark ? 0x22133b : 0x0c0717, 0.95);
+          // Deep cosmic purple voids
+          c1 = isDark ? 0x1a0b36 : 0x05020a;
+          c2 = isDark ? 0x120626 : 0x020105;
+          c3 = isDark ? 0x0a0316 : 0x000000;
+          c4 = isDark ? 0x221142 : 0x0d051c;
         } else if (tier === 'knight') {
-          g.fillStyle(isDark ? 0x042f1a : 0x011c0f, 0.95);
-        } else if (tier === 'rook') {
-          g.fillStyle(isDark ? 0x1f2937 : 0x111827, 0.95);
+          // Rich polished mahogany wood tones
+          c1 = isDark ? 0x3d1d0b : 0x7c411c;
+          c2 = isDark ? 0x2c1407 : 0x673414;
+          c3 = isDark ? 0x1b0b03 : 0x4d250c;
+          c4 = isDark ? 0x482410 : 0x8b4c23;
         } else if (tier === 'bishop') {
-          g.fillStyle(isDark ? 0x2a1c02 : 0x140d01, 0.95);
+          // Luxury gold and ivory marble
+          c1 = isDark ? 0x2d1b03 : 0xffffff;
+          c2 = isDark ? 0x201302 : 0xf1f5f9;
+          c3 = isDark ? 0x140c01 : 0xe2e8f0;
+          c4 = isDark ? 0x452a05 : 0xffffff;
+        } else if (tier === 'rook') {
+          // Heavy carbon steel tiles
+          c1 = isDark ? 0x272e38 : 0x475569;
+          c2 = isDark ? 0x1c2128 : 0x334155;
+          c3 = isDark ? 0x11141a : 0x1e293b;
+          c4 = isDark ? 0x313945 : 0x64748b;
         } else if (tier === 'queen') {
-          g.fillStyle(isDark ? 0x3d0b28 : 0x1a0311, 0.95);
+          // Gilded royal amethyst gemstone tiles
+          c1 = isDark ? 0x3b072c : 0x581c87;
+          c2 = isDark ? 0x2b0420 : 0x4c1d95;
+          c3 = isDark ? 0x1a0213 : 0x3b0764;
+          c4 = isDark ? 0x4e0a3b : 0x6b21a8;
         } else {
-          g.fillStyle(isDark ? 0x15163a : 0x08091f, 0.95);
+          // Default pawn ice/crystal tiles
+          c1 = isDark ? 0x0c4a6e : 0xe0f2fe;
+          c2 = isDark ? 0x075985 : 0xbae6fd;
+          c3 = isDark ? 0x0369a1 : 0x7dd3fc;
+          c4 = isDark ? 0x0284c7 : 0x38bdf8;
         }
+        
+        g.fillGradientStyle(c1, c2, c3, c4, alpha, alpha, alpha, alpha);
         
         g.beginPath();
         g.moveTo(p0.x, p0.y); g.lineTo(p1.x, p1.y); g.lineTo(p2.x, p2.y); g.lineTo(p3.x, p3.y); g.closePath();
         g.fill();
+
+        // Overlaying 3D perspective floor textures
+        if (tier === 'knight') {
+          // Wavy wood grains scaling towards the horizon
+          g.lineStyle(1.2, isDark ? 0x1e0c04 : 0x4a240c, 0.28);
+          for (let w = 0.25; w < 1.0; w += 0.35) {
+            g.beginPath();
+            for (let dv = 0; dv <= 5; dv++) {
+              const v = dv / 5;
+              const du = w + Math.sin(v * Math.PI + (row * 3.7) + (col * 2.1)) * 0.08;
+              const pt = getCanvasPt((col + du) / 8, (row + v) / 8);
+              if (dv === 0) g.moveTo(pt.x, pt.y); else g.lineTo(pt.x, pt.y);
+            }
+            g.strokePath();
+          }
+        } else if (tier === 'bishop') {
+          // Luxury marble veins flowing diagonally
+          g.lineStyle(1.0, isDark ? 0xeab308 : 0x94a3b8, isDark ? 0.35 : 0.45);
+          g.beginPath();
+          const pA = getCanvasPt((col + 0.15 + (col * 0.05) % 0.2) / 8, (row + 0.1) / 8);
+          const pB = getCanvasPt((col + 0.4 + (row * 0.1) % 0.3) / 8, (row + 0.5) / 8);
+          const pC = getCanvasPt((col + 0.6 - (col * 0.08) % 0.25) / 8, (row + 0.4) / 8);
+          const pD = getCanvasPt((col + 0.85 - (row * 0.05) % 0.2) / 8, (row + 0.9) / 8);
+          g.moveTo(pA.x, pA.y);
+          g.lineTo(pB.x, pB.y);
+          g.lineTo(pC.x, pC.y);
+          g.lineTo(pD.x, pD.y);
+          g.strokePath();
+        } else if (tier === 'rook') {
+          // Steel brushed stripes and rivet circles
+          g.lineStyle(0.8, isDark ? 0x4b5563 : 0xffffff, 0.08);
+          for (let k = 0.2; k < 1.5; k += 0.35) {
+            const pA = getCanvasPt((col + k - 0.25) / 8, (row + 0.05) / 8);
+            const pB = getCanvasPt((col + k) / 8, (row + 0.45) / 8);
+            g.beginPath(); g.moveTo(pA.x, pA.y); g.lineTo(pB.x, pB.y); g.strokePath();
+          }
+          g.fillStyle(isDark ? 0x475569 : 0xcbd5e1, 0.7);
+          const r1 = getCanvasPt((col + 0.1) / 8, (row + 0.1) / 8);
+          const r2 = getCanvasPt((col + 0.9) / 8, (row + 0.1) / 8);
+          const r3 = getCanvasPt((col + 0.9) / 8, (row + 0.9) / 8);
+          const r4 = getCanvasPt((col + 0.1) / 8, (row + 0.9) / 8);
+          g.fillCircle(r1.x, r1.y, 1.8);
+          g.fillCircle(r2.x, r2.y, 1.8);
+          g.fillCircle(r3.x, r3.y, 1.8);
+          g.fillCircle(r4.x, r4.y, 1.8);
+        } else if (tier === 'queen') {
+          // Precious Amethyst facets and fracture reflections
+          g.lineStyle(0.9, isDark ? 0xf472b6 : 0xd946ef, 0.22);
+          g.beginPath();
+          const pCenter = getCanvasPt((col + 0.45 + (col * 0.05) % 0.1) / 8, (row + 0.5) / 8);
+          for (let a = 0; a < 3; a++) {
+            const pFract = getCanvasPt((col + 0.15 + a * 0.3) / 8, (row + 0.15 + (a % 2) * 0.6) / 8);
+            g.moveTo(pCenter.x, pCenter.y); g.lineTo(pFract.x, pFract.y);
+          }
+          g.strokePath();
+        } else if (tier === 'shadow') {
+          // Sparkling stars in the dark spaces
+          if (isDark) {
+            g.fillStyle(0xffffff, Math.abs(Math.sin(t + col * 4.3 + row * 2.9)) * 0.7 + 0.3);
+            const starPt = getCanvasPt((col + 0.5 + Math.sin(col * 3) * 0.25) / 8, (row + 0.5 + Math.cos(row * 4) * 0.25) / 8);
+            g.fillCircle(starPt.x, starPt.y, 1.2);
+          }
+        }
       }
     }
 
@@ -5079,6 +5186,18 @@ class ChessBoxGame {
 
     g.fillStyle(activeColor, 0.035);
     g.fillEllipse(400, 290, 420, 110);
+
+    // Sliding glossy sweep highlight reflecting off polished floors
+    const sweepProgress = (time * 0.0005) % 2.5;
+    const sweepX = -200 + sweepProgress * 600;
+    g.fillStyle(0xffffff, 0.06);
+    g.beginPath();
+    g.moveTo(sweepX, 450);
+    g.lineTo(sweepX + 120, 450);
+    g.lineTo(sweepX + 120 + 200, horizonY);
+    g.lineTo(sweepX + 200, horizonY);
+    g.closePath();
+    g.fill();
 
     // 8. 3D Cushions
     const drawCornerCushion = (pt, isLeft, colorHexBase, colorHexGlow, colorHexDark) => {
