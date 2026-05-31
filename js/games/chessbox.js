@@ -2235,41 +2235,26 @@ class ChessBoxGame {
 
   initStockfishWorker() {
     this.destroyWorker();
-    
-    const stockfishUrl = 'https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js';
-    
-    // Try to load via Blob fetch to bypass Web Worker cross-origin policies
-    fetch(stockfishUrl)
-      .then(response => {
-        if (!response.ok) throw new Error("Offline or CDN block");
-        return response.text();
-      })
-      .then(code => {
-        const blob = new Blob([code], { type: 'application/javascript' });
-        this.stockfishWorker = new Worker(URL.createObjectURL(blob));
-        this.engineType = 'stockfish';
-        console.log("Stockfish Engine loaded successfully via Web Worker.");
-        
-        // Initial setup commands
-        this.stockfishWorker.postMessage('uci');
-        this.stockfishWorker.postMessage('isready');
-        
-        // Adjust engine skill level based on level definition & difficulty
-        const currentLevel = this.levels[this.currentLevelIndex];
-        let skillLevel = Math.min(20, Math.max(1, Math.round(1 + ((currentLevel.elo - 400) / 2400) * 19)));
 
-        if (this.selectedDifficulty === 'easy') skillLevel = Math.max(1, skillLevel - 3);
-        if (this.selectedDifficulty === 'hard') skillLevel = Math.min(20, skillLevel + 3);
-        if (this.selectedDifficulty === 'martina') skillLevel = 20; // Full grandmaster
-        
-        this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
-      })
-      .catch(err => {
-        console.warn("Failed to load Stockfish Web Worker. Falling back to inline Local Engine.", err);
-        this.engineType = 'local';
-        // Instantiate our inline ChessDuel engine fallback
-        this.localEngine = new window.ChessDuel(null, this.onChessWin.bind(this), this.onChessLose.bind(this));
-      });
+    try {
+      this.stockfishWorker = new Worker('/js/sf-worker.js');
+      this.engineType = 'stockfish';
+
+      const currentLevel = this.levels[this.currentLevelIndex];
+      let skillLevel = Math.min(20, Math.max(1, Math.round(1 + ((currentLevel.elo - 400) / 2400) * 19)));
+
+      if (this.selectedDifficulty === 'easy') skillLevel = Math.max(1, skillLevel - 3);
+      if (this.selectedDifficulty === 'hard') skillLevel = Math.min(20, skillLevel + 3);
+      if (this.selectedDifficulty === 'martina') skillLevel = 20;
+
+      this.stockfishWorker.postMessage('uci');
+      this.stockfishWorker.postMessage('isready');
+      this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
+    } catch (err) {
+      console.warn('Stockfish worker creation failed, using local engine.', err);
+      this.engineType = 'local';
+      this.localEngine = new window.ChessDuel(null, this.onChessWin.bind(this), this.onChessLose.bind(this));
+    }
   }
 
   destroyWorker() {
