@@ -1157,38 +1157,43 @@ class BotsGame {
 
   // ========== BOARD RENDERING ==========
   showMovePopup(uciMove) {
+    // Remove all existing popups with fade
+    document.querySelectorAll('.bots-popup').forEach(p => {
+      p.style.animation = 'botsPopupOut 0.3s ease-in forwards';
+      setTimeout(() => p.remove(), 350);
+    });
+
     const ann = this.moveAnnotations[uciMove];
     if (!ann) return;
 
     const dest = uciMove.substring(2, 4);
-    const sq = document.querySelector(`#bots-board .bots-chess-sq[data-coord="${dest}"]`);
-    if (!sq) return;
+    const board = document.getElementById('bots-board');
+    if (!board) return;
 
-    // Remove any existing popup
-    const existing = document.querySelector('.bots-popup');
-    if (existing) existing.remove();
+    const file = dest.charCodeAt(0) - 97;
+    const rank = 8 - parseInt(dest[1]);
+    const boardRect = board.getBoundingClientRect();
+    const sqSize = boardRect.width / 8;
+    const x = boardRect.left + file * sqSize + sqSize / 2;
+    const y = boardRect.top + rank * sqSize + sqSize / 2;
 
     const popup = document.createElement('div');
     popup.className = 'bots-popup';
     popup.textContent = ann;
     popup.style.cssText = `
-      position: absolute;
-      top: 50%;
-      left: 50%;
+      position: fixed;
+      left: ${x}px;
+      top: ${y}px;
       transform: translate(-50%, -50%) scale(0);
-      font-size: 1.8rem;
-      z-index: 20;
+      font-size: 2.2rem;
+      z-index: 999;
       pointer-events: none;
       animation: botsPopupIn 0.35s ease-out forwards;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      text-shadow: 0 2px 12px rgba(0,0,0,0.7);
+      line-height: 1;
     `;
 
-    sq.appendChild(popup);
-
-    setTimeout(() => {
-      popup.style.animation = 'botsPopupOut 0.4s ease-in forwards';
-      setTimeout(() => popup.remove(), 450);
-    }, 1800);
+    document.body.appendChild(popup);
   }
 
   renderChessBoard() {
@@ -1411,15 +1416,24 @@ class BotsGame {
   // ========== COMMENTATOR ==========
   classifyMove(evalDiff, isPlayer, categories) {
     const absDiff = Math.abs(evalDiff);
-    const isCapture = categories && categories.includes('capture');
-    const isCheck = categories && categories.includes('check');
+    const hasCapture = categories && categories.includes('capture');
+    const hasCastle = categories && categories.includes('castle');
+    const hasPromo = categories && categories.includes('promotion');
+    const hasCheck = categories && categories.includes('check');
 
-    if (evalDiff > 2.5) return '✨';
-    if (evalDiff > 1.0) return '⭐';
-    if (evalDiff > 0.3) return '✓';
-    if (evalDiff > -0.3) return '';
-    if (evalDiff > -1.0) return '⁉️';
-    if (evalDiff > -2.5) return '❌';
+    // Special moves always get at least ✓
+    if (hasPromo) return evalDiff > -1 ? '⭐' : '✓';
+    if (hasCapture && evalDiff > 0) return '⭐';
+    if (hasCapture && evalDiff > -1.5) return '✓';
+    if (hasCheck) return '⭐';
+    if (hasCastle) return '✓';
+
+    if (evalDiff > 2.0) return '✨';
+    if (evalDiff > 0.8) return '⭐';
+    if (evalDiff > 0.2) return '✓';
+    if (evalDiff > -0.2) return '';
+    if (evalDiff > -0.8) return '⁉️';
+    if (evalDiff > -2.0) return '❌';
     return '💀';
   }
 

@@ -3500,9 +3500,11 @@
   transform: translateY(-3%);
 }
 
-/* Move annotation popup */
+/* Move annotation popup — fixed overlay */
 .bots-popup {
-  font-family: system-ui, sans-serif;
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-weight: 900;
+  will-change: transform, opacity;
 }
 @keyframes botsPopupIn {
   0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
@@ -3511,7 +3513,7 @@
 }
 @keyframes botsPopupOut {
   0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-  100% { transform: translate(-50%, -60%) scale(0.6); opacity: 0; }
+  100% { transform: translate(-50%, -70%) scale(0.5); opacity: 0; }
 }
 
 /* Bot comment bubble */
