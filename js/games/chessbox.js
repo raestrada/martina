@@ -5000,88 +5000,249 @@ class ChessBoxGame {
     g.beginPath();
     g.moveTo(800, 0); g.lineTo(580 - Math.sin(t) * 35, 450); g.lineTo(340 - Math.sin(t) * 35, 450); g.closePath(); g.fill();
 
-    // 4. Floor Perspective (Thematic Outer Floor)
+    // 4. Floor Perspective (Thematic Outer Floor - High Quality Volumetric Materials)
     if (tier === 'pawn') {
-      // Ice crack fissures outside the ring
-      g.lineStyle(2, 0x38bdf8, 0.35);
-      for (let i = 0; i < 12; i++) {
-        const angle = (i / 12) * Math.PI * 2;
-        const startX = 400 + Math.cos(angle) * 200;
-        const startY = 290 + Math.sin(angle) * 70;
-        const endX = 400 + Math.cos(angle) * 450;
-        const endY = 290 + Math.sin(angle) * 200;
+      // Glacial ice background
+      g.fillStyle(0x081b29, 1);
+      g.fillRect(0, horizonY, 800, 450 - horizonY);
+      
+      // Massive translucent glacial ice blocks
+      for (let i = 0; i < 4; i++) {
+        const vStart = i / 4;
+        const vEnd = (i + 1) / 4;
         
+        const ptL1 = { x: 0, y: horizonY + (450 - horizonY) * vStart };
+        const ptL2 = { x: 0, y: horizonY + (450 - horizonY) * vEnd };
+        const ptL3 = getCanvasPt(0, vEnd);
+        const ptL4 = getCanvasPt(0, vStart);
+        
+        const c1 = i % 2 === 0 ? 0x0284c7 : 0x0369a1;
+        const c2 = i % 2 === 0 ? 0x0369a1 : 0x0c4a6e;
+        g.fillGradientStyle(c1, c2, c2, c1, 0.45, 0.45, 0.45, 0.45);
         g.beginPath();
-        g.moveTo(startX, startY);
-        const midX = (startX + endX) / 2 + Math.sin(i * 1.7) * 25;
-        const midY = (startY + endY) / 2 + Math.cos(i * 2.3) * 15;
-        g.lineTo(midX, midY);
-        g.lineTo(endX, endY);
+        g.moveTo(ptL1.x, ptL1.y); g.lineTo(ptL2.x, ptL2.y); g.lineTo(ptL3.x, ptL3.y); g.lineTo(ptL4.x, ptL4.y); g.closePath();
+        g.fill();
+        
+        // Ice highlights
+        g.lineStyle(1.5, 0xe0f2fe, 0.25);
+        g.strokePath();
+        
+        const ptR1 = { x: 800, y: horizonY + (450 - horizonY) * vStart };
+        const ptR2 = { x: 800, y: horizonY + (450 - horizonY) * vEnd };
+        const ptR3 = getCanvasPt(1, vEnd);
+        const ptR4 = getCanvasPt(1, vStart);
+        
+        g.fillGradientStyle(c1, c2, c2, c1, 0.45, 0.45, 0.45, 0.45);
+        g.beginPath();
+        g.moveTo(ptR1.x, ptR1.y); g.lineTo(ptR2.x, ptR2.y); g.lineTo(ptR3.x, ptR3.y); g.lineTo(ptR4.x, ptR4.y); g.closePath();
+        g.fill();
         g.strokePath();
       }
-      // Outer ice-blue grid details
-      g.lineStyle(1.2, 0x38bdf8, 0.2);
-      for (let y = horizonY; y < 450; y += 32) {
-        const factor = (y - horizonY) / (450 - horizonY);
-        const w = 420 * factor;
-        g.beginPath(); g.moveTo(0, y); g.lineTo(400 - w, y); g.strokePath();
-        g.beginPath(); g.moveTo(400 + w, y); g.lineTo(800, y); g.strokePath();
+      
+      // Volumetric 3D Crystal Shards rising on the left/right edges
+      const crystalX = [25, 45, 750, 775];
+      const crystalY = [350, 240, 360, 250];
+      const crystalH = [70, 50, 65, 55];
+      for (let k = 0; k < crystalX.length; k++) {
+        const cx = crystalX[k];
+        const cy = crystalY[k];
+        const ch = crystalH[k];
+        const cw = 12 + (k % 2) * 6;
+        
+        g.fillStyle(0xbae6fd, 0.75); // Left facet
+        g.beginPath();
+        g.moveTo(cx, cy);
+        g.lineTo(cx - cw, cy + ch * 0.3);
+        g.lineTo(cx - cw, cy + ch);
+        g.lineTo(cx, cy + ch * 0.7);
+        g.closePath(); g.fill();
+        
+        g.fillStyle(0x38bdf8, 0.65); // Right facet
+        g.beginPath();
+        g.moveTo(cx, cy);
+        g.lineTo(cx + cw, cy + ch * 0.3);
+        g.lineTo(cx + cw, cy + ch);
+        g.lineTo(cx, cy + ch * 0.7);
+        g.closePath(); g.fill();
+        
+        g.fillStyle(0xffffff, 0.85); // Crystal cap top
+        g.beginPath();
+        g.moveTo(cx, cy - ch * 0.15);
+        g.lineTo(cx - cw, cy);
+        g.lineTo(cx, cy + ch * 0.15);
+        g.lineTo(cx + cw, cy);
+        g.closePath(); g.fill();
+        
+        g.lineStyle(1.2, 0xffffff, 0.4);
+        g.strokePath();
       }
     } else if (tier === 'knight') {
-      // Wood planks outside the ring
-      g.lineStyle(1.5, 0x064e3b, 0.35);
-      for (let y = horizonY; y < 450; y += 24) {
-        const factor = (y - horizonY) / (450 - horizonY);
-        const w = 420 * factor;
-        g.beginPath(); g.moveTo(0, y); g.lineTo(400 - w, y); g.strokePath();
-        g.beginPath(); g.moveTo(400 + w, y); g.lineTo(800, y); g.strokePath();
-      }
-      // Organic creeping green vines at the bottom left and right edges
-      g.lineStyle(2.5, 0x059669, 0.55);
-      g.beginPath();
-      g.moveTo(0, 450);
-      for (let y = 450; y > horizonY; y -= 15) {
-        const x = Math.sin(y * 0.08 + t) * 15;
-        g.lineTo(x + 10, y);
-      }
-      g.strokePath();
+      // Wood parquet floor backdrop
+      g.fillStyle(0x1b0b03, 1);
+      g.fillRect(0, horizonY, 800, 450 - horizonY);
       
-      g.beginPath();
-      g.moveTo(800, 450);
-      for (let y = 450; y > horizonY; y -= 15) {
-        const x = Math.sin(y * 0.08 - t) * 15;
-        g.lineTo(800 - x - 10, y);
-      }
-      g.strokePath();
-    } else if (tier === 'bishop') {
-      // White marble floor with gold geometric sacred templates
-      g.lineStyle(2, 0xeab308, 0.35);
-      for (let r = 80; r < 400; r += 70) {
-        g.strokeEllipse(400, 295, r * 1.1, r * 0.35);
-      }
-      g.lineStyle(1.5, 0xd97706, 0.18);
-      for (let a = 0; a < 8; a++) {
-        const rot = a * Math.PI / 4 + t * 0.05;
-        g.beginPath();
-        g.moveTo(400, 295);
-        g.lineTo(400 + Math.cos(rot) * 550, 295 + Math.sin(rot) * 200);
-        g.strokePath();
-      }
-    } else if (tier === 'rook') {
-      // Heavy metal mesh / steel diamond floor grating
-      g.lineStyle(2.5, 0x334155, 0.7);
-      for (let i = -10; i <= 20; i++) {
-        g.beginPath();
-        g.moveTo(i * 50, 450);
-        g.lineTo(i * 50 + 200, horizonY);
-        g.strokePath();
+      // Planks outside the ring with volumetric alternating mahogany wood textures
+      for (let i = 0; i < 6; i++) {
+        const vStart = i / 6;
+        const vEnd = (i + 1) / 6;
         
+        const ptL1 = { x: 0, y: horizonY + (450 - horizonY) * vStart };
+        const ptL2 = { x: 0, y: horizonY + (450 - horizonY) * vEnd };
+        const ptL3 = getCanvasPt(0, vEnd);
+        const ptL4 = getCanvasPt(0, vStart);
+        
+        const woodColor1 = i % 2 === 0 ? 0x3e1f10 : 0x30170b;
+        const woodColor2 = i % 2 === 0 ? 0x2e140a : 0x241006;
+        g.fillGradientStyle(woodColor1, woodColor2, woodColor2, woodColor1, 1, 1, 1, 1);
         g.beginPath();
-        g.moveTo(i * 50, horizonY);
-        g.lineTo(i * 50 + 200, 450);
+        g.moveTo(ptL1.x, ptL1.y); g.lineTo(ptL2.x, ptL2.y); g.lineTo(ptL3.x, ptL3.y); g.lineTo(ptL4.x, ptL4.y); g.closePath();
+        g.fill();
+        
+        // Plank grooves
+        g.lineStyle(2, 0x140702, 0.75);
+        g.beginPath(); g.moveTo(ptL3.x, ptL3.y); g.lineTo(ptL4.x, ptL4.y); g.strokePath();
+        
+        const ptR1 = { x: 800, y: horizonY + (450 - horizonY) * vStart };
+        const ptR2 = { x: 800, y: horizonY + (450 - horizonY) * vEnd };
+        const ptR3 = getCanvasPt(1, vEnd);
+        const ptR4 = getCanvasPt(1, vStart);
+        
+        g.fillGradientStyle(woodColor1, woodColor2, woodColor2, woodColor1, 1, 1, 1, 1);
+        g.beginPath();
+        g.moveTo(ptR1.x, ptR1.y); g.lineTo(ptR2.x, ptR2.y); g.lineTo(ptR3.x, ptR3.y); g.lineTo(ptR4.x, ptR4.y); g.closePath();
+        g.fill();
+        
+        g.beginPath(); g.moveTo(ptR3.x, ptR3.y); g.lineTo(ptR4.x, ptR4.y); g.strokePath();
+      }
+      
+      // Dense overlapping foliage at the bottom corners
+      const leafColor1 = 0x064e3b;
+      const leafColor2 = 0x059669;
+      const leafColor3 = 0x10b981;
+      
+      g.fillGradientStyle(leafColor1, leafColor2, leafColor2, leafColor1, 0.8, 0.8, 0.8, 0.8);
+      g.fillCircle(10, 440, 50);
+      g.fillCircle(45, 410, 40);
+      g.fillGradientStyle(leafColor2, leafColor3, leafColor3, leafColor2, 0.75, 0.75, 0.75, 0.75);
+      g.fillCircle(25, 430, 30);
+      g.fillCircle(55, 395, 25);
+      
+      g.fillGradientStyle(leafColor1, leafColor2, leafColor2, leafColor1, 0.8, 0.8, 0.8, 0.8);
+      g.fillCircle(790, 440, 50);
+      g.fillCircle(755, 410, 40);
+      g.fillGradientStyle(leafColor2, leafColor3, leafColor3, leafColor2, 0.75, 0.75, 0.75, 0.75);
+      g.fillCircle(775, 430, 30);
+      g.fillCircle(745, 395, 25);
+    } else if (tier === 'bishop') {
+      // Marble floor base
+      g.fillStyle(0xf1f5f9, 1);
+      g.fillRect(0, horizonY, 800, 450 - horizonY);
+      
+      // Luxury White Carrara Marble slabs
+      for (let i = 0; i < 5; i++) {
+        const vStart = i / 5;
+        const vEnd = (i + 1) / 5;
+        
+        const ptL1 = { x: 0, y: horizonY + (450 - horizonY) * vStart };
+        const ptL2 = { x: 0, y: horizonY + (450 - horizonY) * vEnd };
+        const ptL3 = getCanvasPt(0, vEnd);
+        const ptL4 = getCanvasPt(0, vStart);
+        
+        const marble1 = i % 2 === 0 ? 0xffffff : 0xe2e8f0;
+        const marble2 = i % 2 === 0 ? 0xf1f5f9 : 0xcbd5e1;
+        g.fillGradientStyle(marble1, marble2, marble2, marble1, 1, 1, 1, 1);
+        g.beginPath();
+        g.moveTo(ptL1.x, ptL1.y); g.lineTo(ptL2.x, ptL2.y); g.lineTo(ptL3.x, ptL3.y); g.lineTo(ptL4.x, ptL4.y); g.closePath();
+        g.fill();
+        
+        // Gold joints
+        g.lineStyle(2, 0xeab308, 0.55);
+        g.beginPath(); g.moveTo(ptL3.x, ptL3.y); g.lineTo(ptL4.x, ptL4.y); g.strokePath();
+        
+        const ptR1 = { x: 800, y: horizonY + (450 - horizonY) * vStart };
+        const ptR2 = { x: 800, y: horizonY + (450 - horizonY) * vEnd };
+        const ptR3 = getCanvasPt(1, vEnd);
+        const ptR4 = getCanvasPt(1, vStart);
+        
+        g.fillGradientStyle(marble1, marble2, marble2, marble1, 1, 1, 1, 1);
+        g.beginPath();
+        g.moveTo(ptR1.x, ptR1.y); g.lineTo(ptR2.x, ptR2.y); g.lineTo(ptR3.x, ptR3.y); g.lineTo(ptR4.x, ptR4.y); g.closePath();
+        g.fill();
         g.strokePath();
       }
-      // Draw industrial structural beams on the left and right corners
+      
+      // Giant inlaid golden sacred medallion
+      g.lineStyle(3, 0xf59e0b, 0.4);
+      g.strokeEllipse(400, 290, 480, 140);
+      g.strokeEllipse(400, 290, 460, 130);
+      g.fillStyle(0xeab308, 0.12);
+      g.fillEllipse(400, 290, 460, 130);
+    } else if (tier === 'rook') {
+      // Carbon metal floor base
+      g.fillStyle(0x0f172a, 1);
+      g.fillRect(0, horizonY, 800, 450 - horizonY);
+      
+      // Left and right structural iron plates
+      for (let i = 0; i < 4; i++) {
+        const vStart = i / 4;
+        const vEnd = (i + 1) / 4;
+        
+        const ptL1 = { x: 0, y: horizonY + (450 - horizonY) * vStart };
+        const ptL2 = { x: 0, y: horizonY + (450 - horizonY) * vEnd };
+        const ptL3 = getCanvasPt(0, vEnd);
+        const ptL4 = getCanvasPt(0, vStart);
+        
+        const steelColor1 = i % 2 === 0 ? 0x475569 : 0x334155;
+        const steelColor2 = i % 2 === 0 ? 0x1e293b : 0x0f172a;
+        g.fillGradientStyle(steelColor1, steelColor2, steelColor2, steelColor1, 1, 1, 1, 1);
+        g.beginPath();
+        g.moveTo(ptL1.x, ptL1.y); g.lineTo(ptL2.x, ptL2.y); g.lineTo(ptL3.x, ptL3.y); g.lineTo(ptL4.x, ptL4.y); g.closePath();
+        g.fill();
+        
+        // Deep metal weld joints
+        g.lineStyle(3, 0x020617, 0.95);
+        g.beginPath(); g.moveTo(ptL3.x, ptL3.y); g.lineTo(ptL4.x, ptL4.y); g.strokePath();
+        g.lineStyle(1.5, 0x64748b, 0.45);
+        g.beginPath(); g.moveTo(ptL3.x - 1, ptL3.y - 1); g.lineTo(ptL4.x - 1, ptL4.y - 1); g.strokePath();
+        
+        const ptR1 = { x: 800, y: horizonY + (450 - horizonY) * vStart };
+        const ptR2 = { x: 800, y: horizonY + (450 - horizonY) * vEnd };
+        const ptR3 = getCanvasPt(1, vEnd);
+        const ptR4 = getCanvasPt(1, vStart);
+        
+        g.fillGradientStyle(steelColor1, steelColor2, steelColor2, steelColor1, 1, 1, 1, 1);
+        g.beginPath();
+        g.moveTo(ptR1.x, ptR1.y); g.lineTo(ptR2.x, ptR2.y); g.lineTo(ptR3.x, ptR3.y); g.lineTo(ptR4.x, ptR4.y); g.closePath();
+        g.fill();
+        
+        g.lineStyle(3, 0x020617, 0.95);
+        g.beginPath(); g.moveTo(ptR3.x, ptR3.y); g.lineTo(ptR4.x, ptR4.y); g.strokePath();
+        g.lineStyle(1.5, 0x64748b, 0.45);
+        g.beginPath(); g.moveTo(ptR3.x + 1, ptR3.y - 1); g.lineTo(ptR4.x + 1, ptR4.y - 1); g.strokePath();
+      }
+      
+      // Heavy yellow and black warning borders (hazard warning stripes) along the sides of the ring
+      const drawCautionStripe = (isLeft) => {
+        g.lineStyle(1.5, 0x020617, 1);
+        for (let i = 0; i < 15; i++) {
+          const vStart = i / 15;
+          const vEnd = (i + 1) / 15;
+          
+          const pt1 = getCanvasPt(isLeft ? -0.06 : 1.0, vStart);
+          const pt2 = getCanvasPt(isLeft ? -0.06 : 1.0, vEnd);
+          const pt3 = getCanvasPt(isLeft ? 0.0 : 1.06, vEnd);
+          const pt4 = getCanvasPt(isLeft ? 0.0 : 1.06, vStart);
+          
+          g.fillStyle((i % 2 === 0) ? 0xfbbf24 : 0x0f172a, 1);
+          g.beginPath();
+          g.moveTo(pt1.x, pt1.y); g.lineTo(pt2.x, pt2.y); g.lineTo(pt3.x, pt3.y); g.lineTo(pt4.x, pt4.y); g.closePath();
+          g.fill(); g.strokePath();
+        }
+      };
+      drawCautionStripe(true);
+      drawCautionStripe(false);
+      
+      // Structural industrial steel beams at the bottom corners
       g.fillStyle(0x1e293b, 1);
       g.lineStyle(3, 0x475569, 1);
       g.fillRect(0, 410, 45, 40);
@@ -5089,55 +5250,102 @@ class ChessBoxGame {
       g.fillRect(755, 410, 45, 40);
       g.strokeRect(755, 410, 45, 40);
     } else if (tier === 'queen') {
-      // Gothic paving stones and magenta lava vein cracks
-      g.lineStyle(2, 0xd946ef, 0.35);
-      for (let cx = -100; cx <= 900; cx += 200) {
-        g.strokeEllipse(cx, 450, 160, 80);
-        g.strokeEllipse(cx, 450, 120, 60);
-      }
-      g.lineStyle(1.5, 0xec4899, 0.45);
-      for (let i = 0; i < 6; i++) {
-        const side = i % 2 === 0 ? -1 : 1;
-        const startX = side === -1 ? 50 : 750;
-        const startY = 415;
+      // Gothic masonry stone floor base
+      g.fillStyle(0x180815, 1);
+      g.fillRect(0, horizonY, 800, 450 - horizonY);
+      
+      // Volumetric gothic paving stone blocks on the sides
+      for (let i = 0; i < 4; i++) {
+        const vStart = i / 4;
+        const vEnd = (i + 1) / 4;
+        
+        const ptL1 = { x: 0, y: horizonY + (450 - horizonY) * vStart };
+        const ptL2 = { x: 0, y: horizonY + (450 - horizonY) * vEnd };
+        const ptL3 = getCanvasPt(0, vEnd);
+        const ptL4 = getCanvasPt(0, vStart);
+        
+        const stoneColor1 = i % 2 === 0 ? 0x3b072c : 0x2e1026;
+        const stoneColor2 = i % 2 === 0 ? 0x25021a : 0x1d0517;
+        
+        g.fillGradientStyle(stoneColor1, stoneColor2, stoneColor2, stoneColor1, 1, 1, 1, 1);
         g.beginPath();
-        g.moveTo(startX, startY);
-        let curX = startX;
-        let curY = startY;
-        for (let step = 0; step < 6; step++) {
-          curX += side * 40 + Math.sin(step + i + t) * 15;
-          curY += 10 + Math.cos(step - i) * 10;
-          g.lineTo(curX, curY);
-        }
-        g.strokePath();
+        g.moveTo(ptL1.x, ptL1.y); g.lineTo(ptL2.x, ptL2.y); g.lineTo(ptL3.x, ptL3.y); g.lineTo(ptL4.x, ptL4.y); g.closePath();
+        g.fill();
+        
+        // Thick glowing neon pink mortar joints
+        g.lineStyle(4, 0x701a75, 0.9);
+        g.beginPath(); g.moveTo(ptL3.x, ptL3.y); g.lineTo(ptL4.x, ptL4.y); g.strokePath();
+        g.lineStyle(2, 0xf472b6, 0.95);
+        g.beginPath(); g.moveTo(ptL3.x, ptL3.y); g.lineTo(ptL4.x, ptL4.y); g.strokePath();
+        
+        const ptR1 = { x: 800, y: horizonY + (450 - horizonY) * vStart };
+        const ptR2 = { x: 800, y: horizonY + (450 - horizonY) * vEnd };
+        const ptR3 = getCanvasPt(1, vEnd);
+        const ptR4 = getCanvasPt(1, vStart);
+        
+        g.fillGradientStyle(stoneColor1, stoneColor2, stoneColor2, stoneColor1, 1, 1, 1, 1);
+        g.beginPath();
+        g.moveTo(ptR1.x, ptR1.y); g.lineTo(ptR2.x, ptR2.y); g.lineTo(ptR3.x, ptR3.y); g.lineTo(ptR4.x, ptR4.y); g.closePath();
+        g.fill();
+        
+        g.lineStyle(4, 0x701a75, 0.9);
+        g.beginPath(); g.moveTo(ptR3.x, ptR3.y); g.lineTo(ptR4.x, ptR4.y); g.strokePath();
+        g.lineStyle(2, 0xf472b6, 0.95);
+        g.beginPath(); g.moveTo(ptR3.x, ptR3.y); g.lineTo(ptR4.x, ptR4.y); g.strokePath();
+      }
+      
+      // Glowing gothic Rosette geometry lines overlaid on the floor
+      g.lineStyle(3, 0xdb2777, 0.35);
+      g.strokeEllipse(400, 290, 520, 150);
+      g.lineStyle(1.5, 0xdb2777, 0.22);
+      for (let j = 0; j < 6; j++) {
+        g.strokeEllipse(150 + j * 100, 450, 180, 70);
       }
     } else if (tier === 'shadow') {
-      // Space distortion / gravitational warp ripples
-      g.lineStyle(1.8, 0xa855f7, 0.4);
-      for (let y = horizonY; y < 450; y += 28) {
-        g.beginPath();
-        g.moveTo(0, y);
-        for (let x = 0; x <= 800; x += 40) {
-          const distToCenter = Math.abs(x - 400);
-          const warp = Math.max(0, (1 - distToCenter / 400)) * 30 * Math.sin((y - horizonY) * 0.05 + t * 0.1);
-          g.lineTo(x, y + warp);
-        }
-        g.strokePath();
+      // Cosmic space backdrop
+      g.fillStyle(0x020208, 1);
+      g.fillRect(0, horizonY, 800, 450 - horizonY);
+      
+      // Giant cosmic vortex swirling around the ring
+      for (let r = 260; r > 80; r -= 40) {
+        const factor = (r / 260);
+        g.fillStyle(factor % 2 === 0 ? 0x6b21a8 : 0x0369a1, 0.08);
+        g.fillEllipse(400, 290, r * 1.6 + Math.sin(t) * 15, r * 0.55 + Math.cos(t) * 5);
       }
-      for (let i = -10; i <= 20; i++) {
-        const xStart = (i - 10) * 130 + 400;
-        const xEnd = (i - 10) * 18 + 400;
-        
+      
+      // Swirling gravity well rays - curved polygons with gradients
+      g.fillStyle(0xa855f7, 0.04);
+      for (let a = 0; a < 6; a++) {
+        const rot = a * Math.PI / 3 + t * 0.06;
         g.beginPath();
-        g.moveTo(xStart, 450);
-        for (let step = 0; step <= 10; step++) {
-          const v = step / 10;
-          const xRaw = xStart + (xEnd - xStart) * v;
-          const yRaw = 450 + (horizonY - 450) * v;
-          const bendX = 400 + (xRaw - 400) * (1 - 0.25 * Math.sin(v * Math.PI));
-          g.lineTo(bendX, yRaw);
+        g.moveTo(400, 290);
+        const p1x = 400 + Math.cos(rot) * 200;
+        const p1y = 290 + Math.sin(rot) * 70;
+        const p2x = 400 + Math.cos(rot + 0.5) * 450;
+        const p2y = 290 + Math.sin(rot + 0.5) * 150;
+        const p3x = 400 + Math.cos(rot + 0.8) * 450;
+        const p3y = 290 + Math.sin(rot + 0.8) * 150;
+        
+        g.moveTo(400, 290);
+        g.quadraticCurveTo(p1x, p1y, p2x, p2y);
+        g.lineTo(p3x, p3y);
+        g.quadraticCurveTo(p1x + 20, p1y + 10, 400, 290);
+        g.closePath();
+        g.fill();
+      }
+      
+      // Sparkling background stars on the outer floor
+      g.fillStyle(0xffffff, 0.85);
+      for (let i = 0; i < 20; i++) {
+        const sx = (i * 197) % 780 + 10;
+        const sy = horizonY + 10 + ((i * 131) % (450 - horizonY - 20));
+        const dx = sx - 400;
+        const dy = sy - 290;
+        const dist = (dx * dx) / (400 * 400) + (dy * dy) / (120 * 120);
+        if (dist > 0.85) {
+          const size = Math.abs(Math.sin(t + i)) * 1.5 + 0.5;
+          g.fillCircle(sx, sy, size);
         }
-        g.strokePath();
       }
     } else {
       // Fallback default simple grid
