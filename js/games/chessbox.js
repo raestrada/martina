@@ -5340,10 +5340,36 @@ class ChessBoxGame {
         const p3x = 400 + Math.cos(rot + 0.8) * 450;
         const p3y = 290 + Math.sin(rot + 0.8) * 150;
         
-        g.moveTo(400, 290);
-        g.quadraticCurveTo(p1x, p1y, p2x, p2y);
+        g.beginPath();
+        
+        // Manual quadratic bezier curve forward (p0 = [400, 290], p1 = [p1x, p1y], p2 = [p2x, p2y])
+        const steps = 10;
+        for (let step = 0; step <= steps; step++) {
+          const tVal = step / steps;
+          const oneMinusT = 1 - tVal;
+          const b0 = oneMinusT * oneMinusT;
+          const b1 = 2 * oneMinusT * tVal;
+          const b2 = tVal * tVal;
+          
+          const px = b0 * 400 + b1 * p1x + b2 * p2x;
+          const py = b0 * 290 + b1 * p1y + b2 * p2y;
+          if (step === 0) g.moveTo(px, py); else g.lineTo(px, py);
+        }
+        
         g.lineTo(p3x, p3y);
-        g.quadraticCurveTo(p1x + 20, p1y + 10, 400, 290);
+        
+        // Manual quadratic bezier curve backward (p0 = [p3x, p3y], p1 = [p1x + 20, p1y + 10], p2 = [400, 290])
+        for (let step = 0; step <= steps; step++) {
+          const tVal = step / steps;
+          const oneMinusT = 1 - tVal;
+          const b0 = oneMinusT * oneMinusT;
+          const b1 = 2 * oneMinusT * tVal;
+          const b2 = tVal * tVal;
+          
+          const px = b0 * p3x + b1 * (p1x + 20) + b2 * 400;
+          const py = b0 * p3y + b1 * (p1y + 10) + b2 * 290;
+          g.lineTo(px, py);
+        }
         g.closePath();
         g.fill();
       }
