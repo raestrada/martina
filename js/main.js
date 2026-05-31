@@ -2,10 +2,6 @@
 // Dark mode toggle, hamburger menu, fade animations, reading progress, nav dropdown
 
 (function () {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js');
-  }
-
   document.addEventListener('DOMContentLoaded', function () {
     // === DARK MODE TOGGLE ===
     var themeToggle = document.getElementById('theme-toggle');

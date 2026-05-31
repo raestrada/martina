@@ -4830,28 +4830,77 @@ class ChessBoxGame {
       };
     }
 
-    // 1. DYNAMIC SKIES & THEMES
+    // 1. DYNAMIC SKIES & THEMES (Rich Thematic Background Illustration & Dynamic Elements)
     if (tier === 'pawn') {
-      g.fillStyle(0x020617, 1);
-      g.fillRect(0, 0, 800, 450);
+      // Ice-blue deep glacial gradient sky with rich emerald aurora borealis waves
+      g.fillGradientStyle(0x020617, 0x020617, 0x0b2545, 0x0b2545, 1, 1, 1, 1);
+      g.fillRect(0, 0, 800, horizonY);
       
-      g.fillStyle(0x0f172a, 0.85);
-      g.lineStyle(1.5, 0x38bdf8, 0.45);
+      // Animated aurora borealis waves in emerald and teal
+      g.fillStyle(0x10b981, 0.06);
       g.beginPath();
-      g.moveTo(40, 20); g.lineTo(80, 20); g.lineTo(80, horizonY); g.lineTo(40, horizonY); g.closePath();
-      g.fill(); g.strokePath();
+      for (let x = 0; x <= 800; x += 40) {
+        const y = horizonY - 60 + Math.sin(t * 0.5 + x * 0.008) * 18 + Math.cos(t * 0.3 + x * 0.015) * 10;
+        if (x === 0) g.moveTo(x, y); else g.lineTo(x, y);
+      }
+      g.lineTo(800, horizonY); g.lineTo(0, horizonY); g.closePath(); g.fill();
       
+      g.fillStyle(0x06b6d4, 0.04);
       g.beginPath();
-      g.moveTo(720, 20); g.lineTo(760, 20); g.lineTo(760, horizonY); g.lineTo(720, horizonY); g.closePath();
-      g.fill(); g.strokePath();
+      for (let x = 0; x <= 800; x += 40) {
+        const y = horizonY - 80 + Math.cos(t * 0.4 + x * 0.006) * 15 + Math.sin(t * 0.2 + x * 0.012) * 12;
+        if (x === 0) g.moveTo(x, y); else g.lineTo(x, y);
+      }
+      g.lineTo(800, horizonY); g.lineTo(0, horizonY); g.closePath(); g.fill();
 
-      g.lineStyle(1, 0xffffff, 0.25);
-      g.beginPath(); g.moveTo(60, 20); g.lineTo(60, horizonY); g.strokePath();
-      g.beginPath(); g.moveTo(740, 20); g.lineTo(740, horizonY); g.strokePath();
-      
+      // Layered ice-capped glacial mountain peaks with 3D slope shading
+      const peaks = [
+        { cx: 160, y: horizonY, h: 100, w: 120, cLeft: 0x1e3a8a, cRight: 0x0369a1, alpha: 0.45 },
+        { cx: 320, y: horizonY, h: 120, w: 140, cLeft: 0x0f172a, cRight: 0x0284c7, alpha: 0.5 },
+        { cx: 480, y: horizonY, h: 110, w: 130, cLeft: 0x0f172a, cRight: 0x0c4a6e, alpha: 0.4 },
+        { cx: 620, y: horizonY, h: 90,  w: 100, cLeft: 0x1e3a8a, cRight: 0x0369a1, alpha: 0.45 }
+      ];
+      peaks.forEach(p => {
+        // Left slope (shaded dark)
+        g.fillStyle(p.cLeft, p.alpha);
+        g.beginPath();
+        g.moveTo(p.cx - p.w, p.y); g.lineTo(p.cx, p.y - p.h); g.lineTo(p.cx, p.y); g.closePath(); g.fill();
+        // Right slope (lighted bright)
+        g.fillStyle(p.cRight, p.alpha * 1.2);
+        g.beginPath();
+        g.moveTo(p.cx, p.y - p.h); g.lineTo(p.cx + p.w, p.y); g.lineTo(p.cx, p.y); g.closePath(); g.fill();
+        
+        // Snowy mountain cap top
+        g.fillStyle(0xffffff, p.alpha * 1.5);
+        g.beginPath();
+        g.moveTo(p.cx, p.y - p.h);
+        g.lineTo(p.cx - p.w * 0.25, p.y - p.h * 0.75);
+        g.lineTo(p.cx, p.y - p.h * 0.65);
+        g.lineTo(p.cx + p.w * 0.25, p.y - p.h * 0.75);
+        g.closePath(); g.fill();
+      });
+
+      // Giant ice crystal spires rising from sides
+      const spires = [
+        { x: 30, h: 130, w: 12 }, { x: 60, h: 95, w: 8 },
+        { x: 740, h: 110, w: 10 }, { x: 770, h: 135, w: 13 }
+      ];
+      spires.forEach(s => {
+        g.fillStyle(0x0e1b2f, 0.85);
+        g.lineStyle(1.5, 0x38bdf8, 0.4);
+        g.beginPath();
+        g.moveTo(s.x, horizonY); g.lineTo(s.x - s.w, horizonY); g.lineTo(s.x, horizonY - s.h); g.lineTo(s.x + s.w, horizonY); g.closePath();
+        g.fill(); g.strokePath();
+        
+        g.fillStyle(0xffffff, 0.2); // Slipped light facet
+        g.beginPath();
+        g.moveTo(s.x, horizonY - s.h); g.lineTo(s.x + s.w, horizonY); g.lineTo(s.x, horizonY); g.closePath();
+        g.fill();
+      });
+
       // Floating glass crystal diamonds
-      g.fillStyle(0x38bdf8, 0.4);
-      g.lineStyle(0.8, 0xffffff, 0.3);
+      g.fillStyle(0x38bdf8, 0.35);
+      g.lineStyle(0.8, 0xffffff, 0.25);
       for (let i = 0; i < 20; i++) {
         const sx = ((i * 123 + time * 0.015) % 680) + 60;
         const sy = (horizonY - 10) - ((i * 32 + time * 0.04) % (horizonY - 20));
@@ -4866,10 +4915,58 @@ class ChessBoxGame {
         g.fill(); g.strokePath();
       }
     } else if (tier === 'knight') {
-      g.fillStyle(0x021c12, 1);
-      g.fillRect(0, 0, 800, 450);
+      // Mystic deep forest teal-green gradient sky with golden autumn hints
+      g.fillGradientStyle(0x01130d, 0x01130d, 0x022c22, 0x022c22, 1, 1, 1, 1);
+      g.fillRect(0, 0, 800, horizonY);
       
-      // Emerald bioluminescent fireflies waving up
+      // Distant rolling forest hills in layers with fog
+      g.fillStyle(0x012015, 0.45);
+      g.beginPath();
+      for (let x = 0; x <= 800; x += 50) {
+        const y = horizonY - 45 + Math.sin(x * 0.005) * 15 + Math.cos(x * 0.01) * 8;
+        if (x === 0) g.moveTo(x, y); else g.lineTo(x, y);
+      }
+      g.lineTo(800, horizonY); g.lineTo(0, horizonY); g.closePath(); g.fill();
+      
+      g.fillStyle(0x022e1f, 0.6);
+      g.beginPath();
+      for (let x = 0; x <= 800; x += 50) {
+        const y = horizonY - 30 + Math.cos(x * 0.006) * 12 + Math.sin(x * 0.012) * 8;
+        if (x === 0) g.moveTo(x, y); else g.lineTo(x, y);
+      }
+      g.lineTo(800, horizonY); g.lineTo(0, horizonY); g.closePath(); g.fill();
+
+      // Silhouetted conifer pine trees far behind the ring, with branched layers and color variety
+      const trees = [
+        { cx: 80,  h: 120, w: 38, colTrunk: 0x140702, col1: 0x011c12, col2: 0x064e3b, col3: 0xd97706, alpha: 0.75 },
+        { cx: 145, h: 95,  w: 30, colTrunk: 0x140702, col1: 0x022c22, col2: 0x047857, col3: 0xb45309, alpha: 0.8 },
+        { cx: 720, h: 125, w: 40, colTrunk: 0x140702, col1: 0x011c12, col2: 0x064e3b, col3: 0xd97706, alpha: 0.75 },
+        { cx: 655, h: 90,  w: 28, colTrunk: 0x140702, col1: 0x022c22, col2: 0x047857, col3: 0xb45309, alpha: 0.8 }
+      ];
+      trees.forEach(tTree => {
+        // Trunk
+        g.fillStyle(tTree.colTrunk, tTree.alpha);
+        g.fillRect(tTree.cx - 3, horizonY - tTree.h, 6, tTree.h);
+        
+        // Multi-layered foliage tiers
+        const tiers = 3;
+        for (let j = 0; j < tiers; j++) {
+          const factor = (j / tiers);
+          const ty = horizonY - tTree.h + j * (tTree.h * 0.28);
+          const tw = tTree.w * (1.0 - factor * 0.45);
+          const th = tTree.h * 0.35;
+          const leafColor = (j === 0) ? tTree.col3 : ((j === 1) ? tTree.col2 : tTree.col1);
+          
+          g.fillStyle(leafColor, tTree.alpha);
+          g.beginPath();
+          g.moveTo(tTree.cx, ty - th);
+          g.lineTo(tTree.cx - tw, ty);
+          g.lineTo(tTree.cx + tw, ty);
+          g.closePath(); g.fill();
+        }
+      });
+
+      // Emerald bioluminescent fireflies and autumn leaves waving up/down
       for (let i = 0; i < 25; i++) {
         const sx = ((i * 157 + Math.sin(t + i) * 15) % 800);
         const sy = (horizonY - 10) - ((i * 19 + time * 0.03) % (horizonY - 20));
@@ -4881,22 +4978,89 @@ class ChessBoxGame {
         g.fillCircle(sx, sy, size * 2.5);
       }
     } else if (tier === 'bishop') {
-      g.fillStyle(0x1e1503, 1);
-      g.fillRect(0, 0, 800, 450);
+      // Luxurious warm purple-indigo blending to gold gradient sky
+      g.fillGradientStyle(0x12031c, 0x12031c, 0x2e1065, 0x2e1065, 1, 1, 1, 1);
+      g.fillRect(0, 0, 800, horizonY);
       
-      // Rotating golden geometric runes and sunbeams
-      g.fillStyle(0xfbbf24, 0.03);
-      for (let angle = 0; angle < Math.PI; angle += Math.PI / 8) {
-        const rx1 = 400 + Math.cos(angle + t * 0.02) * 900;
-        const ry1 = horizonY - Math.sin(angle + t * 0.02) * 900;
-        const rx2 = 400 + Math.cos(angle + 0.1 + t * 0.02) * 900;
-        const ry2 = horizonY - Math.sin(angle + 0.1 + t * 0.02) * 900;
+      // Giant golden rotating clockwork gears (Time/Reloj Theme)
+      const drawGearBackground = (cx, cy, r, numTeeth, speed, colorBase, colorGlow) => {
+        const rot = t * speed;
+        
+        // 1. Draw outer teeth
+        g.fillStyle(colorBase, 0.15);
+        for (let j = 0; j < numTeeth; j++) {
+          const a = rot + (j / numTeeth) * Math.PI * 2;
+          const toothWidth = 0.05 * (55 / r);
+          g.beginPath();
+          g.moveTo(cx + Math.cos(a - toothWidth) * r, cy + Math.sin(a - toothWidth) * r);
+          g.lineTo(cx + Math.cos(a - toothWidth * 0.5) * (r + 10), cy + Math.sin(a - toothWidth * 0.5) * (r + 10));
+          g.lineTo(cx + Math.cos(a + toothWidth * 0.5) * (r + 10), cy + Math.sin(a + toothWidth * 0.5) * (r + 10));
+          g.lineTo(cx + Math.cos(a + toothWidth) * r, cy + Math.sin(a + toothWidth) * r);
+          g.closePath(); g.fill();
+        }
+        
+        // 2. Draw outer gear rim
+        g.fillStyle(colorBase, 0.06);
+        g.lineStyle(1.8, colorGlow, 0.25);
+        g.fillCircle(cx, cy, r);
+        g.strokeCircle(cx, cy, r);
+        g.strokeCircle(cx, cy, r - 8);
+        
+        // 3. Draw spokes/radios
+        for (let k = 0; k < 6; k++) {
+          const a = rot + k * Math.PI / 3;
+          g.beginPath();
+          g.moveTo(cx + Math.cos(a) * (r - 8), cy + Math.sin(a) * (r - 8));
+          g.lineTo(cx + Math.cos(a) * (r * 0.28), cy + Math.sin(a) * (r * 0.28));
+          g.strokePath();
+        }
+        
+        // 4. Center axle bolt
+        g.fillStyle(0x100b26, 1);
+        g.fillCircle(cx, cy, r * 0.28);
+        g.strokeCircle(cx, cy, r * 0.28);
+        g.fillStyle(colorGlow, 0.6);
+        g.fillCircle(cx, cy, r * 0.12);
+        
+        // 5. Clock Hands (Hour & Minute) ticking
+        const hrAngle = rot * 0.05 + 1.2;
+        const minAngle = rot * 0.6 - 0.4;
+        g.lineStyle(2, 0xffffff, 0.7);
+        g.beginPath();
+        g.moveTo(cx, cy); g.lineTo(cx + Math.cos(hrAngle) * (r * 0.55), cy + Math.sin(hrAngle) * (r * 0.55));
+        g.strokePath();
+        g.lineStyle(1.2, 0xffffff, 0.55);
+        g.beginPath();
+        g.moveTo(cx, cy); g.lineTo(cx + Math.cos(minAngle) * (r * 0.75), cy + Math.sin(minAngle) * (r * 0.75));
+        g.strokePath();
+      };
+      
+      // Overlapping beautiful gears
+      drawGearBackground(120, 75, 55, 12, 0.06, 0xd97706, 0xf59e0b);
+      drawGearBackground(220, 95, 38, 10, -0.09, 0xb45309, 0xd97706);
+      drawGearBackground(680, 65, 48, 11, -0.07, 0xd97706, 0xf59e0b);
+      drawGearBackground(600, 90, 32, 8, 0.12, 0xb45309, 0xd97706);
+
+      // Distant rolling desert sand dunes & obelisk spires
+      g.fillStyle(0x18031d, 0.5);
+      g.beginPath();
+      g.moveTo(40, horizonY); g.lineTo(65, 45); g.lineTo(90, horizonY); g.closePath(); g.fill();
+      g.moveTo(710, horizonY); g.lineTo(730, 55); g.lineTo(750, horizonY); g.closePath(); g.fill();
+
+      // Gorgeous crossing sunbeams
+      g.fillStyle(0xfbbf24, 0.02);
+      for (let angle = 0; angle < Math.PI; angle += Math.PI / 10) {
+        const rx1 = 400 + Math.cos(angle + t * 0.015) * 900;
+        const ry1 = horizonY - Math.sin(angle + t * 0.015) * 900;
+        const rx2 = 400 + Math.cos(angle + 0.07 + t * 0.015) * 900;
+        const ry2 = horizonY - Math.sin(angle + 0.07 + t * 0.015) * 900;
         g.beginPath();
         g.moveTo(400, horizonY); g.lineTo(rx1, ry1); g.lineTo(rx2, ry2); g.closePath();
         g.fill();
       }
 
-      g.lineStyle(1.2, 0xf59e0b, 0.22);
+      // Small floating golden geometric triangles
+      g.lineStyle(1.2, 0xf59e0b, 0.2);
       g.fillStyle(0xeab308, 0.05);
       for (let i = 0; i < 8; i++) {
         const cx = 80 + i * 90 + Math.sin(t + i) * 10;
@@ -4913,30 +5077,54 @@ class ChessBoxGame {
         g.fill(); g.strokePath();
       }
     } else if (tier === 'rook') {
-      g.fillStyle(0x0f1115, 1);
-      g.fillRect(0, 0, 800, 450);
+      // Dark charcoal to red fiery furnace gradient sky
+      g.fillGradientStyle(0x07080c, 0x07080c, 0x3d0c14, 0x3d0c14, 1, 1, 1, 1);
+      g.fillRect(0, 0, 800, horizonY);
       
-      g.fillStyle(0x181c24, 1);
-      g.fillRect(0, horizonY - 30, 800, 30);
-      
-      g.fillStyle(0x0f1115, 1);
-      for (let bx = 20; bx < 800; bx += 60) {
-        g.fillRect(bx, horizonY - 30, 25, 12);
+      // Fortress watchtowers and battlements wall silhouettes
+      g.fillStyle(0x090a0f, 0.95);
+      g.lineStyle(1.5, 0x374151, 0.45);
+      g.fillRect(100, horizonY - 45, 600, 45);
+      g.strokeRect(100, horizonY - 45, 600, 45);
+      for (let bx = 120; bx < 680; bx += 40) {
+        g.fillRect(bx, horizonY - 57, 20, 12);
+        g.strokeRect(bx, horizonY - 57, 20, 12);
       }
       
-      g.fillStyle(0x1f2937, 1);
-      g.lineStyle(2, 0x374151, 1);
+      // Big left and right castle tower pillars
+      g.fillRect(35, horizonY - 120, 70, 120);
+      g.strokeRect(35, horizonY - 120, 70, 120);
+      g.fillRect(695, horizonY - 120, 70, 120);
+      g.strokeRect(695, horizonY - 120, 70, 120);
       
-      g.fillRect(10, 10, 50, horizonY - 10);
-      g.strokeRect(10, 10, 50, horizonY - 10);
+      for (let tx = 40; tx < 100; tx += 20) g.fillRect(tx, horizonY - 130, 10, 10);
+      for (let tx = 700; tx < 760; tx += 20) g.fillRect(tx, horizonY - 130, 10, 10);
       
-      g.fillRect(740, 10, 50, horizonY - 10);
-      g.strokeRect(740, 10, 50, horizonY - 10);
+      // Glowing yellow/orange furnace windows and pipes with molten metal glow
+      g.fillStyle(0xf59e0b, 0.8);
+      g.fillRect(55, horizonY - 80, 10, 18);
+      g.fillRect(80, horizonY - 80, 10, 18);
+      g.fillRect(715, horizonY - 80, 10, 18);
+      g.fillRect(740, horizonY - 80, 10, 18);
+      
+      // Vertical molten metal conduits
+      g.fillStyle(0xea580c, 0.9);
+      g.fillRect(62, horizonY - 60, 4, 60);
+      g.fillRect(728, horizonY - 60, 4, 60);
+      g.fillStyle(0xf59e0b, 0.6);
+      g.fillRect(63, horizonY - 60, 2, 60);
+      g.fillRect(729, horizonY - 60, 2, 60);
 
-      g.lineStyle(1.5, 0x374151, 0.65);
-      for (let py = 25; py < horizonY; py += 25) {
-        g.beginPath(); g.moveTo(10, py); g.lineTo(60, py); g.strokePath();
-        g.beginPath(); g.moveTo(740, py); g.lineTo(790, py); g.strokePath();
+      // Industrial steam clouds puffing and rising
+      g.fillStyle(0x374151, 0.25);
+      for (let i = 0; i < 6; i++) {
+        const side = i % 2 === 0 ? 1 : -1;
+        const cx = side === 1 ? 85 : 715;
+        const tVal = (t * 0.18 + i * 0.4) % 1.0;
+        const sy = horizonY - 110 - tVal * 80;
+        const sx = cx + Math.sin(tVal * 6 + i) * 12;
+        const sr = 10 + tVal * 25;
+        g.fillCircle(sx, sy, sr);
       }
 
       // Industrial steam and fire sparks/embers
@@ -4953,34 +5141,73 @@ class ChessBoxGame {
         g.fillCircle(sx, sy, size * 2);
       }
     } else if (tier === 'queen') {
-      const flashTrigger = (time || 0) % 5500;
-      const isFlash = flashTrigger < 160;
+      const flashTrigger = (time || 0) % 5200;
+      const isFlash = flashTrigger < 200;
       
+      // Amethyst deep purple to bright magenta gradient sky
       if (isFlash) {
-        const flashIntensity = Math.sin((flashTrigger / 160) * Math.PI) * 0.85;
-        g.fillStyle(0x3e183a, 1 - flashIntensity * 0.4);
-        g.fillRect(0, 0, 800, 450);
+        const flashIntensity = Math.sin((flashTrigger / 200) * Math.PI) * 0.85;
+        g.fillGradientStyle(0x3e0c35, 0x3e0c35, 0x580c44, 0x580c44, 1 - flashIntensity * 0.35, 1 - flashIntensity * 0.35, 1 - flashIntensity * 0.35, 1 - flashIntensity * 0.35);
+        g.fillRect(0, 0, 800, horizonY);
       } else {
-        g.fillStyle(0x180315, 1);
-        g.fillRect(0, 0, 800, 450);
+        g.fillGradientStyle(0x130211, 0x130211, 0x2e0828, 0x2e0828, 1, 1, 1, 1);
+        g.fillRect(0, 0, 800, horizonY);
       }
 
-      g.fillStyle(0x0f010d, 0.9);
+      // Gothic cathedral arches and tracery
+      g.fillStyle(0x080107, 0.95);
+      g.lineStyle(1.5, 0x4a044e, 0.4);
+      g.fillRect(15, 0, 40, horizonY);
+      g.strokeRect(15, 0, 40, horizonY);
+      g.fillRect(745, 0, 40, horizonY);
+      g.strokeRect(745, 0, 40, horizonY);
+      
+      // Double arch frames
+      g.lineStyle(2, 0x4a044e, 0.35);
+      g.strokeEllipse(200, 0, 400, 110);
+      g.strokeEllipse(200, -20, 400, 110);
+      
+      // Rosette glass frames
+      g.fillStyle(0x080107, 0.85);
       g.fillCircle(120, 20, 90);
       g.fillCircle(240, 10, 80);
       g.fillCircle(400, 20, 100);
       g.fillCircle(580, 10, 90);
       g.fillCircle(720, 30, 80);
       
-      if (isFlash && flashTrigger < 100) {
+      g.lineStyle(1.2, 0xd946ef, 0.18);
+      g.strokeCircle(120, 20, 80);
+      g.strokeCircle(400, 20, 90);
+      g.strokeCircle(720, 30, 70);
+
+      // Branching Fork Lightning neon flash strike (highly dramatic and splitting)
+      if (isFlash && flashTrigger < 150) {
         g.lineStyle(3, 0xffffff, 0.95);
         g.beginPath();
-        g.moveTo(350, 0); g.lineTo(390, 45); g.lineTo(365, 80); g.lineTo(410, 140);
+        g.moveTo(420, 0);
+        
+        const b1x = 405 + Math.sin(t * 8.0) * 35;
+        const b1y = 35;
+        const b2x = b1x + Math.cos(t * 11.0) * 30;
+        const b2y = 75;
+        const b3x = b2x + Math.sin(t * 13.0) * 45;
+        const b3y = horizonY;
+        
+        g.lineTo(b1x, b1y);
+        g.lineTo(b2x, b2y);
+        g.lineTo(b3x, b3y);
+        
+        // Split branch
+        g.moveTo(b1x, b1y);
+        g.lineTo(b1x - 35, b1y + 25);
+        g.lineTo(b1x - 20, b1y + 60);
         g.strokePath();
         
-        g.lineStyle(6, 0xec4899, 0.45);
+        // Neon halo glow
+        g.lineStyle(7, 0xdb2777, 0.4);
         g.beginPath();
-        g.moveTo(350, 0); g.lineTo(390, 45); g.lineTo(365, 80); g.lineTo(410, 140);
+        g.moveTo(420, 0); g.lineTo(b1x, b1y); g.lineTo(b2x, b2y); g.lineTo(b3x, b3y);
+        g.moveTo(b1x, b1y); g.lineTo(b1x - 35, b1y + 25); g.lineTo(b1x - 20, b1y + 60);
         g.strokePath();
       }
 
@@ -5011,10 +5238,26 @@ class ChessBoxGame {
         g.fill(); g.strokePath();
       }
     } else if (tier === 'shadow') {
-      g.fillStyle(0x03020c, 1);
-      g.fillRect(0, 0, 800, 450);
+      // Cosmic black space to indigo nebula gradient sky
+      g.fillGradientStyle(0x010103, 0x010103, 0x0a031a, 0x0a031a, 1, 1, 1, 1);
+      g.fillRect(0, 0, 800, horizonY);
       
-      // Sparkling cosmic sky constellations
+      // Giant cosmic wormhole / black hole accretion disk swirling
+      g.fillStyle(0x6b21a8, 0.08);
+      g.fillCircle(400, horizonY - 40, 110 + Math.sin(t * 0.7) * 12);
+      g.fillStyle(0x0891b2, 0.05);
+      g.fillCircle(400, horizonY - 40, 170 + Math.cos(t * 0.7) * 16);
+      
+      g.lineStyle(1.8, 0xa78bfa, 0.28);
+      for (let k = 0; k < 6; k++) {
+        const r1 = 25 + k * 28;
+        const angleStart = t * 0.12 + k * 0.45;
+        g.beginPath();
+        g.arc(400, horizonY - 40, r1, angleStart, angleStart + Math.PI * 1.35);
+        g.strokePath();
+      }
+
+      // Distant stars parpadeando
       for (let i = 0; i < 35; i++) {
         const sx = (i * 743) % 780 + 10;
         const sy = (i * 257) % (horizonY - 15) + 10;
@@ -5040,32 +5283,153 @@ class ChessBoxGame {
       g.fillRect(0, 0, 800, 450);
     }
 
-    // 2. Spectators
-    if (tier === 'pawn' || tier === 'knight' || tier === 'bishop') {
-      g.fillStyle(0x080a10, 0.92);
-      g.fillRect(0, horizonY - 14, 800, 16);
+    // 2. DETAILED ANIMATED SILHOUETTE SPECTATORS WITH TIER-SPECIFIC HATS & FLASHES
+    // Draw horizon spectator area base
+    g.fillStyle(0x06070a, 0.95);
+    g.fillRect(0, horizonY - 15, 800, 17);
+    
+    // Draw background row of spectators
+    g.fillStyle(0x090b10, 0.92);
+    for (let cx = 10; cx < 800; cx += 25) {
+      const offset = cx * 0.05;
+      const bob = Math.sin(t * 0.8 + offset) * 1.2;
+      g.fillCircle(cx, horizonY - 11 + bob, 5);
+      g.fillRect(cx - 5, horizonY - 6 + bob, 10, 10);
+    }
+    
+    // Draw foreground row with tier-specific hats and interactive shapes
+    g.fillStyle(0x0c0e15, 1);
+    for (let cx = 15; cx < 800; cx += 28) {
+      const offset = cx * 0.08;
+      const bob = Math.cos(t * 1.1 + offset) * 1.6;
+      const headX = cx;
+      const headY = horizonY - 9 + bob;
       
-      g.fillStyle(0x0f121d, 1);
-      for (let cx = 10; cx < 800; cx += 35) {
-        const wave = Math.sin(t + cx * 0.03) * 2;
-        g.fillCircle(cx, horizonY - 1 + wave, 6);
-        g.fillRect(cx - 7, horizonY + 3 + wave, 14, 12);
+      // Render body and head circle
+      g.fillRect(cx - 7, horizonY - 4 + bob, 14, 10);
+      g.fillCircle(headX, headY, 6);
+      
+      // Tier-specific customized decorations
+      if (tier === 'pawn') {
+        // Fluffy winter coats & pointed beanies
+        g.beginPath();
+        g.moveTo(headX - 5, headY - 4); g.lineTo(headX, headY - 12); g.lineTo(headX + 5, headY - 4); g.closePath();
+        g.fill();
+        g.fillCircle(headX, headY - 12, 1.8); // Beanie pompom
+      } else if (tier === 'knight') {
+        // Therian pointed animal ears
+        g.beginPath();
+        g.moveTo(headX - 5, headY - 3); g.lineTo(headX - 4, headY - 10); g.lineTo(headX - 1, headY - 4); g.closePath(); g.fill();
+        g.beginPath();
+        g.moveTo(headX + 5, headY - 3); g.lineTo(headX + 4, headY - 10); g.lineTo(headX + 1, headY - 4); g.closePath(); g.fill();
+      } else if (tier === 'bishop') {
+        // Pointed high mitre hats / chess bishop mitres
+        g.beginPath();
+        g.moveTo(headX - 4, headY - 3);
+        g.lineTo(headX, headY - 13);
+        g.lineTo(headX + 4, headY - 3);
+        g.closePath(); g.fill();
+        g.fillStyle(0xeab308, 0.45); // Golden cross on mitre
+        g.fillRect(headX - 1, headY - 10, 2, 6);
+        g.fillRect(headX - 2, headY - 8, 4, 2);
+        g.fillStyle(0x0c0e15, 1);
+      } else if (tier === 'rook') {
+        // Robotic square heads / hardhats
+        g.fillStyle(0xf59e0b, 0.85); // Yellow hardhat arc
+        g.beginPath();
+        g.arc(headX, headY - 1, 6, Math.PI, Math.PI * 2);
+        g.closePath(); g.fill();
+        g.fillStyle(0x0c0e15, 1);
+        
+        // Glowing robotic LED eyes (tiny blinking dots)
+        if (Math.abs(Math.sin(t + cx)) > 0.45) {
+          g.fillStyle(0xef4444, 0.95);
+          g.fillCircle(headX - 2.2, headY, 1);
+          g.fillCircle(headX + 2.2, headY, 1);
+          g.fillStyle(0x0c0e15, 1);
+        }
+      } else if (tier === 'queen') {
+        // Aristocratic high curly wigs & lace collars
+        g.fillCircle(headX - 5, headY - 1, 3.5);
+        g.fillCircle(headX + 5, headY - 1, 3.5);
+        g.fillCircle(headX, headY - 5, 4);
+        
+        g.beginPath(); // Ruff collar
+        g.moveTo(headX - 9, headY + 3); g.lineTo(headX + 9, headY + 3); g.lineTo(headX, headY + 6); g.closePath(); g.fill();
+      } else if (tier === 'shadow') {
+        // Mysterious shadow shapes with glowing violet/cyan eyes blinking in darkness
+        g.fillStyle(0x020205, 1); // Darker shadow silhouette
+        g.fillRect(cx - 7, horizonY - 5 + bob, 14, 11);
+        g.fillCircle(headX, headY, 6.5);
+        
+        const eyeColor = cx % 2 === 0 ? 0x06b6d4 : 0xa855f7;
+        const eyeBlink = Math.abs(Math.sin(t * 0.4 + cx)) > 0.3;
+        if (eyeBlink) {
+          g.fillStyle(eyeColor, 0.95);
+          g.fillCircle(headX - 2.2, headY, 1.2);
+          g.fillCircle(headX + 2.2, headY, 1.2);
+        }
+        g.fillStyle(0x0c0e15, 1);
       }
-    } else {
-      g.fillStyle(0x08080c, 1);
-      g.fillRect(0, horizonY - 12, 800, 14);
+    }
+    
+    // Random camera photo flashes popping in the crowd
+    const flashIndex = Math.floor((t * 22) % 35);
+    if ((time % 2000) < 350) {
+      const flashX = (flashIndex * 153) % 760 + 20;
+      const flashY = horizonY - 15 + (flashIndex * 7) % 20;
+      const intensity = Math.sin(((time % 2000) / 350) * Math.PI) * 0.95;
+      
+      // Star lens flare flash
+      g.lineStyle(1.8, 0xffffff, intensity);
+      g.beginPath();
+      g.moveTo(flashX - 8, flashY); g.lineTo(flashX + 8, flashY);
+      g.moveTo(flashX, flashY - 8); g.lineTo(flashX, flashY + 8);
+      g.strokePath();
+      g.fillStyle(0xffffff, intensity * 0.85);
+      g.fillCircle(flashX, flashY, 3);
+      
+      // Ambient halo circle
+      g.fillStyle(0xffffff, intensity * 0.08);
+      g.fillCircle(flashX, flashY, 28);
     }
 
-    // 3. Spotlights
+    // 3. DYNAMIC TWO-TONE SPECTACULAR SWEEPING SPOTLIGHTS
     const activeColor = Phaser.Display.Color.HexStringToColor(colorHex).color;
+    let spotColor1 = activeColor;
+    let spotColor2 = 0xffffff;
     
-    g.fillStyle(activeColor, 0.06);
+    if (tier === 'pawn') {
+      spotColor1 = 0x06b6d4; spotColor2 = 0x10b981; // Cyan and emerald
+    } else if (tier === 'knight') {
+      spotColor1 = 0x10b981; spotColor2 = 0xf59e0b; // Jade and amber
+    } else if (tier === 'bishop') {
+      spotColor1 = 0xf59e0b; spotColor2 = 0x7c3aed; // Amber and purple
+    } else if (tier === 'rook') {
+      spotColor1 = 0xef4444; spotColor2 = 0xf59e0b; // Crimson red and gold
+    } else if (tier === 'queen') {
+      spotColor1 = 0xd946ef; spotColor2 = 0xec4899; // Neon magenta and hot pink
+    } else if (tier === 'shadow') {
+      spotColor1 = 0xa855f7; spotColor2 = 0x06b6d4; // Purple and starlight cyan
+    }
+    
+    // Left sweeping spotlight
+    const leftSweepX = Math.sin(t * 0.8) * 60;
+    g.fillStyle(spotColor1, 0.09);
     g.beginPath();
-    g.moveTo(0, 0); g.lineTo(200 + Math.sin(t) * 35, 450); g.lineTo(440 + Math.sin(t) * 35, 450); g.closePath(); g.fill();
-
-    g.fillStyle(0xffffff, 0.02);
+    g.moveTo(0, 0);
+    g.lineTo(160 + leftSweepX, 450);
+    g.lineTo(340 + leftSweepX, 450);
+    g.closePath(); g.fill();
+    
+    // Right sweeping spotlight (crossing)
+    const rightSweepX = Math.cos(t * 0.6) * 50;
+    g.fillStyle(spotColor2, 0.05);
     g.beginPath();
-    g.moveTo(800, 0); g.lineTo(580 - Math.sin(t) * 35, 450); g.lineTo(340 - Math.sin(t) * 35, 450); g.closePath(); g.fill();
+    g.moveTo(800, 0);
+    g.lineTo(640 - rightSweepX, 450);
+    g.lineTo(460 - rightSweepX, 450);
+    g.closePath(); g.fill();
 
     // 4. Floor Perspective (Thematic Outer Floor - High Quality Volumetric Materials)
     if (tier === 'pawn') {

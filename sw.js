@@ -1,6 +1,7 @@
-// Martina PWA — Service Worker v3
+// Martina PWA — Service Worker v5
+// Network-first strategy. Cache is offline fallback only.
 // 3-tier caching: shell (auto) + images (auto) + videos (on-demand)
-const VERSION = '4';
+const VERSION = '5';
 const CACHE_SHELL = `martina-shell-v${VERSION}`;
 const CACHE_IMAGES = `martina-images-v${VERSION}`;
 const CACHE_VIDEOS = `martina-videos-v${VERSION}`;
@@ -117,22 +118,6 @@ const AUDIO_URLS = [
 
 // ---- HELPERS ----
 
-async function precacheBatch(urls, cacheName, batchSize, progressFn) {
-  const total = urls.length;
-  let cached = 0;
-  const cache = await caches.open(cacheName);
-  for (let i = 0; i < total; i += batchSize) {
-    const batch = urls.slice(i, i + batchSize);
-    const results = await Promise.allSettled(
-      batch.map(url => cache.add(url).catch(() => {}))
-    );
-    cached += results.length;
-    if (progressFn) {
-      progressFn(Math.min(100, Math.round((cached / total) * 100)));
-    }
-  }
-}
-
 async function broadcastProgress(progress) {
   const clients = await self.clients.matchAll({ includeUncontrolled: true });
   for (const client of clients) {
@@ -199,6 +184,8 @@ self.addEventListener('activate', event => {
 });
 
 // ---- FETCH ----
+// Network-first for ALL content. Cache serves as offline fallback only.
+// This prevents stale/corrupt cached files from bricking the app.
 
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
@@ -208,36 +195,21 @@ self.addEventListener('fetch', event => {
 
   const path = url.pathname;
 
-  // Videos: network-first with cache fallback
+  // Videos: network-first with dedicated videos cache
   if (path.startsWith('/assets/video/') && path.endsWith('.mp4')) {
     event.respondWith(networkFirst(event.request, CACHE_VIDEOS));
     return;
   }
 
-  // Images and audio: cache-first
-  if (path.startsWith('/assets/img/') || path.startsWith('/assets/audio/')) {
-    event.respondWith(cacheFirst(event.request, CACHE_IMAGES));
+  // Images: network-first with images cache
+  if (path.startsWith('/assets/img/')) {
+    event.respondWith(networkFirst(event.request, CACHE_IMAGES));
     return;
   }
 
-  // HTML, CSS, JS, manifest: cache-first
-  event.respondWith(cacheFirst(event.request, CACHE_SHELL));
+  // Everything else (HTML, CSS, JS, audio, manifest): network-first with shell cache
+  event.respondWith(networkFirst(event.request, CACHE_SHELL));
 });
-
-async function cacheFirst(request, cacheName) {
-  const cached = await caches.match(request);
-  if (cached) return cached;
-  try {
-    const response = await fetch(request);
-    if (response && response.ok) {
-      const cache = await caches.open(cacheName);
-      cache.put(request, response.clone());
-    }
-    return response;
-  } catch (e) {
-    return new Response('Sin conexion', { status: 408 });
-  }
-}
 
 async function networkFirst(request, cacheName) {
   try {

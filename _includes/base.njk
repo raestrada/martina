@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="{% if 'http' in resolvedTwitterImage %}{{ resolvedTwitterImage }}{% else %}https://martinachess.com{{ resolvedTwitterImage }}{% endif %}">
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/css/style.css">
-  {% for css in extraCss %}<link rel="stylesheet" href="{{ css }}">
+  <link rel="stylesheet" href="/css/offline.css">  {% for css in extraCss %}<link rel="stylesheet" href="{{ css }}">
   {% endfor %}
   <link rel="icon" type="image/png" href="/assets/img/martina_profile_1778904530237.png">
   {% if ogType == 'article' %}
@@ -122,6 +122,11 @@
 {% for js in extraJs %}<script src="{{ js }}"></script>
 {% endfor %}
 <script src="/js/main.js"></script>
+<script src="/js/offline.js"></script>
+<div id="offline-banner" class="offline-banner" role="status" aria-live="polite">
+  <span class="offline-banner-text"></span>
+  <span class="offline-progress-track"><span class="offline-progress-fill"></span></span>
+</div>
 {% block extraBodyEnd %}{% endblock %}
 </body>
 </html>
