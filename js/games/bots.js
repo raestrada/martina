@@ -814,7 +814,11 @@ class BotsGame {
   }
 
   _playPCM(rawPCM) {
-    console.log('🔊 _playPCM called, data type:', typeof rawPCM, 'len:', rawPCM.length || rawPCM.byteLength);
+    console.log('🔊 _playPCM called, data type:', typeof rawPCM, 'isArray:', Array.isArray(rawPCM), 'isTypedArray:', ArrayBuffer.isView ? ArrayBuffer.isView(rawPCM) : '?', 'constructor:', rawPCM?.constructor?.name);
+    if (typeof rawPCM === 'string') {
+      // base64 WAV format
+      console.log('🔊 got string WAV, length:', rawPCM.length);
+    }
     const ctx = this._resumeAudio();
     console.log('🔊 AudioContext:', !!ctx, 'state:', ctx ? ctx.state : 'null');
     if (!ctx) return;
