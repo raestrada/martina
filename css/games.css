@@ -3414,6 +3414,7 @@
   width: 195px;
   padding-top: 2px;
   min-height: 0;
+  justify-self: start;
 }
 .bots-sidebar-left .bots-captured-section {
   justify-content: flex-start;
@@ -3559,6 +3560,7 @@
   flex-direction: column;
   gap: 4px;
   width: 165px;
+  justify-self: end;
 }
 
 /* Board wrapper — centered column */
