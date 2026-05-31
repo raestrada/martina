@@ -2928,11 +2928,12 @@
   margin: 0 0 0.3rem;
 }
 .bots-hero-subtitle {
-  color: var(--warm-white);
+  color: var(--gold);
   font-size: 0.9rem;
   line-height: 1.6;
   max-width: 560px;
   margin: 0 auto;
+  font-weight: 500;
 }
 
 /* --- Bot Cards Grid --- */
