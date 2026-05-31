@@ -1705,13 +1705,21 @@ class BotsGame {
     this.selectedBot = null;
     this.gameActive = false;
 
+    const stats = this._getStats();
+
     this.container.innerHTML = `
       <section class="bots-hero fade-in">
         <h1>Bots de Ajedrez</h1>
-        <p class="bots-hero-subtitle">
-          Enfréntate a los personajes del Reino de las 64 Casillas.<br>
-          Cada bot tiene su propia personalidad, frases absurdas y nivel de juego.
-        </p>
+        <p class="bots-hero-subtitle">Enfréntate a los personajes del Reino de las 64 Casillas.<br>Cada bot tiene su propia personalidad, frases absurdas y nivel de juego.</p>
+        ${stats.total > 0 ? `
+        <div class="bots-stats-bar">
+          <div class="bots-stat-item"><span>Partidas</span><strong>${stats.total}</strong></div>
+          <div class="bots-stat-item" style="color:#4ade80"><span>Ganadas</span><strong>${stats.wins}</strong></div>
+          <div class="bots-stat-item" style="color:#f87171"><span>Perdidas</span><strong>${stats.losses}</strong></div>
+          <div class="bots-stat-item" style="color:#fbbf24"><span>Tablas</span><strong>${stats.draws}</strong></div>
+          <div class="bots-stat-item"><span>% Victorias</span><strong>${stats.winRate}%</strong></div>
+          ${stats.bestWin ? `<div class="bots-stat-item" style="color:#fbbf24"><span>Mejor victoria</span><strong>vs ${stats.bestWin.botName} (${stats.bestWin.botElo})</strong></div>` : ''}
+        </div>` : ''}
       </section>
       <section class="bots-grid-section fade-in stagger-1">
         <div class="bots-grid" id="bots-grid"></div>
@@ -1722,6 +1730,8 @@ class BotsGame {
     this.bots.forEach((bot, idx) => {
       const difficulty = bot.elo < 800 ? 'Principiante' : bot.elo < 1400 ? 'Intermedio' : bot.elo < 2000 ? 'Avanzado' : 'Experto';
       const diffColor = bot.elo < 800 ? '#4ade80' : bot.elo < 1400 ? '#fbbf24' : bot.elo < 2000 ? '#f97316' : '#ef4444';
+      const br = stats.byBot[bot.id];
+      const recordHTML = br ? `<div class="bot-card-record"><span style="color:#4ade80">${br.wins}G</span> <span style="color:#f87171">${br.losses}P</span> <span style="color:#fbbf24">${br.draws}T</span></div>` : '';
 
       const card = document.createElement('div');
       card.className = 'bot-card';
@@ -1738,6 +1748,7 @@ class BotsGame {
             <span class="elo-value" style="color: ${bot.color};">${bot.elo}</span>
           </div>
           <p class="bot-card-desc">${bot.desc}</p>
+          ${recordHTML}
         </div>
         <div class="bot-card-footer">
           <button class="bot-card-btn" style="background: ${bot.color}; color: ${bot.tier === 'shadow' || bot.tier === 'queen' || bot.tier === 'legend' ? '#0a0a0a' : '#ffffff'};">JUGAR</button>
@@ -2120,6 +2131,49 @@ class BotsGame {
 
     document.getElementById('bots-btn-replay').addEventListener('click', () => this.startGame());
     document.getElementById('bots-btn-choose').addEventListener('click', () => this.showBotSelect());
+
+    // Save game result
+    this._saveGameResult(result, bot, accuracy, perfElo);
+  }
+
+  _saveGameResult(result, bot, accuracy, perfElo) {
+    try {
+      let history = JSON.parse(localStorage.getItem('martina_bots_history') || '[]');
+      history.push({
+        result: result,
+        botId: bot.id,
+        botName: bot.name,
+        botElo: bot.elo,
+        accuracy: accuracy,
+        perfElo: perfElo,
+        moves: this.chessHistory.length,
+        date: Date.now()
+      });
+      // Keep last 100 games
+      if (history.length > 100) history = history.slice(-100);
+      localStorage.setItem('martina_bots_history', JSON.stringify(history));
+    } catch(e) {}
+  }
+
+  _getStats() {
+    try {
+      const history = JSON.parse(localStorage.getItem('martina_bots_history') || '[]');
+      const stats = { total: history.length, wins: 0, losses: 0, draws: 0, bestWin: null, byBot: {} };
+      history.forEach(g => {
+        if (g.result === 'win') stats.wins++;
+        else if (g.result === 'lose') stats.losses++;
+        else stats.draws++;
+        if (g.result === 'win' && (!stats.bestWin || g.botElo > stats.bestWin.botElo)) {
+          stats.bestWin = g;
+        }
+        if (!stats.byBot[g.botId]) stats.byBot[g.botId] = { wins: 0, losses: 0, draws: 0 };
+        if (g.result === 'win') stats.byBot[g.botId].wins++;
+        else if (g.result === 'lose') stats.byBot[g.botId].losses++;
+        else stats.byBot[g.botId].draws++;
+      });
+      stats.winRate = stats.total > 0 ? Math.round((stats.wins / stats.total) * 100) : 0;
+      return stats;
+    } catch(e) { return { total: 0, wins: 0, losses: 0, draws: 0, winRate: 0, byBot: {} }; }
   }
 
   destroy() {
