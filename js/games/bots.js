@@ -803,8 +803,8 @@ class BotsGame {
     if (!utter.voice) { this._dequeueSpeak(); return; } // no voice available, skip
 
     // Base pitch from gender if few voices (differentiates male/female when same voice is used)
-    const basePitch = gender === 'female' ? 1.25 : 0.85;
-    const pitchMap = { high: 1.8, low: 0.6, deep: 0.4, male: 0.85, female: 1.25, fast: 1.0, slow: 0.8, dry: 0.9 };
+    const basePitch = gender === 'female' ? 1.4 : 0.7;
+    const pitchMap = { high: 2.0, low: 0.4, deep: 0.25, male: 0.7, female: 1.4, fast: 1.0, slow: 0.6, dry: 0.8 };
     utter.pitch = pitchMap[profile] || basePitch;
     utter.rate  = profile === 'fast' ? 1.4 : profile === 'slow' ? 0.7 : profile === 'dry' ? 0.85 : 1.05;
     utter.volume = 0.8;
