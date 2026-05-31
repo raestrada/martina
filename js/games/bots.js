@@ -742,19 +742,43 @@ class BotsGame {
   _getVoices() {
     return new Promise(resolve => {
       const voices = speechSynthesis.getVoices();
-      if (voices.length) { resolve(voices); return; }
-      speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices());
+      if (voices.length) {
+        console.log('Voices:', voices.map(v => `${v.name} (${v.lang})`).join(', '));
+        resolve(voices);
+        return;
+      }
+      speechSynthesis.onvoiceschanged = () => {
+        const v = speechSynthesis.getVoices();
+        console.log('Voices loaded:', v.map(x => `${x.name} (${x.lang})`).join(', '));
+        resolve(v);
+      };
     });
   }
 
   async _getSpanishVoice(gender) {
     if (!this._voices) this._voices = await this._getVoices();
     const wantFemale = gender === 'female';
-    let voice = this._voices.find(v => v.lang.startsWith('es') && v.name.includes(wantFemale ? 'Mónica' : 'Jorge'));
-    if (!voice) voice = this._voices.find(v => v.lang.startsWith('es') && v.name.includes(wantFemale ? 'Paulina' : 'Diego'));
+
+    // 1. Any Spanish voice matching desired gender
+    let voice = this._voices.find(v => v.lang.startsWith('es') && (
+      wantFemale ? /mujer|femenin|female|monica|paulina|maría/i.test(v.name)
+                 : /hombre|varón|masculin|male|jorge|diego|pablo/i.test(v.name)
+    ));
+    // 2. Any Spanish voice 
     if (!voice) voice = this._voices.find(v => v.lang.startsWith('es'));
-    if (!voice) voice = this._voices.find(v => v.lang.startsWith('en'));
-    if (!voice) voice = this._voices[0];
+    // 3. Any voice matching desired gender
+    if (!voice) voice = this._voices.find(v => wantFemale
+      ? /female|woman|girl|mujer/i.test(v.name)
+      : /male|man|guy|hombre/i.test(v.name)
+    );
+    // 4. Pick voice by index (alternating odds for female-ish)
+    if (!voice) {
+      const idx = wantFemale ? this._voices.findIndex((v, i) => i % 2 === 1 && v.lang.startsWith('en'))
+                             : this._voices.findIndex((v, i) => i % 2 === 0 && v.lang.startsWith('en'));
+      voice = idx >= 0 ? this._voices[idx] : this._voices[0];
+    }
+
+    console.log(`Voice: ${gender} → ${voice?.name} (${voice?.lang})`);
     return voice;
   }
 
