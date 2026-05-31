@@ -1421,25 +1421,19 @@ class BotsGame {
 
     if (isPlayer) {
       if (moveCategories.includes('check')) {
-        this.addBotMessage('check');
-        this.addPlayerMessage('\u00A1Jaque al rey!');
+        this.showBotComment(this.getBotQuote('check'));
       } else if (moveCategories.includes('capture')) {
-        this.addBotMessage('capture');
-        const dest = uciMove.substring(2, 4);
-        this.addPlayerMessage(`Capturaste en ${dest}`);
+        this.showBotComment(this.getBotQuote('capture'));
       } else if (moveCategories.includes('promotion')) {
-        this.addBotMessage('promotion');
-        this.addPlayerMessage('\u00A1Coronaci\u00F3n!');
+        this.showBotComment(this.getBotQuote('promotion'));
       } else if (moveCategories.includes('castle')) {
-        this.addBotMessage('castle');
-        const isKingSide = uciMove.substring(2, 4) === 'g1';
-        this.addPlayerMessage(`Enroque ${isKingSide ? 'corto' : 'largo'}`);
+        this.showBotComment(this.getBotQuote('castle'));
       }
     } else {
       if (moveCategories.includes('check')) {
-        this.addBotMessage('check');
+        this.showBotComment(this.getBotQuote('check'));
       } else if (moveCategories.includes('capture')) {
-        this.addBotMessage('capture');
+        this.showBotComment(this.getBotQuote('capture'));
       }
     }
   }
@@ -1509,9 +1503,9 @@ class BotsGame {
       matEl.style.color = mat > 0 ? '#4ade80' : mat < 0 ? '#f87171' : '#94a3b8';
     }
 
-    // Commentary text
-    const textEl = document.getElementById('bots-commentator-text');
-    if (!textEl) return;
+    // Commentary list — stack entries
+    const listEl = document.getElementById('bots-commentator-list');
+    if (!listEl) return;
 
     let comment;
     if (moves < 4) {
@@ -1537,18 +1531,38 @@ class BotsGame {
       else comment = 'Equilibrio. Planea tu estrategia a largo plazo.';
     }
 
-    // Append last move quality if available
+    // Add last move annotation
     const lastMove = this.chessHistory.length > 0 ? this.chessHistory[this.chessHistory.length-1] : null;
     const lastAnn = lastMove ? this.moveAnnotations[lastMove] : null;
     if (lastAnn) {
       const names = {'✨':'Brillante','⭐':'Genial','✓':'Buena','⁉️':'Imprecisión','❌':'Error','💀':'Gaffe'};
-      comment += `\nÚltima jugada: ${lastAnn} ${names[lastAnn] || ''}`;
+      comment += `  ${lastAnn}`;
     }
 
-    textEl.textContent = comment;
+    // Determine who just moved (opponent move = bot, player move = player)
+    const totalMoves = this.chessHistory.length;
+    const isOpponent = totalMoves % 2 === 0; // even = black/opponent just moved
+    const author = isOpponent ? this.selectedBot.name : 'Tú';
+    const color = isOpponent ? this.selectedBot.color : '#67e8f9';
+
+    // Append entry
+    const entry = document.createElement('div');
+    entry.className = 'bots-cmt-entry';
+    entry.innerHTML = `<span class="bots-cmt-author" style="color:${color}">${author}</span> <span class="bots-cmt-text">${comment}</span>`;
+    listEl.appendChild(entry);
+
+    // Limit entries
+    while (listEl.children.length > 30) {
+      listEl.removeChild(listEl.firstChild);
+    }
+
+    // Auto-scroll to bottom
+    requestAnimationFrame(() => {
+      listEl.scrollTop = listEl.scrollHeight;
+    });
   }
 
-  // ========== CHAT MESSAGES ==========
+  // ========== BOT COMMENTS ==========
   getBotQuote(trigger) {
     const bot = this.selectedBot;
     if (!bot || !bot.quotes[trigger]) return null;
@@ -1556,58 +1570,17 @@ class BotsGame {
     return quotes[Math.floor(Math.random() * quotes.length)];
   }
 
-  addMessage(author, text, color, emoji, side) {
-    const chat = document.getElementById('bots-chat');
-    if (!chat) return;
-
-    const msg = document.createElement('div');
-    msg.className = `bots-msg ${side === 'player' ? 'bots-msg-player' : 'bots-msg-bot'}`;
-
-    const avatar = document.createElement('span');
-    avatar.className = 'bots-msg-avatar';
-    avatar.textContent = emoji;
-
-    const body = document.createElement('div');
-    body.className = 'bots-msg-body';
-
-    const nameEl = document.createElement('span');
-    nameEl.className = 'bots-msg-name';
-    nameEl.textContent = author;
-    nameEl.style.color = color;
-
-    const textEl = document.createElement('p');
-    textEl.className = 'bots-msg-text';
-    textEl.textContent = text;
-
-    body.appendChild(nameEl);
-    body.appendChild(textEl);
-
-    if (side === 'player') {
-      msg.appendChild(body);
-      msg.appendChild(avatar);
-    } else {
-      msg.appendChild(avatar);
-      msg.appendChild(body);
-    }
-
-    chat.appendChild(msg);
-
-    // Auto-scroll to bottom
-    requestAnimationFrame(() => {
-      chat.scrollTop = chat.scrollHeight;
-    });
-  }
-
-  addBotMessage(trigger) {
-    const bot = this.selectedBot;
-    const quote = this.getBotQuote(trigger);
-    if (quote && bot) {
-      this.addMessage(bot.name, quote, bot.color, bot.emoji, 'bot');
-    }
-  }
-
-  addPlayerMessage(text) {
-    this.addMessage('Tú', text, '#67e8f9', '♟️', 'player');
+  showBotComment(quote) {
+    if (!quote) return;
+    const bubble = document.getElementById('bots-comment-bubble');
+    const textEl = document.getElementById('bots-comment-text');
+    if (!bubble || !textEl) return;
+    textEl.style.transform = 'scale(0.97)';
+    textEl.style.transition = 'transform 0.12s ease';
+    setTimeout(() => {
+      textEl.textContent = quote;
+      textEl.style.transform = 'scale(1)';
+    }, 80);
   }
 
   updateStatus(msg, type) {
@@ -1898,9 +1871,7 @@ class BotsGame {
               <div class="bots-eval-bar-container">
                 <div class="bots-eval-bar-fill" id="bots-eval-bar" style="width:50%;"></div>
               </div>
-              <div class="bots-commentator-text" id="bots-commentator-text">
-                Desarrollo tus piezas al centro. Controla d4 y e4.
-              </div>
+              <div class="bots-commentator-list" id="bots-commentator-list"></div>
             </div>
           </div>
 
@@ -1909,7 +1880,13 @@ class BotsGame {
           </div>
 
           <div class="bots-sidebar-right">
-            <div class="bots-chat" id="bots-chat"></div>
+            <div class="bots-comment-bubble" id="bots-comment-bubble" style="border-color: ${accent}55;">
+              <div class="bots-comment-avatar">${bot.emoji}</div>
+              <div class="bots-comment-content">
+                <span class="bots-comment-name" style="color: ${accent};">${bot.name}</span>
+                <p class="bots-comment-text" id="bots-comment-text"></p>
+              </div>
+            </div>
             <div class="bots-history-section">
               <div class="bots-history-header">Historial <span id="bots-move-count">· J 1</span></div>
               <div class="bots-history-list" id="bots-history"></div>
@@ -1942,15 +1919,12 @@ class BotsGame {
     this.renderChessBoard();
     this.updateStatus('● Tu turno', 'turn');
     this.updateCommentary();
-    this.addBotMessage('greeting');
+    this.showBotComment(this.getBotQuote('greeting'));
 
     this.quoteInterval = setInterval(() => {
       if (this.isThinking && this.gameActive) {
-        const quote = this.getBotQuote('think');
-        if (quote) {
-          const bot = this.selectedBot;
-          this.addMessage(bot.name, quote, bot.color, bot.emoji, 'bot');
-        }
+        const thinkQuote = this.getBotQuote('think');
+        if (thinkQuote) this.showBotComment(thinkQuote);
       }
     }, 5000);
   }
