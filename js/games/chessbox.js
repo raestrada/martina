@@ -1951,7 +1951,8 @@ class ChessBoxGame {
         
         // Adjust engine skill level based on level definition & difficulty
         const currentLevel = this.levels[this.currentLevelIndex];
-        let skillLevel = Math.min(20, Math.max(1, Math.round(currentLevel.elo / 150)));
+        let skillLevel = Math.min(20, Math.max(1, Math.round(1 + ((currentLevel.elo - 400) / 2400) * 19)));
+
         if (this.selectedDifficulty === 'easy') skillLevel = Math.max(1, skillLevel - 3);
         if (this.selectedDifficulty === 'hard') skillLevel = Math.min(20, skillLevel + 3);
         if (this.selectedDifficulty === 'martina') skillLevel = 20; // Full grandmaster
@@ -4827,11 +4828,19 @@ class ChessBoxGame {
 
           validMoves.sort((x, y) => evalScore(y) - evalScore(x));
           
-          if (Math.random() < 0.3) {
+          // ELO simulation logic: lower ELO -> higher random blunder chance!
+          // 400 ELO (Level 1) -> 60% random pick (frequent mistakes/blunders)
+          // 2800 ELO (Level 15) -> 2% random pick (almost flawless chess engine evaluation)
+          const currentLevel = this.levels[this.currentLevelIndex];
+          const opponentElo = currentLevel ? currentLevel.elo : 1200;
+          const randomChance = Math.max(0.02, Math.min(0.60, 0.60 - ((opponentElo - 400) / 2400) * 0.58));
+          
+          if (Math.random() < randomChance) {
             chosenMove = validMoves[Math.floor(Math.random() * validMoves.length)];
           } else {
             chosenMove = validMoves[0]; // best evaluated
           }
+
 
           this.isThinking = false;
           this.executeChessMove(chosenMove, false);
