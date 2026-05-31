@@ -1076,14 +1076,11 @@ class BotsGame {
 
     this._sfInitPromise = new Promise((resolve, reject) => {
       this.stockfishReady = false;
-      const bot = this.selectedBot;
-      const skillLevel = Math.min(20, Math.max(0, Math.round((bot.elo / 2800) * 20)));
       const wasmUrl = 'https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.wasm';
 
       fetch('/js/stockfish.js')
         .then(res => res.text())
         .then(scriptText => {
-          // Module MUST be defined before stockfish.js code runs
           const blob = new Blob([
             `var Module={locateFile:function(p){return p==='stockfish.wasm'?'${wasmUrl}':p}};\n`,
             scriptText + '\n',
@@ -1092,39 +1089,15 @@ class BotsGame {
 
           this.stockfishWorker = new Worker(URL.createObjectURL(blob));
 
-          // Listen for engine output to know it's alive
-          let engineOutput = false;
-          this.stockfishWorker.onmessage = (e) => {
-            const line = e.data;
-            if (!engineOutput) {
-              engineOutput = true;
-              // Engine is alive, send init commands
-              this.stockfishWorker.postMessage('uci');
-              this.stockfishWorker.postMessage('isready');
-              this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
-              this.stockfishWorker.postMessage('ucinewgame');
-              this.stockfishReady = true;
-              setTimeout(resolve, 500);
-            }
-          };
-
-          // Fallback: resolve anyway after a delay
-          setTimeout(() => {
-            if (!this.stockfishReady) {
-              this.stockfishReady = true;
-              resolve();
-            }
-          }, 5000);
-
-          this.stockfishWorker.onerror = (err) => {
-            console.warn('Stockfish worker error');
-            this._sfInitPromise = null;
-            this.stockfishWorker = null;
-            reject(new Error('Worker error'));
-          };
+          // Send init immediately — engine processes async
+          this.stockfishWorker.postMessage('uci');
+          this.stockfishWorker.postMessage('isready');
+          this.stockfishWorker.postMessage(`setoption name Skill Level value ${Math.min(20, Math.max(0, Math.round((this.selectedBot.elo / 2800) * 20)))}`);
+          this.stockfishWorker.postMessage('ucinewgame');
+          this.stockfishReady = true;
+          resolve();
         })
         .catch(err => {
-          console.warn('Stockfish fetch failed:', err.message);
           this._sfInitPromise = null;
           reject(err);
         });
@@ -1155,7 +1128,6 @@ class BotsGame {
     const bot = this.selectedBot;
     this.updateStatus(`${bot.name} está pensando...`, 'thinking');
 
-    // Always use Stockfish — wait if not ready yet
     if (!this.stockfishWorker || !this.stockfishReady) {
       setTimeout(() => {
         if (!this.gameActive) return;
@@ -1164,9 +1136,20 @@ class BotsGame {
       return;
     }
 
+    let responded = false;
+    const safetyTimer = setTimeout(() => {
+      if (!responded && this.gameActive) {
+        this.isThinking = false;
+        this.updateStatus('Reintentando...', 'thinking');
+        setTimeout(() => { if (this.gameActive) this.triggerEngineTurn(); }, 500);
+      }
+    }, 10000);
+
     this.stockfishWorker.onmessage = (e) => {
       const line = e.data;
       if (line.includes('bestmove')) {
+        responded = true;
+        clearTimeout(safetyTimer);
         const move = line.split(' ')[1];
         if (move && move !== '(none)' && this.gameActive) {
           this.executeChessMove(move, false);
