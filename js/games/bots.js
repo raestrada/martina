@@ -776,8 +776,19 @@ class BotsGame {
     utter.rate  = p.rate;
     utter.volume = p.vol;
 
-    utter.onend = () => this._dequeueSpeak();
-    utter.onerror = () => { this._speaking = false; this._dequeueSpeak(); };
+    // Flash status bar while speaking
+    const status = document.getElementById('bots-status');
+    if (status) { status.style.background = 'rgba(250,204,21,0.25)'; status.style.color = '#fbbf24'; }
+
+    utter.onend = () => {
+      if (status) { status.style.background = ''; status.style.color = ''; }
+      this._dequeueSpeak();
+    };
+    utter.onerror = () => {
+      if (status) { status.style.background = ''; status.style.color = ''; }
+      this._speaking = false;
+      this._dequeueSpeak();
+    };
     speechSynthesis.speak(utter);
   }
 
