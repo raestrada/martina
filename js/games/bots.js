@@ -1365,21 +1365,14 @@ class BotsGame {
     const bubble = document.getElementById('bots-comment-bubble');
     if (!bubble) return;
 
-    bubble.style.opacity = '0';
-    bubble.style.transform = 'translateY(8px)';
+    bubble.style.transform = 'translateY(3px)';
+    bubble.style.transition = 'transform 0.15s ease';
 
     setTimeout(() => {
       const textEl = document.getElementById('bots-comment-text');
       if (textEl) textEl.textContent = quote;
-      bubble.style.opacity = '1';
       bubble.style.transform = 'translateY(0)';
-    }, 150);
-
-    if (this.botQuoteTimer) clearTimeout(this.botQuoteTimer);
-    this.botQuoteTimer = setTimeout(() => {
-      bubble.style.opacity = '0';
-      bubble.style.transform = 'translateY(8px)';
-    }, 6000);
+    }, 80);
   }
 
   updateStatus(msg, type) {

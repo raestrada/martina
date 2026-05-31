@@ -3289,7 +3289,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 10px;
+  padding: 2px 8px;
   background: rgba(26, 31, 46, 0.95);
   border-bottom: 1px solid var(--bot-accent, rgba(255, 255, 255, 0.12));
   flex-shrink: 0;
@@ -3359,7 +3359,7 @@
   flex: 1;
   min-height: 0;
   gap: 6px;
-  padding: 3px 6px;
+  padding: 2px 4px;
   align-items: stretch;
 }
 
@@ -3459,7 +3459,6 @@
   display: flex;
   gap: 5px;
   align-items: flex-start;
-  transition: all 0.25s ease;
   flex-shrink: 0;
 }
 .bots-comment-avatar { font-size: 1.1rem; flex-shrink: 0; }
@@ -3478,6 +3477,7 @@
   margin: 0;
   line-height: 1.35;
   font-style: italic;
+  min-height: 1.2em;
 }
 
 /* History section — scrollable */
@@ -3486,11 +3486,11 @@
   border: 1px solid var(--bot-accent, rgba(255, 255, 255, 0.18));
   border-radius: 6px;
   padding: 4px 5px;
-  flex: 1;
+  flex: 0 1 auto;
+  max-height: 120px;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  max-height: 100%;
 }
 .bots-history-header {
   font-size: 0.5rem;
