@@ -1063,6 +1063,20 @@ class ChessBoxGame {
       if (isCleaned) return;
       isCleaned = true;
       
+      // Stop intro music loop
+      if (this.introMusicInterval) {
+        clearInterval(this.introMusicInterval);
+        this.introMusicInterval = null;
+      }
+      
+      // Stop all intro synth oscillators
+      if (this.introSynthNotes) {
+        this.introSynthNotes.forEach(node => {
+          try { node.stop(); } catch(e) {}
+        });
+        this.introSynthNotes = null;
+      }
+      
       // Remove keyboard listener
       window.removeEventListener('keydown', handleKeydown);
       
@@ -1080,6 +1094,7 @@ class ChessBoxGame {
         onComplete();
       }, 400);
     };
+
     
     const handleKeydown = (e) => {
       if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
@@ -1693,6 +1708,8 @@ class ChessBoxGame {
     if (!this.musicEnabled) return;
     const now = audioCtx.currentTime;
     
+    this.introSynthNotes = [];
+    
     // 1. MEGA MAN STYLE FAST ASCENDING ARPEGGIO (Square wave)
     const notes = [
       130.81, 164.81, 196.00, 261.63,
@@ -1706,37 +1723,39 @@ class ChessBoxGame {
       const gain = audioCtx.createGain();
       
       osc.type = 'square';
-      osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+      osc.frequency.setValueAtTime(freq, now + idx * 0.04); // ultra fast arpeggio
       
-      gain.gain.setValueAtTime(0.08, now + idx * 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.05 + 0.15);
+      gain.gain.setValueAtTime(0.06, now + idx * 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.04 + 0.12);
       
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       
-      osc.start(now + idx * 0.05);
-      osc.stop(now + idx * 0.05 + 0.18);
+      osc.start(now + idx * 0.04);
+      osc.stop(now + idx * 0.04 + 0.15);
+      this.introSynthNotes.push(osc);
     });
 
     // 2. POWERFUL DEEP IMPACT THUD (Sine + Noise) at the climax of the arpeggio
-    const impactTime = now + notes.length * 0.05;
+    const impactTime = now + notes.length * 0.04;
     
     const bOsc = audioCtx.createOscillator();
     const bGain = audioCtx.createGain();
     bOsc.type = 'sine';
     bOsc.frequency.setValueAtTime(180, impactTime);
-    bOsc.frequency.exponentialRampToValueAtTime(30, impactTime + 0.4);
+    bOsc.frequency.exponentialRampToValueAtTime(30, impactTime + 0.45);
     
-    bGain.gain.setValueAtTime(0.3, impactTime);
-    bGain.gain.exponentialRampToValueAtTime(0.0001, impactTime + 0.45);
+    bGain.gain.setValueAtTime(0.35, impactTime);
+    bGain.gain.exponentialRampToValueAtTime(0.0001, impactTime + 0.5);
     
     bOsc.connect(bGain);
     bGain.connect(audioCtx.destination);
     bOsc.start(impactTime);
-    bOsc.stop(impactTime + 0.5);
+    bOsc.stop(impactTime + 0.55);
+    this.introSynthNotes.push(bOsc);
 
     // Exploding Crash Noise
-    const bufferSize = audioCtx.sampleRate * 0.4;
+    const bufferSize = audioCtx.sampleRate * 0.45;
     const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
@@ -1751,34 +1770,160 @@ class ChessBoxGame {
     filter.Q.value = 1.0;
     
     const nGain = audioCtx.createGain();
-    nGain.gain.setValueAtTime(0.12, impactTime);
-    nGain.gain.exponentialRampToValueAtTime(0.0001, impactTime + 0.38);
+    nGain.gain.setValueAtTime(0.15, impactTime);
+    nGain.gain.exponentialRampToValueAtTime(0.0001, impactTime + 0.4);
     
     noise.connect(filter);
     filter.connect(nGain);
     nGain.connect(audioCtx.destination);
     
     noise.start(impactTime);
-    noise.stop(impactTime + 0.4);
+    noise.stop(impactTime + 0.45);
+    this.introSynthNotes.push(noise);
 
-    // 3. RETRO ALERT SOUNDS (Blinking pulses after impact)
-    for (let i = 0; i < 3; i++) {
-      const alertTime = impactTime + 0.5 + i * 0.3;
-      const aOsc = audioCtx.createOscillator();
-      const aGain = audioCtx.createGain();
-      aOsc.type = 'triangle';
-      aOsc.frequency.setValueAtTime(440, alertTime);
-      aOsc.frequency.setValueAtTime(660, alertTime + 0.08);
+    // 3. CONTINUOUS HIGH-INTENSITY DRAMATIC CHIPTUNE LOOP!
+    // G minor dramatic arpeggiator fighting theme
+    const introMelody = [
+      392.00, 587.33, 466.16, 392.00, // G4, D5, Bb4, G4
+      523.25, 415.30, 369.99, 392.00, // C5, Ab4, F#4, G4 (dramatic tension!)
+      392.00, 587.33, 466.16, 392.00,
+      523.25, 587.33, 698.46, 783.99  // C5, D5, F5, G5 (ascending climax!)
+    ];
+    
+    const introBass = [
+      98.00, 98.00, 116.54, 130.81,  // G2, G2, Bb2, C3
+      98.00, 98.00, 87.31, 73.42,     // G2, G2, F2, D2
+      98.00, 98.00, 116.54, 130.81,
+      87.31, 87.31, 103.83, 116.54    // F2, F2, Ab2, Bb2
+    ];
+    
+    const stepDuration = 180; // 180ms per step
+    let step = 0;
+    
+    // Start after the initial impact completes (~0.6 seconds delay)
+    setTimeout(() => {
+      if (this.gameActive === false || !this.introSynthNotes) return; // intro was already skipped
       
-      aGain.gain.setValueAtTime(0.05, alertTime);
-      aGain.gain.exponentialRampToValueAtTime(0.0001, alertTime + 0.2);
-      
-      aOsc.connect(aGain);
-      aGain.connect(audioCtx.destination);
-      
-      aOsc.start(alertTime);
-      aOsc.stop(alertTime + 0.25);
-    }
+      this.introMusicInterval = setInterval(() => {
+        if (!this.musicEnabled || !this.introSynthNotes) {
+          clearInterval(this.introMusicInterval);
+          this.introMusicInterval = null;
+          return;
+        }
+        
+        const t = audioCtx.currentTime;
+        
+        // Lead melody channel (Sawtooth wave with slight delay for epic retro synth sound)
+        const leadFreq = introMelody[step];
+        try {
+          const lOsc = audioCtx.createOscillator();
+          const lGain = audioCtx.createGain();
+          
+          lOsc.type = 'sawtooth';
+          lOsc.frequency.setValueAtTime(leadFreq, t);
+          
+          lGain.gain.setValueAtTime(0.025, t);
+          lGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
+          
+          lOsc.connect(lGain);
+          lGain.connect(audioCtx.destination);
+          
+          lOsc.start(t);
+          lOsc.stop(t + 0.17);
+          this.introSynthNotes.push(lOsc);
+        } catch(e) {}
+        
+        // Deep bass channel (Triangle wave)
+        const bassFreq = introBass[step];
+        try {
+          const bOsc = audioCtx.createOscillator();
+          const bGain = audioCtx.createGain();
+          
+          bOsc.type = 'triangle';
+          bOsc.frequency.setValueAtTime(bassFreq, t);
+          
+          bGain.gain.setValueAtTime(0.06, t);
+          bGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
+          
+          bOsc.connect(bGain);
+          bGain.connect(audioCtx.destination);
+          
+          bOsc.start(t);
+          bOsc.stop(t + 0.17);
+          this.introSynthNotes.push(bOsc);
+        } catch(e) {}
+        
+        // Retro Drum ticks and hi-hats
+        const beat = step % 4;
+        if (beat === 0) {
+          // Bass kick chiptune
+          try {
+            const kOsc = audioCtx.createOscillator();
+            const kGain = audioCtx.createGain();
+            kOsc.type = 'sine';
+            kOsc.frequency.setValueAtTime(120, t);
+            kOsc.frequency.exponentialRampToValueAtTime(30, t + 0.08);
+            kGain.gain.setValueAtTime(0.18, t);
+            kGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+            kOsc.connect(kGain);
+            kGain.connect(audioCtx.destination);
+            kOsc.start(t);
+            kOsc.stop(t + 0.1);
+            this.introSynthNotes.push(kOsc);
+          } catch(e) {}
+        } else if (beat === 2) {
+          // Snare chiptune noise crack
+          try {
+            const snOsc = audioCtx.createOscillator();
+            const snGain = audioCtx.createGain();
+            snOsc.type = 'triangle';
+            snOsc.frequency.setValueAtTime(250, t);
+            snGain.gain.setValueAtTime(0.08, t);
+            snGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
+            
+            // Layer hi-hat noise
+            const bufSize = audioCtx.sampleRate * 0.06;
+            const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+            const bufData = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) bufData[i] = Math.random() * 2 - 1;
+            const ns = audioCtx.createBufferSource();
+            ns.buffer = buf;
+            const nsG = audioCtx.createGain();
+            nsG.gain.setValueAtTime(0.04, t);
+            nsG.gain.exponentialRampToValueAtTime(0.0001, t + 0.06);
+            ns.connect(nsG);
+            nsG.connect(audioCtx.destination);
+            ns.start(t);
+            ns.stop(t + 0.07);
+            
+            snOsc.connect(snGain);
+            snGain.connect(audioCtx.destination);
+            snOsc.start(t);
+            snOsc.stop(t + 0.09);
+            
+            this.introSynthNotes.push(snOsc);
+            this.introSynthNotes.push(ns);
+          } catch(e) {}
+        } else {
+          // Hi-hat tick
+          try {
+            const hOsc = audioCtx.createOscillator();
+            const hGain = audioCtx.createGain();
+            hOsc.type = 'square';
+            hOsc.frequency.setValueAtTime(10000, t);
+            hGain.gain.setValueAtTime(0.008, t);
+            hGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
+            hOsc.connect(hGain);
+            hGain.connect(audioCtx.destination);
+            hOsc.start(t);
+            hOsc.stop(t + 0.04);
+            this.introSynthNotes.push(hOsc);
+          } catch(e) {}
+        }
+        
+        step = (step + 1) % introMelody.length;
+      }, stepDuration);
+    }, 600);
   }
 
   // --- INIT STOCKFISH WEB WORKER WITH CORS-BYPASS ---
