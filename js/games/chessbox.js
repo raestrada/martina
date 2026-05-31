@@ -1023,24 +1023,43 @@ class ChessBoxGame {
     // Append to container
     this.container.appendChild(introDiv);
     
-    // Draw on canvases
-    const canvasMartina = introDiv.querySelector('#intro-canvas-martina');
-    if (canvasMartina) {
-      const ctxM = canvasMartina.getContext('2d');
-      ctxM.scale(1.5, 1.5);
-      this.drawMartinaIntro(ctxM);
-    }
-    
-    const canvasOpp = introDiv.querySelector('#intro-canvas-opponent');
-    if (canvasOpp) {
-      const ctxO = canvasOpp.getContext('2d');
-      ctxO.scale(1.5, 1.5);
-      this.drawOpponentIntro(ctxO, tier, opponentName);
-    }
-    
     // Set up cleanup and trigger functions
     let isCleaned = false;
+
+    // Draw on canvases with an animation loop executing their powers!
+    const canvasMartina = introDiv.querySelector('#intro-canvas-martina');
+    const canvasOpp = introDiv.querySelector('#intro-canvas-opponent');
+    
+    let frame = 0;
+    const animate = () => {
+      if (isCleaned) return;
+      frame++;
+      
+      if (canvasMartina) {
+        const ctxM = canvasMartina.getContext('2d');
+        ctxM.clearRect(0, 0, canvasMartina.width, canvasMartina.height);
+        ctxM.save();
+        ctxM.scale(1.5, 1.5);
+        this.drawMartinaIntro(ctxM, frame);
+        ctxM.restore();
+      }
+      
+      if (canvasOpp) {
+        const ctxO = canvasOpp.getContext('2d');
+        ctxO.clearRect(0, 0, canvasOpp.width, canvasOpp.height);
+        ctxO.save();
+        ctxO.scale(1.5, 1.5);
+        this.drawOpponentIntro(ctxO, tier, opponentName, frame);
+        ctxO.restore();
+      }
+      
+      requestAnimationFrame(animate);
+    };
+    
+    requestAnimationFrame(animate);
+
     const cleanUpIntro = () => {
+
       if (isCleaned) return;
       isCleaned = true;
       
@@ -1082,7 +1101,55 @@ class ChessBoxGame {
   }
 
   // --- DRAW MARTINA FRONT PROFILE FOR INTRO CARD ---
-  drawMartinaIntro(ctx) {
+  drawMartinaIntro(ctx, frame = 0) {
+    const bobY = frame > 0 ? Math.sin(frame * 0.15) * 2 : 0;
+    const bobX = frame > 0 ? Math.cos(frame * 0.08) * 0.5 : 0;
+    
+    // Check if jabbing combo
+    let leftGloveY = 96;
+    let leftGloveScale = 1;
+    let rightGloveY = 96;
+    let rightGloveScale = 1;
+    let martinaShiftX = 0;
+    let martinaShiftY = 0;
+    
+    const cycle = frame > 0 ? (frame % 90) : 0;
+    
+    if (cycle >= 10 && cycle < 20) {
+      // Left jab
+      const progress = (cycle - 10) / 10; // 0 to 1
+      const jabOffset = Math.sin(progress * Math.PI) * 26;
+      leftGloveY = 96 - jabOffset;
+      leftGloveScale = 1 + (jabOffset * 0.015);
+      martinaShiftX = -2;
+      martinaShiftY = -1;
+      
+      // Draw motion line trails
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.4)';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(28, 96); ctx.lineTo(28, leftGloveY + 8);
+      ctx.stroke();
+    } else if (cycle >= 30 && cycle < 40) {
+      // Right jab
+      const progress = (cycle - 30) / 10;
+      const jabOffset = Math.sin(progress * Math.PI) * 26;
+      rightGloveY = 96 - jabOffset;
+      rightGloveScale = 1 + (jabOffset * 0.015);
+      martinaShiftX = 2;
+      martinaShiftY = -1;
+      
+      // Draw motion line trails
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.4)';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(100, 96); ctx.lineTo(100, rightGloveY + 8);
+      ctx.stroke();
+    }
+
+    ctx.save();
+    ctx.translate(bobX + martinaShiftX, bobY + martinaShiftY);
+
     // Peach skin neck
     ctx.fillStyle = '#fed7aa'; ctx.fillRect(52, 92, 24, 18);
     ctx.fillStyle = '#fdba74'; ctx.fillRect(52, 102, 24, 8); // Neck shadow
@@ -1153,22 +1220,26 @@ class ChessBoxGame {
     
     // Pink boxing gloves raised up!
     // Left glove
-    const leftGloveGrad = ctx.createRadialGradient(28 - 12*0.3, 96 - 12*0.3, 12*0.1, 28, 96, 12);
+    const leftRadius = 14 * leftGloveScale;
+    const leftGloveGrad = ctx.createRadialGradient(28 - leftRadius*0.3, leftGloveY - leftRadius*0.3, leftRadius*0.1, 28, leftGloveY, leftRadius);
     leftGloveGrad.addColorStop(0, '#fbcfe8'); leftGloveGrad.addColorStop(0.3, '#ec4899'); leftGloveGrad.addColorStop(0.8, '#db2777'); leftGloveGrad.addColorStop(1, '#9d174d');
     ctx.fillStyle = leftGloveGrad;
-    ctx.beginPath(); ctx.arc(28, 96, 14, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)'; ctx.beginPath(); ctx.arc(25, 91, 3.5, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(28, leftGloveY, leftRadius, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)'; ctx.beginPath(); ctx.arc(25, leftGloveY - leftRadius*0.3, leftRadius*0.25, 0, Math.PI*2); ctx.fill();
     
     // Right glove
-    const rightGloveGrad = ctx.createRadialGradient(100 - 12*0.3, 96 - 12*0.3, 12*0.1, 100, 96, 12);
+    const rightRadius = 14 * rightGloveScale;
+    const rightGloveGrad = ctx.createRadialGradient(100 - rightRadius*0.3, rightGloveY - rightRadius*0.3, rightRadius*0.1, 100, rightGloveY, rightRadius);
     rightGloveGrad.addColorStop(0, '#fbcfe8'); rightGloveGrad.addColorStop(0.3, '#ec4899'); rightGloveGrad.addColorStop(0.8, '#db2777'); rightGloveGrad.addColorStop(1, '#9d174d');
     ctx.fillStyle = rightGloveGrad;
-    ctx.beginPath(); ctx.arc(100, 96, 14, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)'; ctx.beginPath(); ctx.arc(97, 91, 3.5, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(100, rightGloveY, rightRadius, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)'; ctx.beginPath(); ctx.arc(97, rightGloveY - rightRadius*0.3, rightRadius*0.25, 0, Math.PI*2); ctx.fill();
+
+    ctx.restore();
   }
 
   // --- DRAW OPPONENT FRONT PROFILE FOR INTRO CARD ---
-  drawOpponentIntro(ctx, tier, opponentName) {
+  drawOpponentIntro(ctx, tier, opponentName, frame = 0) {
     const getStoneGrad = (c, x1, y1, x2, y2) => {
       const g = c.createLinearGradient(x1, y1, x2, y2);
       g.addColorStop(0, '#374151'); g.addColorStop(0.2, '#6b7280'); g.addColorStop(0.5, '#d1d5db'); g.addColorStop(0.8, '#4b5563'); g.addColorStop(1, '#1f2937');
@@ -1371,8 +1442,99 @@ class ChessBoxGame {
     else if (tier === 'queen') mouthY = 100;
     else if (tier === 'shadow') mouthY = 70;
 
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)'; ctx.shadowBlur = 10; ctx.shadowOffsetY = 6;
+    // Bobbing & Attack cycle staggered
+    const bobY = frame > 0 ? Math.sin(frame * 0.12) * 2.5 : 0;
+    const cycle = frame > 0 ? ((frame + 45) % 90) : 0;
     
+    let oppShiftX = 0;
+    let oppShiftY = bobY;
+    let mustRotate = 0;
+    let customAlpha = 1;
+    
+    // Execute active special powers rendering inside cycle!
+    if (cycle >= 10 && cycle < 40) {
+      const p = (cycle - 10) / 30; // 0 to 1
+      
+      if (tier === 'pawn') {
+        // Peoncito Crystal embestida!
+        const chargeOffset = Math.sin(p * Math.PI) * 16;
+        oppShiftY += chargeOffset;
+        mustRotate = Math.sin(frame * 0.7) * 0.12;
+        
+        // Spawn crystal stars
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.6)';
+        for (let i = 0; i < 3; i++) {
+          const px = 96 + Math.sin(frame + i) * 32;
+          const py = 70 + Math.cos(frame * 2 + i) * 32;
+          ctx.beginPath(); ctx.arc(px, py, 2.5, 0, Math.PI*2); ctx.fill();
+        }
+      } else if (tier === 'knight') {
+        // Knight L-Leap!
+        const leapProgress = (cycle - 10) / 25;
+        if (leapProgress >= 0 && leapProgress <= 1) {
+          oppShiftY -= Math.sin(leapProgress * Math.PI) * 26;
+          oppShiftX += Math.sin(leapProgress * Math.PI * 2) * 12; // L-shaped horizontal shift
+          
+          // Draw green L-trail behind Knight
+          ctx.strokeStyle = 'rgba(74, 222, 128, 0.35)';
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.moveTo(96, 96); ctx.lineTo(96 + oppShiftX, 96 + oppShiftY);
+          ctx.stroke();
+        }
+      } else if (tier === 'bishop') {
+        // Alfil Slash!
+        oppShiftX += Math.sin(frame * 1.5) * 2; // shaking before strike
+        const slashP = (cycle - 10) / 20;
+        if (slashP > 0 && slashP <= 1) {
+          ctx.strokeStyle = 'rgba(251, 191, 36, 0.85)';
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.moveTo(25, 25); ctx.lineTo(25 + slashP * 142, 25 + slashP * 142);
+          ctx.stroke();
+        }
+      } else if (tier === 'rook') {
+        // Torreta Steel Enroque Shield!
+        const shieldAlpha = Math.sin(p * Math.PI) * 0.75;
+        if (shieldAlpha > 0) {
+          ctx.strokeStyle = `rgba(6, 182, 212, ${shieldAlpha})`;
+          ctx.lineWidth = 3.5;
+          ctx.beginPath();
+          for (let i = 0; i < 6; i++) {
+            const angle = (i * Math.PI) / 3;
+            const sx = 96 + Math.cos(angle) * 64;
+            const sy = 96 + Math.sin(angle) * 64;
+            if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+          }
+          ctx.closePath();
+          ctx.stroke();
+        }
+      } else if (tier === 'shadow') {
+        // Sombra Spatial Teleport/Fade!
+        customAlpha = 1 - Math.sin(p * Math.PI) * 0.8;
+      } else if (tier === 'queen') {
+        // Reina Negra Sneeze Shockwave!
+        oppShiftX += Math.sin(frame * 1.2) * 2;
+        if (cycle >= 20) {
+          const sneezeP = (cycle - 20) / 20;
+          const r = sneezeP * 65;
+          ctx.fillStyle = `rgba(255, 255, 255, ${0.4 * (1 - sneezeP)})`;
+          ctx.beginPath();
+          ctx.arc(96, mouthY + 10, r, 0, Math.PI*2);
+          ctx.fill();
+        }
+      }
+    }
+
+    ctx.save();
+    ctx.translate(oppShiftX, oppShiftY);
+    if (mustRotate !== 0) {
+      ctx.translate(96, 96);
+      ctx.rotate(mustRotate);
+      ctx.translate(-96, -96);
+    }
+    ctx.globalAlpha = customAlpha;
+
     if (tier === 'rook') {
       ctx.fillStyle = '#111827'; ctx.fillRect(52, 48, 88, 20);
     }
@@ -1435,6 +1597,10 @@ class ChessBoxGame {
     ctx.fillStyle = getGloveGrad(ctx, 156, 116, 26);
     ctx.beginPath(); ctx.arc(156, 116, 26, 0, Math.PI*2); ctx.fill();
     ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'; ctx.beginPath(); ctx.arc(150, 108, 6, 0, Math.PI*2); ctx.fill();
+
+    ctx.restore();
+  }
+
   }
 
   // --- MAP OPPONENT UNIQUE STORIES AND TACTICAL POWERS ---
