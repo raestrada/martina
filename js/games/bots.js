@@ -10,6 +10,8 @@ class BotsGame {
         elo: 400,
         color: '#38bdf8',
         emoji: '♟️',
+        boardLight: '#dbeafe',
+        boardDark: '#1e4d8c',
         desc: 'Peón de cristal con un bigote falso enorme que se le despega constantemente.',
         quotes: {
           greeting: [
@@ -71,6 +73,8 @@ class BotsGame {
         elo: 600,
         color: '#4ade80',
         emoji: '🐴',
+        boardLight: '#dcfce7',
+        boardDark: '#1a6b3c',
         desc: 'Caballo que practica saltos en L, pero a veces se confunde y salta en Ŋ.',
         quotes: {
           greeting: [
@@ -132,6 +136,8 @@ class BotsGame {
         elo: 800,
         color: '#fbbf24',
         emoji: '🎯',
+        boardLight: '#fef9c3',
+        boardDark: '#8b6914',
         desc: 'Lo mandaron a una diagonal de un solo color por protestar contra las tablas. Reinventa la geometría.',
         quotes: {
           greeting: [
@@ -193,6 +199,8 @@ class BotsGame {
         elo: 1000,
         color: '#f43f5e',
         emoji: '🏰',
+        boardLight: '#fee2e2',
+        boardDark: '#7a1e2e',
         desc: 'Torre de piedra gris con delantal a cuadros. Vende empanadas temáticas en c3. Humor seco.',
         quotes: {
           greeting: [
@@ -254,6 +262,8 @@ class BotsGame {
         elo: 1400,
         color: '#ec4899',
         emoji: '👑',
+        boardLight: '#fce7f3',
+        boardDark: '#8a2e6a',
         desc: 'Alérgica al jaque mate. Estornuda cada vez que alguien está a punto de dar mate.',
         quotes: {
           greeting: [
@@ -315,6 +325,8 @@ class BotsGame {
         elo: 1600,
         color: '#a855f7',
         emoji: '🌑',
+        boardLight: '#ede9fe',
+        boardDark: '#5a2d82',
         desc: 'La sombra que domina las cuatro casillas centrales del tablero. Juega con tu mente.',
         quotes: {
           greeting: [
@@ -375,7 +387,9 @@ class BotsGame {
         tier: 'legend',
         elo: 1800,
         color: '#fbbf24',
-        emoji: '♟️',
+        emoji: '👧',
+        boardLight: '#fefce8',
+        boardDark: '#8a7a2e',
         desc: 'La niña ajedrecista de 9 años. Agresiva, caótica, AMA las clavadas. Su ídolo es Judit Polgar.',
         quotes: {
           greeting: [
@@ -442,6 +456,8 @@ class BotsGame {
         elo: 2200,
         color: '#d946ef',
         emoji: '⚔️',
+        boardLight: '#fae8ff',
+        boardDark: '#7a2e6a',
         desc: 'Ataque calculado y demolición posicional. La penúltima muralla. Precisión de Judit Polgar.',
         quotes: {
           greeting: [
@@ -503,6 +519,8 @@ class BotsGame {
         elo: 2800,
         color: '#fbbf24',
         emoji: '💀',
+        boardLight: '#f5f0e0',
+        boardDark: '#6b5a2e',
         desc: 'Stockfish al 100%. El fin del tablero. Solo los más valientes se atreven.',
         quotes: {
           greeting: [
@@ -1077,8 +1095,21 @@ class BotsGame {
     const bot = this.selectedBot;
     this.updateStatus(`${bot.name} está pensando...`, 'thinking');
 
+    // Stockfish timeout safety net — fall back to local engine if no response
+    let sfTimedOut = false;
+    const sfTimer = setTimeout(() => {
+      if (this.isThinking && this.gameActive && this.engineType === 'stockfish') {
+        sfTimedOut = true;
+        this.destroyWorker();
+        this.engineType = 'local';
+        this.triggerEngineTurn();
+      }
+    }, 4000);
+
     if (this.engineType === 'stockfish' && this.stockfishWorker) {
       this.stockfishWorker.onmessage = (e) => {
+        if (sfTimedOut) return;
+        clearTimeout(sfTimer);
         const line = e.data;
         if (line.includes('bestmove')) {
           const move = line.split(' ')[1];
@@ -1091,7 +1122,8 @@ class BotsGame {
       this.stockfishWorker.postMessage(`position fen ${this.chessFEN}`);
       this.stockfishWorker.postMessage('go movetime 1500');
     } else {
-      // Local fallback engine
+      clearTimeout(sfTimer);
+      // Local engine with ELO-based skill simulation
       setTimeout(() => {
         if (!this.gameActive) return;
         const validMoves = this.getAllLegalMoves(this.chessFEN, 'b');
@@ -1116,7 +1148,7 @@ class BotsGame {
         if (this.gameActive) {
           this.executeChessMove(chosenMove, false);
         }
-      }, 800 + Math.random() * 600);
+      }, 300 + Math.random() * 400);
     }
   }
 
@@ -1126,13 +1158,16 @@ class BotsGame {
     if (!boardDOM) return;
     boardDOM.innerHTML = '';
 
+    const bot = this.selectedBot;
+    const bl = bot.boardLight || '#e8d5b7';
+    const bd = bot.boardDark || '#7c5c3e';
+
     const board = this.parseFEN(this.chessFEN);
     const sym = {
       'K': '\u2654', 'Q': '\u2655', 'R': '\u2656', 'B': '\u2657', 'N': '\u2658', 'P': '\u2659',
       'k': '\u265A', 'q': '\u265B', 'r': '\u265C', 'b': '\u265D', 'n': '\u265E', 'p': '\u265F'
     };
 
-    const legalMoves = this.getAllLegalMoves(this.chessFEN, 'w');
     const parts = this.chessFEN.split(' ');
     const turn = parts[1] || 'w';
 
@@ -1144,24 +1179,26 @@ class BotsGame {
         const rank = 8 - r;
         const coord = `${file}${rank}`;
 
-        square.className = `chess-square ${light ? 'square-light' : 'square-dark'}`;
+        square.className = 'bots-chess-sq';
+        square.style.backgroundColor = light ? bl : bd;
         square.setAttribute('data-coord', coord);
 
         const piece = board[r][c];
         if (piece) {
           const pieceEl = document.createElement('div');
-          pieceEl.className = 'chess-piece';
+          pieceEl.className = 'bots-chess-pc';
           pieceEl.textContent = sym[piece] || '';
-          pieceEl.style.color = piece === piece.toUpperCase() ? '#ffffff' : '#0a0a0a';
-          pieceEl.style.textShadow = piece === piece.toUpperCase()
-            ? '-1px -1px 0 #1a1a2e, 1px -1px 0 #1a1a2e, -1px 1px 0 #1a1a2e, 1px 1px 0 #1a1a2e, 0 3px 6px rgba(0,0,0,0.5)'
-            : '-1px -1px 0 #e2e8f0, 1px -1px 0 #e2e8f0, -1px 1px 0 #e2e8f0, 1px 1px 0 #e2e8f0, 0 2px 4px rgba(0,0,0,0.3)';
+          const isWhitePiece = piece === piece.toUpperCase();
+          pieceEl.style.color = isWhitePiece ? '#fff' : '#1a1a2e';
+          pieceEl.style.textShadow = isWhitePiece
+            ? '-1px -1px 0 #1a1a2e, 1px -1px 0 #1a1a2e, -1px 1px 0 #1a1a2e, 1px 1px 0 #1a1a2e, 0 2px 4px rgba(0,0,0,0.4)'
+            : '-1px -1px 0 #e2e8f0, 1px -1px 0 #e2e8f0, -1px 1px 0 #e2e8f0, 1px 1px 0 #e2e8f0, 0 2px 4px rgba(0,0,0,0.2)';
           square.appendChild(pieceEl);
         }
 
         if (this.lastChessMove) {
           if (coord === this.lastChessMove.from || coord === this.lastChessMove.to) {
-            square.style.backgroundColor = (r + c) % 2 === 0 ? '#c8d45a' : '#a8b440';
+            square.style.boxShadow = `inset 0 0 0 3px ${bot.color}88`;
           }
         }
 
@@ -1172,7 +1209,7 @@ class BotsGame {
   }
 
   clearHighlights() {
-    const squares = document.querySelectorAll('#bots-board .chess-square');
+    const squares = document.querySelectorAll('#bots-board .bots-chess-sq');
     squares.forEach(sq => {
       sq.style.boxShadow = '';
       sq.style.outline = '';
@@ -1208,16 +1245,16 @@ class BotsGame {
 
     if (piece && piece === piece.toUpperCase()) {
       this.selectedSquare = { r, c, coord };
-      const sq = document.querySelector(`#bots-board .chess-square[data-coord="${coord}"]`);
+      const sq = document.querySelector(`#bots-board .bots-chess-sq[data-coord="${coord}"]`);
       if (sq) sq.style.outline = '3px solid #fbbf24';
 
       const moves = this.getAllLegalMoves(this.chessFEN, 'w');
       moves.forEach(m => {
         if (m.substring(0, 2) === coord) {
           const dest = m.substring(2, 4);
-          const destSq = document.querySelector(`#bots-board .chess-square[data-coord="${dest}"]`);
+          const destSq = document.querySelector(`#bots-board .bots-chess-sq[data-coord="${dest}"]`);
           if (destSq) {
-            const hasPiece = destSq.querySelector('.chess-piece');
+            const hasPiece = destSq.querySelector('.bots-chess-pc');
             const highlightColor = hasPiece ? 'rgba(239,68,68,0.55)' : 'rgba(74,222,128,0.35)';
             destSq.style.boxShadow = `inset 0 0 0 4px ${highlightColor}`;
           }
@@ -1430,11 +1467,46 @@ class BotsGame {
     });
   }
 
+  playVSIntroMusic() {
+    const ctx = this._resumeAudio();
+    if (!ctx || !this.soundEnabled) return;
+    try {
+      const now = ctx.currentTime;
+      // Fast ascending arpeggio — Mega Man style
+      const notes = [130.81, 164.81, 196.00, 261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(freq, now + i * 0.04);
+        gain.gain.setValueAtTime(0.06, now + i * 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.04 + 0.15);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + i * 0.04);
+        osc.stop(now + i * 0.04 + 0.18);
+      });
+      // Heavy impact bass at end
+      const bOsc = ctx.createOscillator();
+      const bGain = ctx.createGain();
+      bOsc.type = 'sine';
+      bOsc.frequency.setValueAtTime(40, now + notes.length * 0.04);
+      bOsc.frequency.exponentialRampToValueAtTime(20, now + notes.length * 0.04 + 0.3);
+      bGain.gain.setValueAtTime(0.2, now + notes.length * 0.04);
+      bGain.gain.exponentialRampToValueAtTime(0.0001, now + notes.length * 0.04 + 0.5);
+      bOsc.connect(bGain);
+      bGain.connect(ctx.destination);
+      bOsc.start(now + notes.length * 0.04);
+      bOsc.stop(now + notes.length * 0.04 + 0.55);
+    } catch(e) {}
+  }
+
   showVSIntro(botIdx) {
     const bot = this.bots[botIdx];
     this.selectedBot = bot;
 
     this._resumeAudio();
+    this.playVSIntroMusic();
 
     const overlay = document.createElement('div');
     overlay.className = 'bots-vs-overlay';
@@ -1442,7 +1514,12 @@ class BotsGame {
     overlay.innerHTML = `
       <div class="bots-vs-warning warning-top">
         <div class="bots-vs-scroller">
-          <span>${'\u26A0\uFE0F'} RIVAL DETECTADO ${'\u26A0\uFE0F'} AMENAZA ELO ${bot.elo} ${'\u26A0\uFE0F'} PREP\u00C1RATE ${'\u26A0\uFE0F'} RIVAL DETECTADO ${'\u26A0\uFE0F'} AMENAZA ELO ${bot.elo} ${'\u26A0\uFE0F'}</span>
+          <span>${'\u26A0\uFE0F'} WARNING ${'\u26A0\uFE0F'} CHALLENGER APPROACHING ${'\u26A0\uFE0F'} ELO ${bot.elo} ${'\u26A0\uFE0F'} PREP\u00C1RATE ${'\u26A0\uFE0F'} WARNING ${'\u26A0\uFE0F'} CHALLENGER APPROACHING ${'\u26A0\uFE0F'} ELO ${bot.elo} ${'\u26A0\uFE0F'}</span>
+        </div>
+      </div>
+      <div class="bots-vs-warning warning-bottom">
+        <div class="bots-vs-scroller bots-vs-scroller-reverse">
+          <span>${'\u26A0\uFE0F'} WARNING ${'\u26A0\uFE0F'} ${bot.name.toUpperCase()} DETECTADO ${'\u26A0\uFE0F'} AMENAZA INMINENTE ${'\u26A0\uFE0F'} ${bot.name.toUpperCase()} DETECTADO ${'\u26A0\uFE0F'} AMENAZA INMINENTE ${'\u26A0\uFE0F'}</span>
         </div>
       </div>
       <div class="bots-vs-speed-lines"></div>
@@ -1453,9 +1530,9 @@ class BotsGame {
               <span class="bots-vs-badge" style="background: #fbbf24; color: #0a0a0a;">DESAFIANTE</span>
               <h2 class="bots-vs-name name-player">T\u00DA</h2>
               <div class="bots-vs-player-icon">
-                <span class="bots-vs-emoji-big">♟️</span>
+                <span class="bots-vs-emoji-big">👧</span>
               </div>
-              <p class="bots-vs-quote">«Juegas con blancas. Tú mueves primero.»</p>
+              <p class="bots-vs-quote">«Juegas con blancas. Primer movimiento. Sin miedo.»</p>
             </div>
           </div>
         </div>
@@ -1463,12 +1540,12 @@ class BotsGame {
           <div class="bots-vs-unskew">
             <div class="bots-vs-card">
               <span class="bots-vs-badge" style="background: ${bot.color}; color: #0a0a0a;">RIVAL</span>
-              <h2 class="bots-vs-name" style="text-shadow: 0 0 20px ${bot.color};">${bot.name}</h2>
+              <h2 class="bots-vs-name" style="text-shadow: 0 0 25px ${bot.color};">${bot.name}</h2>
               <div class="bots-vs-player-icon">
                 <span class="bots-vs-emoji-big">${bot.emoji}</span>
               </div>
-              <p class="bots-vs-elo">Stockfish ELO ${bot.elo}</p>
-              <p class="bots-vs-quote" style="color: #cbd5e1;">${bot.quotes.greeting[0]}</p>
+              <p class="bots-vs-elo" style="color: ${bot.color}; font-size: 1.15rem; font-weight: 800;">Stockfish ELO ${bot.elo}</p>
+              <p class="bots-vs-quote" style="color: #e2e8f0;">«${bot.quotes.greeting[0]}»</p>
             </div>
           </div>
         </div>
@@ -1476,6 +1553,7 @@ class BotsGame {
       <div class="bots-vs-center">
         <div class="bots-vs-vs">VS</div>
       </div>
+      <div class="bots-vs-energy"></div>
       <button class="bots-vs-skip">OMITIR <kbd>ENTER</kbd></button>
     `;
 
@@ -1506,7 +1584,7 @@ class BotsGame {
     setTimeout(() => {
       document.removeEventListener('keydown', keyHandler);
       cleanup();
-    }, 6000);
+    }, 7000);
   }
 
   startGame() {
@@ -1519,26 +1597,31 @@ class BotsGame {
     this.capturedWhite = [];
     this.capturedBlack = [];
 
+    const bot = this.selectedBot;
+    const bl = bot.boardLight || '#e8d5b7';
+    const bd = bot.boardDark || '#7c5c3e';
+    const accent = bot.color;
+
     this.container.innerHTML = `
-      <div class="bots-game-container" id="bots-game-container">
-        <div class="bots-game-topbar">
+      <div class="bots-game-container" style="--bot-accent: ${accent}; --bot-light: ${bl}; --bot-dark: ${bd};">
+        <div class="bots-game-topbar" style="border-color: ${accent}55;">
           <button class="bots-btn-resign" id="bots-btn-resign">Rendirse</button>
           <div class="bots-opponent-info">
-            <span class="bots-opponent-emoji">${this.selectedBot.emoji}</span>
+            <span class="bots-opponent-emoji">${bot.emoji}</span>
             <div>
-              <span class="bots-opponent-name">${this.selectedBot.name}</span>
-              <span class="bots-opponent-elo" style="color: ${this.selectedBot.color};">ELO ${this.selectedBot.elo}</span>
+              <span class="bots-opponent-name">${bot.name}</span>
+              <span class="bots-opponent-elo" style="color: ${accent};">ELO ${bot.elo}</span>
             </div>
           </div>
           <div class="bots-move-counter">
-            <span id="bots-move-count">Jugada 1</span>
+            <span id="bots-move-count">Jugada ${Math.floor(this.chessHistory.length / 2) + 1}</span>
           </div>
         </div>
 
         <div class="bots-game-main">
           <div class="bots-sidebar-left">
-            <div class="bots-captured-section">
-              <div class="bots-captured-label">Capturadas por el rival</div>
+            <div class="bots-captured-section" style="border-color: ${accent}44;">
+              <span class="bots-captured-label">Rival</span>
               <div class="bots-captured-pieces" id="bots-captured-white"></div>
             </div>
           </div>
@@ -1551,10 +1634,10 @@ class BotsGame {
           </div>
 
           <div class="bots-sidebar-right">
-            <div class="bots-comment-bubble" id="bots-comment-bubble">
-              <div class="bots-comment-avatar">${this.selectedBot.emoji}</div>
+            <div class="bots-comment-bubble" id="bots-comment-bubble" style="border-color: ${accent}55;">
+              <div class="bots-comment-avatar">${bot.emoji}</div>
               <div class="bots-comment-content">
-                <span class="bots-comment-name" style="color: ${this.selectedBot.color};">${this.selectedBot.name}</span>
+                <span class="bots-comment-name" style="color: ${accent};">${bot.name}</span>
                 <p class="bots-comment-text" id="bots-comment-text"></p>
               </div>
             </div>
@@ -1563,7 +1646,7 @@ class BotsGame {
               <div class="bots-history-list" id="bots-history"></div>
             </div>
             <div class="bots-captured-section">
-              <div class="bots-captured-label">Tus capturas</div>
+              <span class="bots-captured-label">Tuyas</span>
               <div class="bots-captured-pieces" id="bots-captured-black"></div>
             </div>
           </div>
@@ -1581,7 +1664,6 @@ class BotsGame {
     this.updateStatus('¡Tu turno! Juegas con blancas.');
     this.showBotComment(this.getBotQuote('greeting'));
 
-    // Random bot comments while thinking
     this.quoteInterval = setInterval(() => {
       if (this.isThinking && this.gameActive) {
         const thinkQuote = this.getBotQuote('think');
