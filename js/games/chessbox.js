@@ -10,6 +10,39 @@ class ChessBoxGame {
     this.gameActive = false;
     this.selectedDifficulty = localStorage.getItem('martina_chessbox_difficulty') || 'medium';
     
+    // Check if we need to reset legacy progress for the new Chess Boxing v2 characters & levels
+    this.showResetAnnouncement = false;
+    if (localStorage.getItem('martina_chessbox_v2_reset_v3_done') !== 'true') {
+      const keys = [
+        'martina_chessbox_progress',
+        'martina_chessbox_progress_easy',
+        'martina_chessbox_progress_hard',
+        'martina_chessbox_progress_martina'
+      ];
+      let hadProgress = false;
+      keys.forEach(k => {
+        const val = localStorage.getItem(k);
+        if (val) {
+          try {
+            const arr = JSON.parse(val);
+            if (Array.isArray(arr) && arr.some(stars => stars > 0)) {
+              hadProgress = true;
+            }
+          } catch(e) {}
+        }
+      });
+
+      if (hadProgress) {
+        // Reset all progresses to 0 for a fresh start with characters!
+        const resetArr = JSON.stringify([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+        keys.forEach(k => {
+          localStorage.setItem(k, resetArr);
+        });
+        this.showResetAnnouncement = true;
+      }
+      localStorage.setItem('martina_chessbox_v2_reset_v3_done', 'true');
+    }
+    
     // Core Chess Boxing states
     this.currentRound = 1; // 1 to 6 (R1, R3, R5: Box | R2, R4, R6: Chess)
     this.playerHealth = 100;
@@ -58,23 +91,23 @@ class ChessBoxGame {
     // Mobile detection
     this.isMobile = window.innerWidth < 1024 || window.innerHeight < 500 || 'ontouchstart' in window;
 
-    // 15 Progressive tournament levels
+    // 15 Progressive tournament levels (Chess Boxing v2 with dynamic tiers and stories)
     this.levels = [
-      { name: "El Calentamiento del Peón", elo: 400, hp: 80, punchSpeed: 1400, color: "#38bdf8", desc: "Enfréntate a un Peón Boxeador novato en el ring azul celeste. ¡Aprende los esquives básicos!" },
-      { name: "La Guardia de la Torre", elo: 600, hp: 100, punchSpeed: 1300, color: "#4ade80", desc: "El General Torreón adopta una postura defensiva firme. Rompe su bloqueo." },
-      { name: "El Galope del Caballo", elo: 800, hp: 110, punchSpeed: 1200, color: "#fbbf24", desc: "Un Caballo ágil lanza golpes rápidos en L. Esquiva con reflejos felinos." },
-      { name: "El Ataque del Alfil", elo: 1000, hp: 120, punchSpeed: 1100, color: "#f43f5e", desc: "Ataques en diagonal muy veloces. Presta atención a las advertencias." },
-      { name: "Duelo en el Río Central", elo: 1200, hp: 130, punchSpeed: 1000, color: "#a855f7", desc: "El combate se calienta en la d4 del ring. El tiempo se reduce velozmente." },
-      { name: "La Furia de la Reina Negra", elo: 1400, hp: 140, punchSpeed: 920, color: "#ec4899", desc: "Ganchos brutales de la monarca del sur. Mantén la concentración." },
-      { name: "El Enroque de Acero", elo: 1600, hp: 150, punchSpeed: 840, color: "#06b6d4", desc: "Un General sumamente resistente. Tendrás que boxear al contragolpe perfecto." },
-      { name: "Blitz de Contraataque", elo: 1800, hp: 160, punchSpeed: 760, color: "#3b82f6", desc: "El rival ataca sin cesar. Bloquea y responde con ganchos al mentón." },
-      { name: "La Sombra del Ring", elo: 2000, hp: 170, punchSpeed: 680, color: "#6366f1", desc: "Tu propia Sombra de boxeo. Telegrafía muy poco y piensa al nivel de un maestro." },
-      { name: "Tensión en la Octava Fila", elo: 2200, hp: 180, punchSpeed: 600, color: "#14b8a6", desc: "Falta muy poco para la final. Un descuido en el ring arruinará tu enroque." },
-      { name: "El Templo de Fianchetto", elo: 2300, hp: 190, punchSpeed: 540, color: "#f59e0b", desc: "Música tensa y golpes cruzados. Tu rival tiene una precisión milimétrica." },
-      { name: "El Bosque Oscuro de Tal", elo: 2400, hp: 200, punchSpeed: 480, color: "#ef4444", desc: "Caos puro en el ring y sacrificios tácticos en el tablero. ¡Supera tus límites!" },
-      { name: "La Diagonal del Sacrificio", elo: 2500, hp: 210, punchSpeed: 430, color: "#8b5cf6", desc: "El rival reduce tu salud rápidamente. Conectar golpes es vital para restar su tiempo." },
-      { name: "El Desafío de Judit", elo: 2600, hp: 225, punchSpeed: 380, color: "#d946ef", desc: "Ataque calculado y demolición posicional. La penúltima muralla antes del título." },
-      { name: "La Corona de las 64 Casillas", elo: 2800, hp: 250, punchSpeed: 330, color: "#fbbf24", desc: "¡Combate definitivo por el Campeonato Mundial Mágico! Stockfish al 100% y golpes de trueno." }
+      { name: "El Calentamiento de Peoncito", opponentName: "Peoncito", tier: "pawn", elo: 400, hp: 80, punchSpeed: 1400, color: "#38bdf8", desc: "Enfréntate a un Peón novato con un gran bigote postizo. ¡Aprende los esquives básicos!" },
+      { name: "El Galope del Caballo de Ŋ", opponentName: "Caballo de Ŋ", tier: "knight", elo: 600, hp: 100, punchSpeed: 1300, color: "#4ade80", desc: "El Caballo de Ŋ lanza golpes en L y a veces en Ŋ. ¡Atento a sus saltos erráticos!" },
+      { name: "El Ataque del Alfil Exiliado", opponentName: "Alfil Exiliado", tier: "bishop", elo: 800, hp: 110, punchSpeed: 1200, color: "#fbbf24", desc: "Movimientos diagonales veloces. El Alfil exiliado odia las tablas y ataca sin cesar." },
+      { name: "La Guardia de la Torreta", opponentName: "Torreta", tier: "rook", elo: 1000, hp: 120, punchSpeed: 1100, color: "#f43f5e", desc: "Torreta adopta una postura defensiva firme y prepara su Enroque. ¡Rompe su guardia!" },
+      { name: "Duelo en el Río Central", opponentName: "Sombra del Ring", tier: "shadow", elo: 1200, hp: 130, punchSpeed: 1000, color: "#a855f7", desc: "Tu primer combate contra la Sombra del Ring en las cuatro casillas centrales (d4, e4, d5, e5)." },
+      { name: "La Alergia de la Reina Negra", opponentName: "Reina Negra", tier: "queen", elo: 1400, hp: 140, punchSpeed: 920, color: "#ec4899", desc: "Ganchos brutales de la monarca del sur. ¡Cuidado con sus estornudos de pañuelo!" },
+      { name: "El Enroque de Acero", opponentName: "General Torreón", tier: "rook", elo: 1600, hp: 150, punchSpeed: 840, color: "#06b6d4", desc: "General Torreón regresa blindado y preparando Enroques de Acero. ¡Boxea al contragolpe!" },
+      { name: "La Coronación de Peoncito", opponentName: "Peoncito Dorado", tier: "pawn", elo: 1800, hp: 160, punchSpeed: 760, color: "#3b82f6", desc: "¡Peoncito ha vuelto y busca coronarse! Si no lo noqueas rápido, aumentará su fuerza." },
+      { name: "El Caballo Salvaje", opponentName: "Caballo de Ŋ Salvaje", tier: "knight", elo: 2000, hp: 170, punchSpeed: 680, color: "#6366f1", desc: "El Caballo de Ŋ regresa en su versión más caótica y rápida. ¡Esquiva con reflejos felinos!" },
+      { name: "Fianchetto Maestro", opponentName: "Alfil Exiliado Pro", tier: "bishop", elo: 2200, hp: 180, punchSpeed: 600, color: "#14b8a6", desc: "El Alfil Exiliado ataca con precisión geométrica y ráfagas cruzadas desde las esquinas del ring." },
+      { name: "El Templo de c3", opponentName: "Torreta de c3", tier: "rook", elo: 2300, hp: 190, punchSpeed: 540, color: "#f59e0b", desc: "Torreta pelea a máxima potencia comiendo empanadas picantes de la casilla c3 para sanarse." },
+      { name: "El Caos del Bosque de Tal", opponentName: "Reina Negra de Tal", tier: "queen", elo: 2400, hp: 200, punchSpeed: 480, color: "#ef4444", desc: "La Reina Negra te lleva al bosque oscuro donde 2+2=5. ¡Ataques caóticos y sacrificios!" },
+      { name: "La Diagonal del Sacrificio", opponentName: "Alfil Exiliado Final", tier: "bishop", elo: 2500, hp: 210, punchSpeed: 430, color: "#8b5cf6", desc: "El rival ataca sin descanso. Conectar golpes es vital para restarle tiempo." },
+      { name: "El Desafío de Judit", opponentName: "General de Judit", tier: "rook", elo: 2600, hp: 225, punchSpeed: 380, color: "#d946ef", desc: "Ataque calculado y demolición posicional. La penúltima muralla antes del título." },
+      { name: "La Corona de las 64 Casillas", opponentName: "Sombra Suprema", tier: "shadow", elo: 2800, hp: 250, punchSpeed: 330, color: "#fbbf24", desc: "¡Combate definitivo por el Campeonato Mundial Mágico! Stockfish al 100% y golpes de trueno." }
     ];
   }
 
@@ -760,6 +793,48 @@ class ChessBoxGame {
 
     this.container.innerHTML = `
       <div class="level-select-container">
+        ${this.showResetAnnouncement ? `
+          <div id="chessbox-update-banner" style="
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(244, 63, 94, 0.15));
+            border: 2px solid #ef4444;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.25);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            backdrop-filter: blur(10px);
+            text-align: left;
+            font-family: 'Outfit', sans-serif;
+          ">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span style="font-size: 2.2rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🥊</span>
+              <div>
+                <strong style="color: #ef4444; font-size: 1.1rem; display: block; margin-bottom: 0.25rem; letter-spacing: 0.5px; text-transform: uppercase;">¡GRAN ACTUALIZACIÓN DE PERSONAJES!</strong>
+                <span style="color: #e2e8f0; font-size: 0.9rem; line-height: 1.45; display: inline-block;">
+                  Hemos remodelado por completo el torneo con los divertidos personajes de los cuentos de <strong>Martina</strong> (Peoncito, Caballo de Ŋ, Alfil Exiliado, Torreta y la Reina Negra) con poderes dinámicos e ilustraciones vectoriales en el ring. Tu progreso anterior ha sido reiniciado para que experimentes la nueva campaña desde el principio. ¡A pelear!
+                </span>
+              </div>
+            </div>
+            <button onclick="document.getElementById('chessbox-update-banner').style.display='none';" style="
+              background: #ef4444;
+              color: white;
+              border: none;
+              padding: 0.6rem 1.2rem;
+              border-radius: 8px;
+              font-weight: 800;
+              font-size: 0.9rem;
+              cursor: pointer;
+              transition: all 0.2s;
+              white-space: nowrap;
+              box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            " onmouseover="this.style.background='#f43f5e'; this.style.transform='scale(1.05)';" onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)';">
+              ¡Entendido! 🥊
+            </button>
+          </div>
+        ` : ''}
         <div class="level-select-header">
           <h2 style="color: #ef4444;">🥊 Chess Boxing: Duelo de Titanes 🥊</h2>
           <p>Alterna rondas de boxeo de reflejos con ajedrez mental contra Stockfish. ¡Los golpes restan tiempo en el reloj!</p>
@@ -838,10 +913,712 @@ class ChessBoxGame {
     // Load Stockfish Worker
     this.initStockfishWorker();
 
-    this.startRound();
+    this.showChallengerIntro(() => {
+      this.startRound();
+    });
+  }
+
+  // =========================================================================
+  // --- JAPANESE ANIME / MEGA MAN CHILLENGER PRESENTATION INTRO SCREEN ---
+  // =========================================================================
+  showChallengerIntro(onComplete) {
+    const levelIdx = this.currentLevelIndex;
+    const level = this.levels[levelIdx];
+    const opponentName = level ? level.opponentName : 'General Torreón';
+    const tier = level ? level.tier : 'rook';
+    const elo = level ? level.elo : 1600;
+    const opponentColor = level ? level.color : '#f43f5e';
+    
+    const powerData = this.getOpponentTacticalPower(opponentName, tier);
+    
+    // Stop any playing music
+    this.stopMusic();
+    
+    // Play SFX
+    try {
+      const audioCtx = this._getAudioCtx();
+      if (audioCtx) this.playAnimeIntroSound(audioCtx);
+    } catch (e) {
+      console.warn("Could not play anime intro sound:", e);
+    }
+    
+    // Create element
+    const introDiv = document.createElement('div');
+    introDiv.id = 'chessbox-challenger-intro';
+    introDiv.className = 'challenger-intro-overlay';
+    
+    // Build internal HTML structure
+    introDiv.innerHTML = `
+      <!-- Warning flashing banners -->
+      <div class="warning-banner banner-top">
+        <div class="warning-scroller">
+          <span>⚠️ WARNING ⚠️ CHALLENGER APPROACHING ⚠️ ENCUENTRO DETECTADO ⚠️ AMENAZA NIVEL ELO ${elo} ⚠️ WARNING ⚠️ CHALLENGER APPROACHING ⚠️ ENCUENTRO DETECTADO ⚠️ AMENAZA NIVEL ELO ${elo} ⚠️</span>
+        </div>
+      </div>
+      <div class="warning-banner banner-bottom">
+        <div class="warning-scroller">
+          <span>⚠️ WARNING ⚠️ CHALLENGER APPROACHING ⚠️ ENCUENTRO DETECTADO ⚠️ AMENAZA NIVEL ELO ${elo} ⚠️ WARNING ⚠️ CHALLENGER APPROACHING ⚠️ ENCUENTRO DETECTADO ⚠️ AMENAZA NIVEL ELO ${elo} ⚠️</span>
+        </div>
+      </div>
+      
+      <!-- Anime speed lines background -->
+      <div class="intro-speed-lines"></div>
+      
+      <!-- Split screens -->
+      <div class="intro-split-container">
+        
+        <!-- LEFT PANEL: Martina -->
+        <div class="intro-panel intro-panel-left">
+          <div class="panel-unskew">
+            <div class="challenger-card">
+              <span class="intro-badge badge-martina">DESAFIANTE</span>
+              <h2 class="intro-challenger-name name-martina">Martina</h2>
+              <p class="intro-challenger-elo">🧠 ELO 1500 + Táctica</p>
+              
+              <div class="canvas-wrapper">
+                <canvas id="intro-canvas-martina" width="288" height="288"></canvas>
+              </div>
+              
+              <p class="intro-challenger-quote">«¡El ajedrez no se trata de evitar la clavada, se trata de coleccionarla con orgullo!»</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- RIGHT PANEL: Opponent -->
+        <div class="intro-panel intro-panel-right" style="--opp-color: ${opponentColor}">
+          <div class="panel-unskew">
+            <div class="challenger-card">
+              <span class="intro-badge" style="background: ${opponentColor}; color: #000;">ENEMIGO</span>
+              <h2 class="intro-challenger-name" style="text-shadow: 0 0 15px ${opponentColor};">${opponentName}</h2>
+              <p class="intro-challenger-elo">🤖 Stockfish ELO ${elo}</p>
+              
+              <div class="canvas-wrapper">
+                <canvas id="intro-canvas-opponent" width="288" height="288"></canvas>
+              </div>
+              
+              <div class="opponent-power-container" style="border-left: 4px solid ${opponentColor};">
+                <h4 style="color: ${opponentColor}; text-transform: uppercase;">⚡ PODER: ${powerData.powerName}</h4>
+                <p>${powerData.desc}</p>
+              </div>
+              
+              <p class="intro-challenger-quote" style="color: #cbd5e1;">${powerData.quote}</p>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      
+      <!-- Center flashing diagonal slash -->
+      <div class="intro-diagonal-slash"></div>
+      
+      <!-- Giant VS in center -->
+      <div class="intro-vs-container">
+        <div class="intro-vs-badge">VS</div>
+      </div>
+      
+      <!-- Skip button -->
+      <button class="intro-skip-btn">OMITIR <kbd>ENTER</kbd></button>
+    `;
+    
+    // Append to container
+    this.container.appendChild(introDiv);
+    
+    // Draw on canvases
+    const canvasMartina = introDiv.querySelector('#intro-canvas-martina');
+    if (canvasMartina) {
+      const ctxM = canvasMartina.getContext('2d');
+      ctxM.scale(1.5, 1.5);
+      this.drawMartinaIntro(ctxM);
+    }
+    
+    const canvasOpp = introDiv.querySelector('#intro-canvas-opponent');
+    if (canvasOpp) {
+      const ctxO = canvasOpp.getContext('2d');
+      ctxO.scale(1.5, 1.5);
+      this.drawOpponentIntro(ctxO, tier, opponentName);
+    }
+    
+    // Set up cleanup and trigger functions
+    let isCleaned = false;
+    const cleanUpIntro = () => {
+      if (isCleaned) return;
+      isCleaned = true;
+      
+      // Remove keyboard listener
+      window.removeEventListener('keydown', handleKeydown);
+      
+      // Fade out overlay
+      introDiv.style.opacity = '0';
+      introDiv.style.transition = 'opacity 0.4s ease-out';
+      
+      setTimeout(() => {
+        if (introDiv.parentNode) {
+          introDiv.parentNode.removeChild(introDiv);
+        }
+        // Start boxing music!
+        this.startMusic('boxing');
+        // Call next phase
+        onComplete();
+      }, 400);
+    };
+    
+    const handleKeydown = (e) => {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
+        e.preventDefault();
+        cleanUpIntro();
+      }
+    };
+    
+    // Skip button click
+    const skipBtn = introDiv.querySelector('.intro-skip-btn');
+    if (skipBtn) {
+      skipBtn.addEventListener('click', cleanUpIntro);
+    }
+    
+    window.addEventListener('keydown', handleKeydown);
+    
+    // Auto-skip after 4.5 seconds
+    setTimeout(cleanUpIntro, 4500);
+  }
+
+  // --- DRAW MARTINA FRONT PROFILE FOR INTRO CARD ---
+  drawMartinaIntro(ctx) {
+    // Peach skin neck
+    ctx.fillStyle = '#fed7aa'; ctx.fillRect(52, 92, 24, 18);
+    ctx.fillStyle = '#fdba74'; ctx.fillRect(52, 102, 24, 8); // Neck shadow
+    
+    // Round face
+    ctx.fillStyle = '#fed7aa';
+    ctx.beginPath(); ctx.arc(64, 70, 28, 0, Math.PI*2); ctx.fill();
+    
+    // Hair cap & Ponytail Ribbon (Gold)
+    ctx.fillStyle = '#facc15';
+    ctx.beginPath(); ctx.arc(42, 60, 6, 0, Math.PI*2); ctx.fill();
+    
+    // Hair: Chocolate brown with straight bangs and locks
+    const hairGrad = ctx.createLinearGradient(30, 30, 98, 110);
+    hairGrad.addColorStop(0, '#78350f'); hairGrad.addColorStop(1, '#451a03');
+    ctx.fillStyle = hairGrad;
+    
+    // Bangs and sides
+    ctx.beginPath();
+    ctx.arc(64, 62, 28, Math.PI, 0); // cap top
+    ctx.lineTo(92, 98); ctx.lineTo(85, 98); // right lock
+    ctx.lineTo(84, 72);
+    ctx.bezierCurveTo(76, 56, 52, 56, 44, 72); // bang curve
+    ctx.lineTo(43, 98); ctx.lineTo(36, 98); // left lock
+    ctx.closePath(); ctx.fill();
+    
+    // Flowing ponytail on the left
+    ctx.beginPath();
+    ctx.moveTo(42, 60);
+    ctx.quadraticCurveTo(18, 76, 24, 106);
+    ctx.quadraticCurveTo(40, 92, 42, 60);
+    ctx.closePath(); ctx.fill();
+    
+    // Glasses (black thick rims)
+    ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 3.5;
+    ctx.strokeRect(43, 66, 17, 13);
+    ctx.strokeRect(68, 66, 17, 13);
+    ctx.beginPath(); ctx.moveTo(60, 71); ctx.lineTo(68, 71); ctx.stroke(); // bridge
+    
+    // Eyes inside glasses
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(51, 72, 3.2, 0, Math.PI*2); ctx.arc(76, 72, 3.2, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); ctx.arc(49.5, 70.5, 1.2, 0, Math.PI*2); ctx.arc(74.5, 70.5, 1.2, 0, Math.PI*2); ctx.fill();
+    
+    // Grin smile
+    ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 2.2;
+    ctx.beginPath(); ctx.arc(64, 84, 5, 0, Math.PI); ctx.stroke();
+    
+    // White shirt polo
+    const poloGrad = ctx.createLinearGradient(35, 110, 100, 156);
+    poloGrad.addColorStop(0, '#ffffff'); poloGrad.addColorStop(1, '#e2e8f0');
+    ctx.fillStyle = poloGrad;
+    ctx.beginPath();
+    ctx.moveTo(42, 105); ctx.lineTo(86, 105); ctx.lineTo(96, 156); ctx.lineTo(32, 156);
+    ctx.closePath(); ctx.fill();
+    
+    // Red detailing
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath();
+    ctx.moveTo(56, 105); ctx.lineTo(64, 118); ctx.lineTo(72, 105); ctx.closePath(); ctx.fill();
+    
+    // Logo: Gold Pawn/Rook symbol on the chest
+    ctx.fillStyle = '#eab308';
+    ctx.fillRect(61, 126, 6, 8);
+    ctx.fillRect(59, 123, 10, 3);
+    ctx.fillRect(58, 134, 12, 2);
+    
+    // Pink boxing gloves raised up!
+    // Left glove
+    const leftGloveGrad = ctx.createRadialGradient(28 - 12*0.3, 96 - 12*0.3, 12*0.1, 28, 96, 12);
+    leftGloveGrad.addColorStop(0, '#fbcfe8'); leftGloveGrad.addColorStop(0.3, '#ec4899'); leftGloveGrad.addColorStop(0.8, '#db2777'); leftGloveGrad.addColorStop(1, '#9d174d');
+    ctx.fillStyle = leftGloveGrad;
+    ctx.beginPath(); ctx.arc(28, 96, 14, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)'; ctx.beginPath(); ctx.arc(25, 91, 3.5, 0, Math.PI*2); ctx.fill();
+    
+    // Right glove
+    const rightGloveGrad = ctx.createRadialGradient(100 - 12*0.3, 96 - 12*0.3, 12*0.1, 100, 96, 12);
+    rightGloveGrad.addColorStop(0, '#fbcfe8'); rightGloveGrad.addColorStop(0.3, '#ec4899'); rightGloveGrad.addColorStop(0.8, '#db2777'); rightGloveGrad.addColorStop(1, '#9d174d');
+    ctx.fillStyle = rightGloveGrad;
+    ctx.beginPath(); ctx.arc(100, 96, 14, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)'; ctx.beginPath(); ctx.arc(97, 91, 3.5, 0, Math.PI*2); ctx.fill();
+  }
+
+  // --- DRAW OPPONENT FRONT PROFILE FOR INTRO CARD ---
+  drawOpponentIntro(ctx, tier, opponentName) {
+    const getStoneGrad = (c, x1, y1, x2, y2) => {
+      const g = c.createLinearGradient(x1, y1, x2, y2);
+      g.addColorStop(0, '#374151'); g.addColorStop(0.2, '#6b7280'); g.addColorStop(0.5, '#d1d5db'); g.addColorStop(0.8, '#4b5563'); g.addColorStop(1, '#1f2937');
+      return g;
+    };
+
+    // Tier-specific color schemes
+    const tierColors = {
+      pawn:   { body: ['#93c5fd', '#60a5fa', '#bfdbfe', '#3b82f6', '#1e3a5f'], glove: ['#fca5a5', '#60a5fa', '#3b82f6', '#1e3a5f'], eye: '#f59e0b', name: opponentName },
+      knight: { body: ['#d4b88c', '#b8956a', '#f5e6d3', '#8b6914', '#5c3d0e'], glove: ['#fca5a5', '#d97706', '#b45309', '#7c2d12'], eye: '#ef4444', name: opponentName },
+      bishop: { body: ['#c4b5fd', '#a78bfa', '#ddd6fe', '#7c3aed', '#4c1d95'], glove: ['#fca5a5', '#a855f7', '#7e22ce', '#581c87'], eye: '#fbbf24', name: opponentName },
+      rook:   { body: ['#374151', '#6b7280', '#d1d5db', '#4b5563', '#1f2937'], glove: ['#fca5a5', '#dc2626', '#b91c1c', '#7f1d1d'], eye: '#facc15', name: opponentName },
+      queen:  { body: ['#2d1b4e', '#5b21b6', '#a78bfa', '#4c1d95', '#1a0a2e'], glove: ['#fca5a5', '#c026d3', '#86198f', '#4a044e'], eye: '#f43f5e', name: opponentName },
+      shadow: { body: ['#1f1235', '#3d2568', '#5b3c9b', '#110724', '#080212'], glove: ['#f472b6', '#ec4899', '#db2777', '#9d174d'], eye: '#a855f7', name: opponentName }
+    };
+    const tc = tierColors[tier] || tierColors['rook'];
+
+    const opponentShortsColor = tc.body[3];
+    const opponentBeltColor = tc.eye;
+    const opponentBeltDark = tc.body[4];
+
+    const getBodyGrad = (c, x1, y1, x2, y2) => {
+      const g = c.createLinearGradient(x1, y1, x2, y2);
+      g.addColorStop(0, tc.body[0]); g.addColorStop(0.2, tc.body[1]); g.addColorStop(0.5, tc.body[2]); g.addColorStop(0.8, tc.body[3]); g.addColorStop(1, tc.body[4]);
+      return g;
+    };
+    const getGloveGrad = (c, x, y, r) => {
+      const g = c.createRadialGradient(x - r*0.3, y - r*0.3, r*0.1, x, y, r);
+      g.addColorStop(0, tc.glove[0]); g.addColorStop(0.3, tc.glove[1]); g.addColorStop(0.8, tc.glove[2]); g.addColorStop(1, tc.glove[3]);
+      return g;
+    };
+
+    const drawOpponentBody = (c, isStunnedState) => {
+      c.fillStyle = getBodyGrad(c, 44, 40, 148, 156);
+      c.beginPath();
+      
+      if (tier === 'pawn') {
+        c.moveTo(44, 156);
+        c.bezierCurveTo(44, 120, 70, 96, 76, 86);
+        c.lineTo(116, 86);
+        c.bezierCurveTo(122, 96, 148, 120, 148, 156);
+        c.closePath();
+        c.fill();
+        
+        c.beginPath();
+        c.arc(96, 62, 28, 0, Math.PI * 2);
+        c.fill();
+        
+        if (!isStunnedState) {
+          c.fillStyle = '#0f172a';
+          c.beginPath();
+          c.moveTo(96, 80);
+          c.bezierCurveTo(80, 75, 60, 85, 62, 95);
+          c.bezierCurveTo(62, 80, 85, 80, 96, 84);
+          c.moveTo(96, 80);
+          c.bezierCurveTo(112, 75, 132, 85, 130, 95);
+          c.bezierCurveTo(130, 80, 107, 80, 96, 84);
+          c.closePath();
+          c.fill();
+          c.fillRect(94, 79, 4, 6);
+        }
+      } else if (tier === 'knight') {
+        c.moveTo(44, 156);
+        c.lineTo(46, 126);
+        c.bezierCurveTo(46, 110, 55, 96, 66, 86);
+        c.lineTo(56, 76);
+        c.bezierCurveTo(40, 66, 45, 46, 66, 50);
+        c.lineTo(86, 50);
+        c.lineTo(90, 36); c.lineTo(98, 44);
+        c.lineTo(104, 34); c.lineTo(110, 46);
+        c.bezierCurveTo(130, 56, 136, 86, 142, 116);
+        c.lineTo(148, 156);
+        c.closePath();
+        c.fill();
+        
+        c.fillStyle = tc.body[4];
+        c.beginPath();
+        c.moveTo(110, 46);
+        c.bezierCurveTo(135, 60, 140, 95, 144, 130);
+        c.lineTo(136, 130);
+        c.bezierCurveTo(130, 95, 125, 65, 105, 52);
+        c.closePath();
+        c.fill();
+      } else if (tier === 'bishop') {
+        c.moveTo(44, 156);
+        c.bezierCurveTo(46, 110, 60, 96, 66, 86);
+        c.lineTo(60, 80);
+        c.bezierCurveTo(50, 60, 96, 26, 96, 26);
+        c.bezierCurveTo(96, 26, 142, 60, 132, 80);
+        c.lineTo(126, 86);
+        c.bezierCurveTo(132, 96, 146, 110, 148, 156);
+        c.closePath();
+        c.fill();
+        
+        c.fillStyle = tc.eye;
+        c.beginPath();
+        c.arc(96, 25, 6, 0, Math.PI * 2);
+        c.fill();
+        
+        c.strokeStyle = '#1e293b';
+        c.lineWidth = 3.5;
+        c.beginPath();
+        c.moveTo(96, 38);
+        c.lineTo(84, 56);
+        c.stroke();
+      } else if (tier === 'queen') {
+        c.moveTo(44, 156);
+        c.bezierCurveTo(46, 110, 66, 96, 70, 86);
+        c.lineTo(60, 76);
+        c.lineTo(54, 42);
+        c.lineTo(76, 56);
+        c.lineTo(96, 32);
+        c.lineTo(116, 56);
+        c.lineTo(138, 42);
+        c.lineTo(122, 76);
+        c.bezierCurveTo(126, 96, 146, 110, 148, 156);
+        c.closePath();
+        c.fill();
+        
+        c.fillStyle = '#fbbf24';
+        c.beginPath();
+        c.arc(54, 40, 5, 0, Math.PI*2);
+        c.arc(96, 30, 6, 0, Math.PI*2);
+        c.arc(138, 40, 5, 0, Math.PI*2);
+        c.fill();
+
+        if (opponentName.includes("Reina Negra")) {
+          c.fillStyle = '#ffffff';
+          c.beginPath();
+          c.moveTo(90, 30);
+          c.bezierCurveTo(80, 15, 102, 15, 102, 30);
+          c.closePath();
+          c.fill();
+        }
+      } else if (tier === 'shadow') {
+        c.moveTo(44, 156);
+        c.bezierCurveTo(44, 110, 58, 90, 68, 80);
+        c.lineTo(124, 80);
+        c.bezierCurveTo(134, 90, 148, 110, 148, 156);
+        c.closePath();
+        c.fill();
+        
+        c.beginPath();
+        c.arc(96, 54, 30, 0, Math.PI*2);
+        c.fill();
+      } else {
+        c.moveTo(52, 36); c.lineTo(68, 36); c.lineTo(68, 52); 
+        c.lineTo(84, 52); c.lineTo(84, 36); c.lineTo(100, 36); 
+        c.lineTo(100, 52); c.lineTo(116, 52); c.lineTo(116, 36); 
+        c.lineTo(132, 36); c.lineTo(132, 52); c.lineTo(140, 52);
+        c.lineTo(148, 156); c.lineTo(44, 156);
+        c.closePath();
+        c.fill();
+
+        if (opponentName.includes("Torreta")) {
+          c.save();
+          c.beginPath();
+          c.moveTo(52, 72);
+          c.lineTo(140, 72);
+          c.lineTo(148, 156);
+          c.lineTo(44, 156);
+          c.closePath();
+          c.clip();
+          
+          c.fillStyle = '#ffffff';
+          c.fillRect(56, 75, 80, 82);
+          
+          c.fillStyle = '#f43f5e';
+          const size = 8;
+          for (let x = 56; x < 136; x += size * 2) {
+            for (let y = 75; y < 156; y += size * 2) {
+              c.fillRect(x, y, size, size);
+              c.fillRect(x + size, y + size, size, size);
+            }
+          }
+          c.restore();
+        }
+      }
+    };
+
+    let eyeY = 84;
+    let eyeXL = 76;
+    let eyeXR = 116;
+    if (tier === 'pawn') {
+      eyeY = 62; eyeXL = 84; eyeXR = 108;
+    } else if (tier === 'knight') {
+      eyeY = 66; eyeXL = 68; eyeXR = 96;
+    } else if (tier === 'bishop') {
+      eyeY = 74; eyeXL = 82; eyeXR = 110;
+    } else if (tier === 'queen') {
+      eyeY = 80; eyeXL = 80; eyeXR = 112;
+    } else if (tier === 'shadow') {
+      eyeY = 54; eyeXL = 84; eyeXR = 108;
+    }
+
+    let mouthY = 108;
+    if (tier === 'pawn') mouthY = 78;
+    else if (tier === 'knight') mouthY = 78;
+    else if (tier === 'bishop') mouthY = 92;
+    else if (tier === 'queen') mouthY = 100;
+    else if (tier === 'shadow') mouthY = 70;
+
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)'; ctx.shadowBlur = 10; ctx.shadowOffsetY = 6;
+    
+    if (tier === 'rook') {
+      ctx.fillStyle = '#111827'; ctx.fillRect(52, 48, 88, 20);
+    }
+    
+    drawOpponentBody(ctx, false);
+
+    if (tier === 'rook') {
+      ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.moveTo(50, 72); ctx.lineTo(142, 72);
+      ctx.moveTo(48, 102); ctx.lineTo(144, 102);
+      ctx.moveTo(46, 132); ctx.lineTo(146, 132);
+      ctx.moveTo(76, 52); ctx.lineTo(76, 72);
+      ctx.moveTo(116, 52); ctx.lineTo(116, 72);
+      ctx.moveTo(96, 72); ctx.lineTo(96, 102);
+      ctx.moveTo(70, 102); ctx.lineTo(70, 132);
+      ctx.moveTo(122, 102); ctx.lineTo(122, 132);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#047857'; ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.moveTo(54, 80); ctx.lineTo(60, 92);
+      ctx.moveTo(136, 110); ctx.lineTo(130, 122);
+      ctx.stroke();
+    }
+
+    ctx.fillStyle = '#111827'; ctx.beginPath(); ctx.arc(eyeXL, eyeY, 13, 0, Math.PI*2); ctx.arc(eyeXR, eyeY, 13, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#ea580c'; ctx.beginPath(); ctx.arc(eyeXL, eyeY, 9, 0, Math.PI*2); ctx.arc(eyeXR, eyeY, 9, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#facc15'; ctx.beginPath(); ctx.arc(eyeXL, eyeY, 5, 0, Math.PI*2); ctx.arc(eyeXR, eyeY, 5, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(eyeXL - 3, eyeY - 3, 1.8, 0, Math.PI*2); ctx.arc(eyeXR - 3, eyeY - 3, 1.8, 0, Math.PI*2); ctx.fill();
+
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.moveTo(eyeXL - 18, eyeY - 18); ctx.lineTo(eyeXL + 10, eyeY - 6); ctx.lineTo(eyeXL + 10, eyeY - 12); ctx.lineTo(eyeXL - 14, eyeY - 24); ctx.closePath(); ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(eyeXR + 18, eyeY - 18); ctx.lineTo(eyeXR - 10, eyeY - 6); ctx.lineTo(eyeXR - 10, eyeY - 12); ctx.lineTo(eyeXR + 14, eyeY - 24); ctx.closePath(); ctx.fill();
+
+    ctx.fillStyle = '#0f172a'; ctx.fillRect(80, mouthY, 32, 16);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(82, mouthY + 2, 28, 12);
+    ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(82, mouthY + 8); ctx.lineTo(110, mouthY + 8);
+    ctx.moveTo(89, mouthY + 2); ctx.lineTo(89, mouthY + 14);
+    ctx.moveTo(96, mouthY + 2); ctx.lineTo(96, mouthY + 14);
+    ctx.moveTo(103, mouthY + 2); ctx.lineTo(103, mouthY + 14);
+    ctx.stroke();
+
+    ctx.fillStyle = opponentShortsColor; ctx.fillRect(44, 142, 104, 22);
+    ctx.fillStyle = opponentBeltColor; ctx.fillRect(44, 142, 8, 22); ctx.fillRect(140, 142, 8, 22);
+    ctx.beginPath(); ctx.arc(96, 142, 12, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = opponentBeltDark; ctx.beginPath(); ctx.arc(96, 142, 8, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#1e1b4b'; ctx.beginPath();
+    ctx.moveTo(91, 144); ctx.lineTo(93, 138); ctx.lineTo(96, 141); ctx.lineTo(99, 138); ctx.lineTo(101, 144);
+    ctx.closePath(); ctx.fill();
+
+    ctx.fillStyle = getGloveGrad(ctx, 36, 116, 26);
+    ctx.beginPath(); ctx.arc(36, 116, 26, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'; ctx.beginPath(); ctx.arc(30, 108, 6, 0, Math.PI*2); ctx.fill();
+
+    ctx.fillStyle = getGloveGrad(ctx, 156, 116, 26);
+    ctx.beginPath(); ctx.arc(156, 116, 26, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'; ctx.beginPath(); ctx.arc(150, 108, 6, 0, Math.PI*2); ctx.fill();
+  }
+
+  // --- MAP OPPONENT UNIQUE STORIES AND TACTICAL POWERS ---
+  getOpponentTacticalPower(opponentName, tier) {
+    const data = {
+      "Peoncito": {
+        powerName: "Embestida de Cristal",
+        desc: "Su bigote falso le otorga un estilo inquebrantable. Al aturdirse, ¡su bigote sale volando de la rabia!",
+        quote: "«¡Un peón sin bigote es invisible, pero con estilo!»"
+      },
+      "Caballo de Ŋ": {
+        powerName: "Salto en Ŋ Errático",
+        desc: "Lanza golpes saltando en L o en Ŋ. ¡Sus trayectorias no euclidianas esquivan tus bloqueos!",
+        quote: "«Geometría rebelde en L... ¡o algo parecido!»"
+      },
+      "Alfil Exiliado": {
+        powerName: "Corte Geométrico",
+        desc: "Ataques veloces en diagonales cruzadas. Odia las tablas y ataca sin cesar para desgastarte.",
+        quote: "«Reinventando la geometría, paso a paso.»"
+      },
+      "Torreta": {
+        powerName: "Enroque de Acero",
+        desc: "Adopta una postura defensiva indestructible que reduce a la mitad el daño recibido.",
+        quote: "«He visto demasiadas aperturas y muy pocos finales.»"
+      },
+      "Sombra del Ring": {
+        powerName: "Distorsión del Río Central",
+        desc: "Domina las casillas centrales d4, e4, d5, e5. ¡Sus golpes de sombra drenan tu tiempo mental!",
+        quote: "«¿Juegas contra mí... o contra tus propios temores?»"
+      },
+      "Reina Negra": {
+        powerName: "Estornudo Alérgico",
+        desc: "Sufre alergia crónica al jaque mate. Sus estornudos de pañuelos te lanza brutales ganchos de empuje.",
+        quote: "«¡Salud! Digo... ¡Jaque Mate prohibido!»"
+      },
+      "General Torreón": {
+        powerName: "Enroque Blindado",
+        desc: "Una muralla defensiva implacable de granito. Prepárate para un combate de alta resistencia.",
+        quote: "«La solidez del enroque corto es absoluta.»"
+      },
+      "Peoncito Dorado": {
+        powerName: "Corona de Cristal",
+        desc: "Peoncito ha alcanzado la octava fila. Si no lo noqueas rápido, ¡su velocidad aumenta un 50%!",
+        quote: "«¡El respeto de las 64 casillas es mío!»"
+      },
+      "Caballo de Ŋ Salvaje": {
+        powerName: "Caos de Casillas Oscuras",
+        desc: "Golpes caóticos y ultra veloces que desafían los reflejos humanos. Patrones imposibles.",
+        quote: "«¡El salto definitivo sin frenos!»"
+      },
+      "Alfil Exiliado Pro": {
+        powerName: "Fianchetto Cortante",
+        desc: "Ráfagas tácticas cruzadas desde las esquinas del ring. Desvía tus golpes con precisión quirúrgica.",
+        quote: "«El fianchetto no es una moda, es una ley.»"
+      },
+      "Torreta de c3": {
+        powerName: "Empanada Picante de c3",
+        desc: "Se cura salud comiendo empanadas de la Apertura Italiana hiper picantes a mitad del asalto.",
+        quote: "«¡Cuidado con el Gambito de Dama sin dama!»"
+      },
+      "Reina Negra de Tal": {
+        powerName: "Bosque Oscuro de Tal",
+        desc: "Sacrifica su propia vida para infligir daño triplicado. Te llevará a un bosque donde 2+2=5.",
+        quote: "«Llevemos al rival a un bosque oscuro y sin salida.»"
+      },
+      "Alfil Exiliado Final": {
+        powerName: "Diagonal Infinita",
+        desc: "Cada golpe recibido te robará 3 segundos adicionales en tu reloj de ajedrez para la siguiente ronda.",
+        quote: "«La geometría final no tiene fin.»"
+      },
+      "General de Judit": {
+        powerName: "Precisión de Judit",
+        desc: "Precisión de ataque calculada milimétricamente. Rompe tu guardia y golpea donde más duele.",
+        quote: "«El ataque absoluto es la mejor defensa.»"
+      },
+      "Sombra Suprema": {
+        powerName: "Stockfish Infinito",
+        desc: "Combina el poder de cálculo bruto de una supercomputadora con golpes de velocidad ultrasónica.",
+        quote: "«El fin del tablero. 0-1.»"
+      }
+    };
+    
+    return data[opponentName] || data[opponentName.replace(" Pro", "").replace(" Salvaje", "").replace(" de c3", "").replace(" de Tal", "").replace(" Final", "").replace(" Dorado", "")] || {
+      powerName: "Ataque Maestro",
+      desc: "Un oponente formidable con tácticas avanzadas de ajedrez y velocidad superior.",
+      quote: "«¡Que gane el mejor estratega!»"
+    };
+  }
+
+  // --- PLAY RETRO CHIPTUNE SOUND SEQUENCE WITH WEB AUDIO API ---
+  playAnimeIntroSound(audioCtx) {
+    if (!this.musicEnabled) return;
+    const now = audioCtx.currentTime;
+    
+    // 1. MEGA MAN STYLE FAST ASCENDING ARPEGGIO (Square wave)
+    const notes = [
+      130.81, 164.81, 196.00, 261.63,
+      329.63, 392.00, 523.25, 659.25,
+      783.99, 1046.50, 1318.51, 1567.98,
+      2093.00
+    ];
+    
+    notes.forEach((freq, idx) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+      
+      gain.gain.setValueAtTime(0.08, now + idx * 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.05 + 0.15);
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.start(now + idx * 0.05);
+      osc.stop(now + idx * 0.05 + 0.18);
+    });
+
+    // 2. POWERFUL DEEP IMPACT THUD (Sine + Noise) at the climax of the arpeggio
+    const impactTime = now + notes.length * 0.05;
+    
+    const bOsc = audioCtx.createOscillator();
+    const bGain = audioCtx.createGain();
+    bOsc.type = 'sine';
+    bOsc.frequency.setValueAtTime(180, impactTime);
+    bOsc.frequency.exponentialRampToValueAtTime(30, impactTime + 0.4);
+    
+    bGain.gain.setValueAtTime(0.3, impactTime);
+    bGain.gain.exponentialRampToValueAtTime(0.0001, impactTime + 0.45);
+    
+    bOsc.connect(bGain);
+    bGain.connect(audioCtx.destination);
+    bOsc.start(impactTime);
+    bOsc.stop(impactTime + 0.5);
+
+    // Exploding Crash Noise
+    const bufferSize = audioCtx.sampleRate * 0.4;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+    }
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+    
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 1000;
+    filter.Q.value = 1.0;
+    
+    const nGain = audioCtx.createGain();
+    nGain.gain.setValueAtTime(0.12, impactTime);
+    nGain.gain.exponentialRampToValueAtTime(0.0001, impactTime + 0.38);
+    
+    noise.connect(filter);
+    filter.connect(nGain);
+    nGain.connect(audioCtx.destination);
+    
+    noise.start(impactTime);
+    noise.stop(impactTime + 0.4);
+
+    // 3. RETRO ALERT SOUNDS (Blinking pulses after impact)
+    for (let i = 0; i < 3; i++) {
+      const alertTime = impactTime + 0.5 + i * 0.3;
+      const aOsc = audioCtx.createOscillator();
+      const aGain = audioCtx.createGain();
+      aOsc.type = 'triangle';
+      aOsc.frequency.setValueAtTime(440, alertTime);
+      aOsc.frequency.setValueAtTime(660, alertTime + 0.08);
+      
+      aGain.gain.setValueAtTime(0.05, alertTime);
+      aGain.gain.exponentialRampToValueAtTime(0.0001, alertTime + 0.2);
+      
+      aOsc.connect(aGain);
+      aGain.connect(audioCtx.destination);
+      
+      aOsc.start(alertTime);
+      aOsc.stop(alertTime + 0.25);
+    }
   }
 
   // --- INIT STOCKFISH WEB WORKER WITH CORS-BYPASS ---
+
   initStockfishWorker() {
     this.destroyWorker();
     
@@ -920,6 +1697,9 @@ class ChessBoxGame {
     const accentColor = isBox ? "#ef4444" : "#fbbf24";
     const roundName = `Ronda ${this.currentRound} de 6`;
     
+    const currentLevel = this.levels[this.currentLevelIndex];
+    const opponentName = currentLevel ? currentLevel.opponentName : "tu oponente";
+
     // Connecting stats details
     let connectionStatsHTML = '';
     if (this.currentRound > 1) {
@@ -962,7 +1742,7 @@ class ChessBoxGame {
           <h2 style="color: ${accentColor}; font-size: 1.8rem; margin: 15px 0;">${stageType}</h2>
           <p style="color: #94a3b8; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.5;">
             ${isBox 
-              ? "¡Ponte la guardia! Esquiva los ganchos de piedra del General Torreón y conecta golpes para fundir su reloj mental en la siguiente ronda." 
+              ? `¡Ponte la guardia! Esquiva los ganchos de ${opponentName} y conecta golpes para fundir su reloj mental en la siguiente ronda.` 
               : "¡Cabeza fría! Juega al ajedrez bajo el límite de tu reloj. Si tu tiempo llega a 0 serás derrotado por K.O. Técnico."}
           </p>
 
@@ -1398,8 +2178,328 @@ class ChessBoxGame {
                 scene.playerState = 'stunned';
                 self.gameOver("¡Fuiste noqueado por la apisonadora del Enroque Destructor! 😞");
               }
-            }
+          }
             self.updateBoxingTopBar();
+          };
+
+          // Unleash Queen's ultimate super: Estornudo Alérgico!
+          scene.executeOpponentSneeze = () => {
+            self.opponentSuperPower = 0;
+            scene.opponentState = 'super';
+            self.updateBoxingTopBar();
+            
+            window.GameAudio.playError();
+            self.playCrowdGasp();
+            scene.cameras.main.flash(200, 236, 72, 153, 0.4); // purple flash
+            scene.addTextEffect(400, 140, "🤧 ¡ESTORNUDO ALÉRGICO! 🤧", "#ec4899");
+            
+            // Phase 1: Sneezing wind-up (retreats slightly, shakes)
+            scene.tweens.add({
+              targets: scene.opponent,
+              y: 150,
+              scaleX: 0.55, scaleY: 0.55,
+              duration: 400,
+              yoyo: true,
+              onComplete: () => {
+                // Sneeze impact!
+                scene.opponent.setTexture('opp-punch-l');
+                scene.tweens.add({
+                  targets: scene.opponent,
+                  y: 200,
+                  duration: 150,
+                  yoyo: true,
+                  onComplete: () => {
+                    scene.opponent.y = 180;
+                    scene.opponent.setScale(0.6);
+                    if (scene.opponentState !== 'ko' && scene.opponentState !== 'stunned') {
+                      scene.opponentState = 'idle';
+                      scene.opponent.setTexture('opp-idle');
+                      scene.nextAttackTime = scene.time.now + 1500;
+                    }
+                  }
+                });
+                
+                // Impact calculations
+                if (scene.playerState === 'blocking') {
+                  // Sneezing ignores blocks, blows player away!
+                  self.playerHealth = Math.max(0, self.playerHealth - 15);
+                  window.GameAudio.playError();
+                  scene.addTextEffect(400, 310, "💨 ¡VIENTO ALÉRGICO! (-15)", "#ec4899");
+                  scene.cameras.main.shake(150, 0.02);
+                  scene.playerState = 'hit';
+                  scene.player.y = 380;
+                  scene.tweens.add({
+                    targets: scene.player,
+                    y: 350,
+                    duration: 400,
+                    onComplete: () => { scene.playerState = 'idle'; }
+                  });
+                } else if (scene.playerState === 'dodging-l' || scene.playerState === 'dodging-r') {
+                  scene.addTextEffect(400, 310, "💨 ¡ESQUIVA IMPECABLE!", "#4ade80");
+                } else {
+                  // Direct impact!
+                  self.playerHealth = Math.max(0, self.playerHealth - 25);
+                  window.GameAudio.playError();
+                  scene.addTextEffect(400, 310, "💥 ¡SOPLO MÁXIMO! (-25)", "#ef4444");
+                  scene.cameras.main.shake(200, 0.03);
+                  scene.playerState = 'hit';
+                  scene.player.y = 390;
+                  scene.tweens.add({
+                    targets: scene.player,
+                    y: 350,
+                    duration: 500,
+                    onComplete: () => { scene.playerState = 'idle'; }
+                  });
+                }
+                
+                if (self.playerHealth <= 0) {
+                  self.gameOver("¡Fuiste barrido por el estornudo de la Reina Negra! 🤧");
+                }
+                self.updateBoxingTopBar();
+              }
+            });
+          };
+
+          // Unleash Shadow's ultimate super: Robo de Tiempo!
+          scene.executeOpponentTimeTheft = () => {
+            self.opponentSuperPower = 0;
+            scene.opponentState = 'super';
+            self.updateBoxingTopBar();
+            
+            window.GameAudio.playError();
+            self.playCrowdGasp();
+            scene.cameras.main.flash(200, 168, 85, 247, 0.4); // deep purple flash
+            scene.addTextEffect(400, 140, "⏳ ¡TRAMPA DEL TIEMPO! ⏳", "#a855f7");
+            
+            scene.tweens.add({
+              targets: scene.opponent,
+              scaleX: 0.8, scaleY: 0.8,
+              duration: 300,
+              yoyo: true,
+              onComplete: () => {
+                // Punch lunging forward
+                scene.opponent.setTexture('opp-punch-r');
+                scene.tweens.add({
+                  targets: scene.opponent,
+                  y: 220,
+                  duration: 150,
+                  yoyo: true,
+                  onComplete: () => {
+                    scene.opponent.y = 180;
+                    scene.opponent.setScale(0.6);
+                    if (scene.opponentState !== 'ko' && scene.opponentState !== 'stunned') {
+                      scene.opponentState = 'idle';
+                      scene.opponent.setTexture('opp-idle');
+                      scene.nextAttackTime = scene.time.now + 1500;
+                    }
+                  }
+                });
+                
+                // Impact calculations
+                if (scene.playerState === 'dodging-l' || scene.playerState === 'dodging-r') {
+                  scene.addTextEffect(400, 310, "💨 ¡TIEMPO ESQUIVADO!", "#4ade80");
+                } else {
+                  // Hit lands! Drains EITHER blocks OR direct hits, and takes 15 seconds from player chess clock!
+                  const timeLost = 15000; // 15 seconds
+                  self.playerChessClock = Math.max(90000, self.playerChessClock - timeLost); // floor at 90s
+                  self.playerHealth = Math.max(0, self.playerHealth - (scene.playerState === 'blocking' ? 5 : 15));
+                  
+                  window.GameAudio.playError();
+                  scene.cameras.main.shake(120, 0.015);
+                  scene.addTextEffect(400, 310, "⏳ ¡TIEMPO ROBADO! (-15s ajedrez)", "#f87171");
+                  
+                  scene.playerState = 'hit';
+                  scene.player.y = 370;
+                  scene.tweens.add({
+                    targets: scene.player,
+                    y: 350,
+                    duration: 300,
+                    onComplete: () => { scene.playerState = 'idle'; }
+                  });
+                }
+                
+                if (self.playerHealth <= 0) {
+                  self.gameOver("¡La Sombra del Ring absorbió tu energía vital! 😞");
+                }
+                self.updateBoxingTopBar();
+              }
+            });
+          };
+
+          // Unleash Knight's ultimate super: Salto Errático!
+          scene.executeOpponentKnightJump = () => {
+            self.opponentSuperPower = 0;
+            scene.opponentState = 'super';
+            self.updateBoxingTopBar();
+            
+            window.GameAudio.playError();
+            scene.addTextEffect(400, 140, "🐎 ¡GOLPE DE Ŋ SALVAJE! 🐎", "#fbbf24");
+            
+            // Jumps to the left high, then descends diagonally to the right!
+            scene.tweens.add({
+              targets: scene.opponent,
+              x: 280, y: 120,
+              duration: 300,
+              onComplete: () => {
+                scene.opponent.setTexture('opp-punch-l');
+                scene.tweens.add({
+                  targets: scene.opponent,
+                  x: 520, y: 220,
+                  duration: 200,
+                  yoyo: true,
+                  onComplete: () => {
+                    scene.opponent.x = 400; scene.opponent.y = 180;
+                    scene.opponent.setScale(0.6);
+                    if (scene.opponentState !== 'ko' && scene.opponentState !== 'stunned') {
+                      scene.opponentState = 'idle';
+                      scene.opponent.setTexture('opp-idle');
+                      scene.nextAttackTime = scene.time.now + 1500;
+                    }
+                  }
+                });
+                
+                // Impact calculations: Player must dodge LEFT to escape the diagonal swoop
+                if (scene.playerState === 'dodging-l') {
+                  scene.addTextEffect(400, 310, "💨 ¡ESQUIVA MAESTRA DE Ŋ!", "#4ade80");
+                } else {
+                  self.playerHealth = Math.max(0, self.playerHealth - (scene.playerState === 'blocking' ? 8 : 20));
+                  window.GameAudio.playError();
+                  scene.addTextEffect(400, 310, "💥 ¡SABLAZO EN L! (-20)", "#ef4444");
+                  scene.cameras.main.shake(150, 0.02);
+                  scene.playerState = 'hit';
+                  scene.player.y = 375;
+                  scene.tweens.add({
+                    targets: scene.player,
+                    y: 350,
+                    duration: 350,
+                    onComplete: () => { scene.playerState = 'idle'; }
+                  });
+                }
+                
+                if (self.playerHealth <= 0) {
+                  self.gameOver("¡El Caballo de Ŋ te noqueó con su salto de geometría! 🐎");
+                }
+                self.updateBoxingTopBar();
+              }
+            });
+          };
+
+          // Unleash Bishop's ultimate super: Corte Diagonal!
+          scene.executeOpponentBishopSlash = () => {
+            self.opponentSuperPower = 0;
+            scene.opponentState = 'super';
+            self.updateBoxingTopBar();
+            
+            window.GameAudio.playError();
+            scene.addTextEffect(400, 140, "📐 ¡CORTE GEOMÉTRICO! 📐", "#a855f7");
+            
+            // Fades or teleports side-to-side, then slashes!
+            scene.tweens.add({
+              targets: scene.opponent,
+              x: 500, y: 140,
+              duration: 250,
+              onComplete: () => {
+                scene.opponent.setTexture('opp-punch-r');
+                scene.tweens.add({
+                  targets: scene.opponent,
+                  x: 300, y: 220,
+                  duration: 180,
+                  yoyo: true,
+                  onComplete: () => {
+                    scene.opponent.x = 400; scene.opponent.y = 180;
+                    scene.opponent.setScale(0.6);
+                    if (scene.opponentState !== 'ko' && scene.opponentState !== 'stunned') {
+                      scene.opponentState = 'idle';
+                      scene.opponent.setTexture('opp-idle');
+                      scene.nextAttackTime = scene.time.now + 1500;
+                    }
+                  }
+                });
+                
+                // Impact calculations: Player must dodge RIGHT to escape the diagonal swoop
+                if (scene.playerState === 'dodging-r') {
+                  scene.addTextEffect(400, 310, "💨 ¡DIAGONAL ESQUIVADA!", "#4ade80");
+                } else {
+                  self.playerHealth = Math.max(0, self.playerHealth - (scene.playerState === 'blocking' ? 8 : 20));
+                  window.GameAudio.playError();
+                  scene.addTextEffect(400, 310, "💥 ¡FIANCHETTO BRUTAL! (-20)", "#ef4444");
+                  scene.cameras.main.shake(150, 0.02);
+                  scene.playerState = 'hit';
+                  scene.player.y = 375;
+                  scene.tweens.add({
+                    targets: scene.player,
+                    y: 350,
+                    duration: 350,
+                    onComplete: () => { scene.playerState = 'idle'; }
+                  });
+                }
+                
+                if (self.playerHealth <= 0) {
+                  self.gameOver("¡El Alfil Exiliado te rebanó con su diagonal infinita! 📐");
+                }
+                self.updateBoxingTopBar();
+              }
+            });
+          };
+
+          // Unleash Pawn's ultimate lunge: Envestida de Cristal!
+          scene.executeOpponentPawnLunge = () => {
+            self.opponentSuperPower = 0;
+            scene.opponentState = 'super';
+            self.updateBoxingTopBar();
+            
+            window.GameAudio.playError();
+            scene.addTextEffect(400, 140, "⭐ ¡ENVESTIDA DE PEÓN! ⭐", "#38bdf8");
+            
+            scene.tweens.add({
+              targets: scene.opponent,
+              y: 150,
+              duration: 350,
+              onComplete: () => {
+                scene.opponent.setTexture('opp-punch-l');
+                scene.tweens.add({
+                  targets: scene.opponent,
+                  y: 230,
+                  duration: 150,
+                  yoyo: true,
+                  onComplete: () => {
+                    scene.opponent.y = 180;
+                    scene.opponent.setScale(0.6);
+                    if (scene.opponentState !== 'ko' && scene.opponentState !== 'stunned') {
+                      scene.opponentState = 'idle';
+                      scene.opponent.setTexture('opp-idle');
+                      scene.nextAttackTime = scene.time.now + 1500;
+                    }
+                  }
+                });
+                
+                // Impact calculations: blocking works perfectly, but direct hits deal 18
+                if (scene.playerState === 'blocking') {
+                  self.playerHealth = Math.max(0, self.playerHealth - 3);
+                  scene.addTextEffect(400, 310, "🛡️ ¡BLOQUEO EXCELENTE! (-3)", "#4ade80");
+                } else if (scene.playerState === 'dodging-l' || scene.playerState === 'dodging-r') {
+                  scene.addTextEffect(400, 310, "💨 ¡ESQUIVADO!", "#4ade80");
+                } else {
+                  self.playerHealth = Math.max(0, self.playerHealth - 18);
+                  window.GameAudio.playError();
+                  scene.addTextEffect(400, 310, "💥 ¡ENVESTIDA DE CRISTAL! (-18)", "#ef4444");
+                  scene.cameras.main.shake(120, 0.015);
+                  scene.playerState = 'hit';
+                  scene.player.y = 370;
+                  scene.tweens.add({
+                    targets: scene.player,
+                    y: 350,
+                    duration: 300,
+                    onComplete: () => { scene.playerState = 'idle'; }
+                  });
+                }
+                
+                if (self.playerHealth <= 0) {
+                  self.gameOver("¡Peoncito te derrotó y se ganó todo el respeto! ⭐");
+                }
+                self.updateBoxingTopBar();
+              }
+            });
           };
 
           // Master Player Action controller
@@ -1638,6 +2738,13 @@ class ChessBoxGame {
               self.playPunchImpact();
               scene.addTextEffect(400, 310, "💥 ¡IMPACTO!", "#ef4444");
 
+              const currentTier = self.levels[self.currentLevelIndex].tier;
+              if (currentTier === 'shadow') {
+                const stolen = 2000; // 2 seconds
+                self.playerChessClock = Math.max(90000, self.playerChessClock - stolen); // floor at 90s
+                scene.addTextEffect(400, 270, "⏳ ¡TIEMPO DRENADO! (-2s)", "#a855f7");
+              }
+
               // Interrupt player inputs and trigger hit flinch animation
               scene.playerState = 'hit';
               scene.player.y = 375; // knock down slightly
@@ -1726,7 +2833,22 @@ class ChessBoxGame {
           if (scene.opponentState === 'idle' && time > scene.nextAttackTime) {
             // Check if Opponent has full Super Power!
             if (self.opponentSuperPower === 100) {
-              scene.executeOpponentEnroque();
+              const currentTier = self.levels[self.currentLevelIndex].tier;
+              if (currentTier === 'rook') {
+                scene.executeOpponentEnroque();
+              } else if (currentTier === 'queen') {
+                scene.executeOpponentSneeze();
+              } else if (currentTier === 'shadow') {
+                scene.executeOpponentTimeTheft();
+              } else if (currentTier === 'knight') {
+                scene.executeOpponentKnightJump();
+              } else if (currentTier === 'bishop') {
+                scene.executeOpponentBishopSlash();
+              } else if (currentTier === 'pawn') {
+                scene.executeOpponentPawnLunge();
+              } else {
+                scene.executeOpponentEnroque();
+              }
               return;
             }
 
@@ -1805,11 +2927,8 @@ class ChessBoxGame {
   }
 
   _getOpponentTier(levelIdx) {
-    if (levelIdx <= 3) return 'pawn';
-    if (levelIdx <= 7) return 'knight';
-    if (levelIdx <= 11) return 'bishop';
-    if (levelIdx <= 13) return 'rook';
-    return 'queen';
+    const level = this.levels[levelIdx];
+    return level ? level.tier : 'rook';
   }
 
   // --- PLAYER TEXTURES (Martina — always the same) ---
@@ -2078,12 +3197,11 @@ class ChessBoxGame {
     scene.textures.addCanvas('player-punch-r', prCanvas);
   }
 
-  // ================================================================
-  // OPPONENT TEXTURES — Tier-specific designs per level group
-  // ================================================================
   _renderOpponentTextures(scene, levelIdx) {
-    const tier = this._getOpponentTier(levelIdx);
-    
+    const level = this.levels[levelIdx];
+    const opponentName = level ? level.opponentName : 'General Torreón';
+    const tier = level ? level.tier : 'rook';
+
     const getStoneGrad = (ctx, x1, y1, x2, y2) => {
       const g = ctx.createLinearGradient(x1, y1, x2, y2);
       g.addColorStop(0, '#374151'); g.addColorStop(0.2, '#6b7280'); g.addColorStop(0.5, '#d1d5db'); g.addColorStop(0.8, '#4b5563'); g.addColorStop(1, '#1f2937');
@@ -2098,13 +3216,14 @@ class ChessBoxGame {
 
     // Tier-specific color schemes
     const tierColors = {
-      pawn:   { body: ['#93c5fd', '#60a5fa', '#bfdbfe', '#3b82f6', '#1e3a5f'], glove: ['#fca5a5', '#60a5fa', '#3b82f6', '#1e3a5f'], eye: '#f59e0b', name: 'Peón Boxeador' },
-      knight: { body: ['#d4b88c', '#b8956a', '#f5e6d3', '#8b6914', '#5c3d0e'], glove: ['#fca5a5', '#d97706', '#b45309', '#7c2d12'], eye: '#ef4444', name: 'Caballo Boxeador' },
-      bishop: { body: ['#c4b5fd', '#a78bfa', '#ddd6fe', '#7c3aed', '#4c1d95'], glove: ['#fca5a5', '#a855f7', '#7e22ce', '#581c87'], eye: '#fbbf24', name: 'Alfil Boxeador' },
-      rook:   { body: ['#374151', '#6b7280', '#d1d5db', '#4b5563', '#1f2937'], glove: ['#fca5a5', '#dc2626', '#b91c1c', '#7f1d1d'], eye: '#facc15', name: 'General Torreón' },
-      queen:  { body: ['#2d1b4e', '#5b21b6', '#a78bfa', '#4c1d95', '#1a0a2e'], glove: ['#fca5a5', '#c026d3', '#86198f', '#4a044e'], eye: '#f43f5e', name: 'Reina Negra' }
+      pawn:   { body: ['#93c5fd', '#60a5fa', '#bfdbfe', '#3b82f6', '#1e3a5f'], glove: ['#fca5a5', '#60a5fa', '#3b82f6', '#1e3a5f'], eye: '#f59e0b', name: opponentName },
+      knight: { body: ['#d4b88c', '#b8956a', '#f5e6d3', '#8b6914', '#5c3d0e'], glove: ['#fca5a5', '#d97706', '#b45309', '#7c2d12'], eye: '#ef4444', name: opponentName },
+      bishop: { body: ['#c4b5fd', '#a78bfa', '#ddd6fe', '#7c3aed', '#4c1d95'], glove: ['#fca5a5', '#a855f7', '#7e22ce', '#581c87'], eye: '#fbbf24', name: opponentName },
+      rook:   { body: ['#374151', '#6b7280', '#d1d5db', '#4b5563', '#1f2937'], glove: ['#fca5a5', '#dc2626', '#b91c1c', '#7f1d1d'], eye: '#facc15', name: opponentName },
+      queen:  { body: ['#2d1b4e', '#5b21b6', '#a78bfa', '#4c1d95', '#1a0a2e'], glove: ['#fca5a5', '#c026d3', '#86198f', '#4a044e'], eye: '#f43f5e', name: opponentName },
+      shadow: { body: ['#1f1235', '#3d2568', '#5b3c9b', '#110724', '#080212'], glove: ['#f472b6', '#ec4899', '#db2777', '#9d174d'], eye: '#a855f7', name: opponentName }
     };
-    const tc = tierColors[tier];
+    const tc = tierColors[tier] || tierColors['rook'];
 
     const opponentShortsColor = tc.body[3];
     const opponentBeltColor = tc.eye;
@@ -2121,86 +3240,293 @@ class ChessBoxGame {
       g.addColorStop(0, tc.glove[0]); g.addColorStop(0.3, tc.glove[1]); g.addColorStop(0.8, tc.glove[2]); g.addColorStop(1, tc.glove[3]);
       return g;
     };
-    
-    // 7. General Torreón Idle (Canvas 192x192)
+
+    // Helper: Draw custom piece shapes based on the current tier!
+    const drawOpponentBody = (ctx, isStunnedState) => {
+      ctx.fillStyle = getBodyGrad(ctx, 44, 40, 148, 156);
+      ctx.beginPath();
+      
+      if (tier === 'pawn') {
+        // Pawn shape: rounded head + conical shoulders
+        ctx.moveTo(44, 156);
+        ctx.bezierCurveTo(44, 120, 70, 96, 76, 86); // Left shoulder
+        ctx.lineTo(116, 86); // Neck connector
+        ctx.bezierCurveTo(122, 96, 148, 120, 148, 156); // Right shoulder
+        ctx.closePath();
+        ctx.fill();
+        
+        // Round head
+        ctx.beginPath();
+        ctx.arc(96, 62, 28, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw Peoncito's big fake mustache!
+        if (!isStunnedState) {
+          ctx.fillStyle = '#0f172a'; // black mustache
+          ctx.beginPath();
+          // Left curl
+          ctx.moveTo(96, 80);
+          ctx.bezierCurveTo(80, 75, 60, 85, 62, 95);
+          ctx.bezierCurveTo(62, 80, 85, 80, 96, 84);
+          // Right curl
+          ctx.moveTo(96, 80);
+          ctx.bezierCurveTo(112, 75, 132, 85, 130, 95);
+          ctx.bezierCurveTo(130, 80, 107, 80, 96, 84);
+          ctx.closePath();
+          ctx.fill();
+          
+          // Little center tie
+          ctx.fillRect(94, 79, 4, 6);
+        } else {
+          // Stunned Peoncito: mustache is flying away in the air!
+          ctx.save();
+          ctx.translate(145, 55);
+          ctx.rotate(0.4);
+          ctx.fillStyle = '#0f172a';
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.bezierCurveTo(-16, -5, -36, 5, -34, 15);
+          ctx.bezierCurveTo(-34, 0, -11, 0, 0, 4);
+          ctx.moveTo(0, 0);
+          ctx.bezierCurveTo(16, -5, 36, 5, 34, 15);
+          ctx.bezierCurveTo(34, 0, 11, 0, 0, 4);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillRect(-2, -1, 4, 6);
+          ctx.restore();
+          
+          // draw small exclamation text
+          ctx.fillStyle = '#f43f5e';
+          ctx.font = 'bold 12px Outfit, sans-serif';
+          ctx.fillText('¡Mi bigote!', 20, 40);
+        }
+      } else if (tier === 'knight') {
+        // Knight shape: horse head pointing left
+        ctx.moveTo(44, 156);
+        ctx.lineTo(46, 126);
+        ctx.bezierCurveTo(46, 110, 55, 96, 66, 86); // Back neck
+        ctx.lineTo(56, 76);
+        ctx.bezierCurveTo(40, 66, 45, 46, 66, 50); // Nose/snout top
+        ctx.lineTo(86, 50); // Mane top
+        ctx.lineTo(90, 36); ctx.lineTo(98, 44);
+        ctx.lineTo(104, 34); ctx.lineTo(110, 46);
+        ctx.bezierCurveTo(130, 56, 136, 86, 142, 116);
+        ctx.lineTo(148, 156);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Mane details
+        ctx.fillStyle = tc.body[4];
+        ctx.beginPath();
+        ctx.moveTo(110, 46);
+        ctx.bezierCurveTo(135, 60, 140, 95, 144, 130);
+        ctx.lineTo(136, 130);
+        ctx.bezierCurveTo(130, 95, 125, 65, 105, 52);
+        ctx.closePath();
+        ctx.fill();
+      } else if (tier === 'bishop') {
+        // Bishop shape: mitre hat pointed top
+        ctx.moveTo(44, 156);
+        ctx.bezierCurveTo(46, 110, 60, 96, 66, 86); // shoulders left
+        ctx.lineTo(60, 80);
+        ctx.bezierCurveTo(50, 60, 96, 26, 96, 26); // Mitre left half
+        ctx.bezierCurveTo(96, 26, 142, 60, 132, 80); // Mitre right half
+        ctx.lineTo(126, 86);
+        ctx.bezierCurveTo(132, 96, 146, 110, 148, 156); // shoulders right
+        ctx.closePath();
+        ctx.fill();
+        
+        // Small sphere on top of mitre
+        ctx.fillStyle = tc.eye;
+        ctx.beginPath();
+        ctx.arc(96, 25, 6, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Slit/cleft inside the mitre
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(96, 38);
+        ctx.lineTo(84, 56);
+        ctx.stroke();
+      } else if (tier === 'queen') {
+        // Queen shape: Tall crown
+        ctx.moveTo(44, 156);
+        ctx.bezierCurveTo(46, 110, 66, 96, 70, 86); // Left body
+        ctx.lineTo(60, 76);
+        ctx.lineTo(54, 42); // Left peak
+        ctx.lineTo(76, 56); // Valley 1
+        ctx.lineTo(96, 32); // Center peak
+        ctx.lineTo(116, 56); // Valley 2
+        ctx.lineTo(138, 42); // Right peak
+        ctx.lineTo(122, 76);
+        ctx.bezierCurveTo(126, 96, 146, 110, 148, 156); // Right body
+        ctx.closePath();
+        ctx.fill();
+        
+        // Golden spheres on crown peaks
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.arc(54, 40, 5, 0, Math.PI*2);
+        ctx.arc(96, 30, 6, 0, Math.PI*2);
+        ctx.arc(138, 40, 5, 0, Math.PI*2);
+        ctx.fill();
+
+        // Draw comical tissue box pañuelo in Queen's crown if level is Reina Negra
+        if (opponentName.includes("Reina Negra")) {
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.moveTo(90, 30);
+          ctx.bezierCurveTo(80, 15, 102, 15, 102, 30);
+          ctx.closePath();
+          ctx.fill();
+        }
+      } else if (tier === 'shadow') {
+        // Shadow shape: round creepy head + broad shoulders
+        ctx.moveTo(44, 156);
+        ctx.bezierCurveTo(44, 110, 58, 90, 68, 80);
+        ctx.lineTo(124, 80);
+        ctx.bezierCurveTo(134, 90, 148, 110, 148, 156);
+        ctx.closePath();
+        ctx.fill();
+        
+        ctx.beginPath();
+        ctx.arc(96, 54, 30, 0, Math.PI*2);
+        ctx.fill();
+      } else {
+        // Rook shape (Default)
+        // Crenellations (teeth) top
+        ctx.moveTo(52, 36); ctx.lineTo(68, 36); ctx.lineTo(68, 52); 
+        ctx.lineTo(84, 52); ctx.lineTo(84, 36); ctx.lineTo(100, 36); 
+        ctx.lineTo(100, 52); ctx.lineTo(116, 52); ctx.lineTo(116, 36); 
+        ctx.lineTo(132, 36); ctx.lineTo(132, 52); ctx.lineTo(140, 52);
+        // Cylinder body
+        ctx.lineTo(148, 156); ctx.lineTo(44, 156);
+        ctx.closePath();
+        ctx.fill();
+
+        // Draw "delantal a cuadros" (checked apron) for Torreta
+        if (opponentName.includes("Torreta")) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(52, 72);
+          ctx.lineTo(140, 72);
+          ctx.lineTo(148, 156);
+          ctx.lineTo(44, 156);
+          ctx.closePath();
+          ctx.clip();
+          
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(56, 75, 80, 82);
+          
+          ctx.fillStyle = '#f43f5e';
+          const size = 8;
+          for (let x = 56; x < 136; x += size * 2) {
+            for (let y = 75; y < 156; y += size * 2) {
+              ctx.fillRect(x, y, size, size);
+              ctx.fillRect(x + size, y + size, size, size);
+            }
+          }
+          ctx.restore();
+        }
+      }
+    };
+
+    // Calculate dynamic eye and mouth positions based on tier
+    let eyeY = 84;
+    let eyeXL = 76;
+    let eyeXR = 116;
+    if (tier === 'pawn') {
+      eyeY = 62; eyeXL = 84; eyeXR = 108;
+    } else if (tier === 'knight') {
+      eyeY = 66; eyeXL = 68; eyeXR = 96;
+    } else if (tier === 'bishop') {
+      eyeY = 74; eyeXL = 82; eyeXR = 110;
+    } else if (tier === 'queen') {
+      eyeY = 80; eyeXL = 80; eyeXR = 112;
+    } else if (tier === 'shadow') {
+      eyeY = 54; eyeXL = 84; eyeXR = 108;
+    }
+
+    let mouthY = 108;
+    if (tier === 'pawn') mouthY = 78;
+    else if (tier === 'knight') mouthY = 78;
+    else if (tier === 'bishop') mouthY = 92;
+    else if (tier === 'queen') mouthY = 100;
+    else if (tier === 'shadow') mouthY = 70;
+
+    // ==========================================
+    // 7. Dynamic Opponent Idle (Canvas 192x192)
+    // ==========================================
     const oCanvas = document.createElement('canvas'); oCanvas.width = 192; oCanvas.height = 192;
     const oCtx = oCanvas.getContext('2d');
     
     oCtx.shadowColor = 'rgba(0, 0, 0, 0.3)'; oCtx.shadowBlur = 10; oCtx.shadowOffsetY = 6;
     
-    // Castle battlements interior shadow
-    oCtx.fillStyle = '#111827'; oCtx.fillRect(52, 48, 88, 20);
+    if (tier === 'rook') {
+      // Castle battlements interior shadow
+      oCtx.fillStyle = '#111827'; oCtx.fillRect(52, 48, 88, 20);
+    }
     
-    // Cylindrical 3D stone Rook shape
-    oCtx.fillStyle = getBodyGrad(oCtx, 44, 40, 148, 156);
-    oCtx.beginPath();
-    // Crenellations (teeth) top
-    oCtx.moveTo(52, 36); oCtx.lineTo(68, 36); oCtx.lineTo(68, 52); 
-    oCtx.lineTo(84, 52); oCtx.lineTo(84, 36); oCtx.lineTo(100, 36); 
-    oCtx.lineTo(100, 52); oCtx.lineTo(116, 52); oCtx.lineTo(116, 36); 
-    oCtx.lineTo(132, 36); oCtx.lineTo(132, 52); oCtx.lineTo(140, 52);
-    // Cylinder body
-    oCtx.lineTo(148, 156); oCtx.lineTo(44, 156);
-    oCtx.closePath(); oCtx.fill();
+    // Draw Dynamic Body Shape
+    drawOpponentBody(oCtx, false);
 
-    // Weathered Stone joints / Brick lines (width 2.5 for crisp cartoon outlines)
-    oCtx.strokeStyle = '#1e293b'; oCtx.lineWidth = 2.2;
-    oCtx.beginPath();
-    oCtx.moveTo(50, 72); oCtx.lineTo(142, 72);
-    oCtx.moveTo(48, 102); oCtx.lineTo(144, 102);
-    oCtx.moveTo(46, 132); oCtx.lineTo(146, 132);
-    // Vertical joints
-    oCtx.moveTo(76, 52); oCtx.lineTo(76, 72);
-    oCtx.moveTo(116, 52); oCtx.lineTo(116, 72);
-    oCtx.moveTo(96, 72); oCtx.lineTo(96, 102);
-    oCtx.moveTo(70, 102); oCtx.lineTo(70, 132);
-    oCtx.moveTo(122, 102); oCtx.lineTo(122, 132);
-    oCtx.stroke();
+    if (tier === 'rook') {
+      // Weathered Stone joints / Brick lines (width 2.5 for crisp outlines)
+      oCtx.strokeStyle = '#1e293b'; oCtx.lineWidth = 2.2;
+      oCtx.beginPath();
+      oCtx.moveTo(50, 72); oCtx.lineTo(142, 72);
+      oCtx.moveTo(48, 102); oCtx.lineTo(144, 102);
+      oCtx.moveTo(46, 132); oCtx.lineTo(146, 132);
+      oCtx.moveTo(76, 52); oCtx.lineTo(76, 72);
+      oCtx.moveTo(116, 52); oCtx.lineTo(116, 72);
+      oCtx.moveTo(96, 72); oCtx.lineTo(96, 102);
+      oCtx.moveTo(70, 102); oCtx.lineTo(70, 132);
+      oCtx.moveTo(122, 102); oCtx.lineTo(122, 132);
+      oCtx.stroke();
 
-    // Moss / Lichen cracks details
-    oCtx.strokeStyle = '#047857'; oCtx.lineWidth = 1.8;
-    oCtx.beginPath();
-    oCtx.moveTo(54, 80); oCtx.lineTo(60, 92);
-    oCtx.moveTo(136, 110); oCtx.lineTo(130, 122);
-    oCtx.stroke();
+      // Moss cracks details
+      oCtx.strokeStyle = '#047857'; oCtx.lineWidth = 1.8;
+      oCtx.beginPath();
+      oCtx.moveTo(54, 80); oCtx.lineTo(60, 92);
+      oCtx.moveTo(136, 110); oCtx.lineTo(130, 122);
+      oCtx.stroke();
+    }
 
-    // Angry eyes glowing with core lava color
-    oCtx.fillStyle = '#111827'; oCtx.beginPath(); oCtx.arc(76, 84, 13, 0, Math.PI*2); oCtx.arc(116, 84, 13, 0, Math.PI*2); oCtx.fill(); // black cavities
-    oCtx.fillStyle = '#ea580c'; oCtx.beginPath(); oCtx.arc(76, 84, 9, 0, Math.PI*2); oCtx.arc(116, 84, 9, 0, Math.PI*2); oCtx.fill(); // orange iris
-    oCtx.fillStyle = '#facc15'; oCtx.beginPath(); oCtx.arc(76, 84, 5, 0, Math.PI*2); oCtx.arc(116, 84, 5, 0, Math.PI*2); oCtx.fill(); // yellow pupils
-    oCtx.fillStyle = '#ffffff'; oCtx.beginPath(); oCtx.arc(73, 81, 1.8, 0, Math.PI*2); oCtx.arc(113, 81, 1.8, 0, Math.PI*2); oCtx.fill(); // specular reflections
+    // Angry glowing eyes
+    oCtx.fillStyle = '#111827'; oCtx.beginPath(); oCtx.arc(eyeXL, eyeY, 13, 0, Math.PI*2); oCtx.arc(eyeXR, eyeY, 13, 0, Math.PI*2); oCtx.fill();
+    oCtx.fillStyle = '#ea580c'; oCtx.beginPath(); oCtx.arc(eyeXL, eyeY, 9, 0, Math.PI*2); oCtx.arc(eyeXR, eyeY, 9, 0, Math.PI*2); oCtx.fill();
+    oCtx.fillStyle = '#facc15'; oCtx.beginPath(); oCtx.arc(eyeXL, eyeY, 5, 0, Math.PI*2); oCtx.arc(eyeXR, eyeY, 5, 0, Math.PI*2); oCtx.fill();
+    oCtx.fillStyle = '#ffffff'; oCtx.beginPath(); oCtx.arc(eyeXL - 3, eyeY - 3, 1.8, 0, Math.PI*2); oCtx.arc(eyeXR - 3, eyeY - 3, 1.8, 0, Math.PI*2); oCtx.fill();
 
     // Thick angry eyebrows
     oCtx.fillStyle = '#0f172a';
     oCtx.beginPath();
-    oCtx.moveTo(58, 66); oCtx.lineTo(86, 78); oCtx.lineTo(86, 72); oCtx.lineTo(62, 60); oCtx.closePath(); oCtx.fill();
+    oCtx.moveTo(eyeXL - 18, eyeY - 18); oCtx.lineTo(eyeXL + 10, eyeY - 6); oCtx.lineTo(eyeXL + 10, eyeY - 12); oCtx.lineTo(eyeXL - 14, eyeY - 24); oCtx.closePath(); oCtx.fill();
     oCtx.beginPath();
-    oCtx.moveTo(134, 66); oCtx.lineTo(106, 78); oCtx.lineTo(106, 72); oCtx.lineTo(130, 60); oCtx.closePath(); oCtx.fill();
+    oCtx.moveTo(eyeXR + 18, eyeY - 18); oCtx.lineTo(eyeXR - 10, eyeY - 6); oCtx.lineTo(eyeXR - 10, eyeY - 12); oCtx.lineTo(eyeXR + 14, eyeY - 24); oCtx.closePath(); oCtx.fill();
 
-    // Gritting teeth cartoon mouth
-    oCtx.fillStyle = '#0f172a'; oCtx.fillRect(80, 108, 32, 16);
-    oCtx.fillStyle = '#ffffff'; oCtx.fillRect(82, 110, 28, 12);
+    // Gritting teeth mouth
+    oCtx.fillStyle = '#0f172a'; oCtx.fillRect(80, mouthY, 32, 16);
+    oCtx.fillStyle = '#ffffff'; oCtx.fillRect(82, mouthY + 2, 28, 12);
     oCtx.strokeStyle = '#475569'; oCtx.lineWidth = 1.2;
     oCtx.beginPath();
-    oCtx.moveTo(82, 116); oCtx.lineTo(110, 116);
-    oCtx.moveTo(89, 110); oCtx.lineTo(89, 122);
-    oCtx.moveTo(96, 110); oCtx.lineTo(96, 122);
-    oCtx.moveTo(103, 110); oCtx.lineTo(103, 122);
+    oCtx.moveTo(82, mouthY + 8); oCtx.lineTo(110, mouthY + 8);
+    oCtx.moveTo(89, mouthY + 2); oCtx.lineTo(89, mouthY + 14);
+    oCtx.moveTo(96, mouthY + 2); oCtx.lineTo(96, mouthY + 14);
+    oCtx.moveTo(103, mouthY + 2); oCtx.lineTo(103, mouthY + 14);
     oCtx.stroke();
 
-    // Red boxing shorts & Champion belt
-    oCtx.fillStyle = '#dc2626'; oCtx.fillRect(44, 142, 104, 22);
-    oCtx.fillStyle = '#fbbf24'; oCtx.fillRect(44, 142, 8, 22); oCtx.fillRect(140, 142, 8, 22); // side gold lines
-    
-    // Golden Belt Buckle
-    oCtx.fillStyle = '#fbbf24'; oCtx.beginPath(); oCtx.arc(96, 142, 12, 0, Math.PI*2); oCtx.fill();
-    oCtx.fillStyle = '#eab308'; oCtx.beginPath(); oCtx.arc(96, 142, 8, 0, Math.PI*2); oCtx.fill();
-    // Crown symbol in the middle of buckle
+    // Trunks & Champion belt
+    oCtx.fillStyle = opponentShortsColor; oCtx.fillRect(44, 142, 104, 22);
+    oCtx.fillStyle = opponentBeltColor; oCtx.fillRect(44, 142, 8, 22); oCtx.fillRect(140, 142, 8, 22);
+    oCtx.beginPath(); oCtx.arc(96, 142, 12, 0, Math.PI*2); oCtx.fill();
+    oCtx.fillStyle = opponentBeltDark; oCtx.beginPath(); oCtx.arc(96, 142, 8, 0, Math.PI*2); oCtx.fill();
     oCtx.fillStyle = '#1e1b4b'; oCtx.beginPath();
     oCtx.moveTo(91, 144); oCtx.lineTo(93, 138); oCtx.lineTo(96, 141); oCtx.lineTo(99, 138); oCtx.lineTo(101, 144);
     oCtx.closePath(); oCtx.fill();
 
-    // Heavy red leather gloves (placed in guard)
+    // Gloves in guard
     oCtx.fillStyle = getGloveGrad(oCtx, 36, 116, 26);
     oCtx.beginPath(); oCtx.arc(36, 116, 26, 0, Math.PI*2); oCtx.fill();
     oCtx.fillStyle = 'rgba(255, 255, 255, 0.4)'; oCtx.beginPath(); oCtx.arc(30, 108, 6, 0, Math.PI*2); oCtx.fill();
@@ -2211,35 +3537,37 @@ class ChessBoxGame {
 
     scene.textures.addCanvas('opp-idle', oCanvas);
 
-    // 8. General Torreón Punching Left (Canvas 192x192)
+    // ==========================================
+    // 8. Opponent Punching Left (Canvas 192x192)
+    // ==========================================
     const olCanvas = document.createElement('canvas'); olCanvas.width = 192; olCanvas.height = 192;
     const olCtx = olCanvas.getContext('2d');
     
     olCtx.shadowColor = 'rgba(0, 0, 0, 0.3)'; olCtx.shadowBlur = 10; olCtx.shadowOffsetY = 6;
-    olCtx.fillStyle = '#111827'; olCtx.fillRect(52, 48, 88, 20);
-    olCtx.fillStyle = getStoneGrad(olCtx, 44, 40, 148, 156);
-    olCtx.beginPath();
-    olCtx.moveTo(52, 36); olCtx.lineTo(68, 36); olCtx.lineTo(68, 52); olCtx.lineTo(84, 52); olCtx.lineTo(84, 36); olCtx.lineTo(100, 36); olCtx.lineTo(100, 52); olCtx.lineTo(116, 52); olCtx.lineTo(116, 36); olCtx.lineTo(132, 36); olCtx.lineTo(132, 52); olCtx.lineTo(140, 52);
-    olCtx.lineTo(148, 156); olCtx.lineTo(44, 156); olCtx.closePath(); olCtx.fill();
+    if (tier === 'rook') {
+      olCtx.fillStyle = '#111827'; olCtx.fillRect(52, 48, 88, 20);
+    }
+    
+    drawOpponentBody(olCtx, false);
     
     // Eyes angry
-    olCtx.fillStyle = '#111827'; olCtx.beginPath(); olCtx.arc(76, 84, 13, 0, Math.PI*2); olCtx.arc(116, 84, 13, 0, Math.PI*2); olCtx.fill();
-    olCtx.fillStyle = '#ef4444'; olCtx.beginPath(); olCtx.arc(76, 84, 9, 0, Math.PI*2); olCtx.arc(116, 84, 9, 0, Math.PI*2); olCtx.fill();
+    olCtx.fillStyle = '#111827'; olCtx.beginPath(); olCtx.arc(eyeXL, eyeY, 13, 0, Math.PI*2); olCtx.arc(eyeXR, eyeY, 13, 0, Math.PI*2); olCtx.fill();
+    olCtx.fillStyle = '#ef4444'; olCtx.beginPath(); olCtx.arc(eyeXL, eyeY, 9, 0, Math.PI*2); olCtx.arc(eyeXR, eyeY, 9, 0, Math.PI*2); olCtx.fill();
 
-    // ROARING mouth (fire magma inside!)
-    olCtx.fillStyle = '#0f172a'; olCtx.beginPath(); olCtx.arc(96, 116, 16, 0, Math.PI*2); olCtx.fill();
-    olCtx.fillStyle = '#f97316'; olCtx.beginPath(); olCtx.arc(96, 118, 11, 0, Math.PI*2); olCtx.fill(); // hot magma fire
-    olCtx.fillStyle = '#ffffff'; olCtx.fillRect(86, 102, 4, 4); olCtx.fillRect(102, 102, 4, 4); // stone teeth
+    // ROARING mouth
+    olCtx.fillStyle = '#0f172a'; olCtx.beginPath(); olCtx.arc(96, mouthY + 8, 16, 0, Math.PI*2); olCtx.fill();
+    olCtx.fillStyle = '#f97316'; olCtx.beginPath(); olCtx.arc(96, mouthY + 10, 11, 0, Math.PI*2); olCtx.fill();
+    olCtx.fillStyle = '#ffffff'; olCtx.fillRect(86, mouthY - 6, 4, 4); olCtx.fillRect(102, mouthY - 6, 4, 4);
 
-    // Belt & Trunks
-    olCtx.fillStyle = '#dc2626'; olCtx.fillRect(44, 142, 104, 22);
-    olCtx.fillStyle = '#fbbf24'; olCtx.beginPath(); olCtx.arc(96, 142, 12, 0, Math.PI*2); olCtx.fill();
+    // Trunks
+    olCtx.fillStyle = opponentShortsColor; olCtx.fillRect(44, 142, 104, 22);
+    olCtx.fillStyle = opponentBeltColor; olCtx.beginPath(); olCtx.arc(96, 142, 12, 0, Math.PI*2); olCtx.fill();
 
     // Normal Right Glove in guard
     olCtx.fillStyle = getGloveGrad(olCtx, 156, 116, 26);
     olCtx.beginPath(); olCtx.arc(156, 116, 26, 0, Math.PI*2); olCtx.fill();
 
-    // EXTENDED MASSIVE LEFT GLOVE (Foreshortened punch shooting forward, huge at Y=140, radius=36!)
+    // EXTENDED LEFT GLOVE
     olCtx.strokeStyle = 'rgba(239, 68, 68, 0.4)'; olCtx.lineWidth = 12;
     olCtx.beginPath(); olCtx.moveTo(36, 116); olCtx.lineTo(28, 146); olCtx.stroke();
 
@@ -2249,35 +3577,37 @@ class ChessBoxGame {
 
     scene.textures.addCanvas('opp-punch-l', olCanvas);
 
-    // 9. General Torreón Punching Right (Canvas 192x192)
+    // ==========================================
+    // 9. Opponent Punching Right (Canvas 192x192)
+    // ==========================================
     const orCanvas = document.createElement('canvas'); orCanvas.width = 192; orCanvas.height = 192;
     const orCtx = orCanvas.getContext('2d');
     
     orCtx.shadowColor = 'rgba(0, 0, 0, 0.3)'; orCtx.shadowBlur = 10; orCtx.shadowOffsetY = 6;
-    orCtx.fillStyle = '#111827'; orCtx.fillRect(52, 48, 88, 20);
-    orCtx.fillStyle = getStoneGrad(orCtx, 44, 40, 148, 156);
-    orCtx.beginPath();
-    orCtx.moveTo(52, 36); orCtx.lineTo(68, 36); orCtx.lineTo(68, 52); orCtx.lineTo(84, 52); orCtx.lineTo(84, 36); orCtx.lineTo(100, 36); orCtx.lineTo(100, 52); orCtx.lineTo(116, 52); orCtx.lineTo(116, 36); orCtx.lineTo(132, 36); orCtx.lineTo(132, 52); orCtx.lineTo(140, 52);
-    orCtx.lineTo(148, 156); orCtx.lineTo(44, 156); orCtx.closePath(); orCtx.fill();
+    if (tier === 'rook') {
+      orCtx.fillStyle = '#111827'; orCtx.fillRect(52, 48, 88, 20);
+    }
+    
+    drawOpponentBody(orCtx, false);
     
     // Eyes angry
-    orCtx.fillStyle = '#111827'; orCtx.beginPath(); orCtx.arc(76, 84, 13, 0, Math.PI*2); orCtx.arc(116, 84, 13, 0, Math.PI*2); orCtx.fill();
-    orCtx.fillStyle = '#ef4444'; orCtx.beginPath(); orCtx.arc(76, 84, 9, 0, Math.PI*2); orCtx.arc(116, 84, 9, 0, Math.PI*2); orCtx.fill();
+    orCtx.fillStyle = '#111827'; orCtx.beginPath(); orCtx.arc(eyeXL, eyeY, 13, 0, Math.PI*2); orCtx.arc(eyeXR, eyeY, 13, 0, Math.PI*2); orCtx.fill();
+    orCtx.fillStyle = '#ef4444'; orCtx.beginPath(); orCtx.arc(eyeXL, eyeY, 9, 0, Math.PI*2); orCtx.arc(eyeXR, eyeY, 9, 0, Math.PI*2); orCtx.fill();
 
     // ROARING mouth
-    orCtx.fillStyle = '#0f172a'; orCtx.beginPath(); orCtx.arc(96, 116, 16, 0, Math.PI*2); orCtx.fill();
-    orCtx.fillStyle = '#f97316'; orCtx.beginPath(); orCtx.arc(96, 118, 11, 0, Math.PI*2); orCtx.fill();
-    orCtx.fillStyle = '#ffffff'; orCtx.fillRect(86, 102, 4, 4); orCtx.fillRect(102, 102, 4, 4);
+    orCtx.fillStyle = '#0f172a'; orCtx.beginPath(); oCtx.arc(96, mouthY + 8, 16, 0, Math.PI*2); olCtx.fill();
+    orCtx.fillStyle = '#f97316'; orCtx.beginPath(); oCtx.arc(96, mouthY + 10, 11, 0, Math.PI*2); olCtx.fill();
+    orCtx.fillStyle = '#ffffff'; orCtx.fillRect(86, mouthY - 6, 4, 4); orCtx.fillRect(102, mouthY - 6, 4, 4);
 
-    // Belt & Trunks
-    orCtx.fillStyle = '#dc2626'; orCtx.fillRect(44, 142, 104, 22);
-    orCtx.fillStyle = '#fbbf24'; orCtx.beginPath(); orCtx.arc(96, 142, 12, 0, Math.PI*2); orCtx.fill();
+    // Trunks
+    orCtx.fillStyle = opponentShortsColor; orCtx.fillRect(44, 142, 104, 22);
+    orCtx.fillStyle = opponentBeltColor; orCtx.beginPath(); orCtx.arc(96, 142, 12, 0, Math.PI*2); orCtx.fill();
 
     // Normal Left Glove in guard
     orCtx.fillStyle = getGloveGrad(orCtx, 36, 116, 26);
     orCtx.beginPath(); orCtx.arc(36, 116, 26, 0, Math.PI*2); orCtx.fill();
 
-    // EXTENDED MASSIVE RIGHT GLOVE (Y=146, radius=36!)
+    // EXTENDED RIGHT GLOVE
     orCtx.strokeStyle = 'rgba(239, 68, 68, 0.4)'; orCtx.lineWidth = 12;
     orCtx.beginPath(); orCtx.moveTo(156, 116); orCtx.lineTo(164, 146); orCtx.stroke();
 
@@ -2287,27 +3617,27 @@ class ChessBoxGame {
 
     scene.textures.addCanvas('opp-punch-r', orCanvas);
 
-    // 10. General Torreón Stunned (Canvas 192x192)
+    // ==========================================
+    // 10. Opponent Stunned (Canvas 192x192)
+    // ==========================================
     const osCanvas = document.createElement('canvas'); osCanvas.width = 192; osCanvas.height = 192;
     const osCtx = osCanvas.getContext('2d');
     
     osCtx.shadowColor = 'rgba(0, 0, 0, 0.3)'; osCtx.shadowBlur = 10; osCtx.shadowOffsetY = 6;
     
-    // Stunned Bruised Stone Color
-    const bruiseGrad = osCtx.createLinearGradient(44, 40, 148, 156);
-    bruiseGrad.addColorStop(0, '#27272a'); bruiseGrad.addColorStop(0.5, '#4b5563'); bruiseGrad.addColorStop(1, '#18181b');
+    if (tier === 'rook') {
+      osCtx.fillStyle = '#111827'; osCtx.fillRect(52, 48, 88, 20);
+    }
     
-    osCtx.fillStyle = '#111827'; osCtx.fillRect(52, 48, 88, 20);
-    osCtx.fillStyle = bruiseGrad; osCtx.beginPath();
-    osCtx.moveTo(52, 36); osCtx.lineTo(68, 36); osCtx.lineTo(68, 52); osCtx.lineTo(84, 52); osCtx.lineTo(84, 36); osCtx.lineTo(100, 36); osCtx.lineTo(100, 52); osCtx.lineTo(116, 52); osCtx.lineTo(116, 36); osCtx.lineTo(132, 36); osCtx.lineTo(132, 52); osCtx.lineTo(140, 52);
-    osCtx.lineTo(148, 156); osCtx.lineTo(44, 156);
-    osCtx.closePath(); osCtx.fill();
+    // Draw Dynamic Body Shape (Bruised Stunned Colors)
+    drawOpponentBody(osCtx, true);
 
-    // Joint lines
-    osCtx.strokeStyle = '#1e293b'; osCtx.lineWidth = 2.2;
-    osCtx.beginPath();
-    osCtx.moveTo(50, 72); osCtx.lineTo(142, 72); osCtx.moveTo(48, 102); osCtx.lineTo(144, 102); osCtx.moveTo(46, 132); osCtx.lineTo(146, 132);
-    osCtx.stroke();
+    if (tier === 'rook') {
+      osCtx.strokeStyle = '#1e293b'; osCtx.lineWidth = 2.2;
+      osCtx.beginPath();
+      osCtx.moveTo(50, 72); osCtx.lineTo(142, 72); osCtx.moveTo(48, 102); osCtx.lineTo(144, 102); osCtx.moveTo(46, 132); osCtx.lineTo(146, 132);
+      osCtx.stroke();
+    }
 
     // COMICAL SPIRAL EYES
     const drawSpiral = (ctx, cx, cy, maxR) => {
@@ -2321,33 +3651,35 @@ class ChessBoxGame {
       }
       ctx.stroke();
     };
-    osCtx.fillStyle = '#111827'; osCtx.beginPath(); osCtx.arc(76, 84, 13, 0, Math.PI*2); osCtx.arc(116, 84, 13, 0, Math.PI*2); osCtx.fill();
-    drawSpiral(osCtx, 76, 84, 11);
-    drawSpiral(osCtx, 116, 84, 11);
+    osCtx.fillStyle = '#111827'; osCtx.beginPath(); osCtx.arc(eyeXL, eyeY, 13, 0, Math.PI*2); osCtx.arc(eyeXR, eyeY, 13, 0, Math.PI*2); osCtx.fill();
+    drawSpiral(osCtx, eyeXL, eyeY, 11);
+    drawSpiral(osCtx, eyeXR, eyeY, 11);
 
     // Drooping sad eyebrows
     osCtx.strokeStyle = '#000000'; osCtx.lineWidth = 3.5;
     osCtx.beginPath();
-    osCtx.moveTo(58, 76); osCtx.lineTo(84, 82);
-    osCtx.moveTo(134, 76); osCtx.lineTo(108, 82);
+    osCtx.moveTo(eyeXL - 18, eyeY - 8); osCtx.lineTo(eyeXL + 8, eyeY - 2);
+    osCtx.moveTo(eyeXR + 18, eyeY - 8); osCtx.lineTo(eyeXR - 8, eyeY - 2);
     osCtx.stroke();
 
     // Dazed open mouth with tongue hanging out!
-    osCtx.fillStyle = '#111827'; osCtx.fillRect(80, 108, 32, 18);
+    osCtx.fillStyle = '#111827'; osCtx.fillRect(80, mouthY, 32, 18);
     osCtx.fillStyle = '#f43f5e'; // pink tongue
-    osCtx.beginPath(); osCtx.arc(96, 120, 8, 0, Math.PI); osCtx.fill();
-    osCtx.fillStyle = '#ffffff'; osCtx.fillRect(82, 108, 6, 4); osCtx.fillRect(104, 108, 6, 4); // crooked teeth
+    osCtx.beginPath(); osCtx.arc(96, mouthY + 12, 8, 0, Math.PI); osCtx.fill();
+    osCtx.fillStyle = '#ffffff'; osCtx.fillRect(82, mouthY, 6, 4); osCtx.fillRect(104, mouthY, 6, 4);
 
     // Bruise purple mark
     osCtx.fillStyle = 'rgba(168, 85, 247, 0.45)';
-    osCtx.beginPath(); osCtx.arc(62, 106, 10, 0, Math.PI*2); osCtx.fill();
+    osCtx.beginPath(); osCtx.arc(62, eyeY + 22, 10, 0, Math.PI*2); osCtx.fill();
 
-    // Band-aid on the head crenelllation
-    osCtx.fillStyle = '#fed7aa'; osCtx.fillRect(120, 44, 20, 8);
-    osCtx.fillStyle = '#fca5a5'; osCtx.fillRect(126, 44, 8, 8); // inner pad
+    // Band-aid
+    if (tier === 'rook') {
+      osCtx.fillStyle = '#fed7aa'; osCtx.fillRect(120, 44, 20, 8);
+      osCtx.fillStyle = '#fca5a5'; osCtx.fillRect(126, 44, 8, 8);
+    }
 
     // Red shorts
-    osCtx.fillStyle = '#dc2626'; osCtx.fillRect(44, 142, 104, 22);
+    osCtx.fillStyle = opponentShortsColor; osCtx.fillRect(44, 142, 104, 22);
 
     // Gloves dropped and hanging down weakly!
     osCtx.fillStyle = getGloveGrad(osCtx, 32, 156, 20);
@@ -2356,11 +3688,10 @@ class ChessBoxGame {
     osCtx.fillStyle = getGloveGrad(osCtx, 160, 156, 20);
     osCtx.beginPath(); osCtx.arc(160, 156, 20, 0, Math.PI*2); osCtx.fill();
 
-    // COMICAL SPINNING GOLD STARS ORBIT (Tilted ellipse above head)
+    // COMICAL SPINNING GOLD STARS ORBIT
     osCtx.strokeStyle = 'rgba(251, 191, 36, 0.35)'; osCtx.lineWidth = 1.5;
     osCtx.beginPath(); osCtx.ellipse(96, 22, 44, 10, Math.PI / 12, 0, Math.PI * 2); osCtx.stroke();
     
-    // Draw 3 gold stars at different spots on orbit
     const drawGoldStar = (ctx, sx, sy, r) => {
       ctx.fillStyle = '#fbbf24';
       ctx.beginPath();
@@ -3150,7 +4481,9 @@ class ChessBoxGame {
   // --- TRIGGER ENGINE STOCKFISH OR FALLBACK LOCAL MOVE ---
   triggerEngineTurn() {
     this.isThinking = true;
-    this.updateStatus('General Torreón está pensando... 🤔');
+    const level = this.levels[this.currentLevelIndex];
+    const name = level ? level.opponentName : 'Tu oponente';
+    this.updateStatus(`${name} está pensando... 🤔`);
 
     if (this.engineType === 'stockfish' && this.stockfishWorker) {
       // Send FEN to Stockfish Web Worker
@@ -3550,6 +4883,9 @@ class ChessBoxGame {
     this.destroy();
     window.GameAudio.playVictory();
 
+    const level = this.levels[this.currentLevelIndex];
+    const name = level ? level.opponentName : 'tu oponente';
+
     let starsWon = 3;
     if (this.playerHealth < 40) starsWon = 2;
 
@@ -3561,7 +4897,7 @@ class ChessBoxGame {
           <div style="font-size: 4.5rem; text-shadow: 0 4px 8px rgba(0,0,0,0.5);">🥊</div>
         </div>
         <h2>¡K.O. VICTORIA EN EL RING! 🏆</h2>
-        <p style="color:#fca5a5;">¡Fantástica Martina! Has mandado a la lona al General Torreón en la Ronda de Boxeo.</p>
+        <p style="color:#fca5a5;">¡Fantástica Martina! Has mandado a la lona al ${name} en la Ronda de Boxeo.</p>
         
         <div style="margin: 1rem 0;">
           ${this.getStarsHTML(starsWon)}
@@ -3831,11 +5167,330 @@ class ChessBoxGame {
         60% { transform: translate(-3px, 1px) rotate(0deg); }
         70% { transform: translate(2px, 1px) rotate(-1deg); }
         80% { transform: translate(-1px, -1px) rotate(1deg); }
-        90% { transform: translate(2px, 2px) rotate(0deg); }
         100% { transform: translate(1px, -2px) rotate(-1deg); }
+      }
+      
+      /* =========================================================================
+         JAPANESE ANIME / MEGA MAN RETRO INTRO STYLES
+         ========================================================================= */
+      .challenger-intro-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 9999;
+        background: #050512;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Outfit', 'Inter', sans-serif;
+        color: white;
+        transition: opacity 0.4s ease-out;
+      }
+      
+      .warning-banner {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 35px;
+        background: repeating-linear-gradient(
+          -45deg,
+          #dc2626,
+          #dc2626 12px,
+          #000000 12px,
+          #000000 24px
+        );
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        border-top: 2px solid #f43f5e;
+        border-bottom: 2px solid #f43f5e;
+        box-shadow: 0 0 20px rgba(244, 63, 94, 0.4);
+      }
+      .banner-top { top: 35px; }
+      .banner-bottom { bottom: 35px; }
+      
+      .warning-scroller {
+        white-space: nowrap;
+        animation: scrollIntroText 15s linear infinite;
+        font-weight: 900;
+        font-size: 0.9rem;
+        color: #fff;
+        text-shadow: 1px 1px 2px #000, 0 0 5px #f43f5e;
+        letter-spacing: 2px;
+      }
+      
+      @keyframes scrollIntroText {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+      
+      .intro-speed-lines {
+        position: absolute;
+        inset: -100px;
+        background: 
+          repeating-radial-gradient(
+            circle,
+            transparent,
+            transparent 8px,
+            rgba(255, 255, 255, 0.02) 8px,
+            rgba(255, 255, 255, 0.02) 16px
+          );
+        animation: animeSpeedlines 0.18s linear infinite;
+        opacity: 0.25;
+        pointer-events: none;
+      }
+      
+      @keyframes animeSpeedlines {
+        0% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(-4px, 4px) scale(1.015); }
+        100% { transform: translate(4px, -4px) scale(1); }
+      }
+      
+      .intro-split-container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      
+      .intro-panel {
+        flex: 1;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      
+      .intro-panel-left {
+        background: linear-gradient(135deg, rgba(13, 148, 136, 0.9) 0%, rgba(6, 182, 212, 0.95) 100%);
+        transform: skewX(-12deg) translateX(-100%);
+        animation: slideLeftPanel 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        border-right: 4px solid #67e8f9;
+        box-shadow: 15px 0 35px rgba(6, 182, 212, 0.45);
+      }
+      
+      .intro-panel-right {
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(88, 28, 135, 0.9) 100%);
+        transform: skewX(-12deg) translateX(100%);
+        animation: slideRightPanel 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation-delay: 0.08s;
+        border-left: 4px solid var(--opp-color);
+        box-shadow: -15px 0 35px rgba(124, 58, 237, 0.4);
+      }
+      
+      .panel-unskew {
+        transform: skewX(12deg);
+        width: 85%;
+        max-width: 440px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      
+      @keyframes slideLeftPanel {
+        0% { transform: skewX(-12deg) translateX(-100%); }
+        100% { transform: skewX(-12deg) translateX(0); }
+      }
+      @keyframes slideRightPanel {
+        0% { transform: skewX(-12deg) translateX(100%); }
+        100% { transform: skewX(-12deg) translateX(0); }
+      }
+      
+      .challenger-card {
+        text-align: center;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        animation: panelContentFade 0.5s ease-out 0.65s both;
+      }
+      
+      @keyframes panelContentFade {
+        from { opacity: 0; transform: translateY(25px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      .intro-badge {
+        display: inline-block;
+        padding: 5px 18px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+      }
+      .badge-martina {
+        background: #fbbf24;
+        color: #1e1b4b;
+        box-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+      }
+      
+      .intro-challenger-name {
+        font-size: 2.6rem;
+        font-weight: 900;
+        margin: 5px 0;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-family: 'Outfit', sans-serif;
+      }
+      .name-martina {
+        color: #ffffff;
+        text-shadow: 0 0 15px rgba(6, 182, 212, 0.8);
+      }
+      
+      .intro-challenger-elo {
+        color: #e2e8f0;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 18px;
+        background: rgba(0, 0, 0, 0.35);
+        padding: 3px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      
+      .canvas-wrapper {
+        background: rgba(0, 0, 0, 0.5);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        padding: 15px;
+        margin-bottom: 18px;
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7), 0 10px 25px rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: transform 0.3s ease;
+      }
+      .canvas-wrapper:hover {
+        transform: scale(1.04);
+      }
+      .canvas-wrapper canvas {
+        width: 180px;
+        height: 180px;
+        display: block;
+        image-rendering: pixelated;
+      }
+      
+      .opponent-power-container {
+        background: rgba(0, 0, 0, 0.45);
+        padding: 12px 18px;
+        border-radius: 12px;
+        text-align: left;
+        margin-bottom: 14px;
+        font-size: 0.88rem;
+        line-height: 1.45;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .opponent-power-container h4 {
+        margin: 0 0 6px 0;
+        font-weight: 900;
+        letter-spacing: 0.5px;
+        font-size: 0.92rem;
+      }
+      .opponent-power-container p {
+        margin: 0;
+        color: #cbd5e1;
+      }
+      
+      .intro-challenger-quote {
+        font-style: italic;
+        color: #a5f3fc;
+        font-size: 0.85rem;
+        max-width: 320px;
+        margin: 5px auto;
+        line-height: 1.45;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+      }
+      
+      .intro-diagonal-slash {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 8px;
+        background: #fbbf24;
+        box-shadow: 0 0 35px #f59e0b, 0 0 15px #fbbf24;
+        transform: translateX(-50%) skewX(-12deg);
+        z-index: 10;
+        animation: slashGlow 0.15s linear infinite;
+      }
+      
+      @keyframes slashGlow {
+        0% { opacity: 0.85; filter: blur(0.5px); }
+        50% { opacity: 1; filter: blur(2px); }
+        100% { opacity: 0.85; filter: blur(0.5px); }
+      }
+      
+      .intro-vs-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 20;
+      }
+      
+      .intro-vs-badge {
+        font-size: 3.5rem;
+        font-weight: 900;
+        color: #030712;
+        background: #fbbf24;
+        border: 4px solid #ffffff;
+        padding: 10px 25px;
+        border-radius: 15px;
+        box-shadow: 0 0 30px #fbbf24, 0 10px 30px rgba(0, 0, 0, 0.7);
+        text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff;
+        transform: rotate(-10deg) scale(0);
+        animation: popVs 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.6s forwards;
+      }
+      
+      @keyframes popVs {
+        0% { transform: rotate(-10deg) scale(0); }
+        75% { transform: rotate(-15deg) scale(1.2); }
+        100% { transform: rotate(-10deg) scale(1); }
+      }
+      
+      .intro-skip-btn {
+        position: absolute;
+        bottom: 85px;
+        right: 40px;
+        z-index: 30;
+        background: rgba(0, 0, 0, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: white;
+        padding: 8px 18px;
+        font-size: 0.85rem;
+        font-weight: 800;
+        border-radius: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        transition: all 0.2s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .intro-skip-btn:hover {
+        background: white;
+        color: black;
+        border-color: white;
+        transform: translateY(-2px);
+      }
+      .intro-skip-btn kbd {
+        background: #334155;
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-family: monospace;
+        font-size: 0.75rem;
+        box-shadow: inset 0 -2px 0 rgba(0,0,0,0.25);
+        color: white;
       }
     `;
     document.head.appendChild(styles);
+
   }
 
   // --- DYNAMIC PHASER SCRIPT LOAD ---

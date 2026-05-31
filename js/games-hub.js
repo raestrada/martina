@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       script = document.createElement('script');
       script.id = scriptId;
-      script.src = `js/games/${gameType}.js`;
+      script.src = `js/games/${gameType}.js?v=2.0`;
       script.onload = instantiateGame;
       script.onerror = () => {
         sandbox.innerHTML = `

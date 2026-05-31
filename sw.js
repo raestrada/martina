@@ -1,6 +1,6 @@
 // Martina PWA — Service Worker v3
 // 3-tier caching: shell (auto) + images (auto) + videos (on-demand)
-const VERSION = '3';
+const VERSION = '4';
 const CACHE_SHELL = `martina-shell-v${VERSION}`;
 const CACHE_IMAGES = `martina-images-v${VERSION}`;
 const CACHE_VIDEOS = `martina-videos-v${VERSION}`;
