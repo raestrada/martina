@@ -740,7 +740,6 @@ class BotsGame {
 
   async _getSpanishVoice(preferFemale) {
     if (!this._voices) this._voices = await this._getVoices();
-    // Prefer Spanish female/male
     let voice = this._voices.find(v => v.lang.startsWith('es') && v.name.includes(preferFemale ? 'Mónica' : 'Jorge'));
     if (!voice) voice = this._voices.find(v => v.lang.startsWith('es') && v.name.includes(preferFemale ? 'Paulina' : 'Diego'));
     if (!voice) voice = this._voices.find(v => v.lang.startsWith('es'));
@@ -749,18 +748,30 @@ class BotsGame {
     return voice;
   }
 
-  async speak(text, voiceProfile) {
+  speak(text, voiceProfile) {
     if (!this.voiceEnabled || !text || !window.speechSynthesis) return;
-    const now = Date.now();
-    if (now - this._lastSpeak < 600) return; // debounce
-    this._lastSpeak = now;
+    if (!this._speakQueue) this._speakQueue = [];
+    this._speakQueue.push({ text, profile: voiceProfile });
+    if (!this._speaking) this._dequeueSpeak();
+  }
 
-    speechSynthesis.cancel();
+  async _dequeueSpeak() {
+    if (!this._speakQueue || this._speakQueue.length === 0 || !this.voiceEnabled) {
+      this._speaking = false;
+      return;
+    }
+    this._speaking = true;
+    const { text, profile } = this._speakQueue.shift();
+
     const utter = new SpeechSynthesisUtterance(text);
-    utter.voice = await this._getSpanishVoice(voiceProfile === 'female');
-    utter.pitch = voiceProfile === 'high' ? 1.6 : voiceProfile === 'low' ? 0.7 : voiceProfile === 'deep' ? 0.5 : 1.0;
-    utter.rate = voiceProfile === 'fast' ? 1.3 : voiceProfile === 'slow' ? 0.75 : voiceProfile === 'dry' ? 0.9 : 1.05;
+    utter.voice = await this._getSpanishVoice(profile === 'female');
+    utter.pitch = profile === 'high' ? 1.6 : profile === 'low' ? 0.7 : profile === 'deep' ? 0.5 : 1.0;
+    utter.rate  = profile === 'fast' ? 1.3 : profile === 'slow' ? 0.75 : profile === 'dry' ? 0.9 : 1.05;
     utter.volume = 0.8;
+
+    utter.onend = () => this._dequeueSpeak();
+    utter.onerror = () => { this._speaking = false; this._dequeueSpeak(); };
+
     speechSynthesis.speak(utter);
   }
 
@@ -1979,7 +1990,11 @@ class BotsGame {
     document.getElementById('bots-btn-voice').addEventListener('click', () => {
       this.voiceEnabled = !this.voiceEnabled;
       localStorage.setItem('martina_bots_voice', this.voiceEnabled ? 'true' : 'false');
-      if (!this.voiceEnabled) speechSynthesis.cancel();
+      if (!this.voiceEnabled) {
+        speechSynthesis.cancel();
+        this._speakQueue = [];
+        this._speaking = false;
+      }
       const btn = document.getElementById('bots-btn-voice');
       if (btn) {
         btn.textContent = this.voiceEnabled ? '🗣️' : '🔈';
