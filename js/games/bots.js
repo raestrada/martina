@@ -12,6 +12,7 @@ class BotsGame {
         emoji: '♟️',
         boardLight: '#dbeafe',
         boardDark: '#1e4d8c',
+        gender: 'male',
         desc: 'Peón de cristal con un bigote falso enorme que se le despega constantemente.',
         quotes: {
           greeting: [
@@ -75,6 +76,7 @@ class BotsGame {
         emoji: '🐴',
         boardLight: '#dcfce7',
         boardDark: '#1a6b3c',
+        gender: 'male',
         desc: 'Caballo que practica saltos en L, pero a veces se confunde y salta en Ŋ.',
         quotes: {
           greeting: [
@@ -138,6 +140,7 @@ class BotsGame {
         emoji: '🎯',
         boardLight: '#fef9c3',
         boardDark: '#8b6914',
+        gender: 'male',
         desc: 'Lo mandaron a una diagonal de un solo color por protestar contra las tablas. Reinventa la geometría.',
         quotes: {
           greeting: [
@@ -201,6 +204,7 @@ class BotsGame {
         emoji: '🏰',
         boardLight: '#fee2e2',
         boardDark: '#7a1e2e',
+        gender: 'female',
         desc: 'Torre de piedra gris con delantal a cuadros. Vende empanadas temáticas en c3. Humor seco.',
         quotes: {
           greeting: [
@@ -264,6 +268,7 @@ class BotsGame {
         emoji: '👑',
         boardLight: '#fce7f3',
         boardDark: '#8a2e6a',
+        gender: 'female',
         desc: 'Alérgica al jaque mate. Estornuda cada vez que alguien está a punto de dar mate.',
         quotes: {
           greeting: [
@@ -327,6 +332,7 @@ class BotsGame {
         emoji: '🌑',
         boardLight: '#ede9fe',
         boardDark: '#5a2d82',
+        gender: 'male',
         desc: 'La sombra que domina las cuatro casillas centrales del tablero. Juega con tu mente.',
         quotes: {
           greeting: [
@@ -390,6 +396,7 @@ class BotsGame {
         emoji: '👧',
         boardLight: '#fefce8',
         boardDark: '#8a7a2e',
+        gender: 'female',
         desc: 'La niña ajedrecista de 9 años. Agresiva, caótica, AMA las clavadas. Su ídolo es Judit Polgar.',
         quotes: {
           greeting: [
@@ -458,6 +465,7 @@ class BotsGame {
         emoji: '⚔️',
         boardLight: '#fae8ff',
         boardDark: '#7a2e6a',
+        gender: 'female',
         desc: 'Ataque calculado y demolición posicional. La penúltima muralla. Precisión de Judit Polgar.',
         quotes: {
           greeting: [
@@ -521,6 +529,7 @@ class BotsGame {
         emoji: '💀',
         boardLight: '#f5f0e0',
         boardDark: '#6b5a2e',
+        gender: 'male',
         desc: 'Stockfish al 100%. El fin del tablero. Solo los más valientes se atreven.',
         quotes: {
           greeting: [
@@ -738,20 +747,21 @@ class BotsGame {
     });
   }
 
-  async _getSpanishVoice(preferFemale) {
+  async _getSpanishVoice(gender) {
     if (!this._voices) this._voices = await this._getVoices();
-    let voice = this._voices.find(v => v.lang.startsWith('es') && v.name.includes(preferFemale ? 'Mónica' : 'Jorge'));
-    if (!voice) voice = this._voices.find(v => v.lang.startsWith('es') && v.name.includes(preferFemale ? 'Paulina' : 'Diego'));
+    const wantFemale = gender === 'female';
+    let voice = this._voices.find(v => v.lang.startsWith('es') && v.name.includes(wantFemale ? 'Mónica' : 'Jorge'));
+    if (!voice) voice = this._voices.find(v => v.lang.startsWith('es') && v.name.includes(wantFemale ? 'Paulina' : 'Diego'));
     if (!voice) voice = this._voices.find(v => v.lang.startsWith('es'));
     if (!voice) voice = this._voices.find(v => v.lang.startsWith('en'));
     if (!voice) voice = this._voices[0];
     return voice;
   }
 
-  speak(text, voiceProfile) {
+  speak(text, gender, pitchProfile) {
     if (!this.voiceEnabled || !text || !window.speechSynthesis) return;
     if (!this._speakQueue) this._speakQueue = [];
-    this._speakQueue.push({ text, profile: voiceProfile });
+    this._speakQueue.push({ text, gender: gender || 'male', profile: pitchProfile || 'normal' });
     if (!this._speaking) this._dequeueSpeak();
   }
 
@@ -761,11 +771,12 @@ class BotsGame {
       return;
     }
     this._speaking = true;
-    const { text, profile } = this._speakQueue.shift();
+    const { text, gender, profile } = this._speakQueue.shift();
 
     const utter = new SpeechSynthesisUtterance(text);
-    utter.voice = await this._getSpanishVoice(profile === 'female');
-    utter.pitch = profile === 'high' ? 1.6 : profile === 'low' ? 0.7 : profile === 'deep' ? 0.5 : 1.0;
+    utter.voice = await this._getSpanishVoice(gender);
+    const pitchMap = { high: 1.6, low: 0.7, deep: 0.5, female: 1.1, male: 0.9, fast: 1.2, slow: 0.75, dry: 0.9 };
+    utter.pitch = pitchMap[profile] || 1.0;
     utter.rate  = profile === 'fast' ? 1.3 : profile === 'slow' ? 0.75 : profile === 'dry' ? 0.9 : 1.05;
     utter.volume = 0.8;
 
@@ -777,11 +788,17 @@ class BotsGame {
 
   getSpeakProfile(botId) {
     const profiles = {
-      peoncito: 'high', caballo: 'fast', alfil: 'low',
-      torreta: 'dry', reinangra: 'high', sombra: 'slow',
-      martina: 'female', judit: 'female', sombrasuprema: 'deep'
+      peoncito: { gender: 'male', pitch: 'high' },
+      caballo:  { gender: 'male', pitch: 'fast' },
+      alfil:    { gender: 'male', pitch: 'low' },
+      torreta:  { gender: 'female', pitch: 'dry' },
+      reinangra:{ gender: 'female', pitch: 'high' },
+      sombra:   { gender: 'male', pitch: 'slow' },
+      martina:  { gender: 'female', pitch: 'female' },
+      judit:    { gender: 'female', pitch: 'male' },
+      sombrasuprema: { gender: 'male', pitch: 'deep' }
     };
-    return profiles[botId] || 'normal';
+    return profiles[botId] || { gender: 'male', pitch: 'normal' };
   }
 
   // ========== CHESS ENGINE ==========
@@ -1619,9 +1636,11 @@ class BotsGame {
       listEl.removeChild(listEl.lastChild);
     }
 
-    // Speak commentator
+    // Speak commentator — opposite gender to opponent
     if (isOpponent && this.selectedBot) {
-      this.speak(comment, this.getSpeakProfile(this.selectedBot.id));
+      const p = this.getSpeakProfile(this.selectedBot.id);
+      const cmtGender = p.gender === 'female' ? 'male' : 'female';
+      this.speak(comment, cmtGender, 'normal');
     }
   }
 
@@ -1646,7 +1665,8 @@ class BotsGame {
     }, 80);
     // Speak with bot's voice
     if (this.selectedBot) {
-      this.speak(quote, this.getSpeakProfile(this.selectedBot.id));
+      const p = this.getSpeakProfile(this.selectedBot.id);
+      this.speak(quote, p.gender, p.pitch);
     }
   }
 
