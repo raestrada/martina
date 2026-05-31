@@ -1363,15 +1363,15 @@ class BotsGame {
   showBotComment(quote) {
     if (!quote) return;
     const bubble = document.getElementById('bots-comment-bubble');
-    if (!bubble) return;
+    const textEl = document.getElementById('bots-comment-text');
+    if (!bubble || !textEl) return;
 
-    bubble.style.transform = 'translateY(3px)';
-    bubble.style.transition = 'transform 0.15s ease';
+    textEl.style.transform = 'scale(0.97)';
+    textEl.style.transition = 'transform 0.12s ease';
 
     setTimeout(() => {
-      const textEl = document.getElementById('bots-comment-text');
-      if (textEl) textEl.textContent = quote;
-      bubble.style.transform = 'translateY(0)';
+      textEl.textContent = quote;
+      textEl.style.transform = 'scale(1)';
     }, 80);
   }
 
@@ -1598,7 +1598,8 @@ class BotsGame {
     this.container.innerHTML = `
       <div class="bots-game-container" style="--bot-accent: ${accent}; --bot-light: ${bl}; --bot-dark: ${bd};">
         <div class="bots-game-topbar" style="border-color: ${accent}55;">
-          <button class="bots-btn-resign" id="bots-btn-resign">Rendirse</button>
+          <button class="bots-btn-resign" id="bots-btn-resign">✕</button>
+          <button class="bots-btn-mute" id="bots-btn-mute" title="${this.soundEnabled ? 'Silenciar' : 'Activar sonido'}">${this.soundEnabled ? '🔊' : '🔇'}</button>
           <div class="bots-opponent-info">
             <span class="bots-opponent-emoji">${bot.emoji}</span>
             <div>
@@ -1606,7 +1607,7 @@ class BotsGame {
               <span class="bots-opponent-elo" style="color: ${accent};">ELO ${bot.elo}</span>
             </div>
           </div>
-          <span id="bots-status" class="bots-status-text">
+          <span id="bots-status">
             ¡Tu turno! Juegas con blancas.
           </span>
         </div>
@@ -1614,11 +1615,11 @@ class BotsGame {
         <div class="bots-game-main">
           <div class="bots-sidebar-left">
             <div class="bots-captured-section" style="border-color: ${accent}44;">
-              <span class="bots-captured-label">Rival</span>
+              <span class="bots-captured-label">Perdiste</span>
               <div class="bots-captured-pieces" id="bots-captured-white"></div>
             </div>
             <div class="bots-captured-section" style="border-color: ${accent}44;">
-              <span class="bots-captured-label">Tuyas</span>
+              <span class="bots-captured-label">Ganaste</span>
               <div class="bots-captured-pieces" id="bots-captured-black"></div>
             </div>
           </div>
@@ -1636,7 +1637,7 @@ class BotsGame {
               </div>
             </div>
             <div class="bots-history-section">
-              <div class="bots-history-header">Historial · <span id="bots-move-count">J 1</span></div>
+              <div class="bots-history-header">Historial <span id="bots-move-count">· J 1</span></div>
               <div class="bots-history-list" id="bots-history"></div>
             </div>
           </div>
@@ -1647,6 +1648,16 @@ class BotsGame {
     document.getElementById('bots-btn-resign').addEventListener('click', () => {
       this.gameActive = false;
       this.endGame('lose', 'Te rendiste.');
+    });
+
+    document.getElementById('bots-btn-mute').addEventListener('click', () => {
+      this.soundEnabled = !this.soundEnabled;
+      localStorage.setItem('martina_bots_sound', this.soundEnabled ? 'true' : 'false');
+      const btn = document.getElementById('bots-btn-mute');
+      if (btn) {
+        btn.textContent = this.soundEnabled ? '🔊' : '🔇';
+        btn.title = this.soundEnabled ? 'Silenciar' : 'Activar sonido';
+      }
     });
 
     this.initStockfishWorker();

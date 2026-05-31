@@ -3312,6 +3312,23 @@
   background: rgba(239, 68, 68, 0.3);
   color: #fecaca;
 }
+.bots-btn-mute {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  min-width: 32px;
+  line-height: 1;
+  transition: all 0.15s;
+}
+.bots-btn-mute:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+}
 .bots-opponent-info {
   display: flex;
   align-items: center;
@@ -3368,8 +3385,20 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  width: 60px;
+  width: 70px;
   padding-top: 2px;
+}
+.bots-sidebar-left .bots-captured-section {
+  justify-content: flex-start;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.bots-captured-pieces {
+  font-size: 0.75rem;
+  color: #dde4f0;
+  word-break: break-all;
+  line-height: 1.15;
+  overflow-wrap: break-word;
 }
 
 /* Right sidebar — comment + scrollable history */
@@ -3377,7 +3406,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  width: 145px;
+  width: 140px;
 }
 
 /* Captured pieces */
@@ -3389,7 +3418,8 @@
   height: 48px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .bots-captured-label {
   font-size: 0.5rem;
@@ -3680,7 +3710,13 @@
     padding: 4px 8px;
     font-size: 0.62rem;
     min-height: 32px;
-    min-width: 44px;
+    min-width: 32px;
+  }
+  .bots-btn-mute {
+    padding: 3px 5px;
+    font-size: 0.75rem;
+    min-width: 28px;
+    min-height: 28px;
   }
   .bots-opponent-emoji { font-size: 1.2rem; }
   .bots-opponent-name { font-size: 0.72rem; }
@@ -3692,13 +3728,52 @@
     display: flex;
     flex-direction: column;
     padding: 4px 6px;
-    gap: 5px;
-    overflow-y: auto;
+    gap: 4px;
   }
 
-  /* Captures + history row */
-  .bots-sidebar-left {
+  /* Comment bubble — personality above board */
+  .bots-sidebar-right {
+    order: 1;
+    width: 100%;
+    flex-direction: row;
+    gap: 4px;
+  }
+  .bots-comment-bubble {
+    flex: 1;
+    padding: 4px 7px;
+    gap: 5px;
+    border-radius: 6px;
+    min-height: 0;
+  }
+  .bots-comment-avatar { font-size: 1rem; }
+  .bots-comment-name { font-size: 0.55rem; }
+  .bots-comment-text { font-size: 0.64rem; }
+  .bots-history-section {
+    width: 90px;
+    flex-shrink: 0;
+    max-height: 52px;
+    padding: 3px 5px;
+    border-radius: 5px;
+  }
+  .bots-history-header { font-size: 0.48rem; }
+  .bots-history-list { font-size: 0.5rem; max-height: 38px; }
+
+  /* Board — full width */
+  .bots-board-wrapper {
     order: 2;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .bots-board {
+    width: min(92vw, 400px);
+    height: min(92vw, 400px);
+    border-width: 3px;
+  }
+
+  /* Captures — row at bottom */
+  .bots-sidebar-left {
+    order: 3;
     flex-direction: row;
     gap: 4px;
     width: 100%;
@@ -3721,44 +3796,6 @@
     font-size: 0.5rem;
   }
   .bots-captured-pieces { font-size: 0.7rem; }
-
-  /* Board — full width */
-  .bots-board-wrapper {
-    order: 1;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-  }
-  .bots-board {
-    width: min(94vw, 400px);
-    height: min(94vw, 400px);
-    border-width: 3px;
-  }
-
-  /* Right sidebar — comment + history */
-  .bots-sidebar-right {
-    order: 3;
-    width: 100%;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .bots-comment-bubble {
-    width: 100%;
-    padding: 5px 7px;
-    gap: 5px;
-    border-radius: 6px;
-    min-height: 0;
-  }
-  .bots-comment-avatar { font-size: 1rem; }
-  .bots-comment-name { font-size: 0.55rem; }
-  .bots-comment-text { font-size: 0.62rem; }
-  .bots-history-section {
-    max-height: 50px;
-    padding: 3px 5px;
-    border-radius: 5px;
-  }
-  .bots-history-header { font-size: 0.48rem; }
-  .bots-history-list { font-size: 0.5rem; max-height: 40px; }
 
   /* --- Result overlay --- */
   .bots-result-icon { font-size: 2.5rem; }
