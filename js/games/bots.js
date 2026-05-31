@@ -1314,6 +1314,7 @@ class BotsGame {
     this.renderChessBoard();
     this.updateHistoryDisplay();
     this.updateCapturedDisplay();
+    this.updateCommentary();
 
     const newParts = this.chessFEN.split(' ');
     const nextTurn = newParts[1] || 'w';
@@ -1357,6 +1358,59 @@ class BotsGame {
         this.showBotComment(this.getBotQuote('capture'));
       }
     }
+  }
+
+  // ========== COMMENTATOR ==========
+  updateCommentary() {
+    const score = this.evaluateBoardLocal(this.chessFEN, 'w');
+    const moves = this.chessHistory.length;
+    const parts = this.chessFEN.split(' ');
+    const fenPieces = parts[0].replace(/[0-9\/]/g, '').length;
+    const pct = fenPieces < 28 ? 'open' : fenPieces < 22 ? 'endgame' : 'midgame';
+
+    // Eval bar
+    const bar = document.getElementById('bots-eval-bar');
+    const scoreEl = document.getElementById('bots-eval-score');
+    const clampedScore = Math.max(-5, Math.min(5, score));
+    const barPct = 50 + clampedScore * 10;
+    const barColor = clampedScore > 0.3 ? '#4ade80' : clampedScore < -0.3 ? '#f87171' : '#94a3b8';
+
+    if (bar) bar.style.width = `${Math.max(5, Math.min(95, barPct))}%`;
+    if (bar) bar.style.background = barColor;
+    if (scoreEl) {
+      const sign = clampedScore > 0 ? '+' : '';
+      scoreEl.textContent = `${sign}${clampedScore.toFixed(1)}`;
+      scoreEl.style.color = barColor;
+    }
+
+    // Commentary text
+    const textEl = document.getElementById('bots-commentator-text');
+    if (!textEl) return;
+
+    let comment;
+    if (moves < 4) {
+      comment = 'Apertura. Desarrolla caballos y alfiles al centro.';
+    } else if (moves < 8) {
+      comment = 'Controla el centro con peones. Prepara el enroque.';
+    } else if (moves < 14) {
+      if (clampedScore > 0.8) comment = 'Buena apertura. Ventaja de desarrollo.';
+      else if (clampedScore < -0.8) comment = 'Apertura pasiva. Necesitas activar tus piezas.';
+      else comment = 'Apertura sólida. Posición equilibrada.';
+    } else if (pct === 'endgame') {
+      if (clampedScore > 1.5) comment = 'Final ganador. Activa el rey y empuja peones pasados.';
+      else if (clampedScore > 0.3) comment = 'Final favorable. Simplifica hacia la victoria.';
+      else if (clampedScore < -0.3) comment = 'Final inferior. Busca el empate con precisión.';
+      else comment = 'Final igualado. Oposición y triangulación.';
+    } else {
+      if (clampedScore > 2) comment = 'Ventaja decisiva. Busca el ataque al rey enemigo.';
+      else if (clampedScore > 0.8) comment = 'Buena posición. Controla columnas abiertas.';
+      else if (clampedScore > 0.3) comment = 'Ligera ventaja. Mejora tus piezas lentamente.';
+      else if (clampedScore < -0.3) comment = 'Tu rival presiona. Defensa sólida, busca contrajuego.';
+      else if (clampedScore < -0.8) comment = 'Posición inferior. No te rindas, espera el error rival.';
+      else if (clampedScore < -2) comment = 'Desventaja crítica. Intenta complicar la posición.';
+      else comment = 'Equilibrio. Planea tu estrategia a largo plazo.';
+    }
+    textEl.textContent = comment;
   }
 
   // ========== BOT COMMENTS ==========
@@ -1629,13 +1683,25 @@ class BotsGame {
 
         <div class="bots-game-main">
           <div class="bots-sidebar-left">
-            <div class="bots-captured-section" style="border-color: ${accent}44;">
+            <div class="bots-captured-section bots-captured-compact" style="border-color: ${accent}44;">
               <span class="bots-captured-label">Perdiste</span>
               <div class="bots-captured-pieces" id="bots-captured-white"></div>
             </div>
-            <div class="bots-captured-section" style="border-color: ${accent}44;">
+            <div class="bots-captured-section bots-captured-compact" style="border-color: ${accent}44;">
               <span class="bots-captured-label">Ganaste</span>
               <div class="bots-captured-pieces" id="bots-captured-black"></div>
+            </div>
+            <div class="bots-commentator" id="bots-commentator" style="border-color: ${accent}44;">
+              <div class="bots-commentator-header">
+                <span>🎙️ Comentarista</span>
+                <span id="bots-eval-score" style="color: #4ade80;">+0.0</span>
+              </div>
+              <div class="bots-eval-bar-container">
+                <div class="bots-eval-bar-fill" id="bots-eval-bar" style="width:50%;"></div>
+              </div>
+              <div class="bots-commentator-text" id="bots-commentator-text">
+                Desarrollo tus piezas al centro. Controla d4 y e4.
+              </div>
             </div>
           </div>
 
@@ -1683,6 +1749,7 @@ class BotsGame {
     this.initStockfishWorker();
     this.renderChessBoard();
     this.updateStatus('● Tu turno', 'turn');
+    this.updateCommentary();
     this.showBotComment(this.getBotQuote('greeting'));
 
     this.quoteInterval = setInterval(() => {
