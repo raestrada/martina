@@ -1545,21 +1545,16 @@ class BotsGame {
     const author = isOpponent ? this.selectedBot.name : 'Tú';
     const color = isOpponent ? this.selectedBot.color : '#67e8f9';
 
-    // Append entry
+    // Create entry and prepend to top (newest first)
     const entry = document.createElement('div');
     entry.className = 'bots-cmt-entry';
     entry.innerHTML = `<span class="bots-cmt-author" style="color:${color}">${author}</span> <span class="bots-cmt-text">${comment}</span>`;
-    listEl.appendChild(entry);
+    listEl.insertBefore(entry, listEl.firstChild);
 
     // Limit entries
-    while (listEl.children.length > 30) {
-      listEl.removeChild(listEl.firstChild);
+    while (listEl.children.length > 25) {
+      listEl.removeChild(listEl.lastChild);
     }
-
-    // Auto-scroll to bottom
-    requestAnimationFrame(() => {
-      listEl.scrollTop = listEl.scrollHeight;
-    });
   }
 
   // ========== BOT COMMENTS ==========
