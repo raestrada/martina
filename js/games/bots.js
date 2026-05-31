@@ -1077,37 +1077,39 @@ class BotsGame {
     this._sfInitPromise = new Promise((resolve, reject) => {
       this.stockfishReady = false;
 
-      fetch('/js/stockfish.js')
-        .then(res => res.text())
-        .then(scriptText => {
-          // Serve WASM from same origin — no CDN, no CORS
-          const blob = new Blob([
-            `var Module={locateFile:function(p){return'/js/'+p}};\n`,
-            scriptText + '\n',
-            'self.onmessage=function(e){StockFish.postMessage(e.data)};'
-          ], { type: 'application/javascript' });
+      try {
+        this.stockfishWorker = new Worker('/js/sf-worker.js');
 
-          this.stockfishWorker = new Worker(URL.createObjectURL(blob));
+        const skill = Math.min(20, Math.max(0, Math.round((this.selectedBot.elo / 2800) * 20)));
 
-          this.stockfishWorker.onerror = (e) => {
-            console.warn('Stockfish worker error:', e);
+        this.stockfishWorker.onmessage = (e) => {
+          if (e.data === 'WORKER_READY') {
+            this.stockfishWorker.postMessage('uci');
+            this.stockfishWorker.postMessage('isready');
+            this.stockfishWorker.postMessage(`setoption name Skill Level value ${skill}`);
+            this.stockfishReady = true;
+            setTimeout(resolve, 300);
+          }
+          if (e.data && e.data.startsWith('ERROR:')) {
             this._sfInitPromise = null;
-            this.stockfishWorker = null;
-            reject(new Error('Worker error'));
-          };
+            reject(new Error(e.data));
+          }
+        };
 
-          // Chessbox.js init pattern — no ucinewgame, no waiting
-          const skill = Math.min(20, Math.max(0, Math.round((this.selectedBot.elo / 2800) * 20)));
-          this.stockfishWorker.postMessage('uci');
-          this.stockfishWorker.postMessage('isready');
-          this.stockfishWorker.postMessage(`setoption name Skill Level value ${skill}`);
-          this.stockfishReady = true;
-          resolve();
-        })
-        .catch(err => {
+        this.stockfishWorker.onerror = () => {
           this._sfInitPromise = null;
-          reject(err);
-        });
+          this.stockfishWorker = null;
+          reject(new Error('Worker failed'));
+        };
+
+        setTimeout(() => {
+          if (!this.stockfishReady) { this._sfInitPromise = null; reject(new Error('timeout')); }
+        }, 20000);
+
+      } catch (err) {
+        this._sfInitPromise = null;
+        reject(err);
+      }
     });
 
     return this._sfInitPromise;
