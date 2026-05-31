@@ -2513,7 +2513,18 @@ class ChessBoxGame {
 
     const self = this;
     const currentLevel = this.levels[this.currentLevelIndex];
+    const tier = currentLevel ? currentLevel.tier : 'rook';
     
+    // Set initial opponent super power based on tier
+    let initialSuper = 0;
+    if (tier === 'pawn') initialSuper = 10;
+    else if (tier === 'knight') initialSuper = 25;
+    else if (tier === 'bishop') initialSuper = 40;
+    else if (tier === 'rook') initialSuper = 50;
+    else if (tier === 'queen') initialSuper = 60;
+    else if (tier === 'shadow') initialSuper = 75;
+    this.opponentSuperPower = initialSuper;
+
     // Difficulty modifier for boxing oponent stats
     let speedMod = 1.0;
     let hpMod = 1.0;
@@ -2521,8 +2532,40 @@ class ChessBoxGame {
     if (this.selectedDifficulty === 'hard') { speedMod = 0.85; hpMod = 1.25; }
     if (this.selectedDifficulty === 'martina') { speedMod = 0.70; hpMod = 1.5; }
 
-    const finalPunchSpeed = currentLevel.punchSpeed * speedMod;
+    // Dynamic tier speed factor to tighten the telegraph window
+    let tierFactor = 0.6;
+    if (tier === 'pawn') tierFactor = 0.65;
+    else if (tier === 'knight') tierFactor = 0.60;
+    else if (tier === 'bishop') tierFactor = 0.58;
+    else if (tier === 'rook') tierFactor = 0.55;
+    else if (tier === 'queen') tierFactor = 0.52;
+    else if (tier === 'shadow') tierFactor = 0.50;
+
+    const finalPunchSpeed = currentLevel.punchSpeed * speedMod * tierFactor;
     const maxOpponentHP = Math.round(currentLevel.hp * hpMod * 2.5); // balanced to 2.5x to prevent first-round K.O.s and force playing chess!
+
+    // Intelligent attack delays based on opponent tier
+    let attackDelayBase = 1200;
+    let attackDelayRandom = 1500;
+    if (tier === 'pawn') {
+      attackDelayBase = 1400;
+      attackDelayRandom = 1600;
+    } else if (tier === 'knight') {
+      attackDelayBase = 1000;
+      attackDelayRandom = 1200;
+    } else if (tier === 'bishop') {
+      attackDelayBase = 800;
+      attackDelayRandom = 1000;
+    } else if (tier === 'rook') {
+      attackDelayBase = 700;
+      attackDelayRandom = 900;
+    } else if (tier === 'queen') {
+      attackDelayBase = 500;
+      attackDelayRandom = 700;
+    } else if (tier === 'shadow') {
+      attackDelayBase = 400;
+      attackDelayRandom = 600;
+    }
 
     const config = {
       type: Phaser.AUTO,
@@ -2544,6 +2587,8 @@ class ChessBoxGame {
         key: 'boxing',
         create: function() {
           const scene = this;
+          scene.attackDelayBase = attackDelayBase;
+          scene.attackDelayRandom = attackDelayRandom;
           
           // Render dynamically created retro textures
           self.renderBoxingTextures(scene);
@@ -3199,6 +3244,7 @@ class ChessBoxGame {
               // Stunned opponent takes massive critical damage! (balanced from 12 to 8)
               scene.opponentHP -= 8;
               self.playerSuperPower = Math.min(100, self.playerSuperPower + 8); // charge Dempsey (highly balanced rate)
+              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 6); // charge adrenaline on fLinch
               self.hitsLandedThisRound++;
               self.totalPunchesLanded++;
               window.GameAudio.playSuccess();
@@ -3232,11 +3278,12 @@ class ChessBoxGame {
               window.GameAudio.playMove();
               self.playPunchBlocked();
               scene.addTextEffect(400, 140, "¡BLOQUEADO!", "#cbd5e1");
-              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 5); // charge opponent (balanced rate)
+              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 10); // charge opponent super faster on block (+10%)
             } else if (scene.opponentState === 'telegraphing-l' || scene.opponentState === 'telegraphing-r') {
               // Opponent gets interrupted if caught preparing a punch! Clean hit! (balanced from 8 to 6)
               scene.opponentHP -= 6;
               self.playerSuperPower = Math.min(100, self.playerSuperPower + 10); // massive Dempsey charge (highly balanced rate)
+              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 8); // build opponent adrenaline on interrupt
               self.hitsLandedThisRound++;
               self.totalPunchesLanded++;
               window.GameAudio.playSuccess();
@@ -3346,7 +3393,7 @@ class ChessBoxGame {
             } else {
               // Clean impact! Player takes damage and flinches!
               self.playerHealth = Math.max(0, self.playerHealth - damage);
-              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 10); // charge opponent super (balanced rate)
+              self.opponentSuperPower = Math.min(100, self.opponentSuperPower + 15); // charge opponent super faster on clean hit (+15%)
               self.hitsReceivedThisRound++;
               self.totalPunchesReceived++;
               window.GameAudio.playError();
@@ -3441,7 +3488,13 @@ class ChessBoxGame {
             scene.opponent.setTexture('opp-idle');
             scene.opponent.y = 180;
             scene.starsEffect.setText('');
-            scene.nextAttackTime = time + 800 + Math.random() * 1000;
+            scene.nextAttackTime = time + (scene.attackDelayBase * 0.6) + Math.random() * (scene.attackDelayRandom * 0.6);
+          }
+
+          // Real-time passive super power charging for the opponent when they are idle
+          if (scene.opponentState === 'idle') {
+            self.opponentSuperPower = Math.min(100, self.opponentSuperPower + delta * 0.0075); // passive charge ~7.5% per second
+            self.updateBoxingTopBar();
           }
 
           // Handle Opponent Attack AI cycles
@@ -3494,7 +3547,7 @@ class ChessBoxGame {
                     if (scene.opponentState !== 'ko' && scene.opponentState !== 'stunned') {
                       scene.opponentState = 'idle';
                       scene.opponent.setTexture('opp-idle');
-                      scene.nextAttackTime = time + 1200 + Math.random() * 1500;
+                      scene.nextAttackTime = time + scene.attackDelayBase + Math.random() * scene.attackDelayRandom;
                     }
                   }
                 });
