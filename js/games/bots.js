@@ -612,6 +612,10 @@ class BotsGame {
     this.botQuoteTimer = null;
     this.quoteInterval = null;
 
+    this._speakQueue = null;
+    this._speaking = false;
+    this._voicesReady = false;
+
     this._voices = null;
     this._lastSpeak = 0;
 
@@ -738,55 +742,27 @@ class BotsGame {
     } catch(e) {}
   }
 
-  // ========== SPEECH ==========
-  _getVoices() {
-    return new Promise(resolve => {
-      const voices = speechSynthesis.getVoices();
-      if (voices.length > 0) { resolve(voices); return; }
-      let resolved = false;
-      speechSynthesis.onvoiceschanged = () => {
-        if (resolved) return;
-        resolved = true;
-        resolve(speechSynthesis.getVoices());
-      };
-      setTimeout(() => {
-        if (!resolved) { resolved = true; resolve(speechSynthesis.getVoices()); }
-      }, 2000);
+  // ========== SPEECH (meSpeak + AudioContext filters) ==========
+  async _initMeSpeak() {
+    if (this._voicesReady) return;
+    return new Promise((resolve) => {
+      if (!window.meSpeak) { resolve(); return; }
+      try {
+        meSpeak.loadConfig('/js/mespeak-config.json');
+        meSpeak.loadVoice('/js/mespeak-voice-es.json', () => {
+          this._voicesReady = true;
+          resolve();
+        });
+      } catch(e) {
+        resolve();
+      }
     });
   }
 
-  async _getSpanishVoice(gender) {
-    if (!this._voices || this._voices.length === 0) {
-      this._voices = await this._getVoices();
-    }
-    if (!this._voices.length) return null;
-    const wantFemale = gender === 'female';
-
-    // 1. Spanish voice matching desired gender
-    let voice = this._voices.find(v => v.lang.startsWith('es') && (
-      wantFemale ? /mujer|femenin|female|monica|paulina|maría/i.test(v.name)
-                 : /hombre|varón|masculin|male|jorge|diego|pablo/i.test(v.name)
-    ));
-    // 2. Any Spanish voice
-    if (!voice) voice = this._voices.find(v => v.lang.startsWith('es'));
-    // 3. Any voice matching desired gender (by name)
-    if (!voice) voice = this._voices.find(v => wantFemale
-      ? /female|woman|girl|mujer|femenina/i.test(v.name)
-      : /male|man|guy|hombre|masculino/i.test(v.name)
-    );
-    // 4. Alternate by index: even≈male, odd≈female
-    if (!voice) {
-      const idx = wantFemale ? this._voices.findIndex((v, i) => i % 2 === 1)
-                             : this._voices.findIndex((v, i) => i % 2 === 0);
-      voice = idx >= 0 ? this._voices[idx] : this._voices[0];
-    }
-    return voice;
-  }
-
-  speak(text, gender, pitchProfile) {
-    if (!this.voiceEnabled || !text || !window.speechSynthesis) return;
+  speak(text, gender, profile) {
+    if (!this.voiceEnabled || !text) return;
     if (!this._speakQueue) this._speakQueue = [];
-    this._speakQueue.push({ text, gender: gender || 'male', profile: pitchProfile || 'normal' });
+    this._speakQueue.push({ text, gender, profile });
     if (!this._speaking) this._dequeueSpeak();
   }
 
@@ -798,24 +774,97 @@ class BotsGame {
     this._speaking = true;
     const { text, gender, profile } = this._speakQueue.shift();
 
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.voice = await this._getSpanishVoice(gender);
-    if (!utter.voice) { this._dequeueSpeak(); return; } // no voice available, skip
+    await this._initMeSpeak();
 
-    // Base pitch from gender if few voices (differentiates male/female when same voice is used)
-    const basePitch = gender === 'female' ? 1.3 : 0.8;
-    const pitchMap = { high: 1.8, low: 0.5, deep: 0.3, male: 0.8, female: 1.3, fast: 1.0, slow: 0.6, dry: 0.85 };
-    utter.pitch = pitchMap[profile] || basePitch;
+    const femaleVariants = ['f1','f2','f3','f4'];
+    const maleVariants   = ['m1','m2','m3','m4','m5'];
+    const variants = gender === 'female' ? femaleVariants : maleVariants;
 
-    // Rate also varies per profile for strong differentiation
-    const rateMap = { high: 1.3, fast: 1.5, low: 0.7, deep: 0.55, slow: 0.65, dry: 0.9, male: 0.95, female: 1.1 };
-    utter.rate  = rateMap[profile] || 1.0;
-    utter.volume = 0.8;
+    const profileMap = {
+      high:  { variant: gender === 'female' ? 'f2' : 'm3', pitch: 120, speed: 170 },
+      fast:  { variant: gender === 'female' ? 'f4' : 'm4', pitch: 100, speed: 200 },
+      low:   { variant: gender === 'female' ? 'f3' : 'm1', pitch: 70,  speed: 130 },
+      dry:   { variant: gender === 'female' ? 'f1' : 'm2', pitch: 90,  speed: 140 },
+      deep:  { variant: gender === 'female' ? 'f3' : 'm5', pitch: 50,  speed: 110 },
+      slow:  { variant: gender === 'female' ? 'f1' : 'm1', pitch: 80,  speed: 120 },
+      male:  { variant: 'm2', pitch: 95,  speed: 150 },
+      female:{ variant: 'f2', pitch: 110, speed: 155 },
+    };
+    const cfg = profileMap[profile] || profileMap[gender === 'female' ? 'female' : 'male'];
+    const variant = cfg.variant || variants[0];
 
-    utter.onend = () => this._dequeueSpeak();
-    utter.onerror = () => { this._speaking = false; this._dequeueSpeak(); };
+    const filterMap = {
+      high:  { type: 'highpass', freq: 600, Q: 0.8 },
+      fast:  { type: 'bandpass', freq: 1800, Q: 1.5 },
+      low:   { type: 'lowshelf', freq: 800, gain: -6 },
+      dry:   { type: 'notch', freq: 1200, Q: 3 },
+      deep:  { type: 'lowpass', freq: 400, Q: 0.7 },
+      slow:  { type: 'lowpass', freq: 700, Q: 0.5 },
+      male:  { type: 'peaking', freq: 2500, Q: 0.8, gain: 2 },
+      female:{ type: 'highshelf', freq: 1500, gain: 3 },
+    };
+    const filterCfg = filterMap[profile] || null;
 
-    speechSynthesis.speak(utter);
+    if (window.meSpeak && this._voicesReady) {
+      meSpeak.speak(text, {
+        variant: variant,
+        pitch: cfg.pitch,
+        speed: cfg.speed,
+        amplitude: 100,
+        wordgap: 3,
+        rawdata: 'array',
+        linebreak: 200
+      }, (rawPCM) => {
+        if (!rawPCM || !this.voiceEnabled) { this._dequeueSpeak(); return; }
+        this._playFilteredPCM(rawPCM, filterCfg);
+        setTimeout(() => this._dequeueSpeak(), 200);
+      });
+    } else {
+      // Fallback: SpeechSynthesis
+      if (!window.speechSynthesis) { this._dequeueSpeak(); return; }
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.pitch = profile === 'high' ? 1.8 : profile === 'low' ? 0.5 : profile === 'deep' ? 0.3 : gender === 'female' ? 1.3 : 0.8;
+      utter.rate  = profile === 'fast' ? 1.5 : profile === 'slow' ? 0.6 : 1.0;
+      utter.volume = 0.8;
+      utter.onend = () => this._dequeueSpeak();
+      utter.onerror = () => this._dequeueSpeak();
+      speechSynthesis.speak(utter);
+    }
+  }
+
+  _playFilteredPCM(rawPCM, filterCfg) {
+    const ctx = this._resumeAudio();
+    if (!ctx) return;
+
+    try {
+      const int8 = new Int8Array(rawPCM);
+      const float32 = new Float32Array(int8.length);
+      for (let i = 0; i < int8.length; i++) float32[i] = int8[i] / 128;
+
+      const buffer = ctx.createBuffer(1, float32.length, 22050);
+      buffer.copyToChannel(float32, 0);
+
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+
+      let lastNode = source;
+      if (filterCfg) {
+        const filter = ctx.createBiquadFilter();
+        filter.type = filterCfg.type;
+        filter.frequency.value = filterCfg.freq;
+        if (filterCfg.Q) filter.Q.value = filterCfg.Q;
+        if (filterCfg.gain) filter.gain.value = filterCfg.gain;
+        lastNode.connect(filter);
+        lastNode = filter;
+      }
+
+      const gain = ctx.createGain();
+      gain.gain.value = 0.7;
+      lastNode.connect(gain);
+      gain.connect(ctx.destination);
+
+      source.start(0);
+    } catch(e) {}
   }
 
   getSpeakProfile(botId) {
@@ -2043,6 +2092,7 @@ class BotsGame {
       this.voiceEnabled = !this.voiceEnabled;
       localStorage.setItem('martina_bots_voice', this.voiceEnabled ? 'true' : 'false');
       if (!this.voiceEnabled) {
+        if (window.meSpeak) meSpeak.stop();
         speechSynthesis.cancel();
         this._speakQueue = [];
         this._speaking = false;
