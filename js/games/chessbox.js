@@ -4927,7 +4927,19 @@ class ChessBoxGame {
         const ry = 4 * Math.cos(t + i * 0.5);
         
         g.beginPath();
-        g.ellipse(sx, sy, Math.abs(rx), Math.abs(ry), Math.PI / 4, 0, Math.PI * 2);
+        const radX = Math.abs(rx);
+        const radY = Math.abs(ry);
+        const rotation = Math.PI / 4;
+        const cosR = Math.cos(rotation);
+        const sinR = Math.sin(rotation);
+        for (let step = 0; step <= 10; step++) {
+          const angle = (step / 10) * Math.PI * 2;
+          const cosA = Math.cos(angle);
+          const sinA = Math.sin(angle);
+          const px = sx + radX * cosA * cosR - radY * sinA * sinR;
+          const py = sy + radX * cosA * sinR + radY * sinA * cosR;
+          if (step === 0) g.moveTo(px, py); else g.lineTo(px, py);
+        }
         g.closePath();
         g.fill(); g.strokePath();
       }
