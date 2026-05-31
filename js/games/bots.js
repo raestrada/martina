@@ -614,6 +614,7 @@ class BotsGame {
 
     this._speakQueue = null;
     this._speaking = false;
+    this._voiceLoaded = false;
 
     this._init();
   }
@@ -738,9 +739,9 @@ class BotsGame {
     } catch(e) {}
   }
 
-  // ========== SPEECH (Web Speech API) ==========
+  // ========== SPEECH (meSpeak + AudioContext) ==========
   speak(text, gender, profile) {
-    if (!this.voiceEnabled || !text || !window.speechSynthesis) return;
+    if (!this.voiceEnabled || !text) return;
     if (!this._speakQueue) this._speakQueue = [];
     this._speakQueue.push({ text, gender, profile });
     if (!this._speaking) this._dequeueSpeak();
@@ -754,41 +755,86 @@ class BotsGame {
     this._speaking = true;
     const { text, gender, profile } = this._speakQueue.shift();
 
+    if (window.meSpeak) {
+      // Load voice on first use
+      if (!this._voiceLoaded) {
+        meSpeak.loadVoice('/js/mespeak-voice-es.json', () => {
+          this._voiceLoaded = true;
+          this._meSpeakSpeak(text, gender, profile);
+        });
+        return;
+      }
+      this._meSpeakSpeak(text, gender, profile);
+    } else {
+      this._fallbackSpeak(text, gender, profile);
+    }
+  }
+
+  _meSpeakSpeak(text, gender, profile) {
+    const femaleVariants = ['f1','f2','f3','f4'];
+    const maleVariants   = ['m1','m2','m3','m4','m5'];
+    const variants = gender === 'female' ? femaleVariants : maleVariants;
+
+    const map = {
+      high:  { v: gender === 'female' ? 'f2' : 'm3', pitch: 130, speed: 175 },
+      fast:  { v: gender === 'female' ? 'f4' : 'm4', pitch: 100, speed: 210 },
+      low:   { v: gender === 'female' ? 'f3' : 'm1', pitch: 60,  speed: 125 },
+      dry:   { v: gender === 'female' ? 'f1' : 'm2', pitch: 85,  speed: 140 },
+      deep:  { v: gender === 'female' ? 'f3' : 'm5', pitch: 40,  speed: 105 },
+      slow:  { v: gender === 'female' ? 'f1' : 'm1', pitch: 70,  speed: 115 },
+      male:  { v: 'm2', pitch: 95,  speed: 150 },
+      female:{ v: 'f2', pitch: 115, speed: 160 },
+    };
+    const cfg = map[profile] || map[gender === 'female' ? 'female' : 'male'];
+    const variant = cfg.v || variants[0];
+
+    meSpeak.speak(text, {
+      variant: variant,
+      pitch: cfg.pitch,
+      speed: cfg.speed,
+      amplitude: 100,
+      wordgap: 3,
+      rawdata: 'array'
+    }, (success, data, isRaw) => {
+      if (success && data && this.voiceEnabled) {
+        this._playPCM(data);
+      }
+      setTimeout(() => this._dequeueSpeak(), 150);
+    });
+  }
+
+  _playPCM(rawPCM) {
+    const ctx = this._resumeAudio();
+    if (!ctx) return;
+    try {
+      const int8 = new Int8Array(rawPCM);
+      const float32 = new Float32Array(int8.length);
+      for (let i = 0; i < int8.length; i++) float32[i] = int8[i] / 128;
+      const buf = ctx.createBuffer(1, float32.length, 22050);
+      buf.copyToChannel(float32, 0);
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      const gain = ctx.createGain();
+      gain.gain.value = 0.6;
+      src.connect(gain);
+      gain.connect(ctx.destination);
+      src.start(0);
+    } catch(e) {}
+  }
+
+  _fallbackSpeak(text, gender, profile) {
+    if (!window.speechSynthesis) { this._dequeueSpeak(); return; }
     const utter = new SpeechSynthesisUtterance(text);
     const voices = speechSynthesis.getVoices();
     const wantFemale = gender === 'female';
     let voice = voices.find(v => v.lang.startsWith('es') && (wantFemale ? /ónica|Paulina|female/i.test(v.name) : /Jorge|Diego|male/i.test(v.name)));
     if (!voice) voice = voices.find(v => v.lang.startsWith('es'));
     if (voice) utter.voice = voice;
-
-    const profiles = {
-      high:  { pitch: 1.8, rate: 1.35, vol: 0.9 },
-      fast:  { pitch: 1.0, rate: 1.7, vol: 0.8 },
-      low:   { pitch: 0.45, rate: 0.75, vol: 0.85 },
-      dry:   { pitch: 0.7, rate: 0.95, vol: 0.75 },
-      deep:  { pitch: 0.25, rate: 0.6, vol: 0.9 },
-      slow:  { pitch: 0.55, rate: 0.65, vol: 0.7 },
-      male:  { pitch: 0.85, rate: 0.95, vol: 0.8 },
-      female:{ pitch: 1.25, rate: 1.05, vol: 0.85 },
-    };
-    const p = profiles[profile] || profiles[gender === 'female' ? 'female' : 'male'];
-    utter.pitch = p.pitch;
-    utter.rate  = p.rate;
-    utter.volume = p.vol;
-
-    // Flash status bar while speaking
-    const status = document.getElementById('bots-status');
-    if (status) { status.style.background = 'rgba(250,204,21,0.25)'; status.style.color = '#fbbf24'; }
-
-    utter.onend = () => {
-      if (status) { status.style.background = ''; status.style.color = ''; }
-      this._dequeueSpeak();
-    };
-    utter.onerror = () => {
-      if (status) { status.style.background = ''; status.style.color = ''; }
-      this._speaking = false;
-      this._dequeueSpeak();
-    };
+    const pm = {high:{p:1.8,r:1.3},fast:{p:1.0,r:1.7},low:{p:0.45,r:0.75},dry:{p:0.7,r:0.95},deep:{p:0.25,r:0.6},slow:{p:0.55,r:0.65},male:{p:0.85,r:0.95},female:{p:1.25,r:1.05}};
+    const pp = pm[profile] || pm[gender==='female'?'female':'male'];
+    utter.pitch = pp.p; utter.rate = pp.r; utter.volume = 0.8;
+    utter.onend = () => this._dequeueSpeak();
+    utter.onerror = () => { this._speaking = false; this._dequeueSpeak(); };
     speechSynthesis.speak(utter);
   }
 
