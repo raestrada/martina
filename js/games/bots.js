@@ -1635,9 +1635,6 @@ class BotsGame {
     this.selectedBot = null;
     this.gameActive = false;
 
-    // Preload Stockfish in background (don't wait)
-    this.initStockfishWorker().catch(() => {});
-
     this.container.innerHTML = `
       <section class="bots-hero fade-in">
         <h1>Bots de Ajedrez</h1>
