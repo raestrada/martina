@@ -3411,7 +3411,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  width: 140px;
+  width: 150px;
   padding-top: 2px;
   min-height: 0;
 }
@@ -3426,12 +3426,39 @@
 }
 .bots-captured-compact .bots-captured-label { margin-bottom: 0; }
 .bots-captured-compact .bots-captured-pieces { font-size: 0.7rem; }
+
+.bots-captured-section {
+  background: rgba(55, 65, 90, 0.5);
+  border: 1px solid var(--bot-accent, rgba(255, 255, 255, 0.2));
+  border-radius: 6px;
+  padding: 4px 6px;
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.bots-captured-label {
+  font-size: 0.52rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 1px;
+  background: rgba(255,255,255,0.08);
+  padding: 1px 6px;
+  border-radius: 3px;
+  display: inline-block;
+  align-self: flex-start;
+}
 .bots-captured-pieces {
-  font-size: 0.75rem;
-  color: #dde4f0;
+  font-size: 0.85rem;
+  color: #f8fafc;
   word-break: break-all;
-  line-height: 1.15;
+  line-height: 1.2;
   overflow-wrap: break-word;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
 
 /* Commentator panel — eval bar + tactical commentary */
@@ -3517,7 +3544,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  width: 155px;
+  width: 165px;
 }
 
 /* Board wrapper — centered column */
@@ -3531,8 +3558,8 @@
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
-  width: min(58vmin, 58vh, 440px);
-  height: min(58vmin, 58vh, 440px);
+  width: min(62vmin, 62vh, 500px);
+  height: min(62vmin, 62vh, 500px);
   border: 4px solid var(--bot-accent, #3b3b5c);
   border-radius: 8px;
   overflow: hidden;
