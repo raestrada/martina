@@ -1485,8 +1485,9 @@ class BotsGame {
     }
 
     // Material count
-    const matEl = document.getElementById('bots-material');
-    if (matEl) {
+    const updateMat = (id, big) => {
+      const el = document.getElementById(id);
+      if (!el) return;
       const board = this.parseFEN(this.chessFEN);
       const vals = {p:1,n:3,b:3,r:5,q:9,k:0};
       let mat = 0;
@@ -1499,9 +1500,12 @@ class BotsGame {
         }
       }
       const sign = mat > 0 ? '+' : '';
-      matEl.textContent = `⚖ ${sign}${mat}`;
-      matEl.style.color = mat > 0 ? '#4ade80' : mat < 0 ? '#f87171' : '#94a3b8';
-    }
+      const color = mat > 0 ? '#4ade80' : mat < 0 ? '#f87171' : '#94a3b8';
+      el.textContent = big ? `⚖ ${sign}${mat}` : `⚖ ${sign}${mat}`;
+      el.style.color = color;
+    };
+    updateMat('bots-material', false);
+    updateMat('bots-material-big', true);
 
     // Commentary list — stack entries
     const listEl = document.getElementById('bots-commentator-list');
@@ -1854,6 +1858,10 @@ class BotsGame {
             <div class="bots-captured-section bots-captured-compact" style="border-color: ${accent}44;">
               <span class="bots-captured-label">Ganaste</span>
               <div class="bots-captured-pieces" id="bots-captured-black"></div>
+            </div>
+            <div class="bots-material-badge" id="bots-material-badge">
+              <span id="bots-material-big">⚖ 0</span>
+            </div>
             </div>
             <div class="bots-commentator" id="bots-commentator" style="border-color: ${accent}44;">
               <div class="bots-commentator-header">
