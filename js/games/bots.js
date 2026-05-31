@@ -1059,6 +1059,20 @@ class BotsGame {
   }
 
   // ========== STOCKFISH INTEGRATION ==========
+  _detectGameEnd(isPlayer) {
+    const parts = this.chessFEN.split(' ');
+    const nextTurn = parts[1] || 'w';
+    if (this.isCheckmate(this.chessFEN, nextTurn)) {
+      if (isPlayer) {
+        this.endGame('win', '¡JAQUE MATE!');
+      } else {
+        this.endGame('lose', 'Jaque mate.');
+      }
+    } else if (this.isStalemate(this.chessFEN, nextTurn)) {
+      this.endGame('draw', '¡Ahogado! Tablas.');
+    }
+  }
+
   initStockfishWorker() {
     this.destroyWorker();
 
@@ -1116,9 +1130,13 @@ class BotsGame {
         const line = e.data;
         if (line.includes('bestmove')) {
           const move = line.split(' ')[1];
-          this.isThinking = false;
           if (move && move !== '(none)' && this.gameActive) {
             this.executeChessMove(move, false);
+          } else {
+            // No valid move — checkmate or stalemate
+            this.isThinking = false;
+            this.renderChessBoard();
+            this._detectGameEnd(false);
           }
         }
       };
@@ -1130,7 +1148,12 @@ class BotsGame {
       setTimeout(() => {
         if (!this.gameActive) return;
         const validMoves = this.getAllLegalMoves(this.chessFEN, 'b');
-        if (validMoves.length === 0) return;
+        if (validMoves.length === 0) {
+          this.isThinking = false;
+          this.renderChessBoard();
+          this._detectGameEnd(false);
+          return;
+        }
 
         const effectiveElo = bot.elo;
         const randomChance = Math.max(0.02, Math.min(0.60, 0.60 - ((effectiveElo - 400) / 2400) * 0.58));
@@ -1380,12 +1403,14 @@ class BotsGame {
     if (!isPlayer) {
       this.isThinking = true;
       setTimeout(() => {
+        if (!this.gameActive) return;
         this.renderChessBoard();
         this.showMovePopup(uciMove);
         this.updateHistoryDisplay();
         this.updateCapturedDisplay();
         this.updateCommentary();
         setTimeout(() => {
+          if (!this.gameActive) return;
           this.isThinking = false;
           this.updateStatus('● Tu turno', 'turn');
         }, 300);
@@ -1417,8 +1442,8 @@ class BotsGame {
 
     if (nextTurn === 'b') {
       this.triggerEngineTurn();
-      if (moveCategories.includes('check')) this.updateStatus('⚡ ¡Jaque!', 'check');
-    } else {
+      if (isPlayer && moveCategories.includes('check')) this.updateStatus('⚡ ¡Jaque!', 'check');
+    } else if (isPlayer) {
       if (moveCategories.includes('check')) this.updateStatus('⚡ ¡Jaque!', 'check');
       else this.updateStatus('● Tu turno', 'turn');
     }
