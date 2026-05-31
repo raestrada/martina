@@ -2917,21 +2917,22 @@
 /* --- Hero --- */
 .bots-hero {
   text-align: center;
-  padding: 2rem 1rem 1rem;
+  padding: 1.5rem 1rem 0.75rem;
 }
 .bots-hero h1 {
   font-family: 'Nunito', 'Outfit', sans-serif;
-  font-size: 2.2rem;
+  font-size: 2rem;
   font-weight: 900;
   color: var(--gold);
   text-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
+  margin: 0 0 0.3rem;
 }
 .bots-hero-subtitle {
   color: var(--warm-white);
-  font-size: 1rem;
+  font-size: 0.9rem;
   line-height: 1.6;
-  max-width: 600px;
-  margin: 0.5rem auto 0;
+  max-width: 560px;
+  margin: 0 auto;
 }
 
 /* --- Bot Cards Grid --- */
@@ -2940,9 +2941,9 @@
 }
 .bots-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.25rem;
-  max-width: 1000px;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1rem;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -3364,19 +3365,19 @@
 
 /* Left sidebar — both capture sections */
 .bots-sidebar-left {
-  flex: 0 0 60px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  width: 60px;
   padding-top: 2px;
 }
 
 /* Right sidebar — comment + scrollable history */
 .bots-sidebar-right {
-  flex: 0 0 150px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  width: 145px;
 }
 
 /* Captured pieces */
@@ -3524,7 +3525,7 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  padding: 2rem;
+  padding: 1.5rem;
   text-align: center;
   border: 2px solid;
   border-radius: 16px;
@@ -3536,8 +3537,8 @@
   to { opacity: 1; transform: scale(1); }
 }
 .bots-result-icon {
-  font-size: 4rem;
-  margin-bottom: 0.5rem;
+  font-size: 3.5rem;
+  margin-bottom: 0.4rem;
   animation: botsResultBounce 0.6s ease-out;
 }
 @keyframes botsResultBounce {
@@ -3547,60 +3548,67 @@
 }
 .bots-result-title {
   font-family: 'Nunito', 'Outfit', sans-serif;
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 900;
-  margin: 0 0 0.3rem;
+  margin: 0 0 0.2rem;
 }
 .bots-result-reason {
   color: #cbd5e1;
-  font-size: 0.9rem;
-  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  margin: 0 0 0.75rem;
 }
 .bots-result-vs {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
   font-family: 'Outfit', sans-serif;
 }
 .result-player { font-weight: 800; color: #67e8f9; }
-.result-vs { color: #94a3b8; font-size: 0.8rem; }
+.result-vs { color: #94a3b8; font-size: 0.75rem; }
 .result-bot { font-weight: 800; }
 .bots-result-quote {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #e2e8f0;
   font-style: italic;
-  margin: 0 0 1rem;
-  max-width: 320px;
+  margin: 0 0 0.75rem;
+  max-width: 300px;
   line-height: 1.4;
 }
 .bots-result-stats {
   display: flex;
-  gap: 1.5rem;
-  margin-bottom: 1.25rem;
+  gap: 1.25rem;
+  margin-bottom: 1rem;
 }
-.result-stat { text-align: center; }
+.result-stat {
+  text-align: center;
+  padding: 0.3rem 0.6rem;
+  background: rgba(255,255,255,0.03);
+  border-radius: 6px;
+}
 .result-stat span {
   display: block;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 .result-stat strong {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   color: var(--warm-white);
 }
 .bots-result-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 .bots-result-btn {
-  padding: 0.6rem 1.5rem;
+  padding: 0.55rem 1.4rem;
   border: none;
   border-radius: 10px;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 800;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -3612,100 +3620,182 @@
   transform: scale(1.03);
 }
 .bots-result-btn.secondary {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--warm-white);
 }
 .bots-result-btn.secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 /* ===================================================================
-   BOTS RESPONSIVE — Mobile
+   BOTS RESPONSIVE — Mobile & Tablet
    =================================================================== */
 @media (max-width: 768px) {
-  .bots-hero h1 { font-size: 1.5rem; }
-  .bots-hero-subtitle { font-size: 0.8rem; }
-  .bots-grid { grid-template-columns: 1fr; max-width: 400px; }
+  /* --- Bot selection --- */
+  .bots-hero { padding: 1rem 0.75rem 0.5rem; }
+  .bots-hero h1 { font-size: 1.35rem; }
+  .bots-hero-subtitle { font-size: 0.72rem; }
+  .bots-grid-section { padding: 0 0.5rem 1.5rem; }
+  .bots-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    max-width: 380px;
+  }
+  .bot-card { border-radius: 12px; }
+  .bot-card-header { padding: 0.75rem 1rem 0.5rem; }
+  .bot-card-emoji { font-size: 1.8rem; }
+  .bot-card-name { font-size: 1.05rem; }
+  .bot-card-desc { font-size: 0.72rem; }
+  .bot-card-btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
+  .elo-value { font-size: 1.5rem; }
 
+  /* --- VS intro screen --- */
+  .bots-vs-overlay { border-radius: 0; }
+  .bots-vs-name { font-size: 1.1rem; }
+  .bots-vs-emoji-big { font-size: 2.2rem; }
+  .bots-vs-vs { font-size: 2.2rem; }
+  .bots-vs-badge { font-size: 0.55rem; padding: 3px 8px; margin-bottom: 6px; }
+  .bots-vs-quote { font-size: 0.6rem; max-width: 160px; }
+  .bots-vs-skip { bottom: 12px; right: 10px; font-size: 0.65rem; padding: 6px 12px; }
+  .warning-top { top: 18px; }
+  .warning-bottom { bottom: 18px; }
+  .bots-vs-warning { height: 22px; }
+  .bots-vs-scroller { font-size: 0.65rem; }
+
+  /* --- Game container --- */
   .bots-game-container {
     height: auto;
     max-height: 100dvh;
     border-radius: 0;
+    overflow-y: auto;
   }
+
+  /* Topbar — compact single row */
   .bots-game-topbar {
     padding: 4px 6px;
-    gap: 4px;
+    gap: 6px;
   }
   .bots-btn-resign {
-    padding: 3px 8px;
-    font-size: 0.65rem;
+    padding: 4px 8px;
+    font-size: 0.62rem;
+    min-height: 32px;
+    min-width: 44px;
   }
   .bots-opponent-emoji { font-size: 1.2rem; }
   .bots-opponent-name { font-size: 0.72rem; }
   .bots-opponent-elo { font-size: 0.55rem; }
-  #bots-status { font-size: 0.68rem; }
+  #bots-status { font-size: 0.66rem; }
 
+  /* Main area — stack vertically */
   .bots-game-main {
     display: flex;
     flex-direction: column;
     padding: 4px 6px;
-    gap: 4px;
+    gap: 5px;
+    overflow-y: auto;
   }
+
+  /* Captures + history row */
   .bots-sidebar-left {
-    flex: 0 0 auto;
+    order: 2;
     flex-direction: row;
-    padding-top: 0;
     gap: 4px;
+    width: 100%;
+    padding-top: 0;
   }
   .bots-sidebar-left .bots-captured-section {
     flex: 1;
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     padding: 3px 6px;
     height: auto;
-    min-height: auto;
+    min-height: 0;
+    border-radius: 5px;
   }
   .bots-captured-label {
     margin-bottom: 0;
     white-space: nowrap;
+    font-size: 0.5rem;
   }
-  .bots-captured-pieces { font-size: 0.72rem; }
+  .bots-captured-pieces { font-size: 0.7rem; }
 
-  .bots-board-wrapper { flex: 1; min-height: 0; }
+  /* Board — full width */
+  .bots-board-wrapper {
+    order: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
   .bots-board {
-    width: min(78vmin, 78vw, 400px);
-    height: min(78vmin, 78vw, 400px);
+    width: min(94vw, 400px);
+    height: min(94vw, 400px);
+    border-width: 3px;
   }
 
+  /* Right sidebar — comment + history */
   .bots-sidebar-right {
-    flex: 0 0 auto;
-    flex-direction: row;
+    order: 3;
+    width: 100%;
+    flex-direction: column;
     gap: 4px;
   }
   .bots-comment-bubble {
-    flex: 1 1 60%;
-    min-height: auto;
-    padding: 4px 6px;
+    width: 100%;
+    padding: 5px 7px;
+    gap: 5px;
+    border-radius: 6px;
+    min-height: 0;
   }
+  .bots-comment-avatar { font-size: 1rem; }
+  .bots-comment-name { font-size: 0.55rem; }
   .bots-comment-text { font-size: 0.62rem; }
   .bots-history-section {
-    flex: 1 1 40%;
-    max-height: 60px;
+    max-height: 50px;
+    padding: 3px 5px;
+    border-radius: 5px;
   }
-  .bots-history-list { font-size: 0.5rem; }
+  .bots-history-header { font-size: 0.48rem; }
+  .bots-history-list { font-size: 0.5rem; max-height: 40px; }
 
-  .bots-vs-name { font-size: 1.2rem; }
-  .bots-vs-emoji-big { font-size: 2.5rem; }
-  .bots-vs-vs { font-size: 2.5rem; }
-  .bots-vs-badge { font-size: 0.6rem; padding: 3px 10px; }
-  .bots-vs-quote { font-size: 0.65rem; max-width: 180px; }
-  .bots-vs-skip { bottom: 16px; right: 12px; font-size: 0.7rem; }
-
+  /* --- Result overlay --- */
   .bots-result-icon { font-size: 2.5rem; }
-  .bots-result-title { font-size: 1.3rem; }
-  .bots-result-actions { flex-direction: column; width: 100%; max-width: 260px; }
-  .bots-result-btn { width: 100%; }
+  .bots-result-title { font-size: 1.2rem; }
+  .bots-result-reason { font-size: 0.72rem; }
+  .bots-result-quote { font-size: 0.7rem; max-width: 260px; }
+  .bots-result-stats { gap: 0.75rem; }
+  .result-stat strong { font-size: 0.95rem; }
+  .bots-result-actions { flex-direction: column; width: 100%; max-width: 240px; }
+  .bots-result-btn { width: 100%; padding: 0.5rem 1rem; font-size: 0.72rem; }
+}
+
+/* Small phones */
+@media (max-width: 400px) {
+  .bots-hero h1 { font-size: 1.2rem; }
+  .bots-hero-subtitle { font-size: 0.65rem; }
+  .bots-grid { max-width: 320px; }
+  .bot-card-emoji { font-size: 1.5rem; }
+  .bot-card-name { font-size: 0.95rem; }
+  .elo-value { font-size: 1.3rem; }
+  .bot-card-desc { font-size: 0.65rem; }
+
+  .bots-game-topbar { padding: 3px 4px; gap: 4px; }
+  .bots-btn-resign { font-size: 0.6rem; padding: 3px 6px; }
+  .bots-opponent-emoji { font-size: 1rem; }
+  .bots-opponent-name { font-size: 0.65rem; }
+  #bots-status { font-size: 0.58rem; }
+
+  .bots-game-main { gap: 3px; padding: 3px 4px; }
+  .bots-board {
+    width: min(96vw, 360px);
+    height: min(96vw, 360px);
+  }
+  .bots-chess-pc { font-size: clamp(1rem, 3vmin, 2.2rem); }
+
+  .bots-vs-name { font-size: 0.9rem; }
+  .bots-vs-emoji-big { font-size: 1.6rem; }
+  .bots-vs-vs { font-size: 1.6rem; }
+  .bots-vs-skip { bottom: 8px; right: 6px; font-size: 0.6rem; }
 }
