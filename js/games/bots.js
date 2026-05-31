@@ -587,7 +587,7 @@ class BotsGame {
     this.playerColor = 'w';
 
     this.stockfishWorker = null;
-    this.engineType = 'stockfish';
+    this.engineType = 'local';
 
     this.capturedWhite = [];
     this.capturedBlack = [];
@@ -1089,14 +1089,14 @@ class BotsGame {
 
         this.stockfishWorker = new Worker(URL.createObjectURL(blob));
         this.engineType = 'stockfish';
+        console.log('Stockfish loaded');
 
         this.stockfishWorker.postMessage('uci');
         this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
         this.stockfishWorker.postMessage('ucinewgame');
       })
       .catch(err => {
-        console.warn('Failed to load Stockfish, using local engine.', err);
-        this.engineType = 'local';
+        console.warn('Stockfish unavailable, using local engine.', err);
       });
   }
 
@@ -1112,28 +1112,14 @@ class BotsGame {
     const bot = this.selectedBot;
     this.updateStatus(`${bot.name} está pensando...`, 'thinking');
 
-    // Stockfish timeout safety net — fall back to local engine if no response
-    let sfTimedOut = false;
-    const sfTimer = setTimeout(() => {
-      if (this.isThinking && this.gameActive && this.engineType === 'stockfish') {
-        sfTimedOut = true;
-        this.destroyWorker();
-        this.engineType = 'local';
-        this.triggerEngineTurn();
-      }
-    }, 4000);
-
     if (this.engineType === 'stockfish' && this.stockfishWorker) {
       this.stockfishWorker.onmessage = (e) => {
-        if (sfTimedOut) return;
-        clearTimeout(sfTimer);
         const line = e.data;
         if (line.includes('bestmove')) {
           const move = line.split(' ')[1];
           if (move && move !== '(none)' && this.gameActive) {
             this.executeChessMove(move, false);
           } else {
-            // No valid move — checkmate or stalemate
             this.isThinking = false;
             this.renderChessBoard();
             this._detectGameEnd(false);
@@ -1143,7 +1129,6 @@ class BotsGame {
       this.stockfishWorker.postMessage(`position fen ${this.chessFEN}`);
       this.stockfishWorker.postMessage('go movetime 1500');
     } else {
-      clearTimeout(sfTimer);
       // Local engine with ELO-based skill simulation
       setTimeout(() => {
         if (!this.gameActive) return;
