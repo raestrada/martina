@@ -3268,7 +3268,7 @@
 }
 
 /* ===================================================================
-   BOTS GAME CONTAINER — Full chess experience
+   BOTS GAME CONTAINER
    =================================================================== */
 .bots-game-container {
   display: flex;
@@ -3284,17 +3284,16 @@
   to { opacity: 1; transform: scale(1); }
 }
 
-/* Top bar */
+/* Top bar — status message lives here now */
 .bots-game-topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 3px 10px;
+  padding: 4px 10px;
   background: rgba(26, 31, 46, 0.95);
-  border-bottom: 1px solid var(--bot-accent, rgba(255, 255, 255, 0.1));
+  border-bottom: 1px solid var(--bot-accent, rgba(255, 255, 255, 0.12));
   flex-shrink: 0;
-  gap: 8px;
-  font-size: 0.75rem;
+  gap: 10px;
 }
 .bots-btn-resign {
   background: rgba(239, 68, 68, 0.15);
@@ -3305,23 +3304,8 @@
   font-size: 0.7rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
   font-family: 'Outfit', sans-serif;
-}
-.bots-opponent-emoji { font-size: 1.4rem; }
-.bots-opponent-name { font-size: 0.8rem; }
-.bots-opponent-elo { font-size: 0.62rem; }
-.bots-btn-resign {
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: 'Outfit', sans-serif;
+  flex-shrink: 0;
 }
 .bots-btn-resign:hover {
   background: rgba(239, 68, 68, 0.3);
@@ -3330,54 +3314,43 @@
 .bots-opponent-info {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  flex-shrink: 0;
 }
-.bots-opponent-emoji {
-  font-size: 2rem;
-}
+.bots-opponent-emoji { font-size: 1.3rem; }
 .bots-opponent-name {
   display: block;
   color: var(--warm-white);
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
+  line-height: 1.2;
 }
 .bots-opponent-elo {
   display: block;
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.5px;
 }
-.bots-move-counter {
-  color: #a5b4cc;
-  font-size: 0.7rem;
+
+/* Status text in topbar */
+#bots-status {
+  color: #e2e8f0;
+  font-size: 0.78rem;
   font-weight: 600;
-}
-
-/* Main game area */
-.bots-game-main {
-  display: flex;
+  text-align: center;
   flex: 1;
-  min-height: 0;
-  gap: 12px;
-  padding: 8px 12px;
-  align-items: stretch;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.2s;
 }
-
-/* Left sidebar */
-.bots-sidebar-left {
-  flex: 0 0 70px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding-top: 4px;
+#bots-status.thinking {
+  animation: botsDots 1.2s infinite;
 }
-
-/* Right sidebar */
-.bots-sidebar-right {
-  flex: 0 0 190px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+@keyframes botsDots {
+  0%, 20% { opacity: 1; }
+  50% { opacity: 0.4; }
+  80%, 100% { opacity: 1; }
 }
 
 /* Main game area */
@@ -3390,27 +3363,30 @@
   align-items: stretch;
 }
 
-/* Left sidebar */
+/* Left sidebar — both capture sections */
 .bots-sidebar-left {
-  flex: 0 0 55px;
+  flex: 0 0 60px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  gap: 4px;
   padding-top: 2px;
 }
 
-/* Right sidebar */
+/* Right sidebar — comment + scrollable history */
 .bots-sidebar-right {
-  flex: 0 0 155px;
+  flex: 0 0 150px;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
+
+/* Captured pieces */
 .bots-captured-section {
   background: rgba(40, 48, 70, 0.55);
   border: 1px solid var(--bot-accent, rgba(255, 255, 255, 0.2));
   border-radius: 6px;
   padding: 3px 5px;
+  min-height: 36px;
 }
 .bots-captured-label {
   font-size: 0.5rem;
@@ -3422,7 +3398,6 @@
 }
 .bots-captured-pieces {
   font-size: 0.8rem;
-  min-height: 14px;
   color: #dde4f0;
   word-break: break-all;
   line-height: 1.2;
@@ -3432,7 +3407,6 @@
 .bots-board-wrapper {
   flex: 1;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-width: 0;
@@ -3449,7 +3423,7 @@
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.35);
 }
 
-/* Chess square & piece styles in bots */
+/* Chess square & piece */
 .bots-chess-sq {
   display: flex;
   align-items: center;
@@ -3473,60 +3447,23 @@
   user-select: none;
   pointer-events: none;
   line-height: 1;
-  color: #fff;
-  text-shadow: -1px -1px 0 #1a1a2e, 1px -1px 0 #1a1a2e, -1px 1px 0 #1a1a2e, 1px 1px 0 #1a1a2e, 0 3px 6px rgba(0,0,0,0.5);
   transform: translateY(-3%);
-}
-
-/* Status bar */
-.bots-status-bar {
-  width: min(58vmin, 58vh, 440px);
-  padding: 4px 8px;
-  text-align: center;
-}
-.bots-status-text {
-  color: #e2e8f0;
-  font-size: 0.82rem;
-  font-weight: 600;
-  transition: all 0.2s;
-}
-.bots-status-text.thinking {
-  animation: botsDots 1.2s infinite;
-}
-@keyframes botsDots {
-  0%, 20% { opacity: 1; }
-  50% { opacity: 0.4; }
-  80%, 100% { opacity: 1; }
-}
-
-/* Right sidebar */
-.bots-sidebar-right {
-  flex: 0 0 220px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 
 /* Bot comment bubble */
 .bots-comment-bubble {
-  background: rgba(40, 48, 70, 0.6);
+  background: rgba(50, 60, 85, 0.65);
   border: 1px solid var(--bot-accent, rgba(255, 255, 255, 0.2));
   border-radius: 8px;
-  padding: 4px 6px;
+  padding: 5px 7px;
   display: flex;
-  gap: 4px;
+  gap: 5px;
   align-items: flex-start;
   transition: all 0.25s ease;
-  min-height: 38px;
-}
-.bots-comment-avatar {
-  font-size: 1.1rem;
   flex-shrink: 0;
 }
-.bots-comment-content {
-  flex: 1;
-  min-width: 0;
-}
+.bots-comment-avatar { font-size: 1.1rem; flex-shrink: 0; }
+.bots-comment-content { flex: 1; min-width: 0; }
 .bots-comment-name {
   display: block;
   font-size: 0.58rem;
@@ -3536,23 +3473,24 @@
   margin-bottom: 1px;
 }
 .bots-comment-text {
-  font-size: 0.65rem;
-  color: #e2e8f0;
+  font-size: 0.68rem;
+  color: #f1f5f9;
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.35;
   font-style: italic;
 }
 
-/* History section */
+/* History section — scrollable */
 .bots-history-section {
   background: rgba(40, 48, 70, 0.45);
   border: 1px solid var(--bot-accent, rgba(255, 255, 255, 0.18));
   border-radius: 6px;
-  padding: 3px 5px;
+  padding: 4px 5px;
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
+  max-height: 100%;
 }
 .bots-history-header {
   font-size: 0.5rem;
@@ -3560,7 +3498,7 @@
   color: #a5b4cc;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
   flex-shrink: 0;
 }
 .bots-history-list {
@@ -3570,6 +3508,7 @@
   font-size: 0.55rem;
   color: #b0bdd0;
   min-height: 0;
+  max-height: 100%;
 }
 .bots-history-list div:nth-child(even) {
   background: rgba(255, 255, 255, 0.02);
@@ -3623,17 +3562,9 @@
   margin-bottom: 0.75rem;
   font-family: 'Outfit', sans-serif;
 }
-.result-player {
-  font-weight: 800;
-  color: #67e8f9;
-}
-.result-vs {
-  color: #64748b;
-  font-size: 0.8rem;
-}
-.result-bot {
-  font-weight: 800;
-}
+.result-player { font-weight: 800; color: #67e8f9; }
+.result-vs { color: #94a3b8; font-size: 0.8rem; }
+.result-bot { font-weight: 800; }
 .bots-result-quote {
   font-size: 0.85rem;
   color: #e2e8f0;
@@ -3647,13 +3578,11 @@
   gap: 1.5rem;
   margin-bottom: 1.25rem;
 }
-.result-stat {
-  text-align: center;
-}
+.result-stat { text-align: center; }
 .result-stat span {
   display: block;
   font-size: 0.65rem;
-  color: #64748b;
+  color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -3694,16 +3623,9 @@
    BOTS RESPONSIVE — Mobile
    =================================================================== */
 @media (max-width: 768px) {
-  .bots-hero h1 {
-    font-size: 1.5rem;
-  }
-  .bots-hero-subtitle {
-    font-size: 0.8rem;
-  }
-  .bots-grid {
-    grid-template-columns: 1fr;
-    max-width: 400px;
-  }
+  .bots-hero h1 { font-size: 1.5rem; }
+  .bots-hero-subtitle { font-size: 0.8rem; }
+  .bots-grid { grid-template-columns: 1fr; max-width: 400px; }
 
   .bots-game-container {
     height: 100dvh;
@@ -3717,124 +3639,68 @@
     padding: 3px 8px;
     font-size: 0.65rem;
   }
-  .bots-opponent-emoji {
-    font-size: 1.4rem;
-  }
-  .bots-opponent-name {
-    font-size: 0.8rem;
-  }
-  .bots-opponent-elo {
-    font-size: 0.62rem;
-  }
+  .bots-opponent-emoji { font-size: 1.2rem; }
+  .bots-opponent-name { font-size: 0.72rem; }
+  .bots-opponent-elo { font-size: 0.55rem; }
+  #bots-status { font-size: 0.68rem; }
 
   .bots-game-main {
     flex-direction: column;
     padding: 4px 6px;
     gap: 4px;
   }
-
   .bots-sidebar-left {
     flex: 0 0 auto;
     flex-direction: row;
     padding-top: 0;
+    gap: 4px;
   }
-  .bots-captured-section {
+  .bots-sidebar-left .bots-captured-section {
     flex: 1;
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 4px 8px;
+    padding: 3px 6px;
+    min-height: auto;
   }
   .bots-captured-label {
     margin-bottom: 0;
     white-space: nowrap;
   }
-  .bots-captured-pieces {
-    font-size: 0.75rem;
-  }
+  .bots-captured-pieces { font-size: 0.72rem; }
 
-  .bots-board-wrapper {
-    flex: 1;
-    min-height: 0;
-  }
+  .bots-board-wrapper { flex: 1; min-height: 0; }
   .bots-board {
     width: min(78vmin, 78vw, 400px);
     height: min(78vmin, 78vw, 400px);
-  }
-  .bots-status-bar {
-    width: min(78vmin, 78vw, 400px);
-    padding: 3px 6px;
-  }
-  .bots-status-text {
-    font-size: 0.72rem;
   }
 
   .bots-sidebar-right {
     flex: 0 0 auto;
     flex-direction: row;
     gap: 4px;
-    flex-wrap: wrap;
   }
   .bots-comment-bubble {
-    flex: 1 1 100%;
-    min-height: 44px;
-    padding: 6px 8px;
+    flex: 1 1 60%;
+    min-height: auto;
+    padding: 4px 6px;
   }
-  .bots-comment-text {
-    font-size: 0.68rem;
-  }
+  .bots-comment-text { font-size: 0.62rem; }
   .bots-history-section {
-    flex: 1;
-    max-height: 80px;
+    flex: 1 1 40%;
+    max-height: 60px;
   }
-  .bots-history-list {
-    font-size: 0.58rem;
-  }
-  .bots-sidebar-right .bots-captured-section {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 8px;
-  }
+  .bots-history-list { font-size: 0.5rem; }
 
-  /* VS screen mobile */
-  .bots-vs-name {
-    font-size: 1.2rem;
-  }
-  .bots-vs-emoji-big {
-    font-size: 2.5rem;
-  }
-  .bots-vs-vs {
-    font-size: 2.5rem;
-  }
-  .bots-vs-badge {
-    font-size: 0.6rem;
-    padding: 3px 10px;
-  }
-  .bots-vs-quote {
-    font-size: 0.65rem;
-    max-width: 180px;
-  }
-  .bots-vs-skip {
-    bottom: 16px;
-    right: 12px;
-    font-size: 0.7rem;
-  }
+  .bots-vs-name { font-size: 1.2rem; }
+  .bots-vs-emoji-big { font-size: 2.5rem; }
+  .bots-vs-vs { font-size: 2.5rem; }
+  .bots-vs-badge { font-size: 0.6rem; padding: 3px 10px; }
+  .bots-vs-quote { font-size: 0.65rem; max-width: 180px; }
+  .bots-vs-skip { bottom: 16px; right: 12px; font-size: 0.7rem; }
 
-  /* Result screen mobile */
-  .bots-result-icon {
-    font-size: 2.5rem;
-  }
-  .bots-result-title {
-    font-size: 1.3rem;
-  }
-  .bots-result-actions {
-    flex-direction: column;
-    width: 100%;
-    max-width: 260px;
-  }
-  .bots-result-btn {
-    width: 100%;
-  }
+  .bots-result-icon { font-size: 2.5rem; }
+  .bots-result-title { font-size: 1.3rem; }
+  .bots-result-actions { flex-direction: column; width: 100%; max-width: 260px; }
+  .bots-result-btn { width: 100%; }
 }

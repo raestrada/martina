@@ -1613,9 +1613,9 @@ class BotsGame {
               <span class="bots-opponent-elo" style="color: ${accent};">ELO ${bot.elo}</span>
             </div>
           </div>
-          <div class="bots-move-counter">
-            <span id="bots-move-count">Jugada ${Math.floor(this.chessHistory.length / 2) + 1}</span>
-          </div>
+          <span id="bots-status" class="bots-status-text">
+            ¡Tu turno! Juegas con blancas.
+          </span>
         </div>
 
         <div class="bots-game-main">
@@ -1624,13 +1624,14 @@ class BotsGame {
               <span class="bots-captured-label">Rival</span>
               <div class="bots-captured-pieces" id="bots-captured-white"></div>
             </div>
+            <div class="bots-captured-section" style="border-color: ${accent}44;">
+              <span class="bots-captured-label">Tuyas</span>
+              <div class="bots-captured-pieces" id="bots-captured-black"></div>
+            </div>
           </div>
 
           <div class="bots-board-wrapper">
             <div class="bots-board" id="bots-board"></div>
-            <div class="bots-status-bar">
-              <span id="bots-status" class="bots-status-text">¡Tu turno! Juegas con blancas.</span>
-            </div>
           </div>
 
           <div class="bots-sidebar-right">
@@ -1642,12 +1643,8 @@ class BotsGame {
               </div>
             </div>
             <div class="bots-history-section">
-              <div class="bots-history-header">Historial</div>
+              <div class="bots-history-header">Historial · <span id="bots-move-count">J 1</span></div>
               <div class="bots-history-list" id="bots-history"></div>
-            </div>
-            <div class="bots-captured-section">
-              <span class="bots-captured-label">Tuyas</span>
-              <div class="bots-captured-pieces" id="bots-captured-black"></div>
             </div>
           </div>
         </div>
