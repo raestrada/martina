@@ -1,5 +1,16 @@
-importScripts('/js/stockfish.js');
+try {
+  importScripts('stockfish.js');
+} catch(e) {
+  self.postMessage('ERROR:' + e.message);
+  throw e;
+}
 
 self.onmessage = function(e) {
-  StockFish.postMessage(e.data);
+  try {
+    StockFish.postMessage(e.data);
+  } catch(err) {
+    self.postMessage('ERROR:' + err.message);
+  }
 };
+
+self.postMessage('WORKER_READY');

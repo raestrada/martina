@@ -1082,15 +1082,34 @@ class BotsGame {
       try {
         this.stockfishWorker = new Worker('/js/sf-worker.js');
 
-        this.stockfishWorker.postMessage('uci');
-        this.stockfishWorker.postMessage('isready');
-        this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
-        this.stockfishWorker.postMessage('ucinewgame');
+        let initTimeout;
+        this.stockfishWorker.onmessage = (e) => {
+          const line = e.data;
+          if (line === 'WORKER_READY') {
+            this.stockfishWorker.postMessage('uci');
+            this.stockfishWorker.postMessage('isready');
+            this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
+            this.stockfishWorker.postMessage('ucinewgame');
+            this.stockfishReady = true;
+            clearTimeout(initTimeout);
+            setTimeout(resolve, 500);
+          }
+          if (line && line.startsWith('ERROR:')) {
+            clearTimeout(initTimeout);
+            reject(new Error(line));
+          }
+        };
 
-        this.stockfishReady = true;
-        setTimeout(resolve, 800);
+        this.stockfishWorker.onerror = (err) => {
+          clearTimeout(initTimeout);
+          reject(new Error('Worker error'));
+        };
+
+        initTimeout = setTimeout(() => {
+          reject(new Error('Worker timeout'));
+        }, 15000);
+
       } catch (err) {
-        console.warn('Stockfish worker creation failed:', err.message);
         this._sfInitPromise = null;
         reject(err);
       }
@@ -1106,10 +1125,6 @@ class BotsGame {
       this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
       this.stockfishWorker.postMessage('ucinewgame');
     }
-  }
-
-  destroyWorker() {
-    // Don't destroy — cached across games
   }
 
   destroyWorker() {
