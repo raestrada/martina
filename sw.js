@@ -29,6 +29,7 @@ const SHELL_URLS = [
   '/',
   '/index.html',
   '/juegos.html',
+  '/bots.html',
   '/album.html',
   '/galeria.html',
   '/acerca-de.html',
@@ -56,6 +57,8 @@ const GAME_JS_URLS = [
   '/js/games/reina.js',
   '/js/games/sombra.js',
   '/js/games/torreta.js',
+  '/js/games/bots.js',
+  '/js/stockfish.js',
 ];
 
 const IMAGE_URLS = [
