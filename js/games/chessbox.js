@@ -4022,120 +4022,283 @@ class ChessBoxGame {
   drawRetroRingBackground(g, colorHex, time) {
     g.clear();
     
-    // 1. Dark arena sky background
-    g.fillStyle(0x020617, 1);
-    g.fillRect(0, 0, 800, 450);
-
+    const currentLevel = this.levels[this.currentLevelIndex];
+    const tier = currentLevel ? currentLevel.tier : 'rook';
+    const t = time ? time * 0.004 : 0;
     const horizonY = 160;
 
-    // 2. Cheering Stadium Crowd Rows (drawn programmatically with shaded retro silhouettes)
-    const t = time ? time * 0.004 : 0;
-    for (let rY = 20; rY < horizonY; rY += 28) {
-      // Stand base
-      g.fillStyle(0x0f172a, 0.9);
-      g.fillRect(0, rY, 800, 8);
+    // 1. DYNAMIC SKIES & THEMES
+    if (tier === 'pawn') {
+      // pawn: Santuario de Cristal, cielo azul espacial profundo
+      g.fillStyle(0x020617, 1);
+      g.fillRect(0, 0, 800, 450);
       
-      // Spectators silhouettes
-      g.fillStyle(0x1e293b, 1);
-      for (let cx = 10; cx < 800; cx += 24) {
-        // Dynamic crowd bobbing wave using time!
-        const wave = Math.sin(t + cx * 0.04 + rY * 0.15) * 3.5;
-        const hOffset = wave + (Math.sin(cx * 12) * 2); // randomize head heights + wave bobbing
-        g.fillCircle(cx, rY + 16 + hOffset, 8); // head
-        g.fillRect(cx - 10, rY + 22 + hOffset, 20, 20); // shoulders
-        
-        // Sporadic, slow camera flashes in the crowd!
-        if ((cx + rY) % 7 === 0) { // Only about 14% of the crowd has a camera
-          const flashCycle = ((time || 0) + cx * 987 + rY * 432) % 7000; // 7 seconds loop
-          if (flashCycle < 300) {
-            const intensity = Math.sin((flashCycle / 300) * Math.PI); // smooth 300ms bell curve flash
-            g.fillStyle(0xffffff, intensity * 0.95);
-            g.fillCircle(cx, rY + 14 + hOffset, 3.5); // bulb
-            g.fillStyle(0xfef08a, intensity * 0.45);
-            g.fillCircle(cx, rY + 14 + hOffset, 20); // flash glow aura
-            g.fillStyle(0x1e293b, 1); // restore spectator color
-          }
-        }
+      // Draw crystal pillars flanking the ring in the background (vector shapes)
+      g.fillStyle(0x0f172a, 0.85);
+      g.lineStyle(1.5, 0x38bdf8, 0.45);
+      // Pillar left
+      g.beginPath();
+      g.moveTo(40, 20); g.lineTo(80, 20); g.lineTo(80, horizonY); g.lineTo(40, horizonY); g.closePath();
+      g.fill(); g.strokePath();
+      // Pillar right
+      g.beginPath();
+      g.moveTo(720, 20); g.lineTo(760, 20); g.lineTo(760, horizonY); g.lineTo(720, horizonY); g.closePath();
+      g.fill(); g.strokePath();
+
+      // Crystal facet highlights on pillars
+      g.lineStyle(1, 0xffffff, 0.25);
+      g.beginPath(); g.moveTo(60, 20); g.lineTo(60, horizonY); g.strokePath();
+      g.beginPath(); g.moveTo(740, 20); g.lineTo(740, horizonY); g.strokePath();
+      
+      // Floating golden/cyan sparkles drifting upwards
+      g.fillStyle(0xfbbf24, 0.75);
+      for (let i = 0; i < 20; i++) {
+        const sx = ((i * 123 + time * 0.015) % 680) + 60;
+        const sy = (horizonY - 10) - ((i * 32 + time * 0.04) % (horizonY - 20));
+        const size = Math.abs(Math.sin(time * 0.003 + i)) * 3.5 + 1.5;
+        g.fillCircle(sx, sy, size);
       }
+      
+    } else if (tier === 'knight') {
+      // knight: L-Matrix Grasslands, cielo verde oscuro neón
+      g.fillStyle(0x022c22, 1); // very dark emerald teal
+      g.fillRect(0, 0, 800, 450);
+      
+      // Falling matrix digital codes in the background ('L' and 'Ŋ' symbols)
+      g.fillStyle(0x10b981, 0.35); // glowing matrix green
+      for (let col = 15; col < 800; col += 40) {
+        const fallY = (time * 0.08 + col * 9) % (horizonY - 10);
+        g.fillStyle(0x34d399, 0.4);
+        g.fillCircle(col, fallY, 2.5);
+        
+        // Draw little vector shapes resembling 'L' or 'N' characters
+        g.lineStyle(1.5, 0x10b981, 0.35);
+        g.beginPath();
+        // L shape
+        g.moveTo(col - 3, fallY - 12); g.lineTo(col - 3, fallY - 4); g.lineTo(col + 3, fallY - 4);
+        g.strokePath();
+        
+        // N / Ŋ style shape slightly higher up
+        g.beginPath();
+        g.moveTo(col - 3, fallY - 28); g.lineTo(col - 3, fallY - 20); g.lineTo(col + 3, fallY - 28); g.lineTo(col + 3, fallY - 20);
+        g.strokePath();
+      }
+      
+    } else if (tier === 'bishop') {
+      // bishop: Domo Geométrico, láseres cruzados amarillos/ámbar y polígonos flotantes en rotación
+      g.fillStyle(0x1e1503, 1); // warm dark copper sky
+      g.fillRect(0, 0, 800, 450);
+      
+      // Sunburst light rays from the center horizon
+      g.fillStyle(0xfbbf24, 0.035);
+      for (let angle = 0; angle < Math.PI; angle += Math.PI / 8) {
+        const rx1 = 400 + Math.cos(angle) * 900;
+        const ry1 = horizonY - Math.sin(angle) * 900;
+        const rx2 = 400 + Math.cos(angle + 0.1) * 900;
+        const ry2 = horizonY - Math.sin(angle + 0.1) * 900;
+        g.beginPath();
+        g.moveTo(400, horizonY); g.lineTo(rx1, ry1); g.lineTo(rx2, ry2); g.closePath();
+        g.fill();
+      }
+
+      // Crossing neon laser lines in the sky
+      g.lineStyle(2, 0xf59e0b, 0.25);
+      g.beginPath(); g.moveTo(0, 20); g.lineTo(800, horizonY - 20); g.strokePath();
+      g.beginPath(); g.moveTo(800, 20); g.lineTo(0, horizonY - 20); g.strokePath();
+      
+      // Rotating geometric glowing diamond/triangle shapes
+      g.fillStyle(0xfbbf24, 0.18);
+      g.lineStyle(1, 0xf59e0b, 0.4);
+      for (let i = 0; i < 6; i++) {
+        const cx = 100 + i * 120;
+        const cy = 60 + Math.sin(t + i) * 15;
+        const size = 12;
+        const rot = t * 1.5 + i;
+        
+        g.beginPath();
+        for (let a = 0; a < 4; a++) {
+          const px = cx + Math.cos(rot + a * Math.PI / 2) * size;
+          const py = cy + Math.sin(rot + a * Math.PI / 2) * size * 0.6;
+          if (a === 0) g.moveTo(px, py); else g.lineTo(px, py);
+        }
+        g.closePath();
+        g.fill(); g.strokePath();
+      }
+      
+    } else if (tier === 'rook') {
+      // rook: Fortaleza de Piedra con almenas y columnas pesadas de ladrillo
+      g.fillStyle(0x0f1115, 1); // extremely dark charcoal gray
+      g.fillRect(0, 0, 800, 450);
+      
+      // Castle battlements (almenas) along the horizon
+      g.fillStyle(0x181c24, 1);
+      g.fillRect(0, horizonY - 30, 800, 30);
+      
+      // Draw crenellations (almenas gaps)
+      g.fillStyle(0x0f1115, 1);
+      for (let bx = 20; bx < 800; bx += 60) {
+        g.fillRect(bx, horizonY - 30, 25, 12);
+      }
+      
+      // Heavy block stone pillars flanking the ring
+      g.fillStyle(0x1f2937, 1);
+      g.lineStyle(2, 0x374151, 1);
+      
+      // Left massive pillar
+      g.fillRect(10, 10, 50, horizonY - 10);
+      g.strokeRect(10, 10, 50, horizonY - 10);
+      // Right massive pillar
+      g.fillRect(740, 10, 50, horizonY - 10);
+      g.strokeRect(740, 10, 50, horizonY - 10);
+
+      // Horizontal brick lines inside the pillars
+      g.lineStyle(1.5, 0x374151, 0.65);
+      for (let py = 25; py < horizonY; py += 25) {
+        g.beginPath(); g.moveTo(10, py); g.lineTo(60, py); g.strokePath();
+        g.beginPath(); g.moveTo(740, py); g.lineTo(790, py); g.strokePath();
+      }
+      
+    } else if (tier === 'queen') {
+      // queen: Tempestad de Tormenta con nubes negras y relámpagos parpadeantes
+      const flashTrigger = (time || 0) % 5500;
+      const isFlash = flashTrigger < 160;
+      
+      if (isFlash) {
+        const flashIntensity = Math.sin((flashTrigger / 160) * Math.PI) * 0.85;
+        g.fillStyle(0x3e183a, 1 - flashIntensity * 0.4); // bright purple sky background
+        g.fillRect(0, 0, 800, 450);
+      } else {
+        g.fillStyle(0x180315, 1); // very dark storm purple/magenta sky
+        g.fillRect(0, 0, 800, 450);
+      }
+
+      // Storm cloud outlines layered at the top
+      g.fillStyle(0x0f010d, 0.9);
+      g.fillCircle(120, 20, 90);
+      g.fillCircle(240, 10, 80);
+      g.fillCircle(400, 20, 100);
+      g.fillCircle(580, 10, 90);
+      g.fillCircle(720, 30, 80);
+      
+      // If lightning is flashing, draw lightning bolt
+      if (isFlash && flashTrigger < 100) {
+        g.lineStyle(3, 0xffffff, 0.95);
+        g.beginPath();
+        g.moveTo(350, 0); g.lineTo(390, 45); g.lineTo(365, 80); g.lineTo(410, 140);
+        g.strokePath();
+        
+        g.lineStyle(6, 0xec4899, 0.45);
+        g.beginPath();
+        g.moveTo(350, 0); g.lineTo(390, 45); g.lineTo(365, 80); g.lineTo(410, 140);
+        g.strokePath();
+      }
+
+      // Wind tissues
+      g.lineStyle(1.5, 0xffffff, 0.22);
+      for (let i = 0; i < 8; i++) {
+        const wx = ((i * 187 + time * 0.28) % 900) - 100;
+        const wy = 30 + (i * 17) % 100;
+        const length = 45;
+        
+        g.beginPath();
+        g.moveTo(wx, wy); g.lineTo(wx + length, wy + length * 0.3);
+        g.strokePath();
+      }
+      
+    } else if (tier === 'shadow') {
+      // shadow: Vacío Cósmico, estrellas y la majestuosa nebulosa giratoria
+      g.fillStyle(0x03020c, 1);
+      g.fillRect(0, 0, 800, 450);
+      
+      for (let i = 0; i < 35; i++) {
+        const sx = (i * 743) % 780 + 10;
+        const sy = (i * 257) % (horizonY - 15) + 10;
+        const twinkle = Math.abs(Math.sin(t + i)) * 0.8 + 0.2;
+        
+        g.lineStyle(1, 0xffffff, twinkle * 0.8);
+        g.beginPath();
+        g.moveTo(sx - 3, sy); g.lineTo(sx + 3, sy);
+        g.moveTo(sx, sy - 3); g.lineTo(sx, sy + 3);
+        g.strokePath();
+      }
+
+      g.fillStyle(0xa855f7, 0.05);
+      for (let r = 10; r < 200; r += 20) {
+        const angle = t * 0.15 + r * 0.03;
+        const nx = 400 + Math.cos(angle) * r;
+        const ny = horizonY - 40 + Math.sin(angle) * r * 0.35;
+        g.fillCircle(nx, ny, r * 0.45);
+      }
+      
+    } else {
+      g.fillStyle(0x020617, 1);
+      g.fillRect(0, 0, 800, 450);
     }
 
-    // Shadow boundary at the horizon to blend crowd and floor
-    g.fillStyle(0x090d16, 0.95);
-    g.fillRect(0, horizonY - 12, 800, 16);
+    // 2. Spectators
+    if (tier === 'pawn' || tier === 'knight' || tier === 'bishop') {
+      g.fillStyle(0x080a10, 0.92);
+      g.fillRect(0, horizonY - 14, 800, 16);
+      
+      g.fillStyle(0x0f121d, 1);
+      for (let cx = 10; cx < 800; cx += 35) {
+        const wave = Math.sin(t + cx * 0.03) * 2;
+        g.fillCircle(cx, horizonY - 1 + wave, 6);
+        g.fillRect(cx - 7, horizonY + 3 + wave, 14, 12);
+      }
+    } else {
+      g.fillStyle(0x08080c, 1);
+      g.fillRect(0, horizonY - 12, 800, 14);
+    }
 
-    // 3. Sweep Spotlight Beams (Dramatic championship light cones!)
-    g.fillStyle(0x38bdf8, 0.08); // soft blue spotlight
+    // 3. Spotlights
+    const activeColor = Phaser.Display.Color.HexStringToColor(colorHex).color;
+    
+    g.fillStyle(activeColor, 0.06);
     g.beginPath();
-    g.moveTo(0, 0); g.lineTo(240, 450); g.lineTo(480, 450); g.closePath(); g.fill();
+    g.moveTo(0, 0); g.lineTo(200 + Math.sin(t) * 35, 450); g.lineTo(440 + Math.sin(t) * 35, 450); g.closePath(); g.fill();
 
-    g.fillStyle(0xf87171, 0.06); // soft red spotlight
+    g.fillStyle(0xffffff, 0.02);
     g.beginPath();
-    g.moveTo(800, 0); g.lineTo(560, 450); g.lineTo(320, 450); g.closePath(); g.fill();
+    g.moveTo(800, 0); g.lineTo(580 - Math.sin(t) * 35, 450); g.lineTo(340 - Math.sin(t) * 35, 450); g.closePath(); g.fill();
 
-    // 4. Floor: 3D perspective grid lines
-    g.lineStyle(2, 0x1e293b, 0.7);
+    // 4. Floor Perspective
+    g.lineStyle(2, 0x151624, 0.7);
     for (let i = 0; i <= 20; i++) {
       const xStart = (i - 10) * 130 + 400;
-      g.beginPath();
-      g.moveTo(xStart, 450);
-      g.lineTo((i - 10) * 18 + 400, horizonY);
-      g.strokePath();
+      g.beginPath(); g.moveTo(xStart, 450); g.lineTo((i - 10) * 18 + 400, horizonY); g.strokePath();
     }
     for (let y = horizonY; y < 450; y += 32) {
       const factor = (y - horizonY) / (450 - horizonY);
       const w = 420 * factor;
-      g.beginPath();
-      g.moveTo(400 - w, y);
-      g.lineTo(400 + w, y);
-      g.strokePath();
+      g.beginPath(); g.moveTo(400 - w, y); g.lineTo(400 + w, y); g.strokePath();
     }
 
-    // 5. Drawing Canvas Ring Base Platform with 3D Depth (Apron)
-    
-    // Canvas Top surface coordinates
+    // 5. Aprons
     const tL = { x: 180, y: horizonY + 20 };
     const tR = { x: 620, y: horizonY + 20 };
     const bR = { x: 750, y: 415 };
     const bL = { x: 50, y: 415 };
-    
-    // Platform height (apron depth)
     const apronH = 15;
     
-    // Draw Front Apron (vertical front wall)
-    g.fillStyle(0x0f172a, 1); // Dark grey metal/canvas apron
+    g.fillStyle(0x0a0c14, 1);
     g.beginPath();
-    g.moveTo(bL.x, bL.y);
-    g.lineTo(bR.x, bR.y);
-    g.lineTo(bR.x + 8, bR.y + apronH);
-    g.lineTo(bL.x - 8, bL.y + apronH);
-    g.closePath();
+    g.moveTo(bL.x, bL.y); g.lineTo(bR.x, bR.y); g.lineTo(bR.x + 8, bR.y + apronH); g.lineTo(bL.x - 8, bL.y + apronH); g.closePath();
     g.fill();
     
-    // Draw Left Side Apron (vertical left wall)
-    g.fillStyle(0x0a0f1d, 1);
+    g.fillStyle(0x06070a, 1);
     g.beginPath();
-    g.moveTo(tL.x, tL.y);
-    g.lineTo(bL.x, bL.y);
-    g.lineTo(bL.x - 8, bL.y + apronH);
-    g.lineTo(tL.x - 4, tL.y + apronH);
-    g.closePath();
+    g.moveTo(tL.x, tL.y); g.lineTo(bL.x, bL.y); g.lineTo(bL.x - 8, bL.y + apronH); g.lineTo(tL.x - 4, tL.y + apronH); g.closePath();
     g.fill();
 
-    // Draw Right Side Apron (vertical right wall)
-    g.fillStyle(0x080c16, 1);
+    g.fillStyle(0x040507, 1);
     g.beginPath();
-    g.moveTo(tR.x, tR.y);
-    g.lineTo(bR.x, bR.y);
-    g.lineTo(bR.x + 8, bR.y + apronH);
-    g.lineTo(tR.x + 4, tR.y + apronH);
-    g.closePath();
+    g.moveTo(tR.x, tR.y); g.lineTo(bR.x, bR.y); g.lineTo(bR.x + 8, bR.y + apronH); g.lineTo(tR.x + 4, tR.y + apronH); g.closePath();
     g.fill();
     
-    // Red accent stripes on the front apron for a retro punch-out aesthetic
-    g.fillStyle(0xdc2626, 1);
+    g.fillStyle(0xb91c1c, 0.95);
     g.fillRect(bL.x - 5, bL.y + 4, bR.x - bL.x + 10, 3);
 
-    // 3D perspective projection helper for the ring canvas surface
     const getCanvasPt = (u, v) => {
       const leftX = tL.x + (bL.x - tL.x) * v;
       const rightX = tR.x + (bR.x - tR.x) * v;
@@ -4144,188 +4307,161 @@ class ChessBoxGame {
       return { x, y };
     };
 
-    // Draw detailed 3D Chessboard Pattern directly on the Ring Canvas!
+    // 6. Flowing Great Central River
+    if (tier === 'shadow') {
+      g.fillStyle(0x7c3aed, 0.12);
+      g.beginPath();
+      const rL0 = getCanvasPt(2/8, 0); const rR0 = getCanvasPt(6/8, 0);
+      const rR1 = getCanvasPt(6/8, 1); const rL1 = getCanvasPt(2/8, 1);
+      g.moveTo(rL0.x, rL0.y); g.lineTo(rR0.x, rR0.y); g.lineTo(rR1.x, rR1.y); g.lineTo(rL1.x, rL1.y); g.closePath();
+      g.fill();
+      
+      g.lineStyle(1.5, 0xa855f7, 0.3);
+      for (let i = 0; i < 5; i++) {
+        const flowV = ((i * 0.2 + time * 0.00025) % 1.0);
+        const fL = getCanvasPt(2/8, flowV); const fR = getCanvasPt(6/8, flowV);
+        g.beginPath(); g.moveTo(fL.x, fL.y); g.lineTo(fR.x, fR.y); g.strokePath();
+      }
+    }
+
+    // 7. Chessboard pattern
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
         const p0 = getCanvasPt(col / 8, row / 8);
         const p1 = getCanvasPt((col + 1) / 8, row / 8);
         const p2 = getCanvasPt((col + 1) / 8, (row + 1) / 8);
         const p3 = getCanvasPt(col / 8, (row + 1) / 8);
-        
-        // Alternate squares between deep royal-indigo and dark retro blue
         const isDark = (row + col) % 2 === 1;
-        g.fillStyle(isDark ? 0x1a1840 : 0x0c0b24, 0.95);
+        
+        if (tier === 'shadow') {
+          g.fillStyle(isDark ? 0x22133b : 0x0c0717, 0.95);
+        } else if (tier === 'knight') {
+          g.fillStyle(isDark ? 0x042f1a : 0x011c0f, 0.95);
+        } else if (tier === 'rook') {
+          g.fillStyle(isDark ? 0x1f2937 : 0x111827, 0.95);
+        } else if (tier === 'bishop') {
+          g.fillStyle(isDark ? 0x2a1c02 : 0x140d01, 0.95);
+        } else if (tier === 'queen') {
+          g.fillStyle(isDark ? 0x3d0b28 : 0x1a0311, 0.95);
+        } else {
+          g.fillStyle(isDark ? 0x15163a : 0x08091f, 0.95);
+        }
+        
         g.beginPath();
-        g.moveTo(p0.x, p0.y);
-        g.lineTo(p1.x, p1.y);
-        g.lineTo(p2.x, p2.y);
-        g.lineTo(p3.x, p3.y);
-        g.closePath();
+        g.moveTo(p0.x, p0.y); g.lineTo(p1.x, p1.y); g.lineTo(p2.x, p2.y); g.lineTo(p3.x, p3.y); g.closePath();
         g.fill();
       }
     }
 
-    // Outer border stroke around the chessboard to outline the ring floor
-    g.lineStyle(3, 0xfbbf24, 0.85); // gold border around the canvas top
+    g.lineStyle(3, activeColor, 0.85);
     g.beginPath();
     g.moveTo(tL.x, tL.y); g.lineTo(tR.x, tR.y); g.lineTo(bR.x, bR.y); g.lineTo(bL.x, bL.y); g.closePath();
     g.strokePath();
 
-    // Canvas Seams / Grid Lines (stitched retro texture along the cell boundaries)
-    g.lineStyle(1.5, 0x1e293b, 0.35);
+    g.lineStyle(1.5, 0xffffff, 0.08);
     for (let i = 1; i < 8; i++) {
-      const startH = getCanvasPt(0, i / 8);
-      const endH = getCanvasPt(1, i / 8);
+      const startH = getCanvasPt(0, i / 8); const endH = getCanvasPt(1, i / 8);
       g.beginPath(); g.moveTo(startH.x, startH.y); g.lineTo(endH.x, endH.y); g.strokePath();
-
-      const startV = getCanvasPt(i / 8, 0);
-      const endV = getCanvasPt(i / 8, 1);
+      const startV = getCanvasPt(i / 8, 0); const endV = getCanvasPt(i / 8, 1);
       g.beginPath(); g.moveTo(startV.x, startV.y); g.lineTo(endV.x, endV.y); g.strokePath();
     }
 
-    // Shadows beneath the fighters (grounding them perfectly on the 3D floor)
-    g.fillStyle(0x000000, 0.45);
-    g.fillEllipse(400, 198, 90, 24); // Opponent foot shadow
-    g.fillEllipse(400, 385, 140, 32); // Player foot shadow
+    g.fillStyle(0x000000, 0.5);
+    g.fillEllipse(400, 198, 90, 24);
+    g.fillEllipse(400, 385, 140, 32);
     
-    // Highlight spotlight center (ambient illumination overlay on the canvas)
-    g.fillStyle(0xffffff, 0.04);
-    g.fillEllipse(400, 290, 420, 110); // broad light reflection glow covering the canvas
+    g.fillStyle(activeColor, 0.035);
+    g.fillEllipse(400, 290, 420, 110);
 
-    // 6. Premium 3D Padded Corner Cushions with metallic turnbuckles and cylindrical capsule style
-    
-    // Bottom-Left (Red Corner)
-    g.fillStyle(0xb91c1c, 1); // Red base pad
-    g.fillRoundedRect(bL.x - 12, 230, 24, 185, 8);
-    g.fillStyle(0xef4444, 1); // Highlight cylinder strip
-    g.fillRoundedRect(bL.x - 8, 230, 8, 185, 4);
-    g.fillStyle(0x7f1d1d, 1); // Shadow cylinder strip
-    g.fillRoundedRect(bL.x, 230, 11, 185, 4);
-    
-    // Bottom-Left Top/Bottom steel caps
-    g.fillStyle(0x475569, 1);
-    g.fillEllipse(bL.x, 230, 26, 6);
-    g.fillEllipse(bL.x, 415, 26, 6);
-    g.fillStyle(0x94a3b8, 1);
-    g.fillEllipse(bL.x, 230, 16, 3);
-    
-    // Bottom-Left Leather tension straps
-    g.fillStyle(0x0f172a, 1);
-    for (let sy = 250; sy < 400; sy += 45) {
-      g.fillRect(bL.x - 14, sy, 28, 4);
-    }
-    
-    // Bottom-Left Chrome Bracket turnbuckles connecting to ropes
-    g.fillStyle(0x64748b, 1);
-    g.fillRect(bL.x - 15, 258, 30, 4);
-    g.fillRect(bL.x - 15, 308, 30, 4);
-    g.fillRect(bL.x - 15, 358, 30, 4);
-    g.fillStyle(0xe2e8f0, 1);
-    g.fillRect(bL.x - 17, 259, 3, 2); g.fillRect(bL.x + 14, 259, 3, 2);
-    g.fillRect(bL.x - 17, 309, 3, 2); g.fillRect(bL.x + 14, 309, 3, 2);
-    g.fillRect(bL.x - 17, 359, 3, 2); g.fillRect(bL.x + 14, 359, 3, 2);
-    
-    // Bottom-Right (Blue Corner)
-    g.fillStyle(0x1d4ed8, 1); // Blue base pad
-    g.fillRoundedRect(bR.x - 12, 230, 24, 185, 8);
-    g.fillStyle(0x3b82f6, 1); // Highlight cylinder strip
-    g.fillRoundedRect(bR.x - 8, 230, 8, 185, 4);
-    g.fillStyle(0x1e3a8a, 1); // Shadow cylinder strip
-    g.fillRoundedRect(bR.x, 230, 11, 185, 4);
-    
-    // Bottom-Right Top/Bottom steel caps
-    g.fillStyle(0x475569, 1);
-    g.fillEllipse(bR.x, 230, 26, 6);
-    g.fillEllipse(bR.x, 415, 26, 6);
-    g.fillStyle(0x94a3b8, 1);
-    g.fillEllipse(bR.x, 230, 16, 3);
-    
-    // Bottom-Right Leather tension straps
-    g.fillStyle(0x0f172a, 1);
-    for (let sy = 250; sy < 400; sy += 45) {
-      g.fillRect(bR.x - 14, sy, 28, 4);
-    }
-    
-    // Bottom-Right Chrome Bracket turnbuckles connecting to ropes
-    g.fillStyle(0x64748b, 1);
-    g.fillRect(bR.x - 15, 258, 30, 4);
-    g.fillRect(bR.x - 15, 308, 30, 4);
-    g.fillRect(bR.x - 15, 358, 30, 4);
-    g.fillStyle(0xe2e8f0, 1);
-    g.fillRect(bR.x - 17, 259, 3, 2); g.fillRect(bR.x + 14, 259, 3, 2);
-    g.fillRect(bR.x - 17, 309, 3, 2); g.fillRect(bR.x + 14, 309, 3, 2);
-    g.fillRect(bR.x - 17, 359, 3, 2); g.fillRect(bR.x + 14, 359, 3, 2);
+    // 8. 3D Cushions
+    const drawCornerCushion = (pt, isLeft, colorHexBase, colorHexGlow, colorHexDark) => {
+      g.fillStyle(colorHexBase, 1);
+      g.fillRoundedRect(pt.x - 12, 230, 24, 185, 8);
+      g.fillStyle(colorHexGlow, 1);
+      g.fillRoundedRect(pt.x - 8, 230, 8, 185, 4);
+      g.fillStyle(colorHexDark, 1);
+      g.fillRoundedRect(pt.x, 230, 11, 185, 4);
+      
+      g.fillStyle(0x334155, 1);
+      g.fillEllipse(pt.x, 230, 26, 6); g.fillEllipse(pt.x, 415, 26, 6);
+      g.fillStyle(0x64748b, 1);
+      g.fillEllipse(pt.x, 230, 16, 3);
+      
+      g.fillStyle(0x090d16, 1);
+      for (let sy = 250; sy < 400; sy += 45) g.fillRect(pt.x - 14, sy, 28, 4);
+      
+      g.fillStyle(0x475569, 1);
+      g.fillRect(pt.x - 15, 258, 30, 4); g.fillRect(pt.x - 15, 308, 30, 4); g.fillRect(pt.x - 15, 358, 30, 4);
+    };
 
-    // Top-Left (Neutral White Corner)
-    g.fillStyle(0xd1d5db, 1); // White base pad
+    drawCornerCushion(bL, true, 0xb91c1c, 0xef4444, 0x7f1d1d);
+    drawCornerCushion(bR, false, 0x1d4ed8, 0x3b82f6, 0x1e3a8a);
+    
+    // Top-Left (Neutral Corner)
+    g.fillStyle(0xd1d5db, 1);
     g.fillRoundedRect(tL.x - 8, tL.y - 40, 16, 60, 4);
-    g.fillStyle(0xf3f4f6, 1); // Highlight cylinder strip
+    g.fillStyle(0xf3f4f6, 1);
     g.fillRoundedRect(tL.x - 6, tL.y - 40, 5, 60, 2);
-    g.fillStyle(0x9ca3af, 1); // Shadow cylinder strip
+    g.fillStyle(0x9ca3af, 1);
     g.fillRoundedRect(tL.x - 1, tL.y - 40, 7, 60, 2);
-    
-    // Top-Left top cap
-    g.fillStyle(0x475569, 1);
+    g.fillStyle(0x334155, 1);
     g.fillEllipse(tL.x, tL.y - 40, 18, 4);
-    
-    // Top-Left Leather tension straps and hooks
-    g.fillStyle(0x0f172a, 1);
-    for (let sy = tL.y - 30; sy < tL.y + 20; sy += 18) {
-      g.fillRect(tL.x - 10, sy, 20, 2);
-    }
-    g.fillStyle(0x64748b, 1);
-    g.fillRect(tL.x - 10, 138, 20, 2);
-    g.fillRect(tL.x - 10, 163, 20, 2);
-    g.fillRect(tL.x - 10, 188, 20, 2);
-
-    // Top-Right (Neutral White Corner)
-    g.fillStyle(0xd1d5db, 1); // White base pad
-    g.fillRoundedRect(tR.x - 8, tR.y - 40, 16, 60, 4);
-    g.fillStyle(0xf3f4f6, 1); // Highlight cylinder strip
-    g.fillRoundedRect(tR.x - 6, tR.y - 40, 5, 60, 2);
-    g.fillStyle(0x9ca3af, 1); // Shadow cylinder strip
-    g.fillRoundedRect(tR.x - 1, tR.y - 40, 7, 60, 2);
-    
-    // Top-Right top cap
+    g.fillStyle(0x090d16, 1);
+    for (let sy = tL.y - 30; sy < tL.y + 20; sy += 18) g.fillRect(tL.x - 10, sy, 20, 2);
     g.fillStyle(0x475569, 1);
+    g.fillRect(tL.x - 10, 138, 20, 2); g.fillRect(tL.x - 10, 163, 20, 2); g.fillRect(tL.x - 10, 188, 20, 2);
+
+    // Top-Right (Neutral Corner)
+    g.fillStyle(0xd1d5db, 1);
+    g.fillRoundedRect(tR.x - 8, tR.y - 40, 16, 60, 4);
+    g.fillStyle(0xf3f4f6, 1);
+    g.fillRoundedRect(tR.x - 6, tR.y - 40, 5, 60, 2);
+    g.fillStyle(0x9ca3af, 1);
+    g.fillRoundedRect(tR.x - 1, tR.y - 40, 7, 60, 2);
+    g.fillStyle(0x334155, 1);
     g.fillEllipse(tR.x, tR.y - 40, 18, 4);
-    
-    // Top-Right Leather tension straps and hooks
-    g.fillStyle(0x0f172a, 1);
-    for (let sy = tR.y - 30; sy < tR.y + 20; sy += 18) {
-      g.fillRect(tR.x - 10, sy, 20, 2);
+    g.fillStyle(0x090d16, 1);
+    for (let sy = tR.y - 30; sy < tR.y + 20; sy += 18) g.fillRect(tR.x - 10, sy, 20, 2);
+    g.fillStyle(0x475569, 1);
+    g.fillRect(tR.x - 10, 138, 20, 2); g.fillRect(tR.x - 10, 163, 20, 2); g.fillRect(tR.x - 10, 188, 20, 2);
+
+    // 9. Dual-Pass Ropes or chains
+    if (tier === 'rook') {
+      g.lineStyle(5, 0x1e293b, 1);
+      g.beginPath();
+      g.moveTo(bL.x, 260); g.lineTo(tL.x, horizonY - 20); g.lineTo(tR.x, horizonY - 20); g.lineTo(bR.x, 260);
+      g.moveTo(bL.x, 310); g.lineTo(tL.x, horizonY + 5); g.lineTo(tR.x, horizonY + 5); g.lineTo(bR.x, 310);
+      g.moveTo(bL.x, 360); g.lineTo(tL.x, horizonY + 30); g.lineTo(tR.x, horizonY + 30); g.lineTo(bR.x, 360);
+      g.strokePath();
+
+      g.lineStyle(3, 0x64748b, 0.8);
+      g.beginPath();
+      g.moveTo(bL.x, 260); g.lineTo(tL.x, horizonY - 20); g.lineTo(tR.x, horizonY - 20); g.lineTo(bR.x, 260);
+      g.moveTo(bL.x, 310); g.lineTo(tL.x, horizonY + 5); g.lineTo(tR.x, horizonY + 5); g.lineTo(bR.x, 310);
+      g.moveTo(bL.x, 360); g.lineTo(tL.x, horizonY + 30); g.lineTo(tR.x, horizonY + 30); g.lineTo(bR.x, 360);
+      g.strokePath();
+    } else {
+      g.lineStyle(5, 0x000000, 0.45);
+      g.beginPath();
+      g.moveTo(bL.x, 264); g.lineTo(tL.x, horizonY - 16); g.lineTo(tR.x, horizonY - 16); g.lineTo(bR.x, 264);
+      g.moveTo(bL.x, 314); g.lineTo(tL.x, horizonY + 9); g.lineTo(tR.x, horizonY + 9); g.lineTo(bR.x, 314);
+      g.moveTo(bL.x, 364); g.lineTo(tL.x, horizonY + 34); g.lineTo(tR.x, horizonY + 34); g.lineTo(bR.x, 364);
+      g.strokePath();
+
+      g.lineStyle(9, activeColor, 0.45);
+      g.beginPath();
+      g.moveTo(bL.x, 260); g.lineTo(tL.x, horizonY - 20); g.lineTo(tR.x, horizonY - 20); g.lineTo(bR.x, 260);
+      g.moveTo(bL.x, 310); g.lineTo(tL.x, horizonY + 5); g.lineTo(tR.x, horizonY + 5); g.lineTo(bR.x, 310);
+      g.moveTo(bL.x, 360); g.lineTo(tL.x, horizonY + 30); g.lineTo(tR.x, horizonY + 30); g.lineTo(bR.x, 360);
+      g.strokePath();
+
+      g.lineStyle(3, 0xffffff, 0.95);
+      g.beginPath();
+      g.moveTo(bL.x, 260); g.lineTo(tL.x, horizonY - 20); g.lineTo(tR.x, horizonY - 20); g.lineTo(bR.x, 260);
+      g.moveTo(bL.x, 310); g.lineTo(tL.x, horizonY + 5); g.lineTo(tR.x, horizonY + 5); g.lineTo(bR.x, 310);
+      g.moveTo(bL.x, 360); g.lineTo(tL.x, horizonY + 30); g.lineTo(tR.x, horizonY + 30); g.lineTo(bR.x, 360);
+      g.strokePath();
     }
-    g.fillStyle(0x64748b, 1);
-    g.fillRect(tR.x - 10, 138, 20, 2);
-    g.fillRect(tR.x - 10, 163, 20, 2);
-    g.fillRect(tR.x - 10, 188, 20, 2);
-
-    // 7. Glowing Dual-Pass Neon Ring Ropes (ultra premium light tube style)
-    const neonCol = Phaser.Display.Color.HexStringToColor(colorHex).color;
-    
-    // Shadow ropes for 3D depth on the floor canvas
-    g.lineStyle(5, 0x000000, 0.45);
-    g.beginPath();
-    g.moveTo(bL.x, 264); g.lineTo(tL.x, horizonY - 16); g.lineTo(tR.x, horizonY - 16); g.lineTo(bR.x, 264);
-    g.moveTo(bL.x, 314); g.lineTo(tL.x, horizonY + 9); g.lineTo(tR.x, horizonY + 9); g.lineTo(bR.x, 314);
-    g.moveTo(bL.x, 364); g.lineTo(tL.x, horizonY + 34); g.lineTo(tR.x, horizonY + 34); g.lineTo(bR.x, 364);
-    g.strokePath();
-
-    // Pass 1: Glowing thick outer line (neon bloom glow)
-    g.lineStyle(9, neonCol, 0.45);
-    g.beginPath();
-    g.moveTo(bL.x, 260); g.lineTo(tL.x, horizonY - 20); g.lineTo(tR.x, horizonY - 20); g.lineTo(bR.x, 260);
-    g.moveTo(bL.x, 310); g.lineTo(tL.x, horizonY + 5); g.lineTo(tR.x, horizonY + 5); g.lineTo(bR.x, 310);
-    g.moveTo(bL.x, 360); g.lineTo(tL.x, horizonY + 30); g.lineTo(tR.x, horizonY + 30); g.lineTo(bR.x, 360);
-    g.strokePath();
-
-    // Pass 2: Bright thin inner core (intense neon glow tube)
-    g.lineStyle(3, 0xffffff, 0.95);
-    g.beginPath();
-    g.moveTo(bL.x, 260); g.lineTo(tL.x, horizonY - 20); g.lineTo(tR.x, horizonY - 20); g.lineTo(bR.x, 260);
-    g.moveTo(bL.x, 310); g.lineTo(tL.x, horizonY + 5); g.lineTo(tR.x, horizonY + 5); g.lineTo(bR.x, 310);
-    g.moveTo(bL.x, 360); g.lineTo(tL.x, horizonY + 30); g.lineTo(tR.x, horizonY + 30); g.lineTo(bR.x, 360);
-    g.strokePath();
   }
 
   // --- BOXING HUD UPDATER ---
@@ -4833,7 +4969,17 @@ class ChessBoxGame {
           // 2800 ELO (Level 15) -> 2% random pick (almost flawless chess engine evaluation)
           const currentLevel = this.levels[this.currentLevelIndex];
           const opponentElo = currentLevel ? currentLevel.elo : 1200;
-          const randomChance = Math.max(0.02, Math.min(0.60, 0.60 - ((opponentElo - 400) / 2400) * 0.58));
+          
+          let effectiveElo = opponentElo;
+          if (this.selectedDifficulty === 'easy') {
+            effectiveElo = Math.max(300, opponentElo - 300);
+          } else if (this.selectedDifficulty === 'hard') {
+            effectiveElo = Math.min(2900, opponentElo + 300);
+          } else if (this.selectedDifficulty === 'martina') {
+            effectiveElo = 3000;
+          }
+          
+          const randomChance = Math.max(0.02, Math.min(0.60, 0.60 - ((effectiveElo - 400) / 2400) * 0.58));
           
           if (Math.random() < randomChance) {
             chosenMove = validMoves[Math.floor(Math.random() * validMoves.length)];
