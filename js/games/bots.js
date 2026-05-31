@@ -592,6 +592,9 @@ class BotsGame {
     this.capturedWhite = [];
     this.capturedBlack = [];
 
+    this.moveAnnotations = {};
+    this.lastEval = 0;
+
     this.audioCtx = null;
     this.soundEnabled = localStorage.getItem('martina_bots_sound') !== 'false';
 
@@ -1308,9 +1311,18 @@ class BotsGame {
     if (moveCategories.includes('capture')) this.playCapture();
     if (moveCategories.includes('check')) this.playCheck();
 
+    // Evaluate BEFORE move for annotation
+    const evalBefore = this.evaluateBoardLocal(this.chessFEN, 'w');
+
     this.chessFEN = this.executeMoveRaw(this.chessFEN, uciMove);
     this.lastChessMove = { from: uciMove.substring(0, 2), to: uciMove.substring(2, 4) };
     this.chessHistory.push(uciMove);
+
+    // Evaluate AFTER move and classify
+    const evalAfter = this.evaluateBoardLocal(this.chessFEN, 'w');
+    const diff = isPlayer ? (evalAfter - evalBefore) : (evalBefore - evalAfter);
+    this.moveAnnotations[uciMove] = this.classifyMove(diff, isPlayer, moveCategories);
+    this.lastEval = evalAfter;
     this.renderChessBoard();
     this.updateHistoryDisplay();
     this.updateCapturedDisplay();
@@ -1361,6 +1373,20 @@ class BotsGame {
   }
 
   // ========== COMMENTATOR ==========
+  classifyMove(evalDiff, isPlayer, categories) {
+    const absDiff = Math.abs(evalDiff);
+    const isCapture = categories && categories.includes('capture');
+    const isCheck = categories && categories.includes('check');
+
+    if (evalDiff > 3.0) return '✨';
+    if (evalDiff > 1.5) return '⭐';
+    if (evalDiff > 0.5) return '✓';
+    if (evalDiff > -0.5) return '';
+    if (evalDiff > -1.5) return '⁉️';
+    if (evalDiff > -3.0) return '❌';
+    return '💀';
+  }
+
   updateCommentary() {
     const score = this.evaluateBoardLocal(this.chessFEN, 'w');
     const moves = this.chessHistory.length;
@@ -1410,6 +1436,15 @@ class BotsGame {
       else if (clampedScore < -2) comment = 'Desventaja crítica. Intenta complicar la posición.';
       else comment = 'Equilibrio. Planea tu estrategia a largo plazo.';
     }
+
+    // Append last move quality if available
+    const lastMove = this.chessHistory.length > 0 ? this.chessHistory[this.chessHistory.length-1] : null;
+    const lastAnn = lastMove ? this.moveAnnotations[lastMove] : null;
+    if (lastAnn) {
+      const names = {'✨':'Brillante','⭐':'Genial','✓':'Buena','⁉️':'Imprecisión','❌':'Error','💀':'Gaffe'};
+      comment += `\nÚltima jugada: ${lastAnn} ${names[lastAnn] || ''}`;
+    }
+
     textEl.textContent = comment;
   }
 
@@ -1460,8 +1495,10 @@ class BotsGame {
       for (let i = 0; i < this.chessHistory.length; i += 2) {
         const plMove = this.chessHistory[i] || '';
         const oppMove = this.chessHistory[i + 1] || '';
+        const plAnn = this.moveAnnotations[plMove] || '';
+        const oppAnn = this.moveAnnotations[oppMove] || '';
         const line = document.createElement('div');
-        line.textContent = `${Math.floor(i/2)+1}. ${plMove}  ${oppMove}`;
+        line.innerHTML = `${Math.floor(i/2)+1}. ${plMove}<span style="font-size:0.55rem;margin-left:1px">${plAnn}</span> ${oppMove}<span style="font-size:0.55rem;margin-left:1px">${oppAnn}</span>`;
         el.appendChild(line);
       }
       el.scrollTop = el.scrollHeight;
@@ -1658,6 +1695,8 @@ class BotsGame {
     this.isThinking = false;
     this.capturedWhite = [];
     this.capturedBlack = [];
+    this.moveAnnotations = {};
+    this.lastEval = 0;
 
     const bot = this.selectedBot;
     const bl = bot.boardLight || '#e8d5b7';
