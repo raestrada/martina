@@ -1,5 +1,7 @@
 try {
-  importScripts('stockfish.js');
+  self.postMessage('LOADING');
+  importScripts('/js/stockfish.js');
+  self.postMessage('LOADED');
 } catch(e) {
   self.postMessage('ERROR:' + e.message);
   throw e;
@@ -9,8 +11,8 @@ self.onmessage = function(e) {
   try {
     StockFish.postMessage(e.data);
   } catch(err) {
-    self.postMessage('ERROR:' + err.message);
+    self.postMessage('CMD_ERR:' + err.message);
   }
 };
 
-self.postMessage('WORKER_READY');
+self.postMessage('READY');
