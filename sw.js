@@ -59,6 +59,7 @@ const GAME_JS_URLS = [
   '/js/games/torreta.js',
   '/js/games/bots.js',
   '/js/stockfish.js',
+  '/js/sf-worker.js',
 ];
 
 const IMAGE_URLS = [

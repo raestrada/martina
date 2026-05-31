@@ -1079,36 +1079,21 @@ class BotsGame {
       const bot = this.selectedBot;
       const skillLevel = Math.min(20, Math.max(0, Math.round((bot.elo / 2800) * 20)));
 
-      // Try CDN first, fall back to local file
-      const stockfishUrl = '/js/stockfish.js';
+      try {
+        this.stockfishWorker = new Worker('/js/sf-worker.js');
 
-      fetch(stockfishUrl)
-        .then(res => {
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          return res.text();
-        })
-        .then(scriptText => {
-          if (this.stockfishWorker) { resolve(); return; }
+        this.stockfishWorker.postMessage('uci');
+        this.stockfishWorker.postMessage('isready');
+        this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
+        this.stockfishWorker.postMessage('ucinewgame');
 
-          const blob = new Blob([
-            scriptText + '\nself.onmessage=function(e){StockFish.postMessage(e.data)};'
-          ], { type: 'application/javascript' });
-
-          this.stockfishWorker = new Worker(URL.createObjectURL(blob));
-
-          this.stockfishWorker.postMessage('uci');
-          this.stockfishWorker.postMessage('isready');
-          this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
-          this.stockfishWorker.postMessage('ucinewgame');
-
-          this.stockfishReady = true;
-          setTimeout(resolve, 500);
-        })
-        .catch(err => {
-          console.warn('Stockfish load failed:', err.message);
-          this._sfInitPromise = null;
-          reject(err);
-        });
+        this.stockfishReady = true;
+        setTimeout(resolve, 800);
+      } catch (err) {
+        console.warn('Stockfish worker creation failed:', err.message);
+        this._sfInitPromise = null;
+        reject(err);
+      }
     });
 
     return this._sfInitPromise;
