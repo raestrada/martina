@@ -1546,7 +1546,7 @@ class BotsGame {
     // Determine who just moved (opponent move = bot, player move = player)
     const totalMoves = this.chessHistory.length;
     const isOpponent = totalMoves % 2 === 0; // even = black/opponent just moved
-    const author = isOpponent ? this.selectedBot.name : 'Tú';
+    const author = isOpponent ? this.selectedBot.name : 'Jugador';
     const color = isOpponent ? this.selectedBot.color : '#67e8f9';
 
     // Create entry and prepend to top (newest first)
@@ -1739,12 +1739,12 @@ class BotsGame {
         <div class="bots-vs-panel bots-vs-left">
           <div class="bots-vs-unskew">
             <div class="bots-vs-card">
-              <span class="bots-vs-badge" style="background: #fbbf24; color: #0a0a0a;">DESAFIANTE</span>
-              <h2 class="bots-vs-name name-player">T\u00DA</h2>
+              <span class="bots-vs-badge" style="background: #fbbf24; color: #0a0a0a;">BLANCAS</span>
+              <h2 class="bots-vs-name name-player">Jugador</h2>
               <div class="bots-vs-player-icon">
-                <span class="bots-vs-emoji-big">👧</span>
+                <span class="bots-vs-emoji-big">♔</span>
               </div>
-              <p class="bots-vs-quote">«Juegas con blancas. Primer movimiento. Sin miedo.»</p>
+              <p class="bots-vs-quote">«Juegas con blancas. Primer movimiento.»</p>
             </div>
           </div>
         </div>
@@ -1994,7 +1994,7 @@ class BotsGame {
         <h2 class="bots-result-title" style="color: ${resultColor};">${resultTitle}</h2>
         <p class="bots-result-reason">${reason}</p>
         <div class="bots-result-vs">
-          <span class="result-player">T\u00DA</span>
+          <span class="result-player">Jugador</span>
           <span style="color:#64748b;font-size:0.7rem;">vs</span>
           <span class="result-bot" style="color: ${bot.color};">${bot.name} (${bot.elo})</span>
         </div>
