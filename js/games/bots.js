@@ -614,10 +614,6 @@ class BotsGame {
 
     this._speakQueue = null;
     this._speaking = false;
-    this._voicesReady = false;
-
-    this._voices = null;
-    this._lastSpeak = 0;
 
     this._init();
   }
@@ -742,30 +738,15 @@ class BotsGame {
     } catch(e) {}
   }
 
-  // ========== SPEECH (meSpeak + AudioContext filters) ==========
-  async _initMeSpeak() {
-    if (this._voicesReady) return;
-    return new Promise((resolve) => {
-      if (!window.meSpeak) { resolve(); return; }
-      try {
-        meSpeak.loadVoice('/js/mespeak-voice-es.json', () => {
-          this._voicesReady = true;
-          resolve();
-        });
-      } catch(e) {
-        resolve();
-      }
-    });
-  }
-
+  // ========== SPEECH (Web Speech API) ==========
   speak(text, gender, profile) {
-    if (!this.voiceEnabled || !text) return;
+    if (!this.voiceEnabled || !text || !window.speechSynthesis) return;
     if (!this._speakQueue) this._speakQueue = [];
     this._speakQueue.push({ text, gender, profile });
     if (!this._speaking) this._dequeueSpeak();
   }
 
-  async _dequeueSpeak() {
+  _dequeueSpeak() {
     if (!this._speakQueue || this._speakQueue.length === 0 || !this.voiceEnabled) {
       this._speaking = false;
       return;
@@ -773,97 +754,31 @@ class BotsGame {
     this._speaking = true;
     const { text, gender, profile } = this._speakQueue.shift();
 
-    await this._initMeSpeak();
+    const utter = new SpeechSynthesisUtterance(text);
+    const voices = speechSynthesis.getVoices();
+    const wantFemale = gender === 'female';
+    let voice = voices.find(v => v.lang.startsWith('es') && (wantFemale ? /ónica|Paulina|female/i.test(v.name) : /Jorge|Diego|male/i.test(v.name)));
+    if (!voice) voice = voices.find(v => v.lang.startsWith('es'));
+    if (voice) utter.voice = voice;
 
-    const femaleVariants = ['f1','f2','f3','f4'];
-    const maleVariants   = ['m1','m2','m3','m4','m5'];
-    const variants = gender === 'female' ? femaleVariants : maleVariants;
-
-    const profileMap = {
-      high:  { variant: gender === 'female' ? 'f2' : 'm3', pitch: 120, speed: 170 },
-      fast:  { variant: gender === 'female' ? 'f4' : 'm4', pitch: 100, speed: 200 },
-      low:   { variant: gender === 'female' ? 'f3' : 'm1', pitch: 70,  speed: 130 },
-      dry:   { variant: gender === 'female' ? 'f1' : 'm2', pitch: 90,  speed: 140 },
-      deep:  { variant: gender === 'female' ? 'f3' : 'm5', pitch: 50,  speed: 110 },
-      slow:  { variant: gender === 'female' ? 'f1' : 'm1', pitch: 80,  speed: 120 },
-      male:  { variant: 'm2', pitch: 95,  speed: 150 },
-      female:{ variant: 'f2', pitch: 110, speed: 155 },
+    const profiles = {
+      high:  { pitch: 1.8, rate: 1.35, vol: 0.9 },
+      fast:  { pitch: 1.0, rate: 1.7, vol: 0.8 },
+      low:   { pitch: 0.45, rate: 0.75, vol: 0.85 },
+      dry:   { pitch: 0.7, rate: 0.95, vol: 0.75 },
+      deep:  { pitch: 0.25, rate: 0.6, vol: 0.9 },
+      slow:  { pitch: 0.55, rate: 0.65, vol: 0.7 },
+      male:  { pitch: 0.85, rate: 0.95, vol: 0.8 },
+      female:{ pitch: 1.25, rate: 1.05, vol: 0.85 },
     };
-    const cfg = profileMap[profile] || profileMap[gender === 'female' ? 'female' : 'male'];
-    const variant = cfg.variant || variants[0];
+    const p = profiles[profile] || profiles[gender === 'female' ? 'female' : 'male'];
+    utter.pitch = p.pitch;
+    utter.rate  = p.rate;
+    utter.volume = p.vol;
 
-    const filterMap = {
-      high:  { type: 'highpass', freq: 600, Q: 0.8 },
-      fast:  { type: 'bandpass', freq: 1800, Q: 1.5 },
-      low:   { type: 'lowshelf', freq: 800, gain: -6 },
-      dry:   { type: 'notch', freq: 1200, Q: 3 },
-      deep:  { type: 'lowpass', freq: 400, Q: 0.7 },
-      slow:  { type: 'lowpass', freq: 700, Q: 0.5 },
-      male:  { type: 'peaking', freq: 2500, Q: 0.8, gain: 2 },
-      female:{ type: 'highshelf', freq: 1500, gain: 3 },
-    };
-    const filterCfg = filterMap[profile] || null;
-
-    if (window.meSpeak && this._voicesReady) {
-      meSpeak.speak(text, {
-        variant: variant,
-        pitch: cfg.pitch,
-        speed: cfg.speed,
-        amplitude: 100,
-        wordgap: 3,
-        rawdata: 'array',
-        linebreak: 200
-      }, (success, rawPCM, isRaw) => {
-        if (!success || !rawPCM || !this.voiceEnabled) { this._dequeueSpeak(); return; }
-        this._playFilteredPCM(rawPCM, filterCfg);
-        setTimeout(() => this._dequeueSpeak(), 200);
-      });
-    } else {
-      // Fallback: SpeechSynthesis
-      if (!window.speechSynthesis) { this._dequeueSpeak(); return; }
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.pitch = profile === 'high' ? 1.8 : profile === 'low' ? 0.5 : profile === 'deep' ? 0.3 : gender === 'female' ? 1.3 : 0.8;
-      utter.rate  = profile === 'fast' ? 1.5 : profile === 'slow' ? 0.6 : 1.0;
-      utter.volume = 0.8;
-      utter.onend = () => this._dequeueSpeak();
-      utter.onerror = () => this._dequeueSpeak();
-      speechSynthesis.speak(utter);
-    }
-  }
-
-  _playFilteredPCM(rawPCM, filterCfg) {
-    const ctx = this._resumeAudio();
-    if (!ctx) return;
-
-    try {
-      const int8 = new Int8Array(rawPCM);
-      const float32 = new Float32Array(int8.length);
-      for (let i = 0; i < int8.length; i++) float32[i] = int8[i] / 128;
-
-      const buffer = ctx.createBuffer(1, float32.length, 22050);
-      buffer.copyToChannel(float32, 0);
-
-      const source = ctx.createBufferSource();
-      source.buffer = buffer;
-
-      let lastNode = source;
-      if (filterCfg) {
-        const filter = ctx.createBiquadFilter();
-        filter.type = filterCfg.type;
-        filter.frequency.value = filterCfg.freq;
-        if (filterCfg.Q) filter.Q.value = filterCfg.Q;
-        if (filterCfg.gain) filter.gain.value = filterCfg.gain;
-        lastNode.connect(filter);
-        lastNode = filter;
-      }
-
-      const gain = ctx.createGain();
-      gain.gain.value = 0.7;
-      lastNode.connect(gain);
-      gain.connect(ctx.destination);
-
-      source.start(0);
-    } catch(e) {}
+    utter.onend = () => this._dequeueSpeak();
+    utter.onerror = () => { this._speaking = false; this._dequeueSpeak(); };
+    speechSynthesis.speak(utter);
   }
 
   getSpeakProfile(botId) {

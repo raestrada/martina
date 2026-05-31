@@ -61,9 +61,6 @@ const GAME_JS_URLS = [
   '/js/stockfish.js',
   '/js/stockfish.wasm',
   '/js/sf-worker.js',
-  '/js/mespeak.js',
-  '/js/mespeak-core.js',
-  '/js/mespeak-voice-es.json',
 ];
 
 const IMAGE_URLS = [
