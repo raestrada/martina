@@ -1174,8 +1174,8 @@ class BotsGame {
     const rank = 8 - parseInt(dest[1]);
     const boardRect = board.getBoundingClientRect();
     const sqSize = boardRect.width / 8;
-    const x = boardRect.left + file * sqSize + sqSize / 2;
-    const y = boardRect.top + rank * sqSize + sqSize / 2;
+    const x = boardRect.left + (file + 1) * sqSize - 6;
+    const y = boardRect.top + rank * sqSize + 3;
 
     const popup = document.createElement('div');
     popup.className = 'bots-popup';
@@ -1184,13 +1184,14 @@ class BotsGame {
       position: fixed;
       left: ${x}px;
       top: ${y}px;
-      transform: translate(-50%, -50%) scale(0);
-      font-size: 2.2rem;
+      transform: translate(-100%, 0) scale(0);
+      font-size: 0.8rem;
       z-index: 999;
       pointer-events: none;
-      animation: botsPopupIn 0.35s ease-out forwards;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.7);
+      animation: botsPopupIn 0.3s ease-out forwards;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
       line-height: 1;
+      font-weight: 900;
     `;
 
     document.body.appendChild(popup);
@@ -1354,6 +1355,17 @@ class BotsGame {
     // Evaluate BEFORE move for annotation
     const evalBefore = this.evaluateBoardLocal(this.chessFEN, 'w');
 
+    // For opponent moves: flash from/to squares before rendering
+    if (!isPlayer) {
+      const fromCoord = uciMove.substring(0, 2);
+      const toCoord = uciMove.substring(2, 4);
+      const fromSq = document.querySelector(`#bots-board .bots-chess-sq[data-coord="${fromCoord}"]`);
+      const toSq = document.querySelector(`#bots-board .bots-chess-sq[data-coord="${toCoord}"]`);
+      if (fromSq) fromSq.style.boxShadow = `inset 0 0 0 0 transparent`;
+      if (toSq) toSq.style.boxShadow = `inset 0 0 0 5px ${bot.color}`;
+      this.updateStatus(`${bot.name} jugó ${uciMove}`, 'thinking');
+    }
+
     this.chessFEN = this.executeMoveRaw(this.chessFEN, uciMove);
     this.lastChessMove = { from: uciMove.substring(0, 2), to: uciMove.substring(2, 4) };
     this.chessHistory.push(uciMove);
@@ -1363,18 +1375,27 @@ class BotsGame {
     const diff = isPlayer ? (evalAfter - evalBefore) : (evalBefore - evalAfter);
     this.moveAnnotations[uciMove] = this.classifyMove(diff, isPlayer, moveCategories);
     this.lastEval = evalAfter;
-    this.renderChessBoard();
-    this.showMovePopup(uciMove);
-    this.updateHistoryDisplay();
-    this.updateCapturedDisplay();
-    this.updateCommentary();
 
-    // Briefly pause to let player see opponent's move
+    // Opponent: delay render for visual tracking
     if (!isPlayer) {
       this.isThinking = true;
       setTimeout(() => {
-        this.isThinking = false;
-      }, 400);
+        this.renderChessBoard();
+        this.showMovePopup(uciMove);
+        this.updateHistoryDisplay();
+        this.updateCapturedDisplay();
+        this.updateCommentary();
+        setTimeout(() => {
+          this.isThinking = false;
+          this.updateStatus('● Tu turno', 'turn');
+        }, 300);
+      }, 350);
+    } else {
+      this.renderChessBoard();
+      this.showMovePopup(uciMove);
+      this.updateHistoryDisplay();
+      this.updateCapturedDisplay();
+      this.updateCommentary();
     }
 
     const newParts = this.chessFEN.split(' ');
