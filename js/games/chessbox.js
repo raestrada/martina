@@ -1339,67 +1339,233 @@ class ChessBoxGame {
         c.closePath();
         c.fill();
       } else if (tier === 'bishop') {
-        c.moveTo(44, 156);
-        c.bezierCurveTo(46, 110, 60, 96, 66, 86);
-        c.lineTo(60, 80);
-        c.bezierCurveTo(50, 60, 96, 26, 96, 26);
-        c.bezierCurveTo(96, 26, 142, 60, 132, 80);
-        c.lineTo(126, 86);
-        c.bezierCurveTo(132, 96, 146, 110, 148, 156);
+        // Pedestal base (classic chess piece styling)
+        c.beginPath();
+        c.moveTo(36, 156);
+        c.lineTo(156, 156);
+        c.quadraticCurveTo(156, 142, 142, 142);
+        c.lineTo(50, 142);
+        c.quadraticCurveTo(36, 142, 36, 156);
         c.closePath();
         c.fill();
         
-        c.fillStyle = tc.eye;
+        // Base ring molding
+        c.fillStyle = tc.body[1];
+        c.fillRect(48, 134, 96, 8);
+        c.fillStyle = getBodyGrad(c, 44, 40, 148, 156);
+
+        // Slender neck column
         c.beginPath();
-        c.arc(96, 25, 6, 0, Math.PI * 2);
-        c.fill();
-        
-        c.strokeStyle = '#1e293b';
-        c.lineWidth = 3.5;
-        c.beginPath();
-        c.moveTo(96, 38);
-        c.lineTo(84, 56);
-        c.stroke();
-      } else if (tier === 'queen') {
-        c.moveTo(44, 156);
-        c.bezierCurveTo(46, 110, 66, 96, 70, 86);
-        c.lineTo(60, 76);
-        c.lineTo(54, 42);
-        c.lineTo(76, 56);
-        c.lineTo(96, 32);
-        c.lineTo(116, 56);
-        c.lineTo(138, 42);
-        c.lineTo(122, 76);
-        c.bezierCurveTo(126, 96, 146, 110, 148, 156);
+        c.moveTo(56, 134);
+        c.bezierCurveTo(68, 116, 72, 100, 72, 88);
+        c.lineTo(120, 88);
+        c.bezierCurveTo(120, 100, 124, 116, 136, 134);
         c.closePath();
-        c.fill();
-        
-        c.fillStyle = '#fbbf24';
-        c.beginPath();
-        c.arc(54, 40, 5, 0, Math.PI*2);
-        c.arc(96, 30, 6, 0, Math.PI*2);
-        c.arc(138, 40, 5, 0, Math.PI*2);
         c.fill();
 
-        if (opponentName.includes("Reina Negra")) {
-          c.fillStyle = '#ffffff';
-          c.beginPath();
-          c.moveTo(90, 30);
-          c.bezierCurveTo(80, 15, 102, 15, 102, 30);
-          c.closePath();
-          c.fill();
-        }
-      } else if (tier === 'shadow') {
-        c.moveTo(44, 156);
-        c.bezierCurveTo(44, 110, 58, 90, 68, 80);
-        c.lineTo(124, 80);
-        c.bezierCurveTo(134, 90, 148, 110, 148, 156);
+        // Elegant collar rings at the neck
+        const collarGrad = c.createLinearGradient(60, 80, 132, 88);
+        collarGrad.addColorStop(0, tc.body[4]);
+        collarGrad.addColorStop(0.5, tc.body[1]);
+        collarGrad.addColorStop(1, tc.body[4]);
+        c.fillStyle = collarGrad;
+        c.beginPath();
+        c.ellipse(96, 88, 28, 6, 0, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = getBodyGrad(c, 44, 40, 148, 156);
+        c.beginPath();
+        c.ellipse(96, 84, 24, 5, 0, 0, Math.PI * 2);
+        c.fill();
+
+        // Majestic Bishop Mitre Head
+        c.beginPath();
+        c.moveTo(72, 84);
+        c.bezierCurveTo(62, 70, 72, 32, 96, 26); // Pointy top
+        c.bezierCurveTo(120, 32, 130, 70, 120, 84);
         c.closePath();
         c.fill();
-        
+
+        // Golden Cross on top (Y=13 to Y=26)
+        c.fillStyle = '#fbbf24';
+        c.fillRect(94, 13, 4, 13);
+        c.fillRect(90, 17, 12, 4);
+
+        // The Classic Bishop Slash / Tajo (Diagonal cut)
+        c.strokeStyle = '#fbbf24';
+        c.lineWidth = 4;
+        c.lineCap = 'round';
         c.beginPath();
-        c.arc(96, 54, 30, 0, Math.PI*2);
+        c.moveTo(96, 36);
+        c.lineTo(82, 54);
+        c.stroke();
+
+        // Shadow slash border for depth
+        c.strokeStyle = tc.body[4];
+        c.lineWidth = 1.5;
+        c.beginPath();
+        c.moveTo(98, 37);
+        c.lineTo(84, 55);
+        c.stroke();
+      } else if (tier === 'queen') {
+        // Pedestal base (classic chess piece styling)
+        c.beginPath();
+        c.moveTo(36, 156);
+        c.lineTo(156, 156);
+        c.quadraticCurveTo(156, 140, 140, 140);
+        c.lineTo(52, 140);
+        c.quadraticCurveTo(36, 140, 36, 156);
+        c.closePath();
         c.fill();
+
+        // Elegant Hourglass Corset/Gown Bodice
+        c.beginPath();
+        c.moveTo(52, 140);
+        c.bezierCurveTo(68, 125, 72, 105, 72, 92); // narrow waist
+        c.lineTo(120, 92);
+        c.bezierCurveTo(120, 105, 124, 125, 140, 140);
+        c.closePath();
+        c.fill();
+
+        // Corset Gold Lacing in the center of the bodice
+        c.strokeStyle = '#fbbf24';
+        c.lineWidth = 2.5;
+        c.beginPath();
+        c.moveTo(92, 100); c.lineTo(100, 108);
+        c.moveTo(100, 100); c.lineTo(92, 108);
+        c.moveTo(92, 112); c.lineTo(100, 120);
+        c.moveTo(100, 112); c.lineTo(92, 120);
+        c.moveTo(92, 124); c.lineTo(100, 132);
+        c.moveTo(100, 124); c.lineTo(92, 132);
+        c.stroke();
+
+        // Royal Elizabethan Ruffled Collar (Gorguera)
+        c.fillStyle = '#f8fafc';
+        c.strokeStyle = '#e2e8f0';
+        c.lineWidth = 1.5;
+        const drawRuffWave = (cx, cy, rx, ry) => {
+          c.beginPath();
+          c.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+          c.fill();
+          c.stroke();
+        };
+        // Five fluffy ruffled circles forming the collar
+        drawRuffWave(74, 88, 14, 10);
+        drawRuffWave(118, 88, 14, 10);
+        drawRuffWave(84, 92, 16, 11);
+        drawRuffWave(108, 92, 16, 11);
+        drawRuffWave(96, 94, 18, 12);
+
+        // Elegant Queen Head
+        c.fillStyle = getBodyGrad(c, 44, 40, 148, 156);
+        c.beginPath();
+        c.ellipse(96, 70, 22, 18, 0, 0, Math.PI * 2);
+        c.fill();
+
+        // Majestic Five-Pointed Royal Crown
+        // Crown Base (Y=52)
+        c.fillStyle = '#fbbf24';
+        c.beginPath();
+        c.moveTo(76, 54);
+        c.lineTo(116, 54);
+        c.lineTo(112, 58);
+        c.lineTo(80, 58);
+        c.closePath();
+        c.fill();
+
+        // Crown Peaks (Five elegant points)
+        c.beginPath();
+        c.moveTo(76, 54);
+        c.lineTo(70, 36);  // peak 1
+        c.lineTo(82, 48);
+        c.lineTo(84, 28);  // peak 2
+        c.lineTo(92, 44);
+        c.lineTo(96, 20);  // peak 3 (highest center)
+        c.lineTo(100, 44);
+        c.lineTo(108, 28); // peak 4
+        c.lineTo(110, 48);
+        c.lineTo(122, 36); // peak 5
+        c.lineTo(116, 54);
+        c.closePath();
+        c.fill();
+
+        // Glowing Magenta Gemstones on top of crown peaks
+        c.fillStyle = '#f43f5e';
+        const drawGem = (gx, gy, r) => {
+          c.beginPath();
+          c.arc(gx, gy, r, 0, Math.PI * 2);
+          c.fill();
+          // Gem sheen
+          c.fillStyle = '#ffffff';
+          c.beginPath();
+          c.arc(gx - r * 0.3, gy - r * 0.3, r * 0.3, 0, Math.PI * 2);
+          c.fill();
+          c.fillStyle = '#f43f5e';
+        };
+        drawGem(70, 36, 3.5);
+        drawGem(84, 28, 4.0);
+        drawGem(96, 20, 5.0);
+        drawGem(108, 28, 4.0);
+        drawGem(122, 36, 3.5);
+
+        // Gemstones embedded in the crown band
+        c.fillStyle = '#ec4899';
+        drawGem(86, 54, 2.5);
+        drawGem(96, 54, 3.0);
+        drawGem(106, 54, 2.5);
+
+        // Fluffy Tissue sticking out of the crown (humorous detail)
+        c.fillStyle = 'rgba(255, 255, 255, 0.95)';
+        c.strokeStyle = 'rgba(226, 232, 240, 0.9)';
+        c.lineWidth = 1;
+        c.beginPath();
+        c.moveTo(96, 20);
+        c.quadraticCurveTo(90, 8, 82, 10);
+        c.quadraticCurveTo(86, 18, 96, 20);
+        c.moveTo(96, 20);
+        c.quadraticCurveTo(102, 6, 110, 8);
+        c.quadraticCurveTo(106, 18, 96, 20);
+        c.closePath();
+        c.fill();
+        c.stroke();
+      } else if (tier === 'shadow') {
+        // Shadow base: Ethereal flowing wisps/smoke
+        c.beginPath();
+        c.moveTo(56, 156);
+        c.bezierCurveTo(46, 135, 42, 110, 48, 86);
+        c.bezierCurveTo(36, 40, 72, 32, 96, 32); // Hood peak
+        c.bezierCurveTo(120, 32, 156, 40, 144, 86);
+        c.bezierCurveTo(150, 110, 146, 135, 136, 156);
+        
+        // Dynamic wisp cuts at the bottom
+        c.bezierCurveTo(124, 142, 116, 168, 96, 150);
+        c.bezierCurveTo(76, 168, 68, 142, 56, 156);
+        c.closePath();
+        c.fill();
+
+        // Inner Cowl Hood Void (Deep absolute black)
+        c.fillStyle = '#020006';
+        c.beginPath();
+        c.ellipse(96, 64, 22, 26, 0, 0, Math.PI * 2);
+        c.fill();
+
+        // Purple Ethereal energy aura
+        c.strokeStyle = 'rgba(168, 85, 247, 0.4)';
+        c.lineWidth = 4;
+        c.beginPath();
+        c.arc(96, 64, 26, 0, Math.PI * 2);
+        c.stroke();
+
+        // Floating shadowy wisps around the body
+        c.fillStyle = 'rgba(168, 85, 247, 0.2)';
+        const drawWispCircle = (wx, wy, wr) => {
+          c.beginPath();
+          c.arc(wx, wy, wr, 0, Math.PI * 2);
+          c.fill();
+        };
+        drawWispCircle(38, 76, 8);
+        drawWispCircle(154, 84, 10);
+        drawWispCircle(46, 126, 6);
+        drawWispCircle(142, 134, 7);
       } else {
         c.moveTo(52, 36); c.lineTo(68, 36); c.lineTo(68, 52); 
         c.lineTo(84, 52); c.lineTo(84, 36); c.lineTo(100, 36); 
@@ -1443,19 +1609,184 @@ class ChessBoxGame {
     } else if (tier === 'knight') {
       eyeY = 66; eyeXL = 68; eyeXR = 96;
     } else if (tier === 'bishop') {
-      eyeY = 74; eyeXL = 82; eyeXR = 110;
+      eyeY = 62; eyeXL = 82; eyeXR = 110;
     } else if (tier === 'queen') {
-      eyeY = 80; eyeXL = 80; eyeXR = 112;
+      eyeY = 64; eyeXL = 80; eyeXR = 112; // Adjusted for better proportions
     } else if (tier === 'shadow') {
-      eyeY = 54; eyeXL = 84; eyeXR = 108;
+      eyeY = 56; eyeXL = 84; eyeXR = 108;
     }
 
     let mouthY = 108;
     if (tier === 'pawn') mouthY = 78;
     else if (tier === 'knight') mouthY = 78;
-    else if (tier === 'bishop') mouthY = 92;
-    else if (tier === 'queen') mouthY = 100;
-    else if (tier === 'shadow') mouthY = 70;
+    else if (tier === 'bishop') mouthY = 80;
+    else if (tier === 'queen') mouthY = 76; // Adjusted to chin area on head
+    else if (tier === 'shadow') mouthY = 82;
+
+    const drawFaceIdle = (c) => {
+      if (tier === 'shadow') {
+        c.shadowColor = '#c084fc';
+        c.shadowBlur = 10;
+        c.fillStyle = '#ffffff';
+        c.beginPath();
+        c.ellipse(eyeXL, eyeY, 6, 8, 0, 0, Math.PI*2);
+        c.ellipse(eyeXR, eyeY, 6, 8, 0, 0, Math.PI*2);
+        c.fill();
+        c.shadowBlur = 0;
+
+        c.strokeStyle = 'rgba(168, 85, 247, 0.6)';
+        c.lineWidth = 2.5;
+        c.beginPath();
+        c.moveTo(eyeXL, eyeY - 4);
+        c.bezierCurveTo(eyeXL - 8, eyeY - 18, eyeXL + 4, eyeY - 32, eyeXL - 4, eyeY - 44);
+        c.moveTo(eyeXR, eyeY - 4);
+        c.bezierCurveTo(eyeXR + 8, eyeY - 18, eyeXR - 4, eyeY - 32, eyeXR + 4, eyeY - 44);
+        c.stroke();
+      } else if (tier === 'bishop') {
+        // Wise, slanted slit eyes
+        c.fillStyle = '#111827';
+        c.beginPath();
+        c.moveTo(eyeXL - 12, eyeY + 2); c.lineTo(eyeXL + 8, eyeY - 6); c.lineTo(eyeXL + 12, eyeY - 2); c.lineTo(eyeXL - 8, eyeY + 6);
+        c.moveTo(eyeXR + 12, eyeY + 2); c.lineTo(eyeXR - 8, eyeY - 6); c.lineTo(eyeXR - 12, eyeY - 2); c.lineTo(eyeXR + 8, eyeY + 6);
+        c.fill();
+
+        c.fillStyle = tc.eye;
+        c.beginPath();
+        c.arc(eyeXL + 2, eyeY, 4, 0, Math.PI*2);
+        c.arc(eyeXR - 2, eyeY, 4, 0, Math.PI*2);
+        c.fill();
+        c.fillStyle = '#ffffff';
+        c.beginPath();
+        c.arc(eyeXL + 1, eyeY - 1, 1.2, 0, Math.PI*2);
+        c.arc(eyeXR - 3, eyeY - 1, 1.2, 0, Math.PI*2);
+        c.fill();
+
+        // Smug scholarly smirk
+        c.strokeStyle = '#0f172a'; c.lineWidth = 3.2;
+        c.beginPath();
+        c.moveTo(82, mouthY); c.quadraticCurveTo(96, mouthY + 12, 110, mouthY - 2);
+        c.stroke();
+      } else if (tier === 'queen') {
+        // Royal eyeliner makeup
+        c.fillStyle = '#1e0a2e';
+        c.beginPath();
+        c.moveTo(eyeXL - 16, eyeY - 4);
+        c.quadraticCurveTo(eyeXL, eyeY - 12, eyeXL + 14, eyeY - 2);
+        c.quadraticCurveTo(eyeXL, eyeY + 6, eyeXL - 16, eyeY - 4);
+        c.moveTo(eyeXR + 16, eyeY - 4);
+        c.quadraticCurveTo(eyeXR, eyeY - 12, eyeXR - 14, eyeY - 2);
+        c.quadraticCurveTo(eyeXR, eyeY + 6, eyeXR + 16, eyeY - 4);
+        c.closePath(); c.fill();
+
+        // Glowing magenta/pink irises
+        c.fillStyle = tc.eye;
+        c.beginPath();
+        c.arc(eyeXL - 1, eyeY - 2, 5.5, 0, Math.PI*2);
+        c.arc(eyeXR + 1, eyeY - 2, 5.5, 0, Math.PI*2);
+        c.fill();
+        c.fillStyle = '#ffffff';
+        c.beginPath();
+        c.arc(eyeXL - 3, eyeY - 4, 1.8, 0, Math.PI*2);
+        c.arc(eyeXR - 1, eyeY - 4, 1.8, 0, Math.PI*2);
+        c.fill();
+
+        // High curved royal eyebrows
+        c.strokeStyle = '#4a044e'; c.lineWidth = 3.0;
+        c.beginPath();
+        c.moveTo(eyeXL - 18, eyeY - 15); c.quadraticCurveTo(eyeXL, eyeY - 18, eyeXL + 12, eyeY - 10);
+        c.moveTo(eyeXR + 18, eyeY - 15); c.quadraticCurveTo(eyeXR, eyeY - 18, eyeXR - 12, eyeY - 10);
+        c.stroke();
+
+        // Sassy royal smirk
+        c.strokeStyle = '#4a044e'; c.lineWidth = 3.5;
+        c.beginPath();
+        c.moveTo(82, mouthY); c.quadraticCurveTo(96, mouthY + 12, 108, mouthY - 4);
+        c.stroke();
+
+        // Elegance beauty mark
+        c.fillStyle = '#4a044e';
+        c.beginPath(); c.arc(111, mouthY - 6, 2.2, 0, Math.PI*2); c.fill();
+      } else {
+        c.fillStyle = '#111827'; c.beginPath(); c.arc(eyeXL, eyeY, 13, 0, Math.PI*2); c.arc(eyeXR, eyeY, 13, 0, Math.PI*2); c.fill();
+        c.fillStyle = '#ea580c'; c.beginPath(); c.arc(eyeXL, eyeY, 9, 0, Math.PI*2); c.arc(eyeXR, eyeY, 9, 0, Math.PI*2); c.fill();
+        c.fillStyle = tc.eye; c.beginPath(); c.arc(eyeXL, eyeY, 5, 0, Math.PI*2); c.arc(eyeXR, eyeY, 5, 0, Math.PI*2); c.fill();
+        c.fillStyle = '#ffffff'; c.beginPath(); c.arc(eyeXL - 3, eyeY - 3, 1.8, 0, Math.PI*2); c.arc(eyeXR - 3, eyeY - 3, 1.8, 0, Math.PI*2); c.fill();
+        c.fillStyle = '#0f172a';
+        c.beginPath();
+        c.moveTo(eyeXL - 18, eyeY - 18); c.lineTo(eyeXL + 10, eyeY - 6); c.lineTo(eyeXL + 10, eyeY - 12); c.lineTo(eyeXL - 14, eyeY - 24); c.closePath(); c.fill();
+        c.beginPath();
+        c.moveTo(eyeXR + 18, eyeY - 18); c.lineTo(eyeXR - 10, eyeY - 6); c.lineTo(eyeXR - 10, eyeY - 12); c.lineTo(eyeXR + 14, eyeY - 24); c.closePath(); c.fill();
+        c.fillStyle = '#0f172a'; c.fillRect(80, mouthY, 32, 16);
+        c.fillStyle = '#ffffff'; c.fillRect(82, mouthY + 2, 28, 12);
+        c.strokeStyle = '#475569'; c.lineWidth = 1.2;
+        c.beginPath();
+        c.moveTo(82, mouthY + 8); c.lineTo(110, mouthY + 8);
+        c.moveTo(89, mouthY + 2); c.lineTo(89, mouthY + 14);
+        c.moveTo(96, mouthY + 2); c.lineTo(96, mouthY + 14);
+        c.moveTo(103, mouthY + 2); c.lineTo(103, mouthY + 14);
+        c.stroke();
+      }
+    };
+
+    // Helper: Draw custom boxing shorts/skirts or shadowy vapors based on the tier
+    const drawOpponentTrunks = (c, state) => {
+      if (tier === 'shadow') {
+        c.fillStyle = 'rgba(15, 23, 42, 0.4)';
+        for (let i = 0; i < 3; i++) {
+          c.beginPath();
+          c.ellipse(96, 150 + i * 4, 55 - i * 5, 8, 0, 0, Math.PI * 2);
+          c.fill();
+        }
+        return;
+      }
+
+      if (tier === 'queen') {
+        c.fillStyle = opponentShortsColor;
+        c.beginPath();
+        c.moveTo(44, 142);
+        c.lineTo(148, 142);
+        c.lineTo(154, 164);
+        c.lineTo(38, 164);
+        c.closePath();
+        c.fill();
+
+        c.fillStyle = '#fbbf24';
+        c.fillRect(44, 142, 4, 22);
+        c.fillRect(144, 142, 4, 22);
+        c.fillRect(94, 142, 4, 22);
+        c.fillRect(38, 161, 116, 3); // skirt bottom border
+
+        // Queen's Royal Gemstone Belt
+        c.fillStyle = '#fbbf24';
+        c.fillRect(44, 142, 104, 6);
+        c.fillStyle = '#db2777'; // pink magenta diamond buckle
+        c.beginPath();
+        c.arc(96, 145, 6, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = '#ffffff';
+        c.beginPath();
+        c.arc(94, 143, 1.5, 0, Math.PI * 2);
+        c.fill();
+        return;
+      }
+
+      // Default champion trunks for Pawn, Knight, Bishop, Rook
+      c.fillStyle = opponentShortsColor;
+      c.fillRect(44, 142, 104, 22);
+
+      if (state === 'idle') {
+        c.fillStyle = opponentBeltColor;
+        c.fillRect(44, 142, 8, 22);
+        c.fillRect(140, 142, 8, 22);
+        c.beginPath(); c.arc(96, 142, 12, 0, Math.PI*2); c.fill();
+        c.fillStyle = opponentBeltDark;
+        c.beginPath(); c.arc(96, 142, 8, 0, Math.PI*2); c.fill();
+        c.fillStyle = '#1e1b4b';
+        c.beginPath();
+        c.moveTo(91, 144); c.lineTo(93, 138); c.lineTo(96, 141); c.lineTo(99, 138); c.lineTo(101, 144);
+        c.closePath(); c.fill();
+      }
+    };
 
     // Bobbing & Attack cycle staggered
     const bobY = frame > 0 ? Math.sin(frame * 0.12) * 2.5 : 0;
@@ -1576,34 +1907,8 @@ class ChessBoxGame {
       ctx.stroke();
     }
 
-    ctx.fillStyle = '#111827'; ctx.beginPath(); ctx.arc(eyeXL, eyeY, 13, 0, Math.PI*2); ctx.arc(eyeXR, eyeY, 13, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#ea580c'; ctx.beginPath(); ctx.arc(eyeXL, eyeY, 9, 0, Math.PI*2); ctx.arc(eyeXR, eyeY, 9, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#facc15'; ctx.beginPath(); ctx.arc(eyeXL, eyeY, 5, 0, Math.PI*2); ctx.arc(eyeXR, eyeY, 5, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(eyeXL - 3, eyeY - 3, 1.8, 0, Math.PI*2); ctx.arc(eyeXR - 3, eyeY - 3, 1.8, 0, Math.PI*2); ctx.fill();
-
-    ctx.fillStyle = '#0f172a';
-    ctx.beginPath();
-    ctx.moveTo(eyeXL - 18, eyeY - 18); ctx.lineTo(eyeXL + 10, eyeY - 6); ctx.lineTo(eyeXL + 10, eyeY - 12); ctx.lineTo(eyeXL - 14, eyeY - 24); ctx.closePath(); ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(eyeXR + 18, eyeY - 18); ctx.lineTo(eyeXR - 10, eyeY - 6); ctx.lineTo(eyeXR - 10, eyeY - 12); ctx.lineTo(eyeXR + 14, eyeY - 24); ctx.closePath(); ctx.fill();
-
-    ctx.fillStyle = '#0f172a'; ctx.fillRect(80, mouthY, 32, 16);
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(82, mouthY + 2, 28, 12);
-    ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.2;
-    ctx.beginPath();
-    ctx.moveTo(82, mouthY + 8); ctx.lineTo(110, mouthY + 8);
-    ctx.moveTo(89, mouthY + 2); ctx.lineTo(89, mouthY + 14);
-    ctx.moveTo(96, mouthY + 2); ctx.lineTo(96, mouthY + 14);
-    ctx.moveTo(103, mouthY + 2); ctx.lineTo(103, mouthY + 14);
-    ctx.stroke();
-
-    ctx.fillStyle = opponentShortsColor; ctx.fillRect(44, 142, 104, 22);
-    ctx.fillStyle = opponentBeltColor; ctx.fillRect(44, 142, 8, 22); ctx.fillRect(140, 142, 8, 22);
-    ctx.beginPath(); ctx.arc(96, 142, 12, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = opponentBeltDark; ctx.beginPath(); ctx.arc(96, 142, 8, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#1e1b4b'; ctx.beginPath();
-    ctx.moveTo(91, 144); ctx.lineTo(93, 138); ctx.lineTo(96, 141); ctx.lineTo(99, 138); ctx.lineTo(101, 144);
-    ctx.closePath(); ctx.fill();
+    drawFaceIdle(ctx);
+    drawOpponentTrunks(ctx, 'idle');
 
     ctx.fillStyle = getGloveGrad(ctx, 36, 116, 26);
     ctx.beginPath(); ctx.arc(36, 116, 26, 0, Math.PI*2); ctx.fill();
@@ -3538,7 +3843,6 @@ class ChessBoxGame {
     const opponentShortsColor = tc.body[3];
     const opponentBeltColor = tc.eye;
     const opponentBeltDark = tc.body[4];
-    const opponentEyeGlow = tc.eye;
 
     const getBodyGrad = (ctx, x1, y1, x2, y2) => {
       const g = ctx.createLinearGradient(x1, y1, x2, y2);
@@ -3557,38 +3861,29 @@ class ChessBoxGame {
       ctx.beginPath();
       
       if (tier === 'pawn') {
-        // Pawn shape: rounded head + conical shoulders
         ctx.moveTo(44, 156);
-        ctx.bezierCurveTo(44, 120, 70, 96, 76, 86); // Left shoulder
-        ctx.lineTo(116, 86); // Neck connector
-        ctx.bezierCurveTo(122, 96, 148, 120, 148, 156); // Right shoulder
+        ctx.bezierCurveTo(44, 120, 70, 96, 76, 86);
+        ctx.lineTo(116, 86);
+        ctx.bezierCurveTo(122, 96, 148, 120, 148, 156);
         ctx.closePath();
         ctx.fill();
-        
-        // Round head
         ctx.beginPath();
         ctx.arc(96, 62, 28, 0, Math.PI * 2);
         ctx.fill();
         
-        // Draw Peoncito's big fake mustache!
         if (!isStunnedState) {
-          ctx.fillStyle = '#0f172a'; // black mustache
+          ctx.fillStyle = '#0f172a';
           ctx.beginPath();
-          // Left curl
           ctx.moveTo(96, 80);
           ctx.bezierCurveTo(80, 75, 60, 85, 62, 95);
           ctx.bezierCurveTo(62, 80, 85, 80, 96, 84);
-          // Right curl
           ctx.moveTo(96, 80);
           ctx.bezierCurveTo(112, 75, 132, 85, 130, 95);
           ctx.bezierCurveTo(130, 80, 107, 80, 96, 84);
           ctx.closePath();
           ctx.fill();
-          
-          // Little center tie
           ctx.fillRect(94, 79, 4, 6);
         } else {
-          // Stunned Peoncito: mustache is flying away in the air!
           ctx.save();
           ctx.translate(145, 55);
           ctx.rotate(0.4);
@@ -3604,28 +3899,23 @@ class ChessBoxGame {
           ctx.fill();
           ctx.fillRect(-2, -1, 4, 6);
           ctx.restore();
-          
-          // draw small exclamation text
           ctx.fillStyle = '#f43f5e';
           ctx.font = 'bold 12px Outfit, sans-serif';
           ctx.fillText('¡Mi bigote!', 20, 40);
         }
       } else if (tier === 'knight') {
-        // Knight shape: horse head pointing left
         ctx.moveTo(44, 156);
         ctx.lineTo(46, 126);
-        ctx.bezierCurveTo(46, 110, 55, 96, 66, 86); // Back neck
+        ctx.bezierCurveTo(46, 110, 55, 96, 66, 86);
         ctx.lineTo(56, 76);
-        ctx.bezierCurveTo(40, 66, 45, 46, 66, 50); // Nose/snout top
-        ctx.lineTo(86, 50); // Mane top
+        ctx.bezierCurveTo(40, 66, 45, 46, 66, 50);
+        ctx.lineTo(86, 50);
         ctx.lineTo(90, 36); ctx.lineTo(98, 44);
         ctx.lineTo(104, 34); ctx.lineTo(110, 46);
         ctx.bezierCurveTo(130, 56, 136, 86, 142, 116);
         ctx.lineTo(148, 156);
         ctx.closePath();
         ctx.fill();
-        
-        // Mane details
         ctx.fillStyle = tc.body[4];
         ctx.beginPath();
         ctx.moveTo(110, 46);
@@ -3635,100 +3925,248 @@ class ChessBoxGame {
         ctx.closePath();
         ctx.fill();
       } else if (tier === 'bishop') {
-        // Bishop shape: mitre hat pointed top
-        ctx.moveTo(44, 156);
-        ctx.bezierCurveTo(46, 110, 60, 96, 66, 86); // shoulders left
-        ctx.lineTo(60, 80);
-        ctx.bezierCurveTo(50, 60, 96, 26, 96, 26); // Mitre left half
-        ctx.bezierCurveTo(96, 26, 142, 60, 132, 80); // Mitre right half
-        ctx.lineTo(126, 86);
-        ctx.bezierCurveTo(132, 96, 146, 110, 148, 156); // shoulders right
+        // Pedestal base (classic chess piece styling)
+        ctx.beginPath();
+        ctx.moveTo(36, 156);
+        ctx.lineTo(156, 156);
+        ctx.quadraticCurveTo(156, 142, 142, 142);
+        ctx.lineTo(50, 142);
+        ctx.quadraticCurveTo(36, 142, 36, 156);
         ctx.closePath();
         ctx.fill();
         
-        // Small sphere on top of mitre
-        ctx.fillStyle = tc.eye;
+        // Base ring molding
+        ctx.fillStyle = tc.body[1];
+        ctx.fillRect(48, 134, 96, 8);
+        ctx.fillStyle = getBodyGrad(ctx, 44, 40, 148, 156);
+
+        // Slender neck column
         ctx.beginPath();
-        ctx.arc(96, 25, 6, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Slit/cleft inside the mitre
-        ctx.strokeStyle = '#1e293b';
-        ctx.lineWidth = 3.5;
-        ctx.beginPath();
-        ctx.moveTo(96, 38);
-        ctx.lineTo(84, 56);
-        ctx.stroke();
-      } else if (tier === 'queen') {
-        // Queen shape: Tall crown
-        ctx.moveTo(44, 156);
-        ctx.bezierCurveTo(46, 110, 66, 96, 70, 86); // Left body
-        ctx.lineTo(60, 76);
-        ctx.lineTo(54, 42); // Left peak
-        ctx.lineTo(76, 56); // Valley 1
-        ctx.lineTo(96, 32); // Center peak
-        ctx.lineTo(116, 56); // Valley 2
-        ctx.lineTo(138, 42); // Right peak
-        ctx.lineTo(122, 76);
-        ctx.bezierCurveTo(126, 96, 146, 110, 148, 156); // Right body
+        ctx.moveTo(56, 134);
+        ctx.bezierCurveTo(68, 116, 72, 100, 72, 88);
+        ctx.lineTo(120, 88);
+        ctx.bezierCurveTo(120, 100, 124, 116, 136, 134);
         ctx.closePath();
-        ctx.fill();
-        
-        // Golden spheres on crown peaks
-        ctx.fillStyle = '#fbbf24';
-        ctx.beginPath();
-        ctx.arc(54, 40, 5, 0, Math.PI*2);
-        ctx.arc(96, 30, 6, 0, Math.PI*2);
-        ctx.arc(138, 40, 5, 0, Math.PI*2);
         ctx.fill();
 
-        // Draw comical tissue box pañuelo in Queen's crown if level is Reina Negra
-        if (opponentName.includes("Reina Negra")) {
-          ctx.fillStyle = '#ffffff';
-          ctx.beginPath();
-          ctx.moveTo(90, 30);
-          ctx.bezierCurveTo(80, 15, 102, 15, 102, 30);
-          ctx.closePath();
-          ctx.fill();
-        }
-      } else if (tier === 'shadow') {
-        // Shadow shape: round creepy head + broad shoulders
-        ctx.moveTo(44, 156);
-        ctx.bezierCurveTo(44, 110, 58, 90, 68, 80);
-        ctx.lineTo(124, 80);
-        ctx.bezierCurveTo(134, 90, 148, 110, 148, 156);
+        // Elegant collar rings at the neck
+        const collarGrad = ctx.createLinearGradient(60, 80, 132, 88);
+        collarGrad.addColorStop(0, tc.body[4]);
+        collarGrad.addColorStop(0.5, tc.body[1]);
+        collarGrad.addColorStop(1, tc.body[4]);
+        ctx.fillStyle = collarGrad;
+        ctx.beginPath();
+        ctx.ellipse(96, 88, 28, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = getBodyGrad(ctx, 44, 40, 148, 156);
+        ctx.beginPath();
+        ctx.ellipse(96, 84, 24, 5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Majestic Bishop Mitre Head
+        ctx.beginPath();
+        ctx.moveTo(72, 84);
+        ctx.bezierCurveTo(62, 70, 72, 32, 96, 26); // Pointy top
+        ctx.bezierCurveTo(120, 32, 130, 70, 120, 84);
         ctx.closePath();
         ctx.fill();
-        
+
+        // Golden Cross on top (Y=13 to Y=26)
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillRect(94, 13, 4, 13);
+        ctx.fillRect(90, 17, 12, 4);
+
+        // The Classic Bishop Slash / Tajo (Diagonal cut)
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.arc(96, 54, 30, 0, Math.PI*2);
+        ctx.moveTo(96, 36);
+        ctx.lineTo(82, 54);
+        ctx.stroke();
+
+        // Shadow slash border for depth
+        ctx.strokeStyle = tc.body[4];
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(98, 37);
+        ctx.lineTo(84, 55);
+        ctx.stroke();
+      } else if (tier === 'queen') {
+        // Pedestal base (classic chess piece styling)
+        ctx.beginPath();
+        ctx.moveTo(36, 156);
+        ctx.lineTo(156, 156);
+        ctx.quadraticCurveTo(156, 140, 140, 140);
+        ctx.lineTo(52, 140);
+        ctx.quadraticCurveTo(36, 140, 36, 156);
+        ctx.closePath();
         ctx.fill();
+
+        // Elegant Hourglass Corset/Gown Bodice
+        ctx.beginPath();
+        ctx.moveTo(52, 140);
+        ctx.bezierCurveTo(68, 125, 72, 105, 72, 92); // narrow waist
+        ctx.lineTo(120, 92);
+        ctx.bezierCurveTo(120, 105, 124, 125, 140, 140);
+        ctx.closePath();
+        ctx.fill();
+
+        // Corset Gold Lacing in the center of the bodice
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(92, 100); ctx.lineTo(100, 108);
+        ctx.moveTo(100, 100); ctx.lineTo(92, 108);
+        ctx.moveTo(92, 112); ctx.lineTo(100, 120);
+        ctx.moveTo(100, 112); ctx.lineTo(92, 120);
+        ctx.moveTo(92, 124); ctx.lineTo(100, 132);
+        ctx.moveTo(100, 124); ctx.lineTo(92, 132);
+        ctx.stroke();
+
+        // Royal Elizabethan Ruffled Collar (Gorguera)
+        ctx.fillStyle = '#f8fafc';
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1.5;
+        const drawRuffWave = (cx, cy, rx, ry) => {
+          ctx.beginPath();
+          ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        };
+        // Five fluffy ruffled circles forming the collar
+        drawRuffWave(74, 88, 14, 10);
+        drawRuffWave(118, 88, 14, 10);
+        drawRuffWave(84, 92, 16, 11);
+        drawRuffWave(108, 92, 16, 11);
+        drawRuffWave(96, 94, 18, 12);
+
+        // Elegant Queen Head
+        ctx.fillStyle = getBodyGrad(ctx, 44, 40, 148, 156);
+        ctx.beginPath();
+        ctx.ellipse(96, 70, 22, 18, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Majestic Five-Pointed Royal Crown
+        // Crown Base (Y=52)
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.moveTo(76, 54);
+        ctx.lineTo(116, 54);
+        ctx.lineTo(112, 58);
+        ctx.lineTo(80, 58);
+        ctx.closePath();
+        ctx.fill();
+
+        // Crown Peaks (Five elegant points)
+        ctx.beginPath();
+        ctx.moveTo(76, 54);
+        ctx.lineTo(70, 36);  // peak 1
+        ctx.lineTo(82, 48);
+        ctx.lineTo(84, 28);  // peak 2
+        ctx.lineTo(92, 44);
+        ctx.lineTo(96, 20);  // peak 3 (highest center)
+        ctx.lineTo(100, 44);
+        ctx.lineTo(108, 28); // peak 4
+        ctx.lineTo(110, 48);
+        ctx.lineTo(122, 36); // peak 5
+        ctx.lineTo(116, 54);
+        ctx.closePath();
+        ctx.fill();
+
+        // Glowing Magenta Gemstones on top of crown peaks
+        ctx.fillStyle = '#f43f5e';
+        const drawGem = (gx, gy, r) => {
+          ctx.beginPath();
+          ctx.arc(gx, gy, r, 0, Math.PI * 2);
+          ctx.fill();
+          // Gem sheen
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(gx - r * 0.3, gy - r * 0.3, r * 0.3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#f43f5e';
+        };
+        drawGem(70, 36, 3.5);
+        drawGem(84, 28, 4.0);
+        drawGem(96, 20, 5.0);
+        drawGem(108, 28, 4.0);
+        drawGem(122, 36, 3.5);
+
+        // Gemstones embedded in the crown band
+        ctx.fillStyle = '#ec4899';
+        drawGem(86, 54, 2.5);
+        drawGem(96, 54, 3.0);
+        drawGem(106, 54, 2.5);
+
+        // Fluffy Tissue sticking out of the crown (humorous detail)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+        ctx.strokeStyle = 'rgba(226, 232, 240, 0.9)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(96, 20);
+        ctx.quadraticCurveTo(90, 8, 82, 10);
+        ctx.quadraticCurveTo(86, 18, 96, 20);
+        ctx.moveTo(96, 20);
+        ctx.quadraticCurveTo(102, 6, 110, 8);
+        ctx.quadraticCurveTo(106, 18, 96, 20);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      } else if (tier === 'shadow') {
+        // Shadow base: Ethereal flowing wisps/smoke
+        ctx.beginPath();
+        ctx.moveTo(56, 156);
+        ctx.bezierCurveTo(46, 135, 42, 110, 48, 86);
+        ctx.bezierCurveTo(36, 40, 72, 32, 96, 32); // Hood peak
+        ctx.bezierCurveTo(120, 32, 156, 40, 144, 86);
+        ctx.bezierCurveTo(150, 110, 146, 135, 136, 156);
+        
+        // Dynamic wisp cuts at the bottom
+        ctx.bezierCurveTo(124, 142, 116, 168, 96, 150);
+        ctx.bezierCurveTo(76, 168, 68, 142, 56, 156);
+        ctx.closePath();
+        ctx.fill();
+
+        // Inner Cowl Hood Void (Deep absolute black)
+        ctx.fillStyle = '#020006';
+        ctx.beginPath();
+        ctx.ellipse(96, 64, 22, 26, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Purple ethereal energy aura
+        ctx.strokeStyle = 'rgba(168, 85, 247, 0.4)';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(96, 64, 26, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Floating shadowy wisps around the body
+        ctx.fillStyle = 'rgba(168, 85, 247, 0.2)';
+        const drawWispCircle = (wx, wy, wr) => {
+          ctx.beginPath();
+          ctx.arc(wx, wy, wr, 0, Math.PI * 2);
+          ctx.fill();
+        };
+        drawWispCircle(38, 76, 8);
+        drawWispCircle(154, 84, 10);
+        drawWispCircle(46, 126, 6);
+        drawWispCircle(142, 134, 7);
       } else {
-        // Rook shape (Default)
-        // Crenellations (teeth) top
         ctx.moveTo(52, 36); ctx.lineTo(68, 36); ctx.lineTo(68, 52); 
         ctx.lineTo(84, 52); ctx.lineTo(84, 36); ctx.lineTo(100, 36); 
         ctx.lineTo(100, 52); ctx.lineTo(116, 52); ctx.lineTo(116, 36); 
         ctx.lineTo(132, 36); ctx.lineTo(132, 52); ctx.lineTo(140, 52);
-        // Cylinder body
         ctx.lineTo(148, 156); ctx.lineTo(44, 156);
         ctx.closePath();
         ctx.fill();
-
-        // Draw "delantal a cuadros" (checked apron) for Torreta
         if (opponentName.includes("Torreta")) {
           ctx.save();
           ctx.beginPath();
-          ctx.moveTo(52, 72);
-          ctx.lineTo(140, 72);
-          ctx.lineTo(148, 156);
-          ctx.lineTo(44, 156);
-          ctx.closePath();
-          ctx.clip();
-          
+          ctx.moveTo(52, 72); ctx.lineTo(140, 72); ctx.lineTo(148, 156); ctx.lineTo(44, 156);
+          ctx.closePath(); ctx.clip();
           ctx.fillStyle = '#ffffff';
           ctx.fillRect(56, 75, 80, 82);
-          
           ctx.fillStyle = '#f43f5e';
           const size = 8;
           for (let x = 56; x < 136; x += size * 2) {
@@ -3742,7 +4180,6 @@ class ChessBoxGame {
       }
     };
 
-    // Calculate dynamic eye and mouth positions based on tier
     let eyeY = 84;
     let eyeXL = 76;
     let eyeXR = 116;
@@ -3751,256 +4188,475 @@ class ChessBoxGame {
     } else if (tier === 'knight') {
       eyeY = 66; eyeXL = 68; eyeXR = 96;
     } else if (tier === 'bishop') {
-      eyeY = 74; eyeXL = 82; eyeXR = 110;
+      eyeY = 62; eyeXL = 82; eyeXR = 110;
     } else if (tier === 'queen') {
-      eyeY = 80; eyeXL = 80; eyeXR = 112;
+      eyeY = 64; eyeXL = 80; eyeXR = 112; // Adjusted for better proportions
     } else if (tier === 'shadow') {
-      eyeY = 54; eyeXL = 84; eyeXR = 108;
+      eyeY = 56; eyeXL = 84; eyeXR = 108;
     }
 
     let mouthY = 108;
     if (tier === 'pawn') mouthY = 78;
     else if (tier === 'knight') mouthY = 78;
-    else if (tier === 'bishop') mouthY = 92;
-    else if (tier === 'queen') mouthY = 100;
-    else if (tier === 'shadow') mouthY = 70;
+    else if (tier === 'bishop') mouthY = 80;
+    else if (tier === 'queen') mouthY = 76; // Adjusted to chin area on head
+    else if (tier === 'shadow') mouthY = 82;
 
-    // ==========================================
-    // 7. Dynamic Opponent Idle (Canvas 192x192)
-    // ==========================================
+    const drawFaceIdle = (ctx) => {
+      if (tier === 'shadow') {
+        // Glowing void violet eyes
+        ctx.shadowColor = '#c084fc';
+        ctx.shadowBlur = 10;
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.ellipse(eyeXL, eyeY, 6, 8, 0, 0, Math.PI*2);
+        ctx.ellipse(eyeXR, eyeY, 6, 8, 0, 0, Math.PI*2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Smoky neon light trails rising from the eyes
+        ctx.strokeStyle = 'rgba(168, 85, 247, 0.6)';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(eyeXL, eyeY - 4);
+        ctx.bezierCurveTo(eyeXL - 8, eyeY - 18, eyeXL + 4, eyeY - 32, eyeXL - 4, eyeY - 44);
+        ctx.moveTo(eyeXR, eyeY - 4);
+        ctx.bezierCurveTo(eyeXR + 8, eyeY - 18, eyeXR - 4, eyeY - 32, eyeXR + 4, eyeY - 44);
+        ctx.stroke();
+      } else if (tier === 'bishop') {
+        // Wise, slanted slit eyes
+        ctx.fillStyle = '#111827';
+        ctx.beginPath();
+        ctx.moveTo(eyeXL - 12, eyeY + 2); ctx.lineTo(eyeXL + 8, eyeY - 6); ctx.lineTo(eyeXL + 12, eyeY - 2); ctx.lineTo(eyeXL - 8, eyeY + 6);
+        ctx.moveTo(eyeXR + 12, eyeY + 2); ctx.lineTo(eyeXR - 8, eyeY - 6); ctx.lineTo(eyeXR - 12, eyeY - 2); ctx.lineTo(eyeXR + 8, eyeY + 6);
+        ctx.fill();
+
+        ctx.fillStyle = tc.eye;
+        ctx.beginPath();
+        ctx.arc(eyeXL + 2, eyeY, 4, 0, Math.PI*2);
+        ctx.arc(eyeXR - 2, eyeY, 4, 0, Math.PI*2);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(eyeXL + 1, eyeY - 1, 1.2, 0, Math.PI*2);
+        ctx.arc(eyeXR - 3, eyeY - 1, 1.2, 0, Math.PI*2);
+        ctx.fill();
+
+        // Smug scholarly smirk
+        ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 3.2;
+        ctx.beginPath();
+        ctx.moveTo(82, mouthY); ctx.quadraticCurveTo(96, mouthY + 12, 110, mouthY - 2);
+        ctx.stroke();
+      } else if (tier === 'queen') {
+        // Royal eyeliner makeup
+        ctx.fillStyle = '#1e0a2e';
+        ctx.beginPath();
+        ctx.moveTo(eyeXL - 16, eyeY - 4);
+        ctx.quadraticCurveTo(eyeXL, eyeY - 12, eyeXL + 14, eyeY - 2);
+        ctx.quadraticCurveTo(eyeXL, eyeY + 6, eyeXL - 16, eyeY - 4);
+        ctx.moveTo(eyeXR + 16, eyeY - 4);
+        ctx.quadraticCurveTo(eyeXR, eyeY - 12, eyeXR - 14, eyeY - 2);
+        ctx.quadraticCurveTo(eyeXR, eyeY + 6, eyeXR + 16, eyeY - 4);
+        ctx.closePath(); ctx.fill();
+
+        // Glowing magenta/pink irises
+        ctx.fillStyle = tc.eye;
+        ctx.beginPath();
+        ctx.arc(eyeXL - 1, eyeY - 2, 5.5, 0, Math.PI*2);
+        ctx.arc(eyeXR + 1, eyeY - 2, 5.5, 0, Math.PI*2);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(eyeXL - 3, eyeY - 4, 1.8, 0, Math.PI*2);
+        ctx.arc(eyeXR - 1, eyeY - 4, 1.8, 0, Math.PI*2);
+        ctx.fill();
+
+        // High curved royal eyebrows
+        ctx.strokeStyle = '#4a044e'; ctx.lineWidth = 3.0;
+        ctx.beginPath();
+        ctx.moveTo(eyeXL - 18, eyeY - 15); ctx.quadraticCurveTo(eyeXL, eyeY - 18, eyeXL + 12, eyeY - 10);
+        ctx.moveTo(eyeXR + 18, eyeY - 15); ctx.quadraticCurveTo(eyeXR, eyeY - 18, eyeXR - 12, eyeY - 10);
+        ctx.stroke();
+
+        // Sassy royal smirk
+        ctx.strokeStyle = '#4a044e'; ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(82, mouthY); ctx.quadraticCurveTo(96, mouthY + 12, 108, mouthY - 4);
+        ctx.stroke();
+
+        // Elegance beauty mark
+        ctx.fillStyle = '#4a044e';
+        ctx.beginPath(); ctx.arc(111, mouthY - 6, 2.2, 0, Math.PI*2); ctx.fill();
+      } else {
+        ctx.fillStyle = '#111827'; ctx.beginPath(); ctx.arc(eyeXL, eyeY, 13, 0, Math.PI*2); ctx.arc(eyeXR, eyeY, 13, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#ea580c'; ctx.beginPath(); ctx.arc(eyeXL, eyeY, 9, 0, Math.PI*2); ctx.arc(eyeXR, eyeY, 9, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = tc.eye; ctx.beginPath(); ctx.arc(eyeXL, eyeY, 5, 0, Math.PI*2); ctx.arc(eyeXR, eyeY, 5, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(eyeXL - 3, eyeY - 3, 1.8, 0, Math.PI*2); ctx.arc(eyeXR - 3, eyeY - 3, 1.8, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.moveTo(eyeXL - 18, eyeY - 18); ctx.lineTo(eyeXL + 10, eyeY - 6); ctx.lineTo(eyeXL + 10, eyeY - 12); ctx.lineTo(eyeXL - 14, eyeY - 24); ctx.closePath(); ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(eyeXR + 18, eyeY - 18); ctx.lineTo(eyeXR - 10, eyeY - 6); ctx.lineTo(eyeXR - 10, eyeY - 12); ctx.lineTo(eyeXR + 14, eyeY - 24); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#0f172a'; ctx.fillRect(80, mouthY, 32, 16);
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(82, mouthY + 2, 28, 12);
+        ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(82, mouthY + 8); ctx.lineTo(110, mouthY + 8);
+        ctx.moveTo(89, mouthY + 2); ctx.lineTo(89, mouthY + 14);
+        ctx.moveTo(96, mouthY + 2); ctx.lineTo(96, mouthY + 14);
+        ctx.moveTo(103, mouthY + 2); ctx.lineTo(103, mouthY + 14);
+        ctx.stroke();
+      }
+    };
+
+    const drawFacePunching = (ctx) => {
+      if (tier === 'shadow') {
+        // Laser slit eyes glowing intensely
+        ctx.shadowColor = '#f472b6';
+        ctx.shadowBlur = 12;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(eyeXL, eyeY - 14); ctx.lineTo(eyeXL, eyeY + 14);
+        ctx.moveTo(eyeXR, eyeY - 14); ctx.lineTo(eyeXR, eyeY + 14);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Diagonal angry vapor trails
+        ctx.strokeStyle = 'rgba(236, 72, 153, 0.7)';
+        ctx.lineWidth = 2.0;
+        ctx.beginPath();
+        ctx.moveTo(eyeXL - 6, eyeY - 10); ctx.lineTo(eyeXL - 16, eyeY - 24);
+        ctx.moveTo(eyeXR + 6, eyeY - 10); ctx.lineTo(eyeXR + 16, eyeY - 24);
+        ctx.stroke();
+      } else if (tier === 'bishop') {
+        // Squinting focused mathematical/geometric eyes
+        ctx.fillStyle = '#111827';
+        ctx.beginPath();
+        ctx.moveTo(eyeXL - 12, eyeY + 4); ctx.lineTo(eyeXL + 12, eyeY - 8); ctx.lineTo(eyeXL + 8, eyeY + 6);
+        ctx.moveTo(eyeXR + 12, eyeY + 4); ctx.lineTo(eyeXR - 12, eyeY - 8); ctx.lineTo(eyeXR - 8, eyeY + 6);
+        ctx.closePath(); ctx.fill();
+
+        ctx.fillStyle = tc.eye;
+        ctx.beginPath();
+        ctx.arc(eyeXL, eyeY - 2, 4, 0, Math.PI * 2);
+        ctx.arc(eyeXR, eyeY - 2, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Shouting open geometric mouth
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.ellipse(96, mouthY + 4, 14, 8, Math.PI / 12, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(90, mouthY, 6, 3); // single logic tooth
+      } else if (tier === 'queen') {
+        // Closed-eye disdain face
+        ctx.strokeStyle = '#1e0a2e'; ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.arc(eyeXL, eyeY, 12, 0.1, Math.PI - 0.1);
+        ctx.arc(eyeXR, eyeY, 12, 0.1, Math.PI - 0.1);
+        ctx.stroke();
+
+        ctx.lineWidth = 2.0;
+        ctx.beginPath();
+        ctx.moveTo(eyeXL - 8, eyeY + 8); ctx.lineTo(eyeXL - 12, eyeY + 14);
+        ctx.moveTo(eyeXL + 8, eyeY + 8); ctx.lineTo(eyeXL + 12, eyeY + 14);
+        ctx.moveTo(eyeXR - 8, eyeY + 8); ctx.lineTo(eyeXR - 12, eyeY + 14);
+        ctx.moveTo(eyeXR + 8, eyeY + 8); ctx.lineTo(eyeXR + 12, eyeY + 14);
+        ctx.stroke();
+
+        // Stern thin displeased mouth line
+        ctx.strokeStyle = '#4a044e'; ctx.lineWidth = 3.0;
+        ctx.beginPath();
+        ctx.moveTo(84, mouthY + 4); ctx.quadraticCurveTo(96, mouthY, 108, mouthY + 4);
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = '#111827'; ctx.beginPath(); ctx.arc(eyeXL, eyeY, 13, 0, Math.PI*2); ctx.arc(eyeXR, eyeY, 13, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(eyeXL, eyeY, 9, 0, Math.PI*2); ctx.arc(eyeXR, eyeY, 9, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#0f172a'; ctx.beginPath(); ctx.arc(96, mouthY + 8, 16, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#f97316'; ctx.beginPath(); ctx.arc(96, mouthY + 10, 11, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(86, mouthY - 6, 4, 4); ctx.fillRect(102, mouthY - 6, 4, 4);
+      }
+    };
+
+    const drawFaceStunned = (ctx) => {
+      if (tier === 'shadow') {
+        // Glitching/fragmented dizzy particle eyes
+        ctx.strokeStyle = '#a855f7';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(eyeXL, eyeY, 8, 0, Math.PI * 2);
+        ctx.arc(eyeXR, eyeY, 8, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(eyeXL + (Math.sin(Date.now() / 50) * 3), eyeY + (Math.cos(Date.now() / 50) * 3), 3, 0, Math.PI * 2);
+        ctx.arc(eyeXR + (Math.cos(Date.now() / 50) * 3), eyeY + (Math.sin(Date.now() / 50) * 3), 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Dark glitch square indicators around eyes
+        ctx.fillStyle = 'rgba(168, 85, 247, 0.6)';
+        ctx.fillRect(eyeXL - 18, eyeY - 18, 4, 4);
+        ctx.fillRect(eyeXR + 14, eyeY - 18, 4, 4);
+        ctx.fillRect(94, eyeY - 24, 4, 4);
+      } else if (tier === 'bishop') {
+        // Comical diamond spiral eyes
+        const drawDiamondSpiral = (ctx, cx, cy, maxR) => {
+          ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
+          ctx.beginPath();
+          for (let theta = 0; theta < Math.PI * 5; theta += 0.25) {
+            const r = (theta / (Math.PI * 5)) * maxR;
+            const x = cx + r * Math.cos(theta);
+            const y = cy + r * Math.sin(theta);
+            if (theta === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        };
+        ctx.fillStyle = '#111827'; ctx.beginPath(); ctx.rect(eyeXL - 12, eyeY - 12, 24, 24); ctx.rect(eyeXR - 12, eyeY - 12, 24, 24); ctx.fill();
+        drawDiamondSpiral(ctx, eyeXL, eyeY, 11);
+        drawDiamondSpiral(ctx, eyeXR, eyeY, 11);
+
+        // Dizzy geometric eyebrows
+        ctx.strokeStyle = '#000000'; ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(eyeXL - 16, eyeY - 12); ctx.lineTo(eyeXL + 8, eyeY - 4);
+        ctx.moveTo(eyeXR + 16, eyeY - 12); ctx.lineTo(eyeXR - 8, eyeY - 4);
+        ctx.stroke();
+
+        // Zigzag dazed mouth
+        ctx.fillStyle = '#111827';
+        ctx.beginPath();
+        ctx.moveTo(80, mouthY + 4);
+        ctx.lineTo(88, mouthY - 2);
+        ctx.lineTo(96, mouthY + 8);
+        ctx.lineTo(104, mouthY - 2);
+        ctx.lineTo(112, mouthY + 4);
+        ctx.lineTo(112, mouthY + 12);
+        ctx.lineTo(80, mouthY + 12);
+        ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#f43f5e';
+        ctx.beginPath(); ctx.arc(96, mouthY + 10, 6, 0, Math.PI); ctx.fill();
+      } else if (tier === 'queen') {
+        // Dizzy spiral eyes with long fluttery lashes
+        const drawQueenSpiral = (ctx, cx, cy, maxR) => {
+          ctx.strokeStyle = tc.eye; ctx.lineWidth = 2;
+          ctx.beginPath();
+          for (let theta = 0; theta < Math.PI * 5; theta += 0.1) {
+            const r = (theta / (Math.PI * 5)) * maxR;
+            const x = cx + r * Math.cos(theta);
+            const y = cy + r * Math.sin(theta);
+            if (theta === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        };
+        ctx.fillStyle = '#1e0a2e'; ctx.beginPath(); ctx.arc(eyeXL, eyeY, 13, 0, Math.PI*2); ctx.arc(eyeXR, eyeY, 13, 0, Math.PI*2); ctx.fill();
+        drawQueenSpiral(ctx, eyeXL, eyeY, 11);
+        drawQueenSpiral(ctx, eyeXR, eyeY, 11);
+
+        // Flapping long eyelashes
+        ctx.strokeStyle = '#1e0a2e'; ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(eyeXL - 12, eyeY - 8); ctx.lineTo(eyeXL - 18, eyeY - 14);
+        ctx.moveTo(eyeXL + 12, eyeY - 8); ctx.lineTo(eyeXL + 18, eyeY - 14);
+        ctx.moveTo(eyeXR - 12, eyeY - 8); ctx.lineTo(eyeXR - 18, eyeY - 14);
+        ctx.moveTo(eyeXR + 12, eyeY - 8); ctx.lineTo(eyeXR + 18, eyeY - 14);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#4a044e'; ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(eyeXL - 18, eyeY - 14); ctx.lineTo(eyeXL + 6, eyeY - 10);
+        ctx.moveTo(eyeXR + 18, eyeY - 14); ctx.lineTo(eyeXR - 6, eyeY - 10);
+        ctx.stroke();
+
+        // Sneezing open mouth, holding a white tissue
+        ctx.fillStyle = '#1e0a2e';
+        ctx.beginPath();
+        ctx.arc(96, mouthY + 6, 12, 0, Math.PI*2);
+        ctx.fill();
+        ctx.fillStyle = '#f43f5e';
+        ctx.beginPath();
+        ctx.arc(96, mouthY + 12, 6, 0, Math.PI);
+        ctx.fill();
+
+        // White tissue cloud held to nose
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(88, mouthY + 14);
+        ctx.bezierCurveTo(78, mouthY + 6, 82, mouthY + 22, 94, mouthY + 18);
+        ctx.bezierCurveTo(106, mouthY + 22, 102, mouthY + 6, 96, mouthY + 14);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+      } else {
+        ctx.fillStyle = '#111827'; ctx.beginPath(); ctx.arc(eyeXL, eyeY, 13, 0, Math.PI*2); ctx.arc(eyeXR, eyeY, 13, 0, Math.PI*2); ctx.fill();
+        const drawSpiral = (ctx, cx, cy, maxR) => {
+          ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
+          ctx.beginPath();
+          for (let theta = 0; theta < Math.PI * 5; theta += 0.1) {
+            const r = (theta / (Math.PI * 5)) * maxR;
+            const x = cx + r * Math.cos(theta);
+            const y = cy + r * Math.sin(theta);
+            if (theta === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        };
+        drawSpiral(ctx, eyeXL, eyeY, 11);
+        drawSpiral(ctx, eyeXR, eyeY, 11);
+        ctx.strokeStyle = '#000000'; ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(eyeXL - 18, eyeY - 8); ctx.lineTo(eyeXL + 8, eyeY - 2);
+        ctx.moveTo(eyeXR + 18, eyeY - 8); ctx.lineTo(eyeXR - 8, eyeY - 2);
+        ctx.stroke();
+        ctx.fillStyle = '#111827'; ctx.fillRect(80, mouthY, 32, 18);
+        ctx.fillStyle = '#f43f5e';
+        ctx.beginPath(); ctx.arc(96, mouthY + 12, 8, 0, Math.PI); ctx.fill();
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(82, mouthY, 6, 4); ctx.fillRect(104, mouthY, 6, 4);
+      }
+    };
+
+    // Helper: Draw custom boxing shorts/skirts or shadowy vapors based on the tier
+    const drawOpponentTrunks = (ctx, state) => {
+      if (tier === 'shadow') {
+        // Shadow has floating wisp vapors blending with the canvas base
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.4)';
+        for (let i = 0; i < 3; i++) {
+          ctx.beginPath();
+          ctx.ellipse(96, 150 + i * 4, 55 - i * 5, 8, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        return;
+      }
+
+      if (tier === 'queen') {
+        // Royal elegant boxing skirt with gold borders
+        ctx.fillStyle = opponentShortsColor;
+        ctx.beginPath();
+        ctx.moveTo(44, 142);
+        ctx.lineTo(148, 142);
+        ctx.lineTo(154, 164);
+        ctx.lineTo(38, 164);
+        ctx.closePath();
+        ctx.fill();
+
+        // Gold panels and lacing details
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillRect(44, 142, 4, 22);
+        ctx.fillRect(144, 142, 4, 22);
+        ctx.fillRect(94, 142, 4, 22);
+        ctx.fillRect(38, 161, 116, 3); // skirt bottom border
+
+        // Queen's Royal Gemstone Belt
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillRect(44, 142, 104, 6);
+        ctx.fillStyle = '#db2777'; // pink magenta diamond buckle
+        ctx.beginPath();
+        ctx.arc(96, 145, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(94, 143, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+        return;
+      }
+
+      // Default champion trunks for Pawn, Knight, Bishop, Rook
+      ctx.fillStyle = opponentShortsColor;
+      ctx.fillRect(44, 142, 104, 22);
+
+      if (state === 'idle') {
+        ctx.fillStyle = opponentBeltColor;
+        ctx.fillRect(44, 142, 8, 22);
+        ctx.fillRect(140, 142, 8, 22);
+        ctx.beginPath(); ctx.arc(96, 142, 12, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = opponentBeltDark;
+        ctx.beginPath(); ctx.arc(96, 142, 8, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#1e1b4b';
+        ctx.beginPath();
+        ctx.moveTo(91, 144); ctx.lineTo(93, 138); ctx.lineTo(96, 141); ctx.lineTo(99, 138); ctx.lineTo(101, 144);
+        ctx.closePath(); ctx.fill();
+      } else if (state === 'punch-l' || state === 'punch-r') {
+        ctx.fillStyle = opponentBeltColor;
+        ctx.beginPath(); ctx.arc(96, 142, 12, 0, Math.PI*2); ctx.fill();
+      }
+    };
+
     const oCanvas = document.createElement('canvas'); oCanvas.width = 192; oCanvas.height = 192;
     const oCtx = oCanvas.getContext('2d');
-    
     oCtx.shadowColor = 'rgba(0, 0, 0, 0.3)'; oCtx.shadowBlur = 10; oCtx.shadowOffsetY = 6;
-    
-    if (tier === 'rook') {
-      // Castle battlements interior shadow
-      oCtx.fillStyle = '#111827'; oCtx.fillRect(52, 48, 88, 20);
-    }
-    
-    // Draw Dynamic Body Shape
+    if (tier === 'rook') { oCtx.fillStyle = '#111827'; oCtx.fillRect(52, 48, 88, 20); }
     drawOpponentBody(oCtx, false);
-
     if (tier === 'rook') {
-      // Weathered Stone joints / Brick lines (width 2.5 for crisp outlines)
       oCtx.strokeStyle = '#1e293b'; oCtx.lineWidth = 2.2;
       oCtx.beginPath();
       oCtx.moveTo(50, 72); oCtx.lineTo(142, 72);
       oCtx.moveTo(48, 102); oCtx.lineTo(144, 102);
       oCtx.moveTo(46, 132); oCtx.lineTo(146, 132);
-      oCtx.moveTo(76, 52); oCtx.lineTo(76, 72);
-      oCtx.moveTo(116, 52); oCtx.lineTo(116, 72);
-      oCtx.moveTo(96, 72); oCtx.lineTo(96, 102);
-      oCtx.moveTo(70, 102); oCtx.lineTo(70, 132);
-      oCtx.moveTo(122, 102); oCtx.lineTo(122, 132);
-      oCtx.stroke();
-
-      // Moss cracks details
-      oCtx.strokeStyle = '#047857'; oCtx.lineWidth = 1.8;
-      oCtx.beginPath();
-      oCtx.moveTo(54, 80); oCtx.lineTo(60, 92);
-      oCtx.moveTo(136, 110); oCtx.lineTo(130, 122);
       oCtx.stroke();
     }
-
-    // Angry glowing eyes
-    oCtx.fillStyle = '#111827'; oCtx.beginPath(); oCtx.arc(eyeXL, eyeY, 13, 0, Math.PI*2); oCtx.arc(eyeXR, eyeY, 13, 0, Math.PI*2); oCtx.fill();
-    oCtx.fillStyle = '#ea580c'; oCtx.beginPath(); oCtx.arc(eyeXL, eyeY, 9, 0, Math.PI*2); oCtx.arc(eyeXR, eyeY, 9, 0, Math.PI*2); oCtx.fill();
-    oCtx.fillStyle = '#facc15'; oCtx.beginPath(); oCtx.arc(eyeXL, eyeY, 5, 0, Math.PI*2); oCtx.arc(eyeXR, eyeY, 5, 0, Math.PI*2); oCtx.fill();
-    oCtx.fillStyle = '#ffffff'; oCtx.beginPath(); oCtx.arc(eyeXL - 3, eyeY - 3, 1.8, 0, Math.PI*2); oCtx.arc(eyeXR - 3, eyeY - 3, 1.8, 0, Math.PI*2); oCtx.fill();
-
-    // Thick angry eyebrows
-    oCtx.fillStyle = '#0f172a';
-    oCtx.beginPath();
-    oCtx.moveTo(eyeXL - 18, eyeY - 18); oCtx.lineTo(eyeXL + 10, eyeY - 6); oCtx.lineTo(eyeXL + 10, eyeY - 12); oCtx.lineTo(eyeXL - 14, eyeY - 24); oCtx.closePath(); oCtx.fill();
-    oCtx.beginPath();
-    oCtx.moveTo(eyeXR + 18, eyeY - 18); oCtx.lineTo(eyeXR - 10, eyeY - 6); oCtx.lineTo(eyeXR - 10, eyeY - 12); oCtx.lineTo(eyeXR + 14, eyeY - 24); oCtx.closePath(); oCtx.fill();
-
-    // Gritting teeth mouth
-    oCtx.fillStyle = '#0f172a'; oCtx.fillRect(80, mouthY, 32, 16);
-    oCtx.fillStyle = '#ffffff'; oCtx.fillRect(82, mouthY + 2, 28, 12);
-    oCtx.strokeStyle = '#475569'; oCtx.lineWidth = 1.2;
-    oCtx.beginPath();
-    oCtx.moveTo(82, mouthY + 8); oCtx.lineTo(110, mouthY + 8);
-    oCtx.moveTo(89, mouthY + 2); oCtx.lineTo(89, mouthY + 14);
-    oCtx.moveTo(96, mouthY + 2); oCtx.lineTo(96, mouthY + 14);
-    oCtx.moveTo(103, mouthY + 2); oCtx.lineTo(103, mouthY + 14);
-    oCtx.stroke();
-
-    // Trunks & Champion belt
-    oCtx.fillStyle = opponentShortsColor; oCtx.fillRect(44, 142, 104, 22);
-    oCtx.fillStyle = opponentBeltColor; oCtx.fillRect(44, 142, 8, 22); oCtx.fillRect(140, 142, 8, 22);
-    oCtx.beginPath(); oCtx.arc(96, 142, 12, 0, Math.PI*2); oCtx.fill();
-    oCtx.fillStyle = opponentBeltDark; oCtx.beginPath(); oCtx.arc(96, 142, 8, 0, Math.PI*2); oCtx.fill();
-    oCtx.fillStyle = '#1e1b4b'; oCtx.beginPath();
-    oCtx.moveTo(91, 144); oCtx.lineTo(93, 138); oCtx.lineTo(96, 141); oCtx.lineTo(99, 138); oCtx.lineTo(101, 144);
-    oCtx.closePath(); oCtx.fill();
-
-    // Gloves in guard
+    drawFaceIdle(oCtx);
+    drawOpponentTrunks(oCtx, 'idle');
     oCtx.fillStyle = getGloveGrad(oCtx, 36, 116, 26);
     oCtx.beginPath(); oCtx.arc(36, 116, 26, 0, Math.PI*2); oCtx.fill();
-    oCtx.fillStyle = 'rgba(255, 255, 255, 0.4)'; oCtx.beginPath(); oCtx.arc(30, 108, 6, 0, Math.PI*2); oCtx.fill();
-
     oCtx.fillStyle = getGloveGrad(oCtx, 156, 116, 26);
     oCtx.beginPath(); oCtx.arc(156, 116, 26, 0, Math.PI*2); oCtx.fill();
-    oCtx.fillStyle = 'rgba(255, 255, 255, 0.4)'; oCtx.beginPath(); oCtx.arc(150, 108, 6, 0, Math.PI*2); oCtx.fill();
-
     scene.textures.addCanvas('opp-idle', oCanvas);
 
-    // ==========================================
-    // 8. Opponent Punching Left (Canvas 192x192)
-    // ==========================================
     const olCanvas = document.createElement('canvas'); olCanvas.width = 192; olCanvas.height = 192;
     const olCtx = olCanvas.getContext('2d');
-    
     olCtx.shadowColor = 'rgba(0, 0, 0, 0.3)'; olCtx.shadowBlur = 10; olCtx.shadowOffsetY = 6;
-    if (tier === 'rook') {
-      olCtx.fillStyle = '#111827'; olCtx.fillRect(52, 48, 88, 20);
-    }
-    
+    if (tier === 'rook') { olCtx.fillStyle = '#111827'; olCtx.fillRect(52, 48, 88, 20); }
     drawOpponentBody(olCtx, false);
-    
-    // Eyes angry
-    olCtx.fillStyle = '#111827'; olCtx.beginPath(); olCtx.arc(eyeXL, eyeY, 13, 0, Math.PI*2); olCtx.arc(eyeXR, eyeY, 13, 0, Math.PI*2); olCtx.fill();
-    olCtx.fillStyle = '#ef4444'; olCtx.beginPath(); olCtx.arc(eyeXL, eyeY, 9, 0, Math.PI*2); olCtx.arc(eyeXR, eyeY, 9, 0, Math.PI*2); olCtx.fill();
-
-    // ROARING mouth
-    olCtx.fillStyle = '#0f172a'; olCtx.beginPath(); olCtx.arc(96, mouthY + 8, 16, 0, Math.PI*2); olCtx.fill();
-    olCtx.fillStyle = '#f97316'; olCtx.beginPath(); olCtx.arc(96, mouthY + 10, 11, 0, Math.PI*2); olCtx.fill();
-    olCtx.fillStyle = '#ffffff'; olCtx.fillRect(86, mouthY - 6, 4, 4); olCtx.fillRect(102, mouthY - 6, 4, 4);
-
-    // Trunks
-    olCtx.fillStyle = opponentShortsColor; olCtx.fillRect(44, 142, 104, 22);
-    olCtx.fillStyle = opponentBeltColor; olCtx.beginPath(); olCtx.arc(96, 142, 12, 0, Math.PI*2); olCtx.fill();
-
-    // Normal Right Glove in guard
+    drawFacePunching(olCtx);
+    drawOpponentTrunks(olCtx, 'punch-l');
     olCtx.fillStyle = getGloveGrad(olCtx, 156, 116, 26);
     olCtx.beginPath(); olCtx.arc(156, 116, 26, 0, Math.PI*2); olCtx.fill();
-
-    // EXTENDED LEFT GLOVE
     olCtx.strokeStyle = 'rgba(239, 68, 68, 0.4)'; olCtx.lineWidth = 12;
     olCtx.beginPath(); olCtx.moveTo(36, 116); olCtx.lineTo(28, 146); olCtx.stroke();
-
     olCtx.fillStyle = getGloveGrad(olCtx, 28, 146, 36);
     olCtx.beginPath(); olCtx.arc(28, 146, 36, 0, Math.PI*2); olCtx.fill();
-    olCtx.fillStyle = 'rgba(255, 255, 255, 0.5)'; olCtx.beginPath(); olCtx.arc(20, 136, 8, 0, Math.PI*2); olCtx.fill();
-
     scene.textures.addCanvas('opp-punch-l', olCanvas);
 
-    // ==========================================
-    // 9. Opponent Punching Right (Canvas 192x192)
-    // ==========================================
     const orCanvas = document.createElement('canvas'); orCanvas.width = 192; orCanvas.height = 192;
     const orCtx = orCanvas.getContext('2d');
-    
     orCtx.shadowColor = 'rgba(0, 0, 0, 0.3)'; orCtx.shadowBlur = 10; orCtx.shadowOffsetY = 6;
-    if (tier === 'rook') {
-      orCtx.fillStyle = '#111827'; orCtx.fillRect(52, 48, 88, 20);
-    }
-    
+    if (tier === 'rook') { orCtx.fillStyle = '#111827'; orCtx.fillRect(52, 48, 88, 20); }
     drawOpponentBody(orCtx, false);
-    
-    // Eyes angry
-    orCtx.fillStyle = '#111827'; orCtx.beginPath(); orCtx.arc(eyeXL, eyeY, 13, 0, Math.PI*2); orCtx.arc(eyeXR, eyeY, 13, 0, Math.PI*2); orCtx.fill();
-    orCtx.fillStyle = '#ef4444'; orCtx.beginPath(); orCtx.arc(eyeXL, eyeY, 9, 0, Math.PI*2); orCtx.arc(eyeXR, eyeY, 9, 0, Math.PI*2); orCtx.fill();
-
-    // ROARING mouth
-    orCtx.fillStyle = '#0f172a'; orCtx.beginPath(); oCtx.arc(96, mouthY + 8, 16, 0, Math.PI*2); olCtx.fill();
-    orCtx.fillStyle = '#f97316'; orCtx.beginPath(); oCtx.arc(96, mouthY + 10, 11, 0, Math.PI*2); olCtx.fill();
-    orCtx.fillStyle = '#ffffff'; orCtx.fillRect(86, mouthY - 6, 4, 4); orCtx.fillRect(102, mouthY - 6, 4, 4);
-
-    // Trunks
-    orCtx.fillStyle = opponentShortsColor; orCtx.fillRect(44, 142, 104, 22);
-    orCtx.fillStyle = opponentBeltColor; orCtx.beginPath(); orCtx.arc(96, 142, 12, 0, Math.PI*2); orCtx.fill();
-
-    // Normal Left Glove in guard
+    drawFacePunching(orCtx);
+    drawOpponentTrunks(orCtx, 'punch-r');
     orCtx.fillStyle = getGloveGrad(orCtx, 36, 116, 26);
     orCtx.beginPath(); orCtx.arc(36, 116, 26, 0, Math.PI*2); orCtx.fill();
-
-    // EXTENDED RIGHT GLOVE
     orCtx.strokeStyle = 'rgba(239, 68, 68, 0.4)'; orCtx.lineWidth = 12;
     orCtx.beginPath(); orCtx.moveTo(156, 116); orCtx.lineTo(164, 146); orCtx.stroke();
-
     orCtx.fillStyle = getGloveGrad(orCtx, 164, 146, 36);
     orCtx.beginPath(); orCtx.arc(164, 146, 36, 0, Math.PI*2); orCtx.fill();
-    orCtx.fillStyle = 'rgba(255, 255, 255, 0.5)'; orCtx.beginPath(); orCtx.arc(156, 136, 8, 0, Math.PI*2); orCtx.fill();
-
     scene.textures.addCanvas('opp-punch-r', orCanvas);
 
-    // ==========================================
-    // 10. Opponent Stunned (Canvas 192x192)
-    // ==========================================
     const osCanvas = document.createElement('canvas'); osCanvas.width = 192; osCanvas.height = 192;
     const osCtx = osCanvas.getContext('2d');
-    
     osCtx.shadowColor = 'rgba(0, 0, 0, 0.3)'; osCtx.shadowBlur = 10; osCtx.shadowOffsetY = 6;
-    
-    if (tier === 'rook') {
-      osCtx.fillStyle = '#111827'; osCtx.fillRect(52, 48, 88, 20);
-    }
-    
-    // Draw Dynamic Body Shape (Bruised Stunned Colors)
+    if (tier === 'rook') { osCtx.fillStyle = '#111827'; osCtx.fillRect(52, 48, 88, 20); }
     drawOpponentBody(osCtx, true);
-
     if (tier === 'rook') {
       osCtx.strokeStyle = '#1e293b'; osCtx.lineWidth = 2.2;
       osCtx.beginPath();
       osCtx.moveTo(50, 72); osCtx.lineTo(142, 72); osCtx.moveTo(48, 102); osCtx.lineTo(144, 102); osCtx.moveTo(46, 132); osCtx.lineTo(146, 132);
       osCtx.stroke();
     }
-
-    // COMICAL SPIRAL EYES
-    const drawSpiral = (ctx, cx, cy, maxR) => {
-      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
-      ctx.beginPath();
-      for (let theta = 0; theta < Math.PI * 5; theta += 0.1) {
-        const r = (theta / (Math.PI * 5)) * maxR;
-        const x = cx + r * Math.cos(theta);
-        const y = cy + r * Math.sin(theta);
-        if (theta === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-    };
-    osCtx.fillStyle = '#111827'; osCtx.beginPath(); osCtx.arc(eyeXL, eyeY, 13, 0, Math.PI*2); osCtx.arc(eyeXR, eyeY, 13, 0, Math.PI*2); osCtx.fill();
-    drawSpiral(osCtx, eyeXL, eyeY, 11);
-    drawSpiral(osCtx, eyeXR, eyeY, 11);
-
-    // Drooping sad eyebrows
-    osCtx.strokeStyle = '#000000'; osCtx.lineWidth = 3.5;
-    osCtx.beginPath();
-    osCtx.moveTo(eyeXL - 18, eyeY - 8); osCtx.lineTo(eyeXL + 8, eyeY - 2);
-    osCtx.moveTo(eyeXR + 18, eyeY - 8); osCtx.lineTo(eyeXR - 8, eyeY - 2);
-    osCtx.stroke();
-
-    // Dazed open mouth with tongue hanging out!
-    osCtx.fillStyle = '#111827'; osCtx.fillRect(80, mouthY, 32, 18);
-    osCtx.fillStyle = '#f43f5e'; // pink tongue
-    osCtx.beginPath(); osCtx.arc(96, mouthY + 12, 8, 0, Math.PI); osCtx.fill();
-    osCtx.fillStyle = '#ffffff'; osCtx.fillRect(82, mouthY, 6, 4); osCtx.fillRect(104, mouthY, 6, 4);
-
-    // Bruise purple mark
-    osCtx.fillStyle = 'rgba(168, 85, 247, 0.45)';
-    osCtx.beginPath(); osCtx.arc(62, eyeY + 22, 10, 0, Math.PI*2); osCtx.fill();
-
-    // Band-aid
+    drawFaceStunned(osCtx);
+    osCtx.fillStyle = 'rgba(168, 85, 247, 0.45)'; osCtx.beginPath(); osCtx.arc(62, eyeY + 22, 10, 0, Math.PI*2); osCtx.fill();
     if (tier === 'rook') {
       osCtx.fillStyle = '#fed7aa'; osCtx.fillRect(120, 44, 20, 8);
       osCtx.fillStyle = '#fca5a5'; osCtx.fillRect(126, 44, 8, 8);
     }
-
-    // Red shorts
-    osCtx.fillStyle = opponentShortsColor; osCtx.fillRect(44, 142, 104, 22);
-
-    // Gloves dropped and hanging down weakly!
+    drawOpponentTrunks(osCtx, 'stunned');
     osCtx.fillStyle = getGloveGrad(osCtx, 32, 156, 20);
     osCtx.beginPath(); osCtx.arc(32, 156, 20, 0, Math.PI*2); osCtx.fill();
-
     osCtx.fillStyle = getGloveGrad(osCtx, 160, 156, 20);
     osCtx.beginPath(); osCtx.arc(160, 156, 20, 0, Math.PI*2); osCtx.fill();
-    // COMICAL SPINNING GOLD STARS ORBIT
     osCtx.strokeStyle = 'rgba(251, 191, 36, 0.35)'; osCtx.lineWidth = 1.5;
     osCtx.beginPath(); osCtx.ellipse(96, 22, 44, 10, Math.PI / 12, 0, Math.PI * 2); osCtx.stroke();
-    
     const drawGoldStar = (ctx, sx, sy, r) => {
       ctx.fillStyle = '#fbbf24';
       ctx.beginPath();
@@ -4013,7 +4669,6 @@ class ChessBoxGame {
     drawGoldStar(osCtx, 56, 20, 6);
     drawGoldStar(osCtx, 96, 12, 6);
     drawGoldStar(osCtx, 136, 20, 6);
-
     scene.textures.addCanvas('opp-stunned', osCanvas);
   }
 
