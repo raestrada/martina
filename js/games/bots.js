@@ -742,43 +742,44 @@ class BotsGame {
   _getVoices() {
     return new Promise(resolve => {
       const voices = speechSynthesis.getVoices();
-      if (voices.length) {
-        console.log('Voices:', voices.map(v => `${v.name} (${v.lang})`).join(', '));
-        resolve(voices);
-        return;
-      }
+      if (voices.length > 0) { resolve(voices); return; }
+      let resolved = false;
       speechSynthesis.onvoiceschanged = () => {
-        const v = speechSynthesis.getVoices();
-        console.log('Voices loaded:', v.map(x => `${x.name} (${x.lang})`).join(', '));
-        resolve(v);
+        if (resolved) return;
+        resolved = true;
+        resolve(speechSynthesis.getVoices());
       };
+      setTimeout(() => {
+        if (!resolved) { resolved = true; resolve(speechSynthesis.getVoices()); }
+      }, 2000);
     });
   }
 
   async _getSpanishVoice(gender) {
-    if (!this._voices) this._voices = await this._getVoices();
+    if (!this._voices || this._voices.length === 0) {
+      this._voices = await this._getVoices();
+    }
+    if (!this._voices.length) return null;
     const wantFemale = gender === 'female';
 
-    // 1. Any Spanish voice matching desired gender
+    // 1. Spanish voice matching desired gender
     let voice = this._voices.find(v => v.lang.startsWith('es') && (
       wantFemale ? /mujer|femenin|female|monica|paulina|maría/i.test(v.name)
                  : /hombre|varón|masculin|male|jorge|diego|pablo/i.test(v.name)
     ));
-    // 2. Any Spanish voice 
+    // 2. Any Spanish voice
     if (!voice) voice = this._voices.find(v => v.lang.startsWith('es'));
-    // 3. Any voice matching desired gender
+    // 3. Any voice matching desired gender (by name)
     if (!voice) voice = this._voices.find(v => wantFemale
-      ? /female|woman|girl|mujer/i.test(v.name)
-      : /male|man|guy|hombre/i.test(v.name)
+      ? /female|woman|girl|mujer|femenina/i.test(v.name)
+      : /male|man|guy|hombre|masculino/i.test(v.name)
     );
-    // 4. Pick voice by index (alternating odds for female-ish)
+    // 4. Alternate by index: even≈male, odd≈female
     if (!voice) {
-      const idx = wantFemale ? this._voices.findIndex((v, i) => i % 2 === 1 && v.lang.startsWith('en'))
-                             : this._voices.findIndex((v, i) => i % 2 === 0 && v.lang.startsWith('en'));
+      const idx = wantFemale ? this._voices.findIndex((v, i) => i % 2 === 1)
+                             : this._voices.findIndex((v, i) => i % 2 === 0);
       voice = idx >= 0 ? this._voices[idx] : this._voices[0];
     }
-
-    console.log(`Voice: ${gender} → ${voice?.name} (${voice?.lang})`);
     return voice;
   }
 
@@ -799,6 +800,7 @@ class BotsGame {
 
     const utter = new SpeechSynthesisUtterance(text);
     utter.voice = await this._getSpanishVoice(gender);
+    if (!utter.voice) { this._dequeueSpeak(); return; } // no voice available, skip
 
     // Base pitch from gender if few voices (differentiates male/female when same voice is used)
     const basePitch = gender === 'female' ? 1.25 : 0.85;
