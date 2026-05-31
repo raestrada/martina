@@ -1357,8 +1357,8 @@ class BotsGame {
       const fromSq = document.querySelector(`#bots-board .bots-chess-sq[data-coord="${fromCoord}"]`);
       const toSq = document.querySelector(`#bots-board .bots-chess-sq[data-coord="${toCoord}"]`);
       if (fromSq) fromSq.style.boxShadow = `inset 0 0 0 0 transparent`;
-      if (toSq) toSq.style.boxShadow = `inset 0 0 0 5px ${bot.color}`;
-      this.updateStatus(`${bot.name} jugó ${uciMove}`, 'thinking');
+      if (toSq) toSq.style.boxShadow = `inset 0 0 0 5px ${this.selectedBot.color}`;
+      this.updateStatus(`${this.selectedBot.name} jugó ${uciMove}`, 'thinking');
     }
 
     this.chessFEN = this.executeMoveRaw(this.chessFEN, uciMove);
