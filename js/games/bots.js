@@ -1937,11 +1937,8 @@ class BotsGame {
       this.quoteInterval = null;
     }
 
-    if (result === 'win') {
-      this.playVictory();
-    } else {
-      this.playDefeat();
-    }
+    if (result === 'win') this.playVictory();
+    else if (result === 'lose') this.playDefeat();
 
     const bot = this.selectedBot;
     const quote = result === 'win'
@@ -1950,47 +1947,89 @@ class BotsGame {
         ? this.getBotQuote('taunt')
         : this.getBotQuote('victory');
 
-    const resultIcon = result === 'win' ? '👑' : result === 'draw' ? '🤝' : '💀';
+    // --- Performance analysis ---
+    const annNames = {'✨':'Brillante','⭐':'Genial','✓':'Buena','⁉️':'Imprecisión','❌':'Error','💀':'Gaffe'};
+    const playerAnns = { '✨':0, '⭐':0, '✓':0, '⁉️':0, '❌':0, '💀':0 };
+    let totalPlayerMoves = 0;
+    for (let i = 0; i < this.chessHistory.length; i += 2) {
+      const m = this.chessHistory[i];
+      if (m) {
+        totalPlayerMoves++;
+        const a = this.moveAnnotations[m];
+        if (a && playerAnns[a] !== undefined) playerAnns[a]++;
+      }
+    }
+    const good = playerAnns['✨'] + playerAnns['⭐'] + playerAnns['✓'];
+    const bad = playerAnns['⁉️'] + playerAnns['❌'] + playerAnns['💀'];
+    const accuracy = totalPlayerMoves > 0 ? Math.round((good / totalPlayerMoves) * 100) : 100;
+
+    // --- ELO estimation ---
+    let perfElo = bot.elo;
+    if (result === 'win') perfElo = Math.min(3000, bot.elo + 150 + accuracy * 2);
+    else if (result === 'lose') perfElo = Math.max(100, bot.elo - 250 + accuracy * 2);
+    else perfElo = bot.elo - 50 + accuracy * 2;
+
+    // --- Build summary lines ---
+    let summaryHTML = '';
+    if (playerAnns['💀'] > 0) summaryHTML += `<span style="color:#f87171">${playerAnns['💀']} gaffes 💀</span> `;
+    if (playerAnns['❌'] > 0) summaryHTML += `<span style="color:#fca5a5">${playerAnns['❌']} errores</span> `;
+    if (playerAnns['⁉️'] > 0) summaryHTML += `<span style="color:#fbbf24">${playerAnns['⁉️']} imprecisiones</span> `;
+    if (playerAnns['⭐'] > 0) summaryHTML += `<span style="color:#4ade80">${playerAnns['⭐']} geniales ⭐</span> `;
+    if (playerAnns['✓'] > 0) summaryHTML += `<span style="color:#86efac">${playerAnns['✓']} buenas</span>`;
+    if (!summaryHTML) summaryHTML = 'Juego sólido sin imprecisiones.';
+
+    const resultIcon = result === 'win' ? '👑' : result === 'draw' ? '🤝' : '😞';
     const resultTitle = result === 'win' ? '¡VICTORIA!' : result === 'draw' ? 'TABLAS' : 'DERROTA';
     const resultColor = result === 'win' ? '#4ade80' : result === 'draw' ? '#fbbf24' : '#ef4444';
 
     const gameContainer = document.getElementById('bots-game-container');
-    if (gameContainer) {
-      gameContainer.innerHTML = `
-        <div class="bots-result-overlay" style="border-color: ${resultColor}; box-shadow: 0 0 60px ${resultColor}22;">
-          <div class="bots-result-icon">${resultIcon}</div>
-          <h2 class="bots-result-title" style="color: ${resultColor};">${resultTitle}</h2>
-          <p class="bots-result-reason">${reason}</p>
-          <div class="bots-result-vs">
-            <span class="result-player">T\u00DA</span>
-            <span class="result-vs">vs</span>
-            <span class="result-bot" style="color: ${bot.color};">${bot.name}</span>
+    if (!gameContainer) return;
+
+    gameContainer.innerHTML = `
+      <div class="bots-result-overlay" style="border-color: ${resultColor}; box-shadow: 0 0 60px ${resultColor}22;">
+        <div class="bots-result-icon">${resultIcon}</div>
+        <h2 class="bots-result-title" style="color: ${resultColor};">${resultTitle}</h2>
+        <p class="bots-result-reason">${reason}</p>
+        <div class="bots-result-vs">
+          <span class="result-player">T\u00DA</span>
+          <span style="color:#64748b;font-size:0.7rem;">vs</span>
+          <span class="result-bot" style="color: ${bot.color};">${bot.name} (${bot.elo})</span>
+        </div>
+        ${quote ? `<p class="bots-result-quote">«${quote}»</p>` : ''}
+
+        <div class="bots-result-elo" style="margin-bottom:0.8rem;">
+          <span style="font-size:0.6rem;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;">Tu ELO estimado</span>
+          <strong style="font-size:2rem;color:${resultColor};display:block;">${perfElo}</strong>
+        </div>
+
+        <div class="bots-result-stats">
+          <div class="result-stat">
+            <span>Jugadas</span>
+            <strong>${this.chessHistory.length}</strong>
           </div>
-          ${quote ? `<p class="bots-result-quote">«${quote}»</p>` : ''}
-          <div class="bots-result-stats">
-            <div class="result-stat">
-              <span>Jugadas</span>
-              <strong>${this.chessHistory.length}</strong>
-            </div>
-            <div class="result-stat">
-              <span>Capturas</span>
-              <strong>${this.capturedBlack.length} - ${this.capturedWhite.length}</strong>
-            </div>
+          <div class="result-stat">
+            <span>Capturas</span>
+            <strong>${this.capturedBlack.length} - ${this.capturedWhite.length}</strong>
           </div>
-          <div class="bots-result-actions">
-            <button class="bots-result-btn" id="bots-btn-replay" style="background: ${bot.color}; color: ${bot.tier === 'shadow' || bot.tier === 'queen' ? '#0a0a0a' : '#ffffff'};">Revancha</button>
-            <button class="bots-result-btn secondary" id="bots-btn-choose">Elegir otro bot</button>
+          <div class="result-stat">
+            <span>Precisión</span>
+            <strong style="color:${accuracy >= 70 ? '#4ade80' : accuracy >= 40 ? '#fbbf24' : '#f87171'}">${accuracy}%</strong>
           </div>
         </div>
-      `;
 
-      document.getElementById('bots-btn-replay').addEventListener('click', () => {
-        this.startGame();
-      });
-      document.getElementById('bots-btn-choose').addEventListener('click', () => {
-        this.showBotSelect();
-      });
-    }
+        <div class="bots-result-summary" style="background:rgba(255,255,255,0.03);border-radius:8px;padding:0.6rem 0.8rem;margin-bottom:1rem;max-width:340px;font-size:0.72rem;color:#cbd5e1;line-height:1.5;">
+          ${summaryHTML}
+        </div>
+
+        <div class="bots-result-actions">
+          <button class="bots-result-btn" id="bots-btn-replay" style="background: ${bot.color}; color: ${bot.tier === 'shadow' || bot.tier === 'queen' ? '#0a0a0a' : '#fff'};">Revancha</button>
+          <button class="bots-result-btn secondary" id="bots-btn-choose">Elegir otro bot</button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('bots-btn-replay').addEventListener('click', () => this.startGame());
+    document.getElementById('bots-btn-choose').addEventListener('click', () => this.showBotSelect());
   }
 
   destroy() {
