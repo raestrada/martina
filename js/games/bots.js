@@ -1078,10 +1078,11 @@ class BotsGame {
       const bot = this.selectedBot;
       const skillLevel = Math.min(20, Math.max(0, Math.round((bot.elo / 2800) * 20)));
       const stockfishUrl = 'https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js';
+      const wasmUrl = 'https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.wasm';
 
       const failTimer = setTimeout(() => {
         reject(new Error('Stockfish tardó demasiado en cargar'));
-      }, 12000);
+      }, 15000);
 
       fetch(stockfishUrl)
         .then(res => {
@@ -1091,29 +1092,45 @@ class BotsGame {
         .then(scriptText => {
           if (!this.gameActive) { clearTimeout(failTimer); reject(new Error('cancelado')); return; }
 
-          const blob = new Blob([scriptText + '\nself.onmessage=function(e){StockFish.postMessage(e.data)};'], { type: 'application/javascript' });
+          // Prepend Module config so stockfish finds its WASM
+          const fullScript = 
+            `var Module={locateFile:function(p){return'${wasmUrl}'}};\n` +
+            scriptText + '\n' +
+            `self.onmessage=function(e){StockFish.postMessage(e.data)};`;
+
+          const blob = new Blob([fullScript], { type: 'application/javascript' });
           this.stockfishWorker = new Worker(URL.createObjectURL(blob));
 
-          const onMsg = (e) => {
+          let initStep = 0;
+          this.stockfishWorker.onmessage = (e) => {
             const line = e.data;
-            if (line === 'uciok') {
-              this.stockfishWorker.postMessage('isready');
-            }
+            // After uci + isready, engine responds with uciok then readyok
+            if (line === 'uciok') initStep = 1;
             if (line === 'readyok') {
               clearTimeout(failTimer);
               this.stockfishReady = true;
               this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
               this.stockfishWorker.postMessage('ucinewgame');
-              this.stockfishWorker.onmessage = null;
-              resolve();
+              // Small delay to let engine process
+              setTimeout(resolve, 200);
+            }
+            // Some versions don't emit readyok — if we got uciok and a few seconds pass, resolve
+            if (initStep === 1) {
+              setTimeout(() => {
+                if (!this.stockfishReady) {
+                  this.stockfishReady = true;
+                  clearTimeout(failTimer);
+                  resolve();
+                }
+              }, 3000);
             }
           };
-          this.stockfishWorker.onmessage = onMsg;
+
           this.stockfishWorker.postMessage('uci');
+          this.stockfishWorker.postMessage('isready');
         })
         .catch(err => {
           clearTimeout(failTimer);
-          console.warn('Stockfish load failed:', err.message);
           reject(err);
         });
     });
