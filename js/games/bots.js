@@ -1100,6 +1100,8 @@ class BotsGame {
             this.stockfishWorker = null;
             reject(new Error(d));
           }
+          // Debug: log engine messages
+          if (d && d.length < 200) console.log('SF:', d);
         };
 
         this.stockfishWorker.onerror = () => {
@@ -1153,6 +1155,7 @@ class BotsGame {
     this.stockfishWorker.postMessage('go movetime 1200');
     this.stockfishWorker.onmessage = (e) => {
       const line = e.data;
+      console.log('SF:', line);
       if (line.includes('bestmove')) {
         const move = line.split(' ')[1];
         if (move && move !== '(none)' && this.gameActive) {

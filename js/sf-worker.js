@@ -1,9 +1,13 @@
 try {
   self.postMessage('LOADING');
   importScripts('/js/stockfish.js');
-  self.postMessage('LOADED');
+  if (typeof StockFish === 'undefined') {
+    self.postMessage('ERROR:StockFish not defined');
+  } else {
+    self.postMessage('LOADED');
+  }
 } catch(e) {
-  self.postMessage('ERROR:' + e.message);
+  self.postMessage('ERROR:import:' + e.message);
   throw e;
 }
 
