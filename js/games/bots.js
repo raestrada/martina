@@ -799,9 +799,12 @@ class BotsGame {
 
     const utter = new SpeechSynthesisUtterance(text);
     utter.voice = await this._getSpanishVoice(gender);
-    const pitchMap = { high: 1.6, low: 0.7, deep: 0.5, female: 1.1, male: 0.9, fast: 1.2, slow: 0.75, dry: 0.9 };
-    utter.pitch = pitchMap[profile] || 1.0;
-    utter.rate  = profile === 'fast' ? 1.3 : profile === 'slow' ? 0.75 : profile === 'dry' ? 0.9 : 1.05;
+
+    // Base pitch from gender if few voices (differentiates male/female when same voice is used)
+    const basePitch = gender === 'female' ? 1.25 : 0.85;
+    const pitchMap = { high: 1.8, low: 0.6, deep: 0.4, male: 0.85, female: 1.25, fast: 1.0, slow: 0.8, dry: 0.9 };
+    utter.pitch = pitchMap[profile] || basePitch;
+    utter.rate  = profile === 'fast' ? 1.4 : profile === 'slow' ? 0.7 : profile === 'dry' ? 0.85 : 1.05;
     utter.volume = 0.8;
 
     utter.onend = () => this._dequeueSpeak();
