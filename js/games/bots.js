@@ -1232,10 +1232,10 @@ class BotsGame {
           pieceEl.className = 'bots-chess-pc';
           pieceEl.textContent = sym[piece] || '';
           const isWhitePiece = piece === piece.toUpperCase();
-          pieceEl.style.color = isWhitePiece ? '#fff' : '#1a1a2e';
+          pieceEl.style.color = isWhitePiece ? '#ffffff' : '#0f0f1a';
           pieceEl.style.textShadow = isWhitePiece
-            ? '-1px -1px 0 #1a1a2e, 1px -1px 0 #1a1a2e, -1px 1px 0 #1a1a2e, 1px 1px 0 #1a1a2e, 0 2px 4px rgba(0,0,0,0.4)'
-            : '-1px -1px 0 #e2e8f0, 1px -1px 0 #e2e8f0, -1px 1px 0 #e2e8f0, 1px 1px 0 #e2e8f0, 0 2px 4px rgba(0,0,0,0.2)';
+            ? '-2px -2px 0 #0f0f1a, 2px -2px 0 #0f0f1a, -2px 2px 0 #0f0f1a, 2px 2px 0 #0f0f1a, 0 3px 6px rgba(0,0,0,0.6)'
+            : '-2px -2px 0 #e8ecf0, 2px -2px 0 #e8ecf0, -2px 2px 0 #e8ecf0, 2px 2px 0 #e8ecf0, 0 2px 5px rgba(0,0,0,0.3)';
           square.appendChild(pieceEl);
         }
 
@@ -1369,6 +1369,14 @@ class BotsGame {
     this.updateCapturedDisplay();
     this.updateCommentary();
 
+    // Briefly pause to let player see opponent's move
+    if (!isPlayer) {
+      this.isThinking = true;
+      setTimeout(() => {
+        this.isThinking = false;
+      }, 400);
+    }
+
     const newParts = this.chessFEN.split(' ');
     const nextTurn = newParts[1] || 'w';
 
@@ -1457,6 +1465,25 @@ class BotsGame {
       const sign = clampedScore > 0 ? '+' : '';
       scoreEl.textContent = `${sign}${clampedScore.toFixed(1)}`;
       scoreEl.style.color = barColor;
+    }
+
+    // Material count
+    const matEl = document.getElementById('bots-material');
+    if (matEl) {
+      const board = this.parseFEN(this.chessFEN);
+      const vals = {p:1,n:3,b:3,r:5,q:9,k:0};
+      let mat = 0;
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          const p = board[r][c];
+          if (!p) continue;
+          const v = vals[p.toLowerCase()] || 0;
+          mat += p === p.toUpperCase() ? v : -v;
+        }
+      }
+      const sign = mat > 0 ? '+' : '';
+      matEl.textContent = `⚖ ${sign}${mat}`;
+      matEl.style.color = mat > 0 ? '#4ade80' : mat < 0 ? '#f87171' : '#94a3b8';
     }
 
     // Commentary text
@@ -1548,7 +1575,10 @@ class BotsGame {
         const plAnn = this.moveAnnotations[plMove] || '';
         const oppAnn = this.moveAnnotations[oppMove] || '';
         const line = document.createElement('div');
-        line.innerHTML = `${Math.floor(i/2)+1}. ${plMove}<span style="font-size:0.55rem;margin-left:1px">${plAnn}</span> ${oppMove}<span style="font-size:0.55rem;margin-left:1px">${oppAnn}</span>`;
+        line.style.display = 'flex';
+        line.style.gap = '3px';
+        line.style.alignItems = 'center';
+        line.innerHTML = `<span style="color:#64748b;min-width:14px">${Math.floor(i/2)+1}.</span><span style="color:#cbd5e1">${plMove}</span><span style="font-size:0.5rem;color:#94a3b8">${plAnn}</span><span style="color:#64748b">${oppMove}</span><span style="font-size:0.5rem;color:#94a3b8">${oppAnn}</span>`;
         el.appendChild(line);
       }
       el.scrollTop = el.scrollHeight;
@@ -1783,7 +1813,10 @@ class BotsGame {
             <div class="bots-commentator" id="bots-commentator" style="border-color: ${accent}44;">
               <div class="bots-commentator-header">
                 <span>🎙️ Comentarista</span>
-                <span id="bots-eval-score" style="color: #4ade80;">+0.0</span>
+                <span style="display:flex;gap:8px;">
+                  <span id="bots-material">⚖ 0</span>
+                  <span id="bots-eval-score" style="color: #4ade80;">+0.0</span>
+                </span>
               </div>
               <div class="bots-eval-bar-container">
                 <div class="bots-eval-bar-fill" id="bots-eval-bar" style="width:50%;"></div>
