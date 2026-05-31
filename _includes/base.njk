@@ -12,14 +12,17 @@
   <meta name="keywords" content="{{ keywords }}">
   <meta name="author" content="Papá de Martina">
   <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://martinachess.com{{ page.url }}">
   <meta property="og:type" content="{{ ogType or 'website' }}">
   <meta property="og:title" content="{{ ogTitle or title }}">
   <meta property="og:description" content="{{ ogDescription or description }}">
-  <meta property="og:image" content="{{ ogImage }}">
+  {% set resolvedOgImage = ogImage or '/assets/img/martina_profile_1778904530237.png' %}
+  <meta property="og:image" content="{% if 'http' in resolvedOgImage %}{{ resolvedOgImage }}{% else %}https://martinachess.com{{ resolvedOgImage }}{% endif %}">
   <meta name="twitter:card" content="{{ twitterCard or 'summary_large_image' }}">
   <meta name="twitter:title" content="{{ twitterTitle or ogTitle or title }}">
   <meta name="twitter:description" content="{{ twitterDescription or ogDescription or description }}">
-  <meta name="twitter:image" content="{{ twitterImage or ogImage }}">
+  {% set resolvedTwitterImage = twitterImage or resolvedOgImage %}
+  <meta name="twitter:image" content="{% if 'http' in resolvedTwitterImage %}{{ resolvedTwitterImage }}{% else %}https://martinachess.com{{ resolvedTwitterImage }}{% endif %}">
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/css/style.css">
   {% for css in extraCss %}<link rel="stylesheet" href="{{ css }}">
