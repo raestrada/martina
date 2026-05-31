@@ -1082,37 +1082,18 @@ class BotsGame {
 
         const skill = Math.min(20, Math.max(0, Math.round((this.selectedBot.elo / 2800) * 20)));
 
-        let loaded = false;
-        this.stockfishWorker.onmessage = (e) => {
-          const d = e.data;
-          if (d === 'LOADING') { /* engine loading... */ }
-          if (d === 'LOADED') { loaded = true; }
-          if (d === 'READY') {
-            if (!loaded) { reject(new Error('READY before LOADED')); return; }
-            this.stockfishWorker.postMessage('uci');
-            this.stockfishWorker.postMessage('isready');
-            this.stockfishWorker.postMessage(`setoption name Skill Level value ${skill}`);
-            this.stockfishReady = true;
-            setTimeout(resolve, 300);
-          }
-          if (d && d.startsWith('ERROR:')) {
-            this._sfInitPromise = null;
-            this.stockfishWorker = null;
-            reject(new Error(d));
-          }
-          // Debug: log engine messages
-          if (d && d.length < 200) console.log('SF:', d);
-        };
+        // Stockfish handles its own onmessage — just send UCI commands
+        this.stockfishWorker.postMessage('uci');
+        this.stockfishWorker.postMessage('isready');
+        this.stockfishWorker.postMessage(`setoption name Skill Level value ${skill}`);
+        this.stockfishReady = true;
+        setTimeout(resolve, 500);
 
         this.stockfishWorker.onerror = () => {
           this._sfInitPromise = null;
           this.stockfishWorker = null;
           reject(new Error('Worker crashed'));
         };
-
-        setTimeout(() => {
-          if (!this.stockfishReady) { this._sfInitPromise = null; reject(new Error('timeout')); }
-        }, 25000);
 
       } catch (err) {
         this._sfInitPromise = null;
