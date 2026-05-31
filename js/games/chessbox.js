@@ -4681,6 +4681,20 @@ class ChessBoxGame {
     const t = time ? time * 0.004 : 0;
     const horizonY = 160;
 
+    const tL = { x: 180, y: horizonY + 20 };
+    const tR = { x: 620, y: horizonY + 20 };
+    const bR = { x: 750, y: 415 };
+    const bL = { x: 50, y: 415 };
+    const apronH = 15;
+
+    const getCanvasPt = (u, v) => {
+      const leftX = tL.x + (bL.x - tL.x) * v;
+      const rightX = tR.x + (bR.x - tR.x) * v;
+      const y = tL.y + (bL.y - tL.y) * v;
+      const x = leftX + (rightX - leftX) * u;
+      return { x, y };
+    };
+
     // Theme customization variables
     let themePerspectiveColor = 0x151624;
     let themePerspectiveAlpha = 0.7;
@@ -5362,12 +5376,6 @@ class ChessBoxGame {
     }
 
     // 5. Aprons
-    const tL = { x: 180, y: horizonY + 20 };
-    const tR = { x: 620, y: horizonY + 20 };
-    const bR = { x: 750, y: 415 };
-    const bL = { x: 50, y: 415 };
-    const apronH = 15;
-    
     g.fillStyle(themeApronBase, 1);
     g.beginPath();
     g.moveTo(bL.x, bL.y); g.lineTo(bR.x, bR.y); g.lineTo(bR.x + 8, bR.y + apronH); g.lineTo(bL.x - 8, bL.y + apronH); g.closePath();
@@ -5385,14 +5393,6 @@ class ChessBoxGame {
     
     g.fillStyle(themeApronAccent, 0.95);
     g.fillRect(bL.x - 5, bL.y + 4, bR.x - bL.x + 10, 3);
-
-    const getCanvasPt = (u, v) => {
-      const leftX = tL.x + (bL.x - tL.x) * v;
-      const rightX = tR.x + (bR.x - tR.x) * v;
-      const y = tL.y + (bL.y - tL.y) * v;
-      const x = leftX + (rightX - leftX) * u;
-      return { x, y };
-    };
 
     // 6. Flowing Great Central River
     if (tier === 'shadow') {
