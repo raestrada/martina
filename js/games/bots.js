@@ -1422,6 +1422,18 @@ class BotsGame {
     this.lastChessMove = { from: uciMove.substring(0, 2), to: uciMove.substring(2, 4) };
     this.chessHistory.push(uciMove);
 
+    // Validate FEN integrity (should never fail, but catches rare engine bugs)
+    const boardAfter = this.parseFEN(this.chessFEN);
+    let pieceCount = 0;
+    let kings = { K: 0, k: 0 };
+    for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+      if (boardAfter[r][c]) { pieceCount++; if (boardAfter[r][c] === 'K') kings.K++; if (boardAfter[r][c] === 'k') kings.k++; }
+    }
+    if (kings.K !== 1 || kings.k !== 1 || pieceCount < 2) {
+      console.warn('FEN corruption detected after', uciMove, '- resetting board');
+      this.chessFEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+    }
+
     // Evaluate AFTER move and classify
     const evalAfter = this.evaluateBoardLocal(this.chessFEN, 'w');
     const diff = isPlayer ? (evalAfter - evalBefore) : (evalBefore - evalAfter);
@@ -2030,7 +2042,12 @@ class BotsGame {
   }
 
   endGame(result, reason) {
+    // Prevent duplicate calls
+    if (!this.gameActive) return;
     this.gameActive = false;
+
+    // Cancel any pending opponent move timers
+    this.isThinking = false;
     this.destroyWorker();
 
     if (this.quoteInterval) {
