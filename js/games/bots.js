@@ -1156,6 +1156,41 @@ class BotsGame {
   }
 
   // ========== BOARD RENDERING ==========
+  showMovePopup(uciMove) {
+    const ann = this.moveAnnotations[uciMove];
+    if (!ann) return;
+
+    const dest = uciMove.substring(2, 4);
+    const sq = document.querySelector(`#bots-board .bots-chess-sq[data-coord="${dest}"]`);
+    if (!sq) return;
+
+    // Remove any existing popup
+    const existing = document.querySelector('.bots-popup');
+    if (existing) existing.remove();
+
+    const popup = document.createElement('div');
+    popup.className = 'bots-popup';
+    popup.textContent = ann;
+    popup.style.cssText = `
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      font-size: 1.8rem;
+      z-index: 20;
+      pointer-events: none;
+      animation: botsPopupIn 0.35s ease-out forwards;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    `;
+
+    sq.appendChild(popup);
+
+    setTimeout(() => {
+      popup.style.animation = 'botsPopupOut 0.4s ease-in forwards';
+      setTimeout(() => popup.remove(), 450);
+    }, 1800);
+  }
+
   renderChessBoard() {
     const boardDOM = document.getElementById('bots-board');
     if (!boardDOM) return;
@@ -1324,6 +1359,7 @@ class BotsGame {
     this.moveAnnotations[uciMove] = this.classifyMove(diff, isPlayer, moveCategories);
     this.lastEval = evalAfter;
     this.renderChessBoard();
+    this.showMovePopup(uciMove);
     this.updateHistoryDisplay();
     this.updateCapturedDisplay();
     this.updateCommentary();
@@ -1378,12 +1414,12 @@ class BotsGame {
     const isCapture = categories && categories.includes('capture');
     const isCheck = categories && categories.includes('check');
 
-    if (evalDiff > 3.0) return '✨';
-    if (evalDiff > 1.5) return '⭐';
-    if (evalDiff > 0.5) return '✓';
-    if (evalDiff > -0.5) return '';
-    if (evalDiff > -1.5) return '⁉️';
-    if (evalDiff > -3.0) return '❌';
+    if (evalDiff > 2.5) return '✨';
+    if (evalDiff > 1.0) return '⭐';
+    if (evalDiff > 0.3) return '✓';
+    if (evalDiff > -0.3) return '';
+    if (evalDiff > -1.0) return '⁉️';
+    if (evalDiff > -2.5) return '❌';
     return '💀';
   }
 
