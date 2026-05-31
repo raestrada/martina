@@ -1421,19 +1421,25 @@ class BotsGame {
 
     if (isPlayer) {
       if (moveCategories.includes('check')) {
-        this.showBotComment(this.getBotQuote('check'));
+        this.addBotMessage('check');
+        this.addPlayerMessage('\u00A1Jaque al rey!');
       } else if (moveCategories.includes('capture')) {
-        this.showBotComment(this.getBotQuote('capture'));
+        this.addBotMessage('capture');
+        const dest = uciMove.substring(2, 4);
+        this.addPlayerMessage(`Capturaste en ${dest}`);
       } else if (moveCategories.includes('promotion')) {
-        this.showBotComment(this.getBotQuote('promotion'));
+        this.addBotMessage('promotion');
+        this.addPlayerMessage('\u00A1Coronaci\u00F3n!');
       } else if (moveCategories.includes('castle')) {
-        this.showBotComment(this.getBotQuote('castle'));
+        this.addBotMessage('castle');
+        const isKingSide = uciMove.substring(2, 4) === 'g1';
+        this.addPlayerMessage(`Enroque ${isKingSide ? 'corto' : 'largo'}`);
       }
     } else {
       if (moveCategories.includes('check')) {
-        this.showBotComment(this.getBotQuote('check'));
+        this.addBotMessage('check');
       } else if (moveCategories.includes('capture')) {
-        this.showBotComment(this.getBotQuote('capture'));
+        this.addBotMessage('capture');
       }
     }
   }
@@ -1542,7 +1548,7 @@ class BotsGame {
     textEl.textContent = comment;
   }
 
-  // ========== BOT COMMENTS ==========
+  // ========== CHAT MESSAGES ==========
   getBotQuote(trigger) {
     const bot = this.selectedBot;
     if (!bot || !bot.quotes[trigger]) return null;
@@ -1550,19 +1556,58 @@ class BotsGame {
     return quotes[Math.floor(Math.random() * quotes.length)];
   }
 
-  showBotComment(quote) {
-    if (!quote) return;
-    const bubble = document.getElementById('bots-comment-bubble');
-    const textEl = document.getElementById('bots-comment-text');
-    if (!bubble || !textEl) return;
+  addMessage(author, text, color, emoji, side) {
+    const chat = document.getElementById('bots-chat');
+    if (!chat) return;
 
-    textEl.style.transform = 'scale(0.97)';
-    textEl.style.transition = 'transform 0.12s ease';
+    const msg = document.createElement('div');
+    msg.className = `bots-msg ${side === 'player' ? 'bots-msg-player' : 'bots-msg-bot'}`;
 
-    setTimeout(() => {
-      textEl.textContent = quote;
-      textEl.style.transform = 'scale(1)';
-    }, 80);
+    const avatar = document.createElement('span');
+    avatar.className = 'bots-msg-avatar';
+    avatar.textContent = emoji;
+
+    const body = document.createElement('div');
+    body.className = 'bots-msg-body';
+
+    const nameEl = document.createElement('span');
+    nameEl.className = 'bots-msg-name';
+    nameEl.textContent = author;
+    nameEl.style.color = color;
+
+    const textEl = document.createElement('p');
+    textEl.className = 'bots-msg-text';
+    textEl.textContent = text;
+
+    body.appendChild(nameEl);
+    body.appendChild(textEl);
+
+    if (side === 'player') {
+      msg.appendChild(body);
+      msg.appendChild(avatar);
+    } else {
+      msg.appendChild(avatar);
+      msg.appendChild(body);
+    }
+
+    chat.appendChild(msg);
+
+    // Auto-scroll to bottom
+    requestAnimationFrame(() => {
+      chat.scrollTop = chat.scrollHeight;
+    });
+  }
+
+  addBotMessage(trigger) {
+    const bot = this.selectedBot;
+    const quote = this.getBotQuote(trigger);
+    if (quote && bot) {
+      this.addMessage(bot.name, quote, bot.color, bot.emoji, 'bot');
+    }
+  }
+
+  addPlayerMessage(text) {
+    this.addMessage('Tú', text, '#67e8f9', '♟️', 'player');
   }
 
   updateStatus(msg, type) {
@@ -1864,13 +1909,7 @@ class BotsGame {
           </div>
 
           <div class="bots-sidebar-right">
-            <div class="bots-comment-bubble" id="bots-comment-bubble" style="border-color: ${accent}55;">
-              <div class="bots-comment-avatar">${bot.emoji}</div>
-              <div class="bots-comment-content">
-                <span class="bots-comment-name" style="color: ${accent};">${bot.name}</span>
-                <p class="bots-comment-text" id="bots-comment-text"></p>
-              </div>
-            </div>
+            <div class="bots-chat" id="bots-chat"></div>
             <div class="bots-history-section">
               <div class="bots-history-header">Historial <span id="bots-move-count">· J 1</span></div>
               <div class="bots-history-list" id="bots-history"></div>
@@ -1903,12 +1942,15 @@ class BotsGame {
     this.renderChessBoard();
     this.updateStatus('● Tu turno', 'turn');
     this.updateCommentary();
-    this.showBotComment(this.getBotQuote('greeting'));
+    this.addBotMessage('greeting');
 
     this.quoteInterval = setInterval(() => {
       if (this.isThinking && this.gameActive) {
-        const thinkQuote = this.getBotQuote('think');
-        if (thinkQuote) this.showBotComment(thinkQuote);
+        const quote = this.getBotQuote('think');
+        if (quote) {
+          const bot = this.selectedBot;
+          this.addMessage(bot.name, quote, bot.color, bot.emoji, 'bot');
+        }
       }
     }, 5000);
   }
