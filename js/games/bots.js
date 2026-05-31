@@ -748,7 +748,6 @@ class BotsGame {
     return new Promise((resolve) => {
       if (!window.meSpeak) { resolve(); return; }
       try {
-        meSpeak.loadConfig('/js/mespeak-config.json');
         meSpeak.loadVoice('/js/mespeak-voice-es.json', () => {
           this._voicesReady = true;
           resolve();
@@ -814,8 +813,8 @@ class BotsGame {
         wordgap: 3,
         rawdata: 'array',
         linebreak: 200
-      }, (rawPCM) => {
-        if (!rawPCM || !this.voiceEnabled) { this._dequeueSpeak(); return; }
+      }, (success, rawPCM, isRaw) => {
+        if (!success || !rawPCM || !this.voiceEnabled) { this._dequeueSpeak(); return; }
         this._playFilteredPCM(rawPCM, filterCfg);
         setTimeout(() => this._dequeueSpeak(), 200);
       });

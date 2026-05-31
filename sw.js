@@ -63,7 +63,6 @@ const GAME_JS_URLS = [
   '/js/sf-worker.js',
   '/js/mespeak.js',
   '/js/mespeak-core.js',
-  '/js/mespeak-config.json',
   '/js/mespeak-voice-es.json',
 ];
 
