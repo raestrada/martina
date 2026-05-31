@@ -741,6 +741,7 @@ class BotsGame {
 
   // ========== SPEECH (meSpeak + AudioContext) ==========
   speak(text, gender, profile) {
+    console.log('🔊 speak called:', { text: text.substring(0,40), gender, profile, voiceEnabled: this.voiceEnabled, hasMeSpeak: !!window.meSpeak });
     if (!this.voiceEnabled || !text) return;
     if (!this._speakQueue) this._speakQueue = [];
     this._speakQueue.push({ text, gender, profile });
@@ -754,18 +755,22 @@ class BotsGame {
     }
     this._speaking = true;
     const { text, gender, profile } = this._speakQueue.shift();
+    console.log('🔊 _dequeueSpeak:', text.substring(0,40), 'meSpeak:', !!window.meSpeak, 'voiceLoaded:', this._voiceLoaded);
 
     if (window.meSpeak) {
-      // Load voice on first use
       if (!this._voiceLoaded) {
-        meSpeak.loadVoice('/js/mespeak-voice-es.json', () => {
-          this._voiceLoaded = true;
-          this._meSpeakSpeak(text, gender, profile);
+        console.log('🔊 loading voice /js/mespeak-voice-es.json...');
+        meSpeak.loadVoice('/js/mespeak-voice-es.json', (success, msg) => {
+          console.log('🔊 voice loaded:', success, msg || '');
+          this._voiceLoaded = !!success;
+          if (success) this._meSpeakSpeak(text, gender, profile);
+          else this._fallbackSpeak(text, gender, profile);
         });
         return;
       }
       this._meSpeakSpeak(text, gender, profile);
     } else {
+      console.log('🔊 no meSpeak, using fallback');
       this._fallbackSpeak(text, gender, profile);
     }
   }
@@ -787,6 +792,7 @@ class BotsGame {
     };
     const cfg = map[profile] || map[gender === 'female' ? 'female' : 'male'];
     const variant = cfg.v || variants[0];
+    console.log('🔊 meSpeak.speak:', text.substring(0,30), 'variant:', variant, 'pitch:', cfg.pitch, 'speed:', cfg.speed);
 
     meSpeak.speak(text, {
       variant: variant,
@@ -796,6 +802,7 @@ class BotsGame {
       wordgap: 3,
       rawdata: 'array'
     }, (success, data, isRaw) => {
+      console.log('🔊 meSpeak callback:', { success, hasData: !!data, dataLen: data ? data.length || data.byteLength : 0, voiceEnabled: this.voiceEnabled });
       if (success && data && this.voiceEnabled) {
         this._playPCM(data);
       }
@@ -804,7 +811,9 @@ class BotsGame {
   }
 
   _playPCM(rawPCM) {
+    console.log('🔊 _playPCM called, data type:', typeof rawPCM, 'len:', rawPCM.length || rawPCM.byteLength);
     const ctx = this._resumeAudio();
+    console.log('🔊 AudioContext:', !!ctx, 'state:', ctx ? ctx.state : 'null');
     if (!ctx) return;
     try {
       const int8 = new Int8Array(rawPCM);
