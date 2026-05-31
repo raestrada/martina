@@ -5000,16 +5000,157 @@ class ChessBoxGame {
     g.beginPath();
     g.moveTo(800, 0); g.lineTo(580 - Math.sin(t) * 35, 450); g.lineTo(340 - Math.sin(t) * 35, 450); g.closePath(); g.fill();
 
-    // 4. Floor Perspective
-    g.lineStyle(2, themePerspectiveColor, themePerspectiveAlpha);
-    for (let i = 0; i <= 20; i++) {
-      const xStart = (i - 10) * 130 + 400;
-      g.beginPath(); g.moveTo(xStart, 450); g.lineTo((i - 10) * 18 + 400, horizonY); g.strokePath();
-    }
-    for (let y = horizonY; y < 450; y += 32) {
-      const factor = (y - horizonY) / (450 - horizonY);
-      const w = 420 * factor;
-      g.beginPath(); g.moveTo(400 - w, y); g.lineTo(400 + w, y); g.strokePath();
+    // 4. Floor Perspective (Thematic Outer Floor)
+    if (tier === 'pawn') {
+      // Ice crack fissures outside the ring
+      g.lineStyle(2, 0x38bdf8, 0.35);
+      for (let i = 0; i < 12; i++) {
+        const angle = (i / 12) * Math.PI * 2;
+        const startX = 400 + Math.cos(angle) * 200;
+        const startY = 290 + Math.sin(angle) * 70;
+        const endX = 400 + Math.cos(angle) * 450;
+        const endY = 290 + Math.sin(angle) * 200;
+        
+        g.beginPath();
+        g.moveTo(startX, startY);
+        const midX = (startX + endX) / 2 + Math.sin(i * 1.7) * 25;
+        const midY = (startY + endY) / 2 + Math.cos(i * 2.3) * 15;
+        g.lineTo(midX, midY);
+        g.lineTo(endX, endY);
+        g.strokePath();
+      }
+      // Outer ice-blue grid details
+      g.lineStyle(1.2, 0x38bdf8, 0.2);
+      for (let y = horizonY; y < 450; y += 32) {
+        const factor = (y - horizonY) / (450 - horizonY);
+        const w = 420 * factor;
+        g.beginPath(); g.moveTo(0, y); g.lineTo(400 - w, y); g.strokePath();
+        g.beginPath(); g.moveTo(400 + w, y); g.lineTo(800, y); g.strokePath();
+      }
+    } else if (tier === 'knight') {
+      // Wood planks outside the ring
+      g.lineStyle(1.5, 0x064e3b, 0.35);
+      for (let y = horizonY; y < 450; y += 24) {
+        const factor = (y - horizonY) / (450 - horizonY);
+        const w = 420 * factor;
+        g.beginPath(); g.moveTo(0, y); g.lineTo(400 - w, y); g.strokePath();
+        g.beginPath(); g.moveTo(400 + w, y); g.lineTo(800, y); g.strokePath();
+      }
+      // Organic creeping green vines at the bottom left and right edges
+      g.lineStyle(2.5, 0x059669, 0.55);
+      g.beginPath();
+      g.moveTo(0, 450);
+      for (let y = 450; y > horizonY; y -= 15) {
+        const x = Math.sin(y * 0.08 + t) * 15;
+        g.lineTo(x + 10, y);
+      }
+      g.strokePath();
+      
+      g.beginPath();
+      g.moveTo(800, 450);
+      for (let y = 450; y > horizonY; y -= 15) {
+        const x = Math.sin(y * 0.08 - t) * 15;
+        g.lineTo(800 - x - 10, y);
+      }
+      g.strokePath();
+    } else if (tier === 'bishop') {
+      // White marble floor with gold geometric sacred templates
+      g.lineStyle(2, 0xeab308, 0.35);
+      for (let r = 80; r < 400; r += 70) {
+        g.strokeEllipse(400, 295, r * 1.1, r * 0.35);
+      }
+      g.lineStyle(1.5, 0xd97706, 0.18);
+      for (let a = 0; a < 8; a++) {
+        const rot = a * Math.PI / 4 + t * 0.05;
+        g.beginPath();
+        g.moveTo(400, 295);
+        g.lineTo(400 + Math.cos(rot) * 550, 295 + Math.sin(rot) * 200);
+        g.strokePath();
+      }
+    } else if (tier === 'rook') {
+      // Heavy metal mesh / steel diamond floor grating
+      g.lineStyle(2.5, 0x334155, 0.7);
+      for (let i = -10; i <= 20; i++) {
+        g.beginPath();
+        g.moveTo(i * 50, 450);
+        g.lineTo(i * 50 + 200, horizonY);
+        g.strokePath();
+        
+        g.beginPath();
+        g.moveTo(i * 50, horizonY);
+        g.lineTo(i * 50 + 200, 450);
+        g.strokePath();
+      }
+      // Draw industrial structural beams on the left and right corners
+      g.fillStyle(0x1e293b, 1);
+      g.lineStyle(3, 0x475569, 1);
+      g.fillRect(0, 410, 45, 40);
+      g.strokeRect(0, 410, 45, 40);
+      g.fillRect(755, 410, 45, 40);
+      g.strokeRect(755, 410, 45, 40);
+    } else if (tier === 'queen') {
+      // Gothic paving stones and magenta lava vein cracks
+      g.lineStyle(2, 0xd946ef, 0.35);
+      for (let cx = -100; cx <= 900; cx += 200) {
+        g.strokeEllipse(cx, 450, 160, 80);
+        g.strokeEllipse(cx, 450, 120, 60);
+      }
+      g.lineStyle(1.5, 0xec4899, 0.45);
+      for (let i = 0; i < 6; i++) {
+        const side = i % 2 === 0 ? -1 : 1;
+        const startX = side === -1 ? 50 : 750;
+        const startY = 415;
+        g.beginPath();
+        g.moveTo(startX, startY);
+        let curX = startX;
+        let curY = startY;
+        for (let step = 0; step < 6; step++) {
+          curX += side * 40 + Math.sin(step + i + t) * 15;
+          curY += 10 + Math.cos(step - i) * 10;
+          g.lineTo(curX, curY);
+        }
+        g.strokePath();
+      }
+    } else if (tier === 'shadow') {
+      // Space distortion / gravitational warp ripples
+      g.lineStyle(1.8, 0xa855f7, 0.4);
+      for (let y = horizonY; y < 450; y += 28) {
+        g.beginPath();
+        g.moveTo(0, y);
+        for (let x = 0; x <= 800; x += 40) {
+          const distToCenter = Math.abs(x - 400);
+          const warp = Math.max(0, (1 - distToCenter / 400)) * 30 * Math.sin((y - horizonY) * 0.05 + t * 0.1);
+          g.lineTo(x, y + warp);
+        }
+        g.strokePath();
+      }
+      for (let i = -10; i <= 20; i++) {
+        const xStart = (i - 10) * 130 + 400;
+        const xEnd = (i - 10) * 18 + 400;
+        
+        g.beginPath();
+        g.moveTo(xStart, 450);
+        for (let step = 0; step <= 10; step++) {
+          const v = step / 10;
+          const xRaw = xStart + (xEnd - xStart) * v;
+          const yRaw = 450 + (horizonY - 450) * v;
+          const bendX = 400 + (xRaw - 400) * (1 - 0.25 * Math.sin(v * Math.PI));
+          g.lineTo(bendX, yRaw);
+        }
+        g.strokePath();
+      }
+    } else {
+      // Fallback default simple grid
+      g.lineStyle(2, themePerspectiveColor, themePerspectiveAlpha);
+      for (let i = 0; i <= 20; i++) {
+        const xStart = (i - 10) * 130 + 400;
+        g.beginPath(); g.moveTo(xStart, 450); g.lineTo((i - 10) * 18 + 400, horizonY); g.strokePath();
+      }
+      for (let y = horizonY; y < 450; y += 32) {
+        const factor = (y - horizonY) / (450 - horizonY);
+        const w = 420 * factor;
+        g.beginPath(); g.moveTo(400 - w, y); g.lineTo(400 + w, y); g.strokePath();
+      }
     }
 
     // 5. Aprons
@@ -5188,7 +5329,29 @@ class ChessBoxGame {
     g.moveTo(tL.x, tL.y); g.lineTo(tR.x, tR.y); g.lineTo(bR.x, bR.y); g.lineTo(bL.x, bL.y); g.closePath();
     g.strokePath();
 
-    g.lineStyle(1.5, 0xffffff, 0.08);
+    let innerLineColor = 0xffffff;
+    let innerLineAlpha = 0.08;
+    if (tier === 'pawn') {
+      innerLineColor = 0xe0f2fe;
+      innerLineAlpha = 0.18;
+    } else if (tier === 'knight') {
+      innerLineColor = 0x271206;
+      innerLineAlpha = 0.35;
+    } else if (tier === 'bishop') {
+      innerLineColor = 0xf59e0b;
+      innerLineAlpha = 0.32;
+    } else if (tier === 'rook') {
+      innerLineColor = 0x0f172a;
+      innerLineAlpha = 0.38;
+    } else if (tier === 'queen') {
+      innerLineColor = 0xf472b6;
+      innerLineAlpha = 0.25;
+    } else if (tier === 'shadow') {
+      innerLineColor = 0xc084fc;
+      innerLineAlpha = 0.28;
+    }
+
+    g.lineStyle(1.5, innerLineColor, innerLineAlpha);
     for (let i = 1; i < 8; i++) {
       const startH = getCanvasPt(0, i / 8); const endH = getCanvasPt(1, i / 8);
       g.beginPath(); g.moveTo(startH.x, startH.y); g.lineTo(endH.x, endH.y); g.strokePath();
