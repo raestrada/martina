@@ -744,7 +744,7 @@ class BotsGame {
     if (!this._speakQueue) this._speakQueue = [];
     this._speakQueue.push({ text, gender, profile });
     if (!this._speaking) this._dequeueSpeak();
-  },
+  }
 
   _dequeueSpeak() {
     if (!this._speakQueue || this._speakQueue.length === 0 || !this.voiceEnabled) {
@@ -754,25 +754,6 @@ class BotsGame {
     this._speaking = true;
     const { text, gender, profile } = this._speakQueue.shift();
 
-    const utter = new SpeechSynthesisUtterance(text);
-    const voices = speechSynthesis.getVoices();
-    const wantFemale = gender === 'female';
-    let voice = voices.find(v => v.lang.startsWith('es') && (wantFemale ? /ónica|Paulina|female/i.test(v.name) : /Jorge|Diego|male/i.test(v.name)));
-    if (!voice) voice = voices.find(v => v.lang.startsWith('es'));
-    if (voice) utter.voice = voice;
-    const pm = {high:{p:1.8,r:1.3},fast:{p:1.0,r:1.7},low:{p:0.45,r:0.75},dry:{p:0.7,r:0.95},deep:{p:0.25,r:0.6},slow:{p:0.55,r:0.65},male:{p:0.85,r:0.95},female:{p:1.25,r:1.05}};
-    const pp = pm[profile] || pm[gender==='female'?'female':'male'];
-    utter.pitch = pp.p; utter.rate = pp.r; utter.volume = 0.8;
-    utter.onend = () => this._dequeueSpeak();
-    utter.onerror = () => { this._speaking = false; this._dequeueSpeak(); };
-    speechSynthesis.speak(utter);
-  },
-      (err) => console.error('🔊 decodeAudioData FAILED:', err)
-    );
-  }
-
-  _fallbackSpeak(text, gender, profile) {
-    if (!window.speechSynthesis) { this._dequeueSpeak(); return; }
     const utter = new SpeechSynthesisUtterance(text);
     const voices = speechSynthesis.getVoices();
     const wantFemale = gender === 'female';
