@@ -801,41 +801,49 @@ class BotsGame {
       pitch: cfg.pitch,
       speed: cfg.speed,
       amplitude: 100,
-      wordgap: 3,
-      rawdata: 'array'
-    }, (success, data, isRaw) => {
-      console.log('🔊 meSpeak callback:', { success, hasData: !!data, dataLen: data ? data.length || data.byteLength : 0, voiceEnabled: this.voiceEnabled });
-      if (success && data && this.voiceEnabled) {
-        this._playPCM(data);
+      wordgap: 3
+    }, (success, wav, isRaw) => {
+      console.log('🔊 meSpeak callback:', { success, wavType: typeof wav, wavLen: wav?.length, voiceEnabled: this.voiceEnabled });
+      if (success && wav && this.voiceEnabled) {
+        this._playWAV(wav);
       }
       this._speaking = false;
       setTimeout(() => this._dequeueSpeak(), 150);
     });
   }
 
-  _playPCM(rawPCM) {
-    console.log('🔊 _playPCM called, data type:', typeof rawPCM, 'isArray:', Array.isArray(rawPCM), 'isTypedArray:', ArrayBuffer.isView ? ArrayBuffer.isView(rawPCM) : '?', 'constructor:', rawPCM?.constructor?.name);
-    if (typeof rawPCM === 'string') {
-      // base64 WAV format
-      console.log('🔊 got string WAV, length:', rawPCM.length);
-    }
+  _playWAV(wavData) {
+    console.log('🔊 _playWAV, data type:', typeof wavData, 'preview:', typeof wavData === 'string' ? wavData.substring(0, 50) : 'not-string');
     const ctx = this._resumeAudio();
-    console.log('🔊 AudioContext:', !!ctx, 'state:', ctx ? ctx.state : 'null');
     if (!ctx) return;
-    try {
-      const int8 = new Int8Array(rawPCM);
-      const float32 = new Float32Array(int8.length);
-      for (let i = 0; i < int8.length; i++) float32[i] = int8[i] / 128;
-      const buf = ctx.createBuffer(1, float32.length, 22050);
-      buf.copyToChannel(float32, 0);
-      const src = ctx.createBufferSource();
-      src.buffer = buf;
-      const gain = ctx.createGain();
-      gain.gain.value = 0.6;
-      src.connect(gain);
-      gain.connect(ctx.destination);
-      src.start(0);
-    } catch(e) {}
+
+    // meSpeak returns base64 data URI by default: "data:audio/wav;base64,..."
+    let bytes;
+    if (typeof wavData === 'string' && wavData.startsWith('data:')) {
+      const base64 = wavData.split(',')[1];
+      const binary = atob(base64);
+      bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    } else if (wavData.buffer) {
+      bytes = new Uint8Array(wavData.buffer);
+    } else {
+      console.log('🔊 unknown WAV format, skipping');
+      return;
+    }
+
+    // Decode WAV and play via AudioContext
+    ctx.decodeAudioData(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), 
+      (buffer) => {
+        const src = ctx.createBufferSource();
+        src.buffer = buffer;
+        const gain = ctx.createGain();
+        gain.gain.value = 0.6;
+        src.connect(gain);
+        gain.connect(ctx.destination);
+        src.start(0);
+      },
+      (err) => console.log('🔊 decodeAudioData error:', err)
+    );
   }
 
   _fallbackSpeak(text, gender, profile) {
