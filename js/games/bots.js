@@ -1384,23 +1384,23 @@ class BotsGame {
   }
 
   updateHistoryDisplay() {
-    const el = document.getElementById('bots-history');
-    if (!el) return;
-    el.innerHTML = '';
-
-    for (let i = 0; i < this.chessHistory.length; i += 2) {
-      const plMove = this.chessHistory[i] || '';
-      const oppMove = this.chessHistory[i + 1] || '';
-      const moveNum = Math.floor(i / 2) + 1;
-
-      const line = document.createElement('div');
-      line.textContent = `${moveNum}. ${plMove}  ${oppMove}`;
-      line.style.padding = '1px 4px';
-      line.style.borderRadius = '3px';
-      line.style.fontSize = '0.72rem';
-      el.appendChild(line);
-    }
-    el.scrollTop = el.scrollHeight;
+    const buildHist = (containerId, moveCountId) => {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      el.innerHTML = '';
+      for (let i = 0; i < this.chessHistory.length; i += 2) {
+        const plMove = this.chessHistory[i] || '';
+        const oppMove = this.chessHistory[i + 1] || '';
+        const line = document.createElement('div');
+        line.textContent = `${Math.floor(i/2)+1}. ${plMove}  ${oppMove}`;
+        el.appendChild(line);
+      }
+      el.scrollTop = el.scrollHeight;
+      const mc = document.getElementById(moveCountId);
+      if (mc) mc.textContent = `· J ${Math.floor(this.chessHistory.length/2)+1}`;
+    };
+    buildHist('bots-history', 'bots-move-count');
+    buildHist('bots-history-m', 'bots-move-count-m');
   }
 
   updateCapturedDisplay() {
@@ -1640,6 +1640,11 @@ class BotsGame {
               <div class="bots-history-header">Historial <span id="bots-move-count">· J 1</span></div>
               <div class="bots-history-list" id="bots-history"></div>
             </div>
+          </div>
+
+          <div class="bots-history-mobile" id="bots-history-mobile">
+            <div class="bots-history-header">Historial <span id="bots-move-count-m">· J 1</span></div>
+            <div class="bots-history-list" id="bots-history-m"></div>
           </div>
         </div>
       </div>

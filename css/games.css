@@ -3546,6 +3546,11 @@
   background: rgba(255, 255, 255, 0.02);
 }
 
+/* Mobile-only history — hidden on desktop */
+.bots-history-mobile {
+  display: none;
+}
+
 /* ===================================================================
    BOTS RESULT OVERLAY
    =================================================================== */
@@ -3748,15 +3753,31 @@
   .bots-comment-avatar { font-size: 1rem; }
   .bots-comment-name { font-size: 0.55rem; }
   .bots-comment-text { font-size: 0.64rem; }
-  .bots-history-section {
-    width: 90px;
-    flex-shrink: 0;
-    max-height: 52px;
-    padding: 3px 5px;
+  /* Hide desktop history on mobile */
+  .bots-sidebar-right .bots-history-section { display: none; }
+
+  /* Mobile history — appears at bottom */
+  .bots-history-mobile {
+    order: 4;
+    display: flex !important;
+    flex-direction: column;
+    background: rgba(40, 48, 70, 0.45);
+    border: 1px solid var(--bot-accent, rgba(255, 255, 255, 0.18));
     border-radius: 5px;
+    padding: 3px 5px;
+    max-height: 50px;
   }
-  .bots-history-header { font-size: 0.48rem; }
-  .bots-history-list { font-size: 0.5rem; max-height: 38px; }
+  .bots-history-mobile .bots-history-header { font-size: 0.48rem; }
+  .bots-history-mobile .bots-history-list {
+    font-size: 0.5rem;
+    max-height: 36px;
+    overflow-y: auto;
+    font-family: monospace;
+    color: #b0bdd0;
+  }
+  .bots-history-mobile .bots-history-list div:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+  }
 
   /* Board — full width */
   .bots-board-wrapper {
