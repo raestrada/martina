@@ -285,6 +285,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  background-size: 85%;
+  background-repeat: no-repeat;
+  background-position: center;
   line-height: 1;
   /* Ajuste de precisión quirúrgica al -5% para el centrado absoluto y simétrico de los glifos Unicode */
   transform: translateY(-5%);
