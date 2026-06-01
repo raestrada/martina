@@ -1671,50 +1671,130 @@ class BotsGame {
         ${stats.total > 0 ? `
         <div class="bots-dashboard-container">
           <div class="bots-stats-main-grid">
+            <!-- Card 1: Resumen General -->
             <div class="bots-stat-box box-primary">
-              <span class="box-label">HISTORIAL GENERAL</span>
-              <div class="box-stat-row">
-                <div class="box-stat-num"><strong>${stats.total}</strong><span>Partidas</span></div>
-                <div class="box-stat-num" style="color:#4ade80;"><strong>${stats.wins}</strong><span>Ganadas</span></div>
-                <div class="box-stat-num" style="color:#f87171;"><strong>${stats.losses}</strong><span>Perdidas</span></div>
-                <div class="box-stat-num" style="color:#fbbf24;"><strong>${stats.draws}</strong><span>Tablas</span></div>
+              <span class="box-label">Resumen General</span>
+              <div class="general-stats-layout">
+                <div class="stat-hero-col">
+                  <span class="hero-label">Total Jugadas</span>
+                  <div class="hero-number">${stats.total}</div>
+                </div>
+                <div class="stat-details-col">
+                  <div class="detail-pill pill-win">
+                    <span class="pill-dot"></span>
+                    <span class="pill-label">Ganadas</span>
+                    <span class="pill-val">${stats.wins}</span>
+                  </div>
+                  <div class="detail-pill pill-loss">
+                    <span class="pill-dot"></span>
+                    <span class="pill-label">Perdidas</span>
+                    <span class="pill-val">${stats.losses}</span>
+                  </div>
+                  <div class="detail-pill pill-draw">
+                    <span class="pill-dot"></span>
+                    <span class="pill-label">Tablas</span>
+                    <span class="pill-val">${stats.draws}</span>
+                  </div>
+                </div>
               </div>
               <div class="box-progress-wrapper">
-                <span class="progress-label">Efectividad General: <strong>${stats.winRate}%</strong></span>
-                <div class="progress-track"><div class="progress-fill" style="width: ${stats.winRate}%; background: linear-gradient(90deg, #f87171, #4ade80)"></div></div>
+                <div class="progress-info-row">
+                  <span class="progress-label">Efectividad de Victoria</span>
+                  <span class="progress-percentage">${stats.winRate}%</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill" style="width: ${stats.winRate}%;"></div>
+                </div>
               </div>
             </div>
             
+            <!-- Card 2: Estadísticas por Color -->
             <div class="bots-stat-box box-colors">
-              <span class="box-label">ESTADÍSTICAS POR COLOR</span>
+              <span class="box-label">Rendimiento por Color</span>
               <div class="color-stats-split">
-                <div class="color-stat-column">
-                  <div class="color-title">⚪ Blancas</div>
-                  <div class="color-metrics">
-                    <span class="metric-item">Juegos: <strong>${stats.totalWhite}</strong></span>
-                    <span class="metric-item">Récord: <strong style="color:#4ade80">${stats.winsWhite}G</strong> - <strong style="color:#f87171">${stats.lossesWhite}P</strong></span>
-                    <span class="metric-item">Efectividad: <strong style="color:#22d3ee">${stats.winRateWhite}%</strong></span>
+                <!-- Blancas -->
+                <div class="color-column white-theme-col">
+                  <div class="color-header-badge">
+                    <span class="color-badge-icon">⚪</span>
+                    <span class="color-badge-text">Blancas</span>
+                  </div>
+                  <div class="color-metrics-list">
+                    <div class="color-metric-row">
+                      <span>Partidas:</span>
+                      <strong>${stats.totalWhite}</strong>
+                    </div>
+                    <div class="color-metric-row">
+                      <span>Récord:</span>
+                      <strong class="color-record-text">
+                        <span class="txt-win">${stats.winsWhite}G</span>
+                        <span class="txt-sep">/</span>
+                        <span class="txt-loss">${stats.lossesWhite}P</span>
+                      </strong>
+                    </div>
+                    <div class="color-metric-row">
+                      <span>Efectividad:</span>
+                      <strong class="color-rate-text text-white-rate">${stats.winRateWhite}%</strong>
+                    </div>
                   </div>
                 </div>
+                
                 <div class="color-stat-divider"></div>
-                <div class="color-stat-column">
-                  <div class="color-title">⚫ Negras</div>
-                  <div class="color-metrics">
-                    <span class="metric-item">Juegos: <strong>${stats.totalBlack}</strong></span>
-                    <span class="metric-item">Récord: <strong style="color:#4ade80">${stats.winsBlack}G</strong> - <strong style="color:#f87171">${stats.lossesBlack}P</strong></span>
-                    <span class="metric-item">Efectividad: <strong style="color:#a78bfa">${stats.winRateBlack}%</strong></span>
+                
+                <!-- Negras -->
+                <div class="color-column black-theme-col">
+                  <div class="color-header-badge">
+                    <span class="color-badge-icon">⚫</span>
+                    <span class="color-badge-text">Negras</span>
+                  </div>
+                  <div class="color-metrics-list">
+                    <div class="color-metric-row">
+                      <span>Partidas:</span>
+                      <strong>${stats.totalBlack}</strong>
+                    </div>
+                    <div class="color-metric-row">
+                      <span>Récord:</span>
+                      <strong class="color-record-text">
+                        <span class="txt-win">${stats.winsBlack}G</span>
+                        <span class="txt-sep">/</span>
+                        <span class="txt-loss">${stats.lossesBlack}P</span>
+                      </strong>
+                    </div>
+                    <div class="color-metric-row">
+                      <span>Efectividad:</span>
+                      <strong class="color-rate-text text-black-rate">${stats.winRateBlack}%</strong>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             
+            <!-- Card 3: Análisis de Combates -->
             <div class="bots-stat-box box-insights">
-              <span class="box-label">ANÁLISIS DE COMBATES</span>
+              <span class="box-label">Análisis de Combates</span>
               <div class="insights-list">
-                <div class="insight-row"><span>Elo Promedio Rivales:</span><strong>${stats.averageElo}</strong></div>
-                <div class="insight-row"><span>Rango de Elos Jugados:</span><strong>${stats.lowestEloPlayed} - ${stats.highestEloPlayed}</strong></div>
-                <div class="insight-row"><span>Rival más Frecuente:</span><strong>${stats.mostPlayed}</strong></div>
-                ${stats.bestWin ? `<div class="insight-row best-win-highlight"><span>Mejor Victoria:</span><strong style="color:#fbbf24">vs ${stats.bestWin.botName} (${stats.bestWin.botElo})</strong></div>` : ''}
+                <div class="insight-row">
+                  <span class="insight-label-with-icon">📊 Elo Promedio Rivales</span>
+                  <strong class="insight-value-highlight">${stats.averageElo}</strong>
+                </div>
+                <div class="insight-row">
+                  <span class="insight-label-with-icon">⚖️ Rango de Elos</span>
+                  <strong class="insight-value-highlight">${stats.lowestEloPlayed} - ${stats.highestEloPlayed}</strong>
+                </div>
+                <div class="insight-row">
+                  <span class="insight-label-with-icon">🔥 Rival más Frecuente</span>
+                  <strong class="insight-value-highlight">${stats.mostPlayed}</strong>
+                </div>
+                ${stats.bestWin ? `
+                <div class="best-win-card">
+                  <div class="best-win-header">
+                    <span class="gold-trophy">🏆</span>
+                    <span class="best-win-title">Mejor Victoria</span>
+                  </div>
+                  <div class="best-win-body">
+                    <span class="best-win-opp">vs ${stats.bestWin.botName}</span>
+                    <span class="best-win-elo">ELO ${stats.bestWin.botElo}</span>
+                  </div>
+                </div>` : ''}
               </div>
             </div>
           </div>
