@@ -8,6 +8,10 @@ ogImage: /assets/img/mundo_magico_1778904597376.png
 ogTitle: El Pescador y el Elegante — Martina · Cuentos de Ajedrez
 ogDescription: Dos leyendas del ajedrez se enfrentan en un duelo épico. Aprende sobre zugzwang en este cuento mágico.
 activeNav: cuentos
+extraJs:
+  - /js/chess-board.js
+  - /js/chess-engine.js
+  - /js/chess-replayer.js
 prevCuento:
   url: /cuentos/06-la-jugada-invisible.html
   title: "La Jugada Invisible"
@@ -596,7 +600,7 @@ nextCuento:
         Este cuento relata el espíritu del legendario <strong>"Match del Siglo"</strong> (Reikiavik, 1972) entre el excéntrico genio estadounidense Bobby Fischer ("El Pescador") y el caballero soviético Boris Spassky ("El Elegante"). En la histórica <strong>Partida 6</strong>, Fischer jugó de manera tan brillante e impecable que Spassky, en un acto de deportividad sin precedentes en un campeonato mundial, se puso de pie y aplaudió a su rival. ¡Revive la magia reproduciendo esa misma partida real!
       </p>
       <div class="chess-diagram-container" style="text-align: center;">
-        <iframe src="https://lichess.org/embed/iH47Xyd5?theme=auto&bg=auto" width="100%" height="400" frameborder="0" style="max-width: 600px; border-radius: var(--radius); box-shadow: var(--shadow-hover);"></iframe>
+        <div class="chess-replayer-container" data-story-id="7"></div>
       </div>
     </div>
 

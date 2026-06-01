@@ -8,6 +8,10 @@ ogImage: /assets/img/tomas_erizo_1778905884457.png
 ogTitle: Tic, Tac, Jaque Mate — Martina · Cuentos de Ajedrez
 ogDescription: Acompaña a Martina en su primer torneo escolar con reloj y aprende cómo ejecutar el famoso Mate de Boden.
 activeNav: cuentos
+extraJs:
+  - /js/chess-board.js
+  - /js/chess-engine.js
+  - /js/chess-replayer.js
 prevCuento:
   url: /cuentos/01-el-primer-movimiento.html
   title: "El Primer Movimiento"
@@ -393,7 +397,7 @@ nextCuento:
         El increíble jaque mate en forma de cruz que Martina ejecutó bajo la presión del reloj se llama el <strong>Mate de Boden</strong>. Fue jugado por primera vez en 1853 en Londres por Samuel Boden contra su rival Schulder. Ocurre cuando dos alfiles cortan el tablero en "X" mientras el rey enemigo está atrapado por sus propias piezas. ¡Dale play y mira cómo lo hizo el verdadero Boden!
       </p>
       <div class="chess-diagram-container" style="text-align: center;">
-        <iframe src="https://lichess.org/embed/iPmtfplJ?theme=auto&bg=auto#30" width="100%" height="400" frameborder="0" style="max-width: 600px; border-radius: var(--radius); box-shadow: var(--shadow-hover);"></iframe>
+        <div class="chess-replayer-container" data-story-id="2"></div>
       </div>
     </div>
 

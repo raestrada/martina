@@ -8,6 +8,10 @@ ogImage: /assets/img/peoncito_1778904557723.png
 ogTitle: La Coronación de Peoncito — Martina · Cuentos de Ajedrez
 ogDescription: Peoncito por fin llega a la octava fila. Aprende sobre la coronación del peón en este mágico cuento.
 activeNav: cuentos
+extraJs:
+  - /js/chess-board.js
+  - /js/chess-engine.js
+  - /js/chess-replayer.js
 prevCuento:
   url: /cuentos/04-el-caballo-salvaje.html
   title: "El Caballo Salvaje"
@@ -724,7 +728,7 @@ nextCuento:
         En el ajedrez, casi todos los peones que llegan a la octava fila eligen convertirse en dama, porque es la pieza más poderosa. Pero a veces, la posición necesita algo distinto. Esto se conoce como <strong>subcoronación</strong> (underpromotion). ¡Reproduce esta increíble partida donde elegir a un caballo de luz en vez de una poderosa dama fue la única jugada ganadora!
       </p>
       <div class="chess-diagram-container" style="text-align: center;">
-        <iframe src="https://lichess.org/embed/zs6M9i64?theme=auto&bg=auto" width="100%" height="400" frameborder="0" style="max-width: 600px; border-radius: var(--radius); box-shadow: var(--shadow-hover);"></iframe>
+        <div class="chess-replayer-container" data-story-id="5"></div>
       </div>
     </div>
 

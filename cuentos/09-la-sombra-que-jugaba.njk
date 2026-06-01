@@ -8,6 +8,10 @@ ogImage: /assets/img/mundo_magico_1778904597376.png
 ogTitle: La Sombra que Jugaba — Martina · Cuentos de Ajedrez
 ogDescription: Algo oscuro despierta en el reino. Una sombra que juega sin reglas desafía a Martina.
 activeNav: cuentos
+extraJs:
+  - /js/chess-board.js
+  - /js/chess-engine.js
+  - /js/chess-replayer.js
 prevCuento:
   url: /cuentos/08-el-relampago-y-el-vikingo.html
   title: "El Relámpago y el Vikingo"
@@ -488,7 +492,7 @@ nextCuento:
         Martina vence a la sombra tramposa usando las mismas jugadas de la famosa <strong>"Partida Inmortal"</strong> jugada entre Adolf Anderssen y Lionel Kieseritzky en Londres, 1851. Esta partida es legendaria porque las blancas sacrificaron casi todo su ejército (un alfil, dos torres y la dama) para dar un jaque mate espectacular con solo tres piezas menores. ¡Repasa esta joya del ataque y la iniciativa!
       </p>
       <div class="chess-diagram-container" style="text-align: center;">
-        <iframe src="https://lichess.org/embed/NpAbH51e?theme=auto&bg=auto" width="100%" height="400" frameborder="0" style="max-width: 600px; border-radius: var(--radius); box-shadow: var(--shadow-hover);"></iframe>
+        <div class="chess-replayer-container" data-story-id="9"></div>
       </div>
     </div>
 

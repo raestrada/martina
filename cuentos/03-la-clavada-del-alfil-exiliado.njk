@@ -8,6 +8,10 @@ ogImage: /assets/img/alfil_exiliado_1778944848314.png
 ogTitle: La Clavada del Alfil Exiliado — Martina · Cuentos de Ajedrez
 ogDescription: Martina y el Alfil Exiliado se enfrentan en un duelo de clavadas con la legendaria partida de Paul Morphy.
 activeNav: cuentos
+extraJs:
+  - /js/chess-board.js
+  - /js/chess-engine.js
+  - /js/chess-replayer.js
 prevCuento:
   url: /cuentos/02-tic-tac-jaque-mate.html
   title: "Tic, Tac, Jaque Mate"
@@ -609,7 +613,7 @@ nextCuento:
         La clavada perfecta de Martina y su espectacular sacrificio de torre no son magia inventada. En 1858, el genio estadounidense <strong>Paul Morphy</strong> jugó esta misma partida (conocida como la <em>Partida de la Ópera</em>) contra un Duque y un Conde a la vez, ¡mientras veían una ópera en un teatro de París! Es considerada una de las partidas más hermosas de todos los tiempos. Reprodúcela jugada a jugada:
       </p>
       <div class="chess-diagram-container" style="text-align: center;">
-        <iframe src="https://lichess.org/embed/OpnzUJ9v?theme=auto&bg=auto" width="100%" height="400" frameborder="0" style="max-width: 600px; border-radius: var(--radius); box-shadow: var(--shadow-hover);"></iframe>
+        <div class="chess-replayer-container" data-story-id="3"></div>
       </div>
     </div>
 

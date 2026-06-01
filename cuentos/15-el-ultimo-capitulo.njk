@@ -8,6 +8,10 @@ ogImage: /assets/img/martina_sombra_split_1780000000000.png
 ogTitle: El Último Capítulo — Martina · Cuentos de Ajedrez
 ogDescription: La Sombra escribe la última página. Martina entrena para el torneo que lo cambiará todo.
 activeNav: cuentos
+extraJs:
+  - /js/chess-board.js
+  - /js/chess-engine.js
+  - /js/chess-replayer.js
 prevCuento:
   url: /cuentos/14-hielo-que-quema.html
   title: "Hielo que Quema"
@@ -403,7 +407,7 @@ nextCuento:
         Entrenar contra estilos opuestos en una <strong>partida doble</strong> ayuda a desarrollar una tremenda <strong>adaptabilidad táctica</strong>. Para enfrentar a un rival tramposo debemos ser posicionales y sólidos, mientras que para sorprender a un genio de cálculo preciso debemos ser creativos y buscar amenazas dobles. Reproduce esta lección interactiva sobre cómo responder a amenazas complejas y encontrar recursos de doble filo que salven la partida ante cualquier estilo de oponente.
       </p>
       <div class="chess-diagram-container" style="text-align: center;">
-        <iframe src="https://lichess.org/study/embed/E9kY9bXx?theme=auto&bg=auto" width="100%" height="400" frameborder="0" style="max-width: 600px; border-radius: var(--radius); box-shadow: var(--shadow-hover);"></iframe>
+        <div class="chess-replayer-container" data-story-id="15"></div>
       </div>
     </div>
 

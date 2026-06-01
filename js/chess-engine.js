@@ -262,5 +262,117 @@
     return color === 'w' ? score : -score;
   };
 
+  CE.pgnToMoves = function(pgnString) {
+    if (!pgnString) return [];
+    // Remove headers [Event ...]
+    let cleaned = pgnString.replace(/\[[^\]]*\]/g, '');
+    // Remove comments { ... }
+    cleaned = cleaned.replace(/\{[^\}]*\}/g, '');
+    // Remove variations ( ... ) recursively
+    while (cleaned.includes('(') && cleaned.includes(')')) {
+      cleaned = cleaned.replace(/\([^\)]*\)/g, '');
+    }
+    // Remove move numbers (e.g., "1. ", "1...", "2. ")
+    cleaned = cleaned.replace(/\d+\.+\s*/g, '');
+    // Remove results like "1-0", "0-1", "1/2-1/2", "*"
+    cleaned = cleaned.replace(/(1-0|0-1|1\/2-1\/2|\*)/g, '');
+    // Split by whitespace to get individual SAN moves
+    const tokens = cleaned.trim().split(/\s+/).filter(x => x.length > 0);
+    return tokens;
+  };
+
+  CE.sanToUCI = function(fen, san) {
+    if (!san) return null;
+    const cleanSan = san.replace(/[+#?!]/g, '').trim();
+    const turn = fen.split(' ')[1] || 'w';
+
+    // Handle castling
+    if (cleanSan === 'O-O' || cleanSan === '0-0') {
+      return turn === 'w' ? 'e1g1' : 'e8g8';
+    }
+    if (cleanSan === 'O-O-O' || cleanSan === '0-0-0') {
+      return turn === 'w' ? 'e1c1' : 'e8c8';
+    }
+
+    const legalMoves = CE.getAllLegalMoves(fen, turn);
+    const board = CE.parseFEN(fen);
+
+    // Identify destination square (last two characters, e.g. e4, f7, a1)
+    let dest = '';
+    let promo = '';
+    let match = cleanSan.match(/([a-h][1-8])(?:=?([QRNBRqnbr]))?$/);
+    if (match) {
+      dest = match[1];
+      promo = match[2] ? match[2].toLowerCase() : '';
+    } else {
+      return null;
+    }
+
+    let rest = cleanSan.slice(0, cleanSan.length - dest.length - (promo ? (cleanSan.includes('=') ? 2 : 1) : 0));
+    if (rest.endsWith('x')) {
+      rest = rest.slice(0, -1);
+    }
+
+    let pieceChar = 'P'; // Default is Pawn
+    let disambigFile = '';
+    let disambigRank = '';
+
+    if (rest.length > 0) {
+      const first = rest[0];
+      if ('NBRQK'.includes(first)) {
+        pieceChar = first;
+        rest = rest.slice(1);
+      } else if ('ACRDT'.includes(first)) {
+        const map = { 'R': 'K', 'D': 'Q', 'T': 'R', 'A': 'B', 'C': 'N' };
+        pieceChar = map[first];
+        rest = rest.slice(1);
+      }
+
+      for (const char of rest) {
+        if (char >= 'a' && char <= 'h') disambigFile = char;
+        if (char >= '1' && char <= '8') disambigRank = char;
+      }
+    }
+
+    for (const uci of legalMoves) {
+      const fromSq = uci.substring(0, 2);
+      const toSq = uci.substring(2, 4);
+      const p = uci.length > 4 ? uci[4] : '';
+
+      if (toSq !== dest) continue;
+      if (promo && p !== promo) continue;
+
+      const fromC = fromSq.charCodeAt(0) - 97;
+      const fromR = 8 - parseInt(fromSq[1]);
+      const boardPiece = board[fromR][fromC];
+      if (!boardPiece) continue;
+      if (boardPiece.toUpperCase() !== pieceChar) continue;
+
+      if (disambigFile && fromSq[0] !== disambigFile) continue;
+      if (disambigRank && fromSq[1] !== disambigRank) continue;
+
+      return uci;
+    }
+
+    return null;
+  };
+
+  CE.playPGN = function(pgnString, startFen) {
+    const sans = CE.pgnToMoves(pgnString);
+    let fen = startFen || 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+    const history = [{ fen, uci: '', san: 'Posición Inicial' }];
+
+    for (const san of sans) {
+      const uci = CE.sanToUCI(fen, san);
+      if (!uci) {
+        console.error("Could not parse SAN move:", san, "at FEN:", fen);
+        break;
+      }
+      fen = CE.executeMoveRaw(fen, uci);
+      history.push({ fen, uci, san });
+    }
+    return history;
+  };
+
   window.ChessEngine = CE;
 })();

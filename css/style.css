@@ -1594,3 +1594,233 @@ img[loading="lazy"].loaded {
   transform: translateY(-2px);
   box-shadow: var(--shadow-hover);
 }
+
+/* === CHESS REPLAYER PREMIUM STYLES === */
+.chess-replayer-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 2.5rem auto;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--board-dark);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.chess-replayer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.replayer-main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (min-width: 768px) {
+  .replayer-main {
+    grid-template-columns: 1.2fr 1fr;
+  }
+}
+
+.replayer-board-wrapper {
+  aspect-ratio: 1;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border: 4px solid var(--board-dark);
+  outline: none;
+}
+
+.replayer-board-wrapper:focus-visible {
+  border: 4px solid var(--gold);
+  box-shadow: 0 0 20px var(--gold);
+}
+
+.replayer-board {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 100%;
+}
+
+.chess-sq {
+  width: 12.5%;
+  height: 12.5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  aspect-ratio: 1;
+  box-sizing: border-box;
+}
+
+.chess-pc {
+  width: 100%;
+  height: 100%;
+  background-size: 85%;
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.bots-pc-moved {
+  animation: botsPieceMoved 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes botsPieceMoved {
+  from {
+    transform: scale(0.6);
+    filter: brightness(1.35);
+  }
+  to {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+.replayer-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 380px;
+  background: var(--board-dark);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.replayer-game-info {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+
+.replayer-move-indicator {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.8rem;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.replayer-active-move {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--warm-white);
+  margin-top: 0.25rem;
+}
+
+.replayer-moves-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 0.75rem 1rem;
+  max-height: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.replayer-moves-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.replayer-moves-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.replayer-move-row {
+  display: grid;
+  grid-template-columns: 40px 1fr 1fr;
+  align-items: center;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.95rem;
+  color: var(--board-light);
+}
+
+.replayer-move-num {
+  opacity: 0.5;
+  font-weight: 600;
+}
+
+.replayer-move-item {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  text-align: left;
+}
+
+.replayer-move-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--warm-white);
+}
+
+.replayer-move-item.active {
+  background: var(--gold);
+  color: var(--magic-dark) !important;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+  font-weight: 800;
+}
+
+.replayer-controls {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: rgba(0, 0, 0, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.replayer-btn {
+  background: none;
+  border: none;
+  color: var(--board-light);
+  font-size: 1.25rem;
+  padding: 0.85rem 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+}
+
+.replayer-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--warm-white);
+  transform: scale(1.08);
+}
+
+.replayer-btn:active {
+  transform: scale(0.95);
+}
+
+.replayer-btn.btn-play {
+  color: var(--gold);
+  font-size: 1.4rem;
+}
+
+.replayer-btn.btn-play.playing {
+  color: var(--rose) !important;
+  animation: pulsePlay 1.5s infinite alternate;
+}
+
+@keyframes pulsePlay {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
+}

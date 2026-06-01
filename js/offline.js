@@ -39,7 +39,7 @@
     return mb >= 1 ? Math.round(mb) + ' MB' : Math.round(mb * 10) / 10 + ' MB';
   }
 
-  var SHELL_KEY = 'martina-shell-cached-v5';
+  var SHELL_KEY = 'martina-shell-cached-v7';
   var isShellCached = localStorage.getItem(SHELL_KEY) === 'true';
 
   // ---- SW registration ----

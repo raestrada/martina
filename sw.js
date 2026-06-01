@@ -1,7 +1,7 @@
-// Martina PWA — Service Worker v5
+// Martina PWA — Service Worker v7
 // Network-first strategy. Cache is offline fallback only.
 // 3-tier caching: shell (auto) + images (auto) + videos (on-demand)
-const VERSION = '5';
+const VERSION = '7';
 const CACHE_SHELL = `martina-shell-v${VERSION}`;
 const CACHE_IMAGES = `martina-images-v${VERSION}`;
 const CACHE_VIDEOS = `martina-videos-v${VERSION}`;
@@ -59,6 +59,7 @@ const GAME_JS_URLS = [
   '/js/games/torreta.js',
   '/js/chess-engine.js',
   '/js/chess-board.js',
+  '/js/chess-replayer.js',
   '/js/games/bots.js',
   '/js/stockfish.js',
   '/js/stockfish.wasm',
@@ -200,6 +201,9 @@ self.addEventListener('fetch', event => {
   // Only handle same-origin requests
   if (url.origin !== self.location.origin) return;
 
+  // Ignore Service Worker script itself and non-GET requests
+  if (url.pathname === '/sw.js' || event.request.method !== 'GET') return;
+
   const path = url.pathname;
 
   // Videos: network-first with dedicated videos cache
@@ -221,9 +225,9 @@ self.addEventListener('fetch', event => {
 async function networkFirst(request, cacheName) {
   try {
     const response = await fetch(request);
-    if (response && response.ok) {
+    if (response && response.ok && response.status !== 206) {
       const cache = await caches.open(cacheName);
-      cache.put(request, response.clone());
+      await cache.put(request, response.clone());
     }
     return response;
   } catch (e) {
