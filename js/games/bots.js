@@ -1713,6 +1713,8 @@ class BotsGame {
       card.addEventListener('click', () => this.showVSIntro(idx));
       grid.appendChild(card);
     });
+  }
+
   playVSIntroMusic() {
     this.stopVSIntroMusic();
     const ctx = this._resumeAudio();
