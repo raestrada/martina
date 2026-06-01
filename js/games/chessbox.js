@@ -6447,9 +6447,9 @@ class ChessBoxGame {
     boardDOM.innerHTML = '';
 
     const board = ChessEngine.parseFEN(this.chessFEN);
-    const sym = {
-      'K':'♔','Q':'♕','R':'♖','B':'♗','N':'♘','P':'♙',
-      'k':'♚','q':'♛','r':'♜','b':'♝','n':'♞','p':'♟'
+    const pieceMap = {
+      'K': 'wK', 'Q': 'wQ', 'R': 'wR', 'B': 'wB', 'N': 'wN', 'P': 'wP',
+      'k': 'bK', 'q': 'bQ', 'r': 'bR', 'b': 'bB', 'n': 'bN', 'p': 'bP'
     };
 
     const legalMoves = ChessEngine.getAllLegalMoves(this.chessFEN, 'w');
@@ -6473,13 +6473,7 @@ class ChessBoxGame {
         if (piece) {
           const pieceEl = document.createElement('div');
           pieceEl.className = 'chess-piece';
-          pieceEl.textContent = sym[piece] || '';
-          pieceEl.style.color = piece === piece.toUpperCase() ? '#ffffff' : '#0a0a0a';
-          pieceEl.style.textShadow = piece === piece.toUpperCase()
-            ? '-1px -1px 0 #1a1a2e, 1px -1px 0 #1a1a2e, -1px 1px 0 #1a1a2e, 1px 1px 0 #1a1a2e, 0 3px 6px rgba(0,0,0,0.5)'
-            : '-1px -1px 0 #e2e8f0, 1px -1px 0 #e2e8f0, -1px 1px 0 #e2e8f0, 1px 1px 0 #e2e8f0, 0 2px 4px rgba(0,0,0,0.3)';
-          pieceEl.style.fontSize = '2.6rem';
-          pieceEl.style.fontWeight = '700';
+          pieceEl.style.backgroundImage = `url('/assets/img/pieces/${pieceMap[piece]}.svg')`;
           square.appendChild(pieceEl);
         }
 

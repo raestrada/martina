@@ -615,6 +615,7 @@ class BotsGame {
     this._speakQueue = null;
     this._speaking = false;
     this._lastCmtText = '';
+    this.board = null;
 
     this._init();
   }
@@ -876,126 +877,33 @@ class BotsGame {
 
   // ========== BOARD RENDERING ==========
   showMovePopup(uciMove) {
-    // Remove all existing popups with fade
-    document.querySelectorAll('.bots-popup').forEach(p => {
-      p.style.animation = 'botsPopupOut 0.3s ease-in forwards';
-      setTimeout(() => p.remove(), 350);
-    });
-
-    const ann = this.moveAnnotations[uciMove];
-    if (!ann) return;
-
-    const dest = uciMove.substring(2, 4);
-    const board = document.getElementById('bots-board');
-    if (!board) return;
-
-    const file = dest.charCodeAt(0) - 97;
-    const rank = 8 - parseInt(dest[1]);
-    const boardRect = board.getBoundingClientRect();
-    const sqSize = boardRect.width / 8;
-    const x = boardRect.left + (file + 1) * sqSize - 6;
-    const y = boardRect.top + rank * sqSize + 3;
-
-    const popup = document.createElement('div');
-    popup.className = 'bots-popup';
-    popup.textContent = ann;
-    popup.style.cssText = `
-      position: fixed;
-      left: ${x}px;
-      top: ${y}px;
-      transform: translate(-100%, 0) scale(0);
-      font-size: 0.8rem;
-      z-index: 999;
-      pointer-events: none;
-      animation: botsPopupIn 0.3s ease-out forwards;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-      line-height: 1;
-      font-weight: 900;
-    `;
-
-    document.body.appendChild(popup);
+    if (!this.board) return;
+    this.board.showPopup(uciMove, this.moveAnnotations[uciMove] || null);
   }
 
   renderChessBoard() {
-    const boardDOM = document.getElementById('bots-board');
-    if (!boardDOM) return;
-    boardDOM.innerHTML = '';
-
-    const bot = this.selectedBot;
-    const bl = bot.boardLight || '#e8d5b7';
-    const bd = bot.boardDark || '#7c5c3e';
-
-    const board = ChessEngine.parseFEN(this.chessFEN);
-    const pieceMap = {
-      'K': 'wK', 'Q': 'wQ', 'R': 'wR', 'B': 'wB', 'N': 'wN', 'P': 'wP',
-      'k': 'bK', 'q': 'bQ', 'r': 'bR', 'b': 'bB', 'n': 'bN', 'p': 'bP'
-    };
-
-    const parts = this.chessFEN.split(' ');
-    const turn = parts[1] || 'w';
-
-    for (let r = 0; r < 8; r++) {
-      for (let c = 0; c < 8; c++) {
-        const square = document.createElement('div');
-        const light = (r + c) % 2 === 0;
-        const coord = `${String.fromCharCode(97 + c)}${8 - r}`;
-
-        square.className = 'bots-chess-sq';
-        square.style.backgroundColor = light ? bl : bd;
-        square.setAttribute('data-coord', coord);
-
-        const piece = board[r][c];
-        if (piece) {
-          const pieceEl = document.createElement('div');
-          pieceEl.className = 'bots-chess-pc';
-          pieceEl.style.backgroundImage = `url('/assets/img/pieces/${pieceMap[piece]}.svg')`;
-          square.appendChild(pieceEl);
-        }
-
-        if (this.lastChessMove) {
-          if (coord === this.lastChessMove.from || coord === this.lastChessMove.to) {
-            const isFrom = coord === this.lastChessMove.from;
-            const pct = isFrom ? 0.25 : 0.45;
-            const r = parseInt(bot.color.slice(1,3), 16);
-            const g = parseInt(bot.color.slice(3,5), 16);
-            const b2 = parseInt(bot.color.slice(5,7), 16);
-            square.style.background = `linear-gradient(rgba(${r},${g},${b2},${pct}), rgba(${r},${g},${b2},${pct})), ${light ? bl : bd}`;
-          }
-        }
-
-        square.addEventListener('click', () => this.handleSquareClick(r, c));
-        boardDOM.appendChild(square);
-      }
-    }
+    if (!this.board) return;
+    this.board.setColors(this.selectedBot.boardLight, this.selectedBot.boardDark);
+    this.board.setLastMove(this.lastChessMove?.from, this.lastChessMove?.to, this.selectedBot.color);
+    this.board.render(this.chessFEN);
   }
 
   clearHighlights() {
-    const squares = document.querySelectorAll('#bots-board .bots-chess-sq');
-    squares.forEach(sq => {
-      sq.style.boxShadow = '';
-      sq.style.outline = '';
-    });
+    if (this.board) this.board.clearHighlights();
   }
 
-  handleSquareClick(r, c) {
+  handleSquareClick(r, c, coord, piece) {
     const parts = this.chessFEN.split(' ');
     const turn = parts[1] || 'w';
     if (turn !== 'w' || this.isThinking || !this.gameActive) return;
 
-    const board = ChessEngine.parseFEN(this.chessFEN);
-    const piece = board[r][c];
-    const file = String.fromCharCode(97 + c);
-    const rank = 8 - r;
-    const coord = `${file}${rank}`;
-
-    this.clearHighlights();
+    this.board.clearHighlights();
 
     if (this.selectedSquare) {
       const fromCoord = this.selectedSquare.coord;
       const uciMove = fromCoord + coord;
       const validMoves = ChessEngine.getAllLegalMoves(this.chessFEN, 'w');
       const targetMove = validMoves.find(m => m.substring(0, 4) === uciMove.substring(0, 4));
-
       if (targetMove) {
         this.executeChessMove(targetMove, true);
         this.selectedSquare = null;
@@ -1006,21 +914,9 @@ class BotsGame {
 
     if (piece && piece === piece.toUpperCase()) {
       this.selectedSquare = { r, c, coord };
-      const sq = document.querySelector(`#bots-board .bots-chess-sq[data-coord="${coord}"]`);
-      if (sq) sq.style.outline = '3px solid #fbbf24';
-
+      this.board.setSelected(coord);
       const moves = ChessEngine.getAllLegalMoves(this.chessFEN, 'w');
-      moves.forEach(m => {
-        if (m.substring(0, 2) === coord) {
-          const dest = m.substring(2, 4);
-          const destSq = document.querySelector(`#bots-board .bots-chess-sq[data-coord="${dest}"]`);
-          if (destSq) {
-            const hasPiece = destSq.querySelector('.bots-chess-pc');
-            const highlightColor = hasPiece ? 'rgba(239,68,68,0.55)' : 'rgba(74,222,128,0.35)';
-            destSq.style.boxShadow = `inset 0 0 0 4px ${highlightColor}`;
-          }
-        }
-      });
+      this.board.showLegalMoves(moves, coord);
     }
   }
 
@@ -1728,6 +1624,16 @@ class BotsGame {
         btn.textContent = this.voiceEnabled ? '🗣️' : '🔈';
         btn.title = this.voiceEnabled ? 'Silenciar voz' : 'Activar voz';
       }
+    });
+
+    // Initialize shared chess board
+    this.board = new ChessBoard({
+      containerId: 'bots-board',
+      squareClass: 'bots-chess-sq',
+      pieceClass: 'bots-chess-pc',
+      popupClass: 'bots-popup',
+      lightColor: bl, darkColor: bd,
+      onSquareClick: (r, c, coord, piece) => this.handleSquareClick(r, c, coord, piece)
     });
 
     this.renderChessBoard();
