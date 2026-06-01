@@ -1458,11 +1458,13 @@ class BotsGame {
         }, 300);
       }, 350);
     } else {
-      this.renderChessBoard();
-      this.showMovePopup(uciMove);
-      this.updateHistoryDisplay();
-      this.updateCapturedDisplay();
-      this.updateCommentary();
+      requestAnimationFrame(() => {
+        this.renderChessBoard();
+        this.showMovePopup(uciMove);
+        this.updateHistoryDisplay();
+        this.updateCapturedDisplay();
+        this.updateCommentary();
+      });
     }
 
     const newParts = this.chessFEN.split(' ');
