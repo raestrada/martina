@@ -41,7 +41,8 @@ class ChessBoard {
         const piece = board[r][c];
         if (piece) {
           const el = document.createElement('div');
-          el.className = this.pieceClass;
+          const isMovedPiece = this._lastMove && coord === this._lastMove.to;
+          el.className = isMovedPiece ? `${this.pieceClass} bots-pc-moved` : this.pieceClass;
           el.style.backgroundImage = `url('/assets/img/pieces/${pieceMap[piece]}.svg')`;
           square.appendChild(el);
         }
@@ -54,6 +55,13 @@ class ChessBoard {
             const gv = parseInt(this._accentColor.slice(3,5), 16);
             const bv = parseInt(this._accentColor.slice(5,7), 16);
             square.style.background = `linear-gradient(rgba(${rv},${gv},${bv},${pct}), rgba(${rv},${gv},${bv},${pct})), ${light ? this.lightColor : this.darkColor}`;
+            
+            // Bordes glow de alta visibilidad para que resalte exactamente de dónde y hacia dónde se movió la pieza
+            if (isFrom) {
+              square.style.boxShadow = 'inset 0 0 0 3px rgba(255, 255, 255, 0.45), inset 0 0 15px rgba(0, 0, 0, 0.2)';
+            } else {
+              square.style.boxShadow = `inset 0 0 0 4px ${this._accentColor}, 0 0 12px ${this._accentColor}66`;
+            }
           }
         }
 

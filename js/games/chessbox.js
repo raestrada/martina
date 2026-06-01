@@ -2233,6 +2233,91 @@ class ChessBoxGame {
 
   // --- INIT STOCKFISH WEB WORKER WITH CORS-BYPASS ---
 
+  getEngineConfig(elo) {
+    if (elo <= 400) {
+      return {
+        limitStrength: false,
+        skillLevel: 0,
+        depth: 1,
+        blunderRate: 0.18,
+        minDelay: 800,
+        maxDelay: 1800,
+        searchCmd: 'go depth 1'
+      };
+    } else if (elo <= 600) {
+      return {
+        limitStrength: false,
+        skillLevel: 0,
+        depth: 2,
+        blunderRate: 0.10,
+        minDelay: 800,
+        maxDelay: 2000,
+        searchCmd: 'go depth 2'
+      };
+    } else if (elo <= 800) {
+      return {
+        limitStrength: false,
+        skillLevel: 0,
+        depth: 3,
+        blunderRate: 0.06,
+        minDelay: 1000,
+        maxDelay: 2200,
+        searchCmd: 'go depth 3'
+      };
+    } else if (elo <= 1000) {
+      return {
+        limitStrength: false,
+        skillLevel: 1,
+        depth: 4,
+        blunderRate: 0.03,
+        minDelay: 1000,
+        maxDelay: 2500,
+        searchCmd: 'go depth 4'
+      };
+    } else if (elo <= 1200) {
+      return {
+        limitStrength: false,
+        skillLevel: 2,
+        depth: 5,
+        blunderRate: 0.01,
+        minDelay: 1200,
+        maxDelay: 2800,
+        searchCmd: 'go depth 5'
+      };
+    } else if (elo < 1350) {
+      return {
+        limitStrength: false,
+        skillLevel: 3,
+        depth: 6,
+        blunderRate: 0.0,
+        minDelay: 1200,
+        maxDelay: 3000,
+        searchCmd: 'go depth 6'
+      };
+    } else if (elo >= 2600) {
+      return {
+        limitStrength: false,
+        skillLevel: 20,
+        depth: null,
+        blunderRate: 0.0,
+        minDelay: 0,
+        maxDelay: 0,
+        searchCmd: 'go movetime 1500'
+      };
+    } else {
+      return {
+        limitStrength: true,
+        elo: elo,
+        skillLevel: null,
+        depth: null,
+        blunderRate: 0.0,
+        minDelay: 0,
+        maxDelay: 0,
+        searchCmd: 'go movetime 1200'
+      };
+    }
+  }
+
   initStockfishWorker() {
     this.destroyWorker();
 
@@ -2241,15 +2326,28 @@ class ChessBoxGame {
       this.engineType = 'stockfish';
 
       const currentLevel = this.levels[this.currentLevelIndex];
-      let skillLevel = Math.min(20, Math.max(1, Math.round(1 + ((currentLevel.elo - 400) / 2400) * 19)));
+      let elo = currentLevel ? currentLevel.elo : 1000;
 
-      if (this.selectedDifficulty === 'easy') skillLevel = Math.max(1, skillLevel - 3);
-      if (this.selectedDifficulty === 'hard') skillLevel = Math.min(20, skillLevel + 3);
-      if (this.selectedDifficulty === 'martina') skillLevel = 20;
+      if (this.selectedDifficulty === 'easy') {
+        elo = Math.max(400, elo - 150);
+      } else if (this.selectedDifficulty === 'hard') {
+        elo = Math.min(2800, elo + 150);
+      } else if (this.selectedDifficulty === 'martina') {
+        elo = 2800;
+      }
+
+      const config = this.getEngineConfig(elo);
 
       this.stockfishWorker.postMessage('uci');
       this.stockfishWorker.postMessage('isready');
-      this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
+
+      if (config.limitStrength) {
+        this.stockfishWorker.postMessage('setoption name UCI_LimitStrength value true');
+        this.stockfishWorker.postMessage(`setoption name UCI_Elo value ${config.elo}`);
+      } else {
+        this.stockfishWorker.postMessage('setoption name UCI_LimitStrength value false');
+        this.stockfishWorker.postMessage(`setoption name Skill Level value ${config.skillLevel}`);
+      }
     } catch (err) {
       console.warn('Stockfish worker creation failed, using local engine.', err);
       this.engineType = 'local';
@@ -6472,7 +6570,8 @@ class ChessBoxGame {
         const piece = board[r][c];
         if (piece) {
           const pieceEl = document.createElement('div');
-          pieceEl.className = 'chess-piece';
+          const isMovedPiece = this.lastChessMove && coord === this.lastChessMove.to;
+          pieceEl.className = isMovedPiece ? 'chess-piece chess-piece-moved' : 'chess-piece';
           pieceEl.style.backgroundImage = `url('/assets/img/pieces/${pieceMap[piece]}.svg')`;
           square.appendChild(pieceEl);
         }
@@ -6480,7 +6579,15 @@ class ChessBoxGame {
         // Highlight last move
         if (this.lastChessMove) {
           if (coord === this.lastChessMove.from || coord === this.lastChessMove.to) {
+            const isFrom = coord === this.lastChessMove.from;
             square.style.backgroundColor = (r + c) % 2 === 0 ? '#c8d45a' : '#a8b440';
+            
+            // Glow y sombras de alta visibilidad para Chess Boxing
+            if (isFrom) {
+              square.style.boxShadow = 'inset 0 0 0 3px rgba(255, 255, 255, 0.45)';
+            } else {
+              square.style.boxShadow = 'inset 0 0 0 4px #fbbf24, 0 0 12px rgba(251, 191, 36, 0.65)';
+            }
           }
         }
 
@@ -6596,7 +6703,6 @@ class ChessBoxGame {
     }
   }
 
-  // --- TRIGGER ENGINE STOCKFISH OR FALLBACK LOCAL MOVE ---
   triggerEngineTurn() {
     this.isThinking = true;
     const level = this.levels[this.currentLevelIndex];
@@ -6604,18 +6710,51 @@ class ChessBoxGame {
     this.updateStatus(`${name} está pensando... 🤔`);
 
     if (this.engineType === 'stockfish' && this.stockfishWorker) {
+      let elo = level ? level.elo : 1000;
+      if (this.selectedDifficulty === 'easy') {
+        elo = Math.max(400, elo - 150);
+      } else if (this.selectedDifficulty === 'hard') {
+        elo = Math.min(2800, elo + 150);
+      } else if (this.selectedDifficulty === 'martina') {
+        elo = 2800;
+      }
+
+      const config = this.getEngineConfig(elo);
+
       // Send FEN to Stockfish Web Worker
       this.stockfishWorker.postMessage(`position fen ${this.chessFEN}`);
-      this.stockfishWorker.postMessage('go movetime 1200');
+      this.stockfishWorker.postMessage(config.searchCmd);
+
+      const startTime = Date.now();
 
       this.stockfishWorker.onmessage = (e) => {
         const line = e.data;
         if (line.includes('bestmove')) {
           const parts = line.split(' ');
-          const move = parts[1];
+          let move = parts[1];
           this.isThinking = false;
           if (move && move !== '(none)') {
-            this.executeChessMove(move, false);
+            const isBlunder = Math.random() < config.blunderRate;
+            if (isBlunder) {
+              const validMoves = ChessEngine.getAllLegalMoves(this.chessFEN, 'b');
+              if (validMoves.length > 0) {
+                const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+                move = randomMove;
+              }
+            }
+
+            let delay = 0;
+            if (config.minDelay > 0) {
+              const elapsedTime = Date.now() - startTime;
+              const targetDelay = config.minDelay + Math.random() * (config.maxDelay - config.minDelay);
+              delay = Math.max(0, targetDelay - elapsedTime);
+            }
+
+            setTimeout(() => {
+              if (this.gameActive) {
+                this.executeChessMove(move, false);
+              }
+            }, delay);
           }
         }
       };

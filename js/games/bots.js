@@ -743,8 +743,11 @@ class BotsGame {
   // ========== SPEECH (Web Speech API) ==========
   speak(text, gender, profile) {
     if (!this.voiceEnabled || !text || !window.speechSynthesis) return;
+    if (text === this._lastSpokenText) return; // Evitar repetición consecutiva exacta
+    this._lastSpokenText = text;
+
     if (!this._speakQueue) this._speakQueue = [];
-    this._speakQueue.push({ text, gender, profile });
+    this._speakQueue.push({ text, gender, profile, timestamp: Date.now() });
     if (!this._speaking) this._dequeueSpeak();
   }
 
@@ -754,7 +757,14 @@ class BotsGame {
       return;
     }
     this._speaking = true;
-    const { text, gender, profile } = this._speakQueue.shift();
+    const { text, gender, profile, timestamp } = this._speakQueue.shift();
+
+    // Descartar audios desfasados (con más de 5 segundos de retraso en cola)
+    const age = Date.now() - (timestamp || Date.now());
+    if (age > 5000) {
+      this._dequeueSpeak();
+      return;
+    }
 
     const utter = new SpeechSynthesisUtterance(text);
     const voices = speechSynthesis.getVoices();
@@ -797,6 +807,91 @@ class BotsGame {
     }
   }
 
+  getEngineConfig(elo) {
+    if (elo <= 400) {
+      return {
+        limitStrength: false,
+        skillLevel: 0,
+        depth: 1,
+        blunderRate: 0.18,
+        minDelay: 800,
+        maxDelay: 1800,
+        searchCmd: 'go depth 1'
+      };
+    } else if (elo <= 600) {
+      return {
+        limitStrength: false,
+        skillLevel: 0,
+        depth: 2,
+        blunderRate: 0.10,
+        minDelay: 800,
+        maxDelay: 2000,
+        searchCmd: 'go depth 2'
+      };
+    } else if (elo <= 800) {
+      return {
+        limitStrength: false,
+        skillLevel: 0,
+        depth: 3,
+        blunderRate: 0.06,
+        minDelay: 1000,
+        maxDelay: 2200,
+        searchCmd: 'go depth 3'
+      };
+    } else if (elo <= 1000) {
+      return {
+        limitStrength: false,
+        skillLevel: 1,
+        depth: 4,
+        blunderRate: 0.03,
+        minDelay: 1000,
+        maxDelay: 2500,
+        searchCmd: 'go depth 4'
+      };
+    } else if (elo <= 1200) {
+      return {
+        limitStrength: false,
+        skillLevel: 2,
+        depth: 5,
+        blunderRate: 0.01,
+        minDelay: 1200,
+        maxDelay: 2800,
+        searchCmd: 'go depth 5'
+      };
+    } else if (elo < 1350) {
+      return {
+        limitStrength: false,
+        skillLevel: 3,
+        depth: 6,
+        blunderRate: 0.0,
+        minDelay: 1200,
+        maxDelay: 3000,
+        searchCmd: 'go depth 6'
+      };
+    } else if (elo >= 2600) {
+      return {
+        limitStrength: false,
+        skillLevel: 20,
+        depth: null,
+        blunderRate: 0.0,
+        minDelay: 0,
+        maxDelay: 0,
+        searchCmd: 'go movetime 1500'
+      };
+    } else {
+      return {
+        limitStrength: true,
+        elo: elo,
+        skillLevel: null,
+        depth: null,
+        blunderRate: 0.0,
+        minDelay: 0,
+        maxDelay: 0,
+        searchCmd: 'go movetime 1200'
+      };
+    }
+  }
+
   initStockfishWorker() {
     if (this._sfInitPromise) return this._sfInitPromise;
 
@@ -806,12 +901,20 @@ class BotsGame {
       try {
         this.stockfishWorker = new Worker('/js/sf-worker.js');
 
-        const skill = Math.min(20, Math.max(0, Math.round((this.selectedBot.elo / 2800) * 20)));
+        const bot = this.selectedBot;
+        const config = this.getEngineConfig(bot.elo);
 
-        // Stockfish handles its own onmessage — just send UCI commands
         this.stockfishWorker.postMessage('uci');
         this.stockfishWorker.postMessage('isready');
-        this.stockfishWorker.postMessage(`setoption name Skill Level value ${skill}`);
+        
+        if (config.limitStrength) {
+          this.stockfishWorker.postMessage('setoption name UCI_LimitStrength value true');
+          this.stockfishWorker.postMessage(`setoption name UCI_Elo value ${config.elo}`);
+        } else {
+          this.stockfishWorker.postMessage('setoption name UCI_LimitStrength value false');
+          this.stockfishWorker.postMessage(`setoption name Skill Level value ${config.skillLevel}`);
+        }
+
         this.stockfishReady = true;
         setTimeout(resolve, 500);
 
@@ -833,8 +936,16 @@ class BotsGame {
   _resetStockfishForNewGame() {
     if (this.stockfishWorker && this.stockfishReady) {
       const bot = this.selectedBot;
-      const skillLevel = Math.min(20, Math.max(0, Math.round((bot.elo / 2800) * 20)));
-      this.stockfishWorker.postMessage(`setoption name Skill Level value ${skillLevel}`);
+      const config = this.getEngineConfig(bot.elo);
+      
+      if (config.limitStrength) {
+        this.stockfishWorker.postMessage('setoption name UCI_LimitStrength value true');
+        this.stockfishWorker.postMessage(`setoption name UCI_Elo value ${config.elo}`);
+      } else {
+        this.stockfishWorker.postMessage('setoption name UCI_LimitStrength value false');
+        this.stockfishWorker.postMessage(`setoption name Skill Level value ${config.skillLevel}`);
+      }
+      
       this.stockfishWorker.postMessage('ucinewgame');
     }
   }
@@ -857,15 +968,40 @@ class BotsGame {
       return;
     }
 
+    const config = this.getEngineConfig(bot.elo);
+
     // Chessbox.js exact pattern: send commands first, then onmessage
     this.stockfishWorker.postMessage(`position fen ${this.chessFEN}`);
-    this.stockfishWorker.postMessage('go movetime 1200');
+    this.stockfishWorker.postMessage(config.searchCmd);
+
+    const startTime = Date.now();
+
     this.stockfishWorker.onmessage = (e) => {
       const line = e.data;
       if (line.includes('bestmove')) {
-        const move = line.split(' ')[1];
+        let move = line.split(' ')[1];
         if (move && move !== '(none)' && this.gameActive) {
-          this.executeChessMove(move, false);
+          const isBlunder = Math.random() < config.blunderRate;
+          if (isBlunder) {
+            const validMoves = ChessEngine.getAllLegalMoves(this.chessFEN, 'b');
+            if (validMoves.length > 0) {
+              const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+              move = randomMove;
+            }
+          }
+
+          let delay = 0;
+          if (config.minDelay > 0) {
+            const elapsedTime = Date.now() - startTime;
+            const targetDelay = config.minDelay + Math.random() * (config.maxDelay - config.minDelay);
+            delay = Math.max(0, targetDelay - elapsedTime);
+          }
+
+          setTimeout(() => {
+            if (this.gameActive) {
+              this.executeChessMove(move, false);
+            }
+          }, delay);
         } else {
           this.isThinking = false;
           this.renderChessBoard();
@@ -1524,7 +1660,7 @@ class BotsGame {
     const accent = bot.color;
 
     this.container.innerHTML = `
-      <div class="bots-game-container" style="--bot-accent: ${accent}; --bot-light: ${bl}; --bot-dark: ${bd};">
+      <div class="bots-game-container" id="bots-game-container" style="--bot-accent: ${accent}; --bot-light: ${bl}; --bot-dark: ${bd};">
         <div class="bots-game-topbar" style="border-color: ${accent}55;">
           <button class="bots-btn-resign" id="bots-btn-resign">✕</button>
           <button class="bots-btn-mute" id="bots-btn-mute" title="${this.soundEnabled ? 'Silenciar' : 'Activar sonido'}">${this.soundEnabled ? '🔊' : '🔇'}</button>
@@ -1653,6 +1789,14 @@ class BotsGame {
     // Prevent duplicate calls
     if (!this.gameActive) return;
     this.gameActive = false;
+
+    // Detener voces activas y vaciar la cola de reproducción para evitar audios desfasados
+    if (window.speechSynthesis) {
+      speechSynthesis.cancel();
+    }
+    this._speakQueue = [];
+    this._speaking = false;
+    this._lastSpokenText = '';
 
     // Cancel any pending opponent move timers
     this.isThinking = false;
