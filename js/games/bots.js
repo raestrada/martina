@@ -1451,6 +1451,8 @@ class BotsGame {
         this.updateHistoryDisplay();
         this.updateCapturedDisplay();
         this.updateCommentary();
+        // Double-check game end after render (safety net)
+        this._detectGameEnd(false);
         setTimeout(() => {
           if (!this.gameActive) return;
           this.isThinking = false;
@@ -1716,6 +1718,11 @@ class BotsGame {
     const bEl = document.getElementById('bots-captured-black');
     if (wEl) wEl.textContent = this.capturedWhite.length > 0 ? this.capturedWhite.map(p => ({K:'\u2654',Q:'\u2655',R:'\u2656',B:'\u2657',N:'\u2658',P:'\u2659'}[p] || '')).join(' ') : '';
     if (bEl) bEl.textContent = this.capturedBlack.length > 0 ? this.capturedBlack.map(p => ({k:'\u265A',q:'\u265B',r:'\u265C',b:'\u265D',n:'\u265E',p:'\u265F'}[p] || '')).join(' ') : '';
+    // Hide labels when pieces are present
+    const wLabel = document.getElementById('bots-captured-white-label');
+    const bLabel = document.getElementById('bots-captured-black-label');
+    if (wLabel) wLabel.style.display = this.capturedWhite.length > 0 ? 'none' : '';
+    if (bLabel) bLabel.style.display = this.capturedBlack.length > 0 ? 'none' : '';
   }
 
   // ========== UI ==========
@@ -1951,12 +1958,12 @@ class BotsGame {
 
         <div class="bots-game-main">
           <div class="bots-sidebar-left">
-            <div class="bots-captured-section bots-captured-compact" style="border-color: ${accent}44;">
-              <span class="bots-captured-label">Perdiste</span>
+            <div class="bots-captured-section" style="border-color: ${accent}44;">
+              <span class="bots-captured-label" id="bots-captured-white-label">Perdiste</span>
               <div class="bots-captured-pieces" id="bots-captured-white"></div>
             </div>
-            <div class="bots-captured-section bots-captured-compact" style="border-color: ${accent}44;">
-              <span class="bots-captured-label">Ganaste</span>
+            <div class="bots-captured-section" style="border-color: ${accent}44;">
+              <span class="bots-captured-label" id="bots-captured-black-label">Ganaste</span>
               <div class="bots-captured-pieces" id="bots-captured-black"></div>
             </div>
             <div class="bots-material-badge" id="bots-material-badge">
