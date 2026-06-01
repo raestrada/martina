@@ -608,9 +608,11 @@ class BotsGame {
     this.audioCtx = null;
     this.soundEnabled = localStorage.getItem('martina_bots_sound') !== 'false';
     this.voiceEnabled = localStorage.getItem('martina_bots_voice') !== 'false';
+    this.musicEnabled = localStorage.getItem('martina_bots_music') !== 'false';
 
     this.botQuoteTimer = null;
     this.quoteInterval = null;
+    this.musicInterval = null;
 
     this._speakQueue = null;
     this._speaking = false;
@@ -793,6 +795,212 @@ class BotsGame {
       sombrasuprema: { gender: 'male', pitch: 'deep' }
     };
     return profiles[botId] || { gender: 'male', pitch: 'normal' };
+  }
+
+  // ========== THEMATIC CHIPTUNE BACKGROUND MUSIC ==========
+  startMusic() {
+    this.stopMusic();
+    if (!this.musicEnabled || !this.gameActive) return;
+
+    let audioCtx = this._resumeAudio();
+    if (!audioCtx) return;
+
+    const bot = this.selectedBot;
+    const elo = bot.elo;
+
+    let melody = [];
+    let bass = [];
+    let tempo = 200; // ms per step
+    let type = 'triangle'; // lead synth oscillator type
+
+    if (elo <= 400) { // Peoncito: Comic/carnival theme
+      melody = [
+        523.25, 659.25, 783.99, 659.25, 587.33, 698.46, 880.00, 698.46,
+        523.25, 659.25, 783.99, 659.25, 493.88, 587.33, 783.99, 587.33
+      ];
+      bass = [
+        130.81, 130.81, 174.61, 174.61, 130.81, 130.81, 196.00, 196.00
+      ];
+      tempo = 200;
+      type = 'triangle';
+    } else if (elo <= 600) { // Caballo: Gallop
+      melody = [
+        440.00, 523.25, 659.25, 880.00, 659.25, 523.25,
+        392.00, 493.88, 587.33, 783.99, 587.33, 493.88
+      ];
+      bass = [
+        110.00, 110.00, 110.00, 98.00, 98.00, 98.00
+      ];
+      tempo = 150;
+      type = 'sine';
+    } else if (elo <= 800) { // Alfil: Solemn/Baroque
+      melody = [
+        587.33, 698.46, 880.00, 783.99, 698.46, 659.25, 587.33, 554.37,
+        587.33, 659.25, 698.46, 783.99, 880.00, 698.46, 587.33, 440.00
+      ];
+      bass = [
+        146.83, 146.83, 196.00, 196.00, 220.00, 220.00, 146.83, 146.83
+      ];
+      tempo = 250;
+      type = 'triangle';
+    } else if (elo <= 1000) { // Torreta: Italian Tarantela
+      melody = [
+        440.00, 493.88, 523.25, 587.33, 523.25, 493.88,
+        440.00, 493.88, 523.25, 493.88, 440.00, 415.30,
+        440.00, 493.88, 523.25, 659.25, 587.33, 523.25,
+        493.88, 523.25, 587.33, 523.25, 493.88, 415.30
+      ];
+      bass = [
+        110.00, 110.00, 110.00, 164.81, 164.81, 164.81,
+        110.00, 110.00, 110.00, 164.81, 164.81, 164.81
+      ];
+      tempo = 120;
+      type = 'sine';
+    } else if (elo <= 1200) { // Sombra (R5): Mid-level Tension
+      melody = [
+        440.00, 0, 493.88, 0, 523.25, 0, 493.88, 0,
+        440.00, 0, 415.30, 0, 440.00, 523.25, 659.25, 0
+      ];
+      bass = [
+        110.00, 110.00, 123.47, 123.47, 130.81, 130.81, 123.47, 123.47
+      ];
+      tempo = 180;
+      type = 'triangle';
+    } else if (elo <= 1400) { // Reina Negra: Waltz ebbs
+      melody = [
+        523.25, 587.33, 622.25, 783.99, 698.46, 622.25,
+        587.33, 493.88, 392.00, 493.88, 587.33, 698.46,
+        622.25, 587.33, 523.25, 392.00, 0, 0
+      ];
+      bass = [
+        130.81, 130.81, 130.81, 155.56, 155.56, 155.56,
+        196.00, 196.00, 196.00, 130.81, 130.81, 130.81
+      ];
+      tempo = 240;
+      type = 'sine';
+    } else if (elo <= 1600) { // Sombra (R7): Dark Synthwave
+      melody = [
+        329.63, 0, 392.00, 0, 369.99, 0, 493.88, 0,
+        440.00, 0, 523.25, 0, 493.88, 0, 329.63, 0
+      ];
+      bass = [
+        82.41, 82.41, 65.41, 65.41, 73.42, 73.42, 49.00, 49.00
+      ];
+      tempo = 350;
+      type = 'sawtooth';
+    } else if (elo <= 2200) { // Martina & Judit: JRPG Battle
+      melody = [
+        392.00, 466.16, 587.33, 523.25, 466.16, 440.00, 392.00, 369.99,
+        392.00, 440.00, 466.16, 523.25, 587.33, 783.99, 739.99, 587.33
+      ];
+      bass = [
+        98.00, 98.00, 77.78, 77.78, 87.31, 87.31, 73.42, 73.42
+      ];
+      tempo = 130;
+      type = 'sawtooth';
+    } else { // Sombra Suprema: Cyberpunk Industrial
+      melody = [
+        277.18, 329.63, 311.13, 369.99, 329.63, 415.30, 369.99, 493.88,
+        440.00, 554.37, 493.88, 415.30, 0, 0, 0, 0
+      ];
+      bass = [
+        69.30, 69.30, 55.00, 55.00, 61.74, 61.74, 41.20, 41.20
+      ];
+      tempo = 140;
+      type = 'sawtooth';
+    }
+
+    let step = 0;
+    this.musicInterval = setInterval(() => {
+      if (!this.gameActive || !this.musicEnabled) {
+        this.stopMusic();
+        return;
+      }
+
+      const now = audioCtx.currentTime;
+
+      // 1. Kick Drum (basic beat)
+      const beat = step % 4;
+      if (beat === 0) {
+        try {
+          const kOsc = audioCtx.createOscillator();
+          const kGain = audioCtx.createGain();
+          kOsc.type = 'sine';
+          kOsc.frequency.setValueAtTime(140, now);
+          kOsc.frequency.exponentialRampToValueAtTime(30, now + 0.08);
+          kGain.gain.setValueAtTime(0.2, now);
+          kGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
+          kOsc.connect(kGain);
+          kGain.connect(audioCtx.destination);
+          kOsc.start(now);
+          kOsc.stop(now + 0.1);
+        } catch(e) {}
+      }
+
+      // 2. Closed Hi-hat (subtle ticking)
+      if (beat === 2) {
+        try {
+          const hOsc = audioCtx.createOscillator();
+          const hGain = audioCtx.createGain();
+          hOsc.type = 'square';
+          hOsc.frequency.setValueAtTime(12000, now);
+          hGain.gain.setValueAtTime(0.008, now);
+          hGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+          hOsc.connect(hGain);
+          hGain.connect(audioCtx.destination);
+          hOsc.start(now);
+          hOsc.stop(now + 0.05);
+        } catch(e) {}
+      }
+
+      // 3. Lead melody
+      const leadFreq = melody[step % melody.length];
+      if (leadFreq > 0) {
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(leadFreq, now);
+          
+          let vol = 0.025;
+          if (type === 'sawtooth') vol = 0.015;
+          gain.gain.setValueAtTime(vol, now);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + (tempo / 1000) * 0.9);
+          
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + tempo / 1000);
+        } catch(e) {}
+      }
+
+      // 4. Bass accompaniment
+      const bassIndex = Math.floor(step / 2) % bass.length;
+      const bassFreq = bass[bassIndex];
+      if (bassFreq > 0 && step % 2 === 0) {
+        try {
+          const bOsc = audioCtx.createOscillator();
+          const bGain = audioCtx.createGain();
+          bOsc.type = 'triangle';
+          bOsc.frequency.setValueAtTime(bassFreq, now);
+          bGain.gain.setValueAtTime(0.035, now);
+          bGain.gain.exponentialRampToValueAtTime(0.0001, now + (tempo / 1000) * 1.8);
+          bOsc.connect(bGain);
+          bGain.connect(audioCtx.destination);
+          bOsc.start(now);
+          bOsc.stop(now + (tempo / 1000) * 2);
+        } catch(e) {}
+      }
+
+      step = (step + 1) % 48;
+    }, tempo);
+  }
+
+  stopMusic() {
+    if (this.musicInterval) {
+      clearInterval(this.musicInterval);
+      this.musicInterval = null;
+    }
   }
 
   // ========== STOCKFISH INTEGRATION ==========
@@ -1450,6 +1658,7 @@ class BotsGame {
   showBotSelect() {
     this.selectedBot = null;
     this.gameActive = false;
+    this.stopMusic();
 
     const stats = this._getStats();
 
@@ -1640,6 +1849,7 @@ class BotsGame {
 
     // Always render game immediately. Stockfish loads in background.
     this._renderGameUI();
+    this.startMusic();
 
     // Load Stockfish (or reset if already loaded)
     if (this.stockfishReady) {
@@ -1665,6 +1875,7 @@ class BotsGame {
           <button class="bots-btn-resign" id="bots-btn-resign">✕</button>
           <button class="bots-btn-mute" id="bots-btn-mute" title="${this.soundEnabled ? 'Silenciar' : 'Activar sonido'}">${this.soundEnabled ? '🔊' : '🔇'}</button>
           <button class="bots-btn-mute" id="bots-btn-voice" title="${this.voiceEnabled ? 'Silenciar voz' : 'Activar voz'}">${this.voiceEnabled ? '🗣️' : '🔈'}</button>
+          <button class="bots-btn-mute" id="bots-btn-music" title="${this.musicEnabled ? 'Silenciar música' : 'Activar música'}">${this.musicEnabled ? '🎵' : '🔇🎵'}</button>
           <div class="bots-opponent-info">
             <span class="bots-opponent-emoji">${bot.emoji}</span>
             <div>
@@ -1762,6 +1973,21 @@ class BotsGame {
       }
     });
 
+    document.getElementById('bots-btn-music').addEventListener('click', () => {
+      this.musicEnabled = !this.musicEnabled;
+      localStorage.setItem('martina_bots_music', this.musicEnabled ? 'true' : 'false');
+      const btn = document.getElementById('bots-btn-music');
+      if (btn) {
+        btn.textContent = this.musicEnabled ? '🎵' : '🔇🎵';
+        btn.title = this.musicEnabled ? 'Silenciar música' : 'Activar música';
+      }
+      if (this.musicEnabled) {
+        this.startMusic();
+      } else {
+        this.stopMusic();
+      }
+    });
+
     // Initialize shared chess board
     this.board = new ChessBoard({
       containerId: 'bots-board',
@@ -1797,6 +2023,7 @@ class BotsGame {
     this._speakQueue = [];
     this._speaking = false;
     this._lastSpokenText = '';
+    this.stopMusic();
 
     // Cancel any pending opponent move timers
     this.isThinking = false;
@@ -1948,6 +2175,7 @@ class BotsGame {
   destroy() {
     this.gameActive = false;
     this.destroyWorker();
+    this.stopMusic();
     if (this.quoteInterval) clearInterval(this.quoteInterval);
     if (this.botQuoteTimer) clearTimeout(this.botQuoteTimer);
   }
