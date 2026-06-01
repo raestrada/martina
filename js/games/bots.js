@@ -1286,10 +1286,10 @@ class BotsGame {
           pieceEl.className = 'bots-chess-pc';
           pieceEl.textContent = sym[piece] || '';
           const isWhitePiece = piece === piece.toUpperCase();
-          pieceEl.style.color = isWhitePiece ? '#ffffff' : '#0f0f1a';
+          pieceEl.style.color = isWhitePiece ? '#ffffff' : '#111111';
           pieceEl.style.textShadow = isWhitePiece
-            ? '-2px -2px 0 #0f0f1a, 2px -2px 0 #0f0f1a, -2px 2px 0 #0f0f1a, 2px 2px 0 #0f0f1a, 0 3px 6px rgba(0,0,0,0.6)'
-            : '-2px -2px 0 #e8ecf0, 2px -2px 0 #e8ecf0, -2px 2px 0 #e8ecf0, 2px 2px 0 #e8ecf0, 0 2px 5px rgba(0,0,0,0.3)';
+            ? '-1px -1px 0 #111, 1px -1px 0 #111, -1px 1px 0 #111, 1px 1px 0 #111'
+            : '-1px -1px 0 #eee, 1px -1px 0 #eee, -1px 1px 0 #eee, 1px 1px 0 #eee';
           square.appendChild(pieceEl);
         }
 
