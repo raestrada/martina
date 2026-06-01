@@ -1260,9 +1260,9 @@ class BotsGame {
     const bd = bot.boardDark || '#7c5c3e';
 
     const board = this.parseFEN(this.chessFEN);
-    const sym = {
-      'K': '\u2654', 'Q': '\u2655', 'R': '\u2656', 'B': '\u2657', 'N': '\u2658', 'P': '\u2659',
-      'k': '\u265A', 'q': '\u265B', 'r': '\u265C', 'b': '\u265D', 'n': '\u265E', 'p': '\u265F'
+    const pieceMap = {
+      'K': 'wK', 'Q': 'wQ', 'R': 'wR', 'B': 'wB', 'N': 'wN', 'P': 'wP',
+      'k': 'bK', 'q': 'bQ', 'r': 'bR', 'b': 'bB', 'n': 'bN', 'p': 'bP'
     };
 
     const parts = this.chessFEN.split(' ');
@@ -1272,9 +1272,7 @@ class BotsGame {
       for (let c = 0; c < 8; c++) {
         const square = document.createElement('div');
         const light = (r + c) % 2 === 0;
-        const file = String.fromCharCode(97 + c);
-        const rank = 8 - r;
-        const coord = `${file}${rank}`;
+        const coord = `${String.fromCharCode(97 + c)}${8 - r}`;
 
         square.className = 'bots-chess-sq';
         square.style.backgroundColor = light ? bl : bd;
@@ -1284,10 +1282,7 @@ class BotsGame {
         if (piece) {
           const pieceEl = document.createElement('div');
           pieceEl.className = 'bots-chess-pc';
-          pieceEl.textContent = sym[piece] || '';
-          const isWhitePiece = piece === piece.toUpperCase();
-          pieceEl.style.color = isWhitePiece ? '#ffffff' : '#222222';
-          pieceEl.style.webkitTextStroke = isWhitePiece ? '3px #222' : '3px #ddd';
+          pieceEl.style.backgroundImage = `url('/assets/img/pieces/${pieceMap[piece]}.svg')`;
           square.appendChild(pieceEl);
         }
 
@@ -1725,9 +1720,28 @@ class BotsGame {
   updateCapturedDisplay() {
     const wEl = document.getElementById('bots-captured-white');
     const bEl = document.getElementById('bots-captured-black');
-    if (wEl) wEl.textContent = this.capturedWhite.length > 0 ? this.capturedWhite.map(p => ({K:'\u2654',Q:'\u2655',R:'\u2656',B:'\u2657',N:'\u2658',P:'\u2659'}[p] || '')).join(' ') : '';
-    if (bEl) bEl.textContent = this.capturedBlack.length > 0 ? this.capturedBlack.map(p => ({k:'\u265A',q:'\u265B',r:'\u265C',b:'\u265D',n:'\u265E',p:'\u265F'}[p] || '')).join(' ') : '';
-    // Hide labels when pieces are present
+    const pieceMap = {
+      K: 'wK', Q: 'wQ', R: 'wR', B: 'wB', N: 'wN', P: 'wP',
+      k: 'bK', q: 'bQ', r: 'bR', b: 'bB', n: 'bN', p: 'bP'
+    };
+    if (wEl) {
+      wEl.innerHTML = '';
+      this.capturedWhite.forEach(p => {
+        const img = document.createElement('img');
+        img.src = `/assets/img/pieces/${pieceMap[p]}.svg`;
+        img.className = 'bots-cap-img';
+        wEl.appendChild(img);
+      });
+    }
+    if (bEl) {
+      bEl.innerHTML = '';
+      this.capturedBlack.forEach(p => {
+        const img = document.createElement('img');
+        img.src = `/assets/img/pieces/${pieceMap[p]}.svg`;
+        img.className = 'bots-cap-img';
+        bEl.appendChild(img);
+      });
+    }
     const wLabel = document.getElementById('bots-captured-white-label');
     const bLabel = document.getElementById('bots-captured-black-label');
     if (wLabel) wLabel.style.display = this.capturedWhite.length > 0 ? 'none' : '';
