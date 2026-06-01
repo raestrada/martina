@@ -57,6 +57,7 @@ const GAME_JS_URLS = [
   '/js/games/reina.js',
   '/js/games/sombra.js',
   '/js/games/torreta.js',
+  '/js/chess-engine.js',
   '/js/games/bots.js',
   '/js/stockfish.js',
   '/js/stockfish.wasm',
