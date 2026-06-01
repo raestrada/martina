@@ -1444,16 +1444,27 @@ class BotsGame {
     // Opponent: delay render for visual tracking
     if (!isPlayer) {
       this.isThinking = true;
+      // Safety: force unstick after 4s if something goes wrong
+      const safetyTimer = setTimeout(() => {
+        if (this.isThinking && this.gameActive) {
+          console.warn('Opponent move stuck, forcing release');
+          this.renderChessBoard();
+          this._detectGameEnd(false);
+          this.isThinking = false;
+          this.updateStatus('● Tu turno', 'turn');
+        }
+      }, 4000);
       setTimeout(() => {
+        clearTimeout(safetyTimer);
         if (!this.gameActive) return;
         this.renderChessBoard();
         this.showMovePopup(uciMove);
         this.updateHistoryDisplay();
         this.updateCapturedDisplay();
         this.updateCommentary();
-        // Double-check game end after render (safety net)
         this._detectGameEnd(false);
         setTimeout(() => {
+          clearTimeout(safetyTimer);
           if (!this.gameActive) return;
           this.isThinking = false;
           this.updateStatus('● Tu turno', 'turn');
