@@ -614,6 +614,7 @@ class BotsGame {
 
     this._speakQueue = null;
     this._speaking = false;
+    this._lastCmtText = '';
 
     this._init();
   }
@@ -1630,11 +1631,14 @@ class BotsGame {
       listEl.removeChild(listEl.lastChild);
     }
 
-    // Speak commentator — opposite gender to opponent
+    // Speak commentator — opposite gender to opponent (skip duplicates)
     if (isOpponent && this.selectedBot) {
-      const p = this.getSpeakProfile(this.selectedBot.id);
-      const cmtGender = p.gender === 'female' ? 'male' : 'female';
-      this.speak(comment, cmtGender, 'normal');
+      if (comment !== this._lastCmtText) {
+        this._lastCmtText = comment;
+        const p = this.getSpeakProfile(this.selectedBot.id);
+        const cmtGender = p.gender === 'female' ? 'male' : 'female';
+        this.speak(comment, cmtGender, 'normal');
+      }
     }
   }
 
