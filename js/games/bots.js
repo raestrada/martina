@@ -1191,7 +1191,8 @@ class BotsGame {
         if (move && move !== '(none)' && this.gameActive) {
           const isBlunder = Math.random() < config.blunderRate;
           if (isBlunder) {
-            const validMoves = ChessEngine.getAllLegalMoves(this.chessFEN, 'b');
+            const botColor = this.playerColor === 'w' ? 'b' : 'w';
+            const validMoves = ChessEngine.getAllLegalMoves(this.chessFEN, botColor);
             if (validMoves.length > 0) {
               const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
               move = randomMove;
@@ -1239,14 +1240,14 @@ class BotsGame {
   handleSquareClick(r, c, coord, piece) {
     const parts = this.chessFEN.split(' ');
     const turn = parts[1] || 'w';
-    if (turn !== 'w' || this.isThinking || !this.gameActive) return;
+    if (turn !== this.playerColor || this.isThinking || !this.gameActive) return;
 
     this.board.clearHighlights();
 
     if (this.selectedSquare) {
       const fromCoord = this.selectedSquare.coord;
       const uciMove = fromCoord + coord;
-      const validMoves = ChessEngine.getAllLegalMoves(this.chessFEN, 'w');
+      const validMoves = ChessEngine.getAllLegalMoves(this.chessFEN, this.playerColor);
       const targetMove = validMoves.find(m => m.substring(0, 4) === uciMove.substring(0, 4));
       if (targetMove) {
         this.executeChessMove(targetMove, true);
@@ -1256,10 +1257,11 @@ class BotsGame {
       this.selectedSquare = null;
     }
 
-    if (piece && piece === piece.toUpperCase()) {
+    const isOwnPiece = piece && (this.playerColor === 'w' ? (piece === piece.toUpperCase()) : (piece === piece.toLowerCase()));
+    if (isOwnPiece) {
       this.selectedSquare = { r, c, coord };
       this.board.setSelected(coord);
-      const moves = ChessEngine.getAllLegalMoves(this.chessFEN, 'w');
+      const moves = ChessEngine.getAllLegalMoves(this.chessFEN, this.playerColor);
       this.board.showLegalMoves(moves, coord);
     }
   }
@@ -1305,7 +1307,7 @@ class BotsGame {
     if (moveCategories.includes('check')) this.playCheck();
 
     // Evaluate BEFORE move for annotation
-    const evalBefore = ChessEngine.evaluateBoard(this.chessFEN, 'w');
+    const evalBefore = ChessEngine.evaluateBoard(this.chessFEN, this.playerColor);
 
     // For opponent moves: flash from/to squares before rendering
     if (!isPlayer) {
@@ -1335,7 +1337,7 @@ class BotsGame {
     }
 
     // Evaluate AFTER move and classify
-    const evalAfter = ChessEngine.evaluateBoard(this.chessFEN, 'w');
+    const evalAfter = ChessEngine.evaluateBoard(this.chessFEN, this.playerColor);
     const diff = isPlayer ? (evalAfter - evalBefore) : (evalBefore - evalAfter);
     this.moveAnnotations[uciMove] = this.classifyMove(diff, isPlayer, moveCategories);
     this.lastEval = evalAfter;
@@ -1396,7 +1398,7 @@ class BotsGame {
       return;
     }
 
-    if (nextTurn === 'b') {
+    if (nextTurn !== this.playerColor) {
       this.triggerEngineTurn();
       if (isPlayer && moveCategories.includes('check')) this.updateStatus('⚡ ¡Jaque!', 'check');
     } else if (isPlayer) {
@@ -1667,13 +1669,55 @@ class BotsGame {
         <h1>Bots de Ajedrez</h1>
         <p class="bots-hero-subtitle">Enfréntate a los personajes del Reino de las 64 Casillas.<br>Cada bot tiene su propia personalidad, frases absurdas y nivel de juego.</p>
         ${stats.total > 0 ? `
-        <div class="bots-stats-bar">
-          <div class="bots-stat-item"><span>Partidas</span><strong>${stats.total}</strong></div>
-          <div class="bots-stat-item" style="color:#4ade80"><span>Ganadas</span><strong>${stats.wins}</strong></div>
-          <div class="bots-stat-item" style="color:#f87171"><span>Perdidas</span><strong>${stats.losses}</strong></div>
-          <div class="bots-stat-item" style="color:#fbbf24"><span>Tablas</span><strong>${stats.draws}</strong></div>
-          <div class="bots-stat-item"><span>% Victorias</span><strong>${stats.winRate}%</strong></div>
-          ${stats.bestWin ? `<div class="bots-stat-item" style="color:#fbbf24"><span>Mejor victoria</span><strong>vs ${stats.bestWin.botName} (${stats.bestWin.botElo})</strong></div>` : ''}
+        <div class="bots-dashboard-container">
+          <div class="bots-stats-main-grid">
+            <div class="bots-stat-box box-primary">
+              <span class="box-label">HISTORIAL GENERAL</span>
+              <div class="box-stat-row">
+                <div class="box-stat-num"><strong>${stats.total}</strong><span>Partidas</span></div>
+                <div class="box-stat-num" style="color:#4ade80;"><strong>${stats.wins}</strong><span>Ganadas</span></div>
+                <div class="box-stat-num" style="color:#f87171;"><strong>${stats.losses}</strong><span>Perdidas</span></div>
+                <div class="box-stat-num" style="color:#fbbf24;"><strong>${stats.draws}</strong><span>Tablas</span></div>
+              </div>
+              <div class="box-progress-wrapper">
+                <span class="progress-label">Efectividad General: <strong>${stats.winRate}%</strong></span>
+                <div class="progress-track"><div class="progress-fill" style="width: ${stats.winRate}%; background: linear-gradient(90deg, #f87171, #4ade80)"></div></div>
+              </div>
+            </div>
+            
+            <div class="bots-stat-box box-colors">
+              <span class="box-label">ESTADÍSTICAS POR COLOR</span>
+              <div class="color-stats-split">
+                <div class="color-stat-column">
+                  <div class="color-title">⚪ Blancas</div>
+                  <div class="color-metrics">
+                    <span class="metric-item">Juegos: <strong>${stats.totalWhite}</strong></span>
+                    <span class="metric-item">Récord: <strong style="color:#4ade80">${stats.winsWhite}G</strong> - <strong style="color:#f87171">${stats.lossesWhite}P</strong></span>
+                    <span class="metric-item">Efectividad: <strong style="color:#22d3ee">${stats.winRateWhite}%</strong></span>
+                  </div>
+                </div>
+                <div class="color-stat-divider"></div>
+                <div class="color-stat-column">
+                  <div class="color-title">⚫ Negras</div>
+                  <div class="color-metrics">
+                    <span class="metric-item">Juegos: <strong>${stats.totalBlack}</strong></span>
+                    <span class="metric-item">Récord: <strong style="color:#4ade80">${stats.winsBlack}G</strong> - <strong style="color:#f87171">${stats.lossesBlack}P</strong></span>
+                    <span class="metric-item">Efectividad: <strong style="color:#a78bfa">${stats.winRateBlack}%</strong></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bots-stat-box box-insights">
+              <span class="box-label">ANÁLISIS DE COMBATES</span>
+              <div class="insights-list">
+                <div class="insight-row"><span>Elo Promedio Rivales:</span><strong>${stats.averageElo}</strong></div>
+                <div class="insight-row"><span>Rango de Elos Jugados:</span><strong>${stats.lowestEloPlayed} - ${stats.highestEloPlayed}</strong></div>
+                <div class="insight-row"><span>Rival más Frecuente:</span><strong>${stats.mostPlayed}</strong></div>
+                ${stats.bestWin ? `<div class="insight-row best-win-highlight"><span>Mejor Victoria:</span><strong style="color:#fbbf24">vs ${stats.bestWin.botName} (${stats.bestWin.botElo})</strong></div>` : ''}
+              </div>
+            </div>
+          </div>
         </div>` : ''}
       </section>
       <section class="bots-grid-section fade-in stagger-1">
@@ -1866,6 +1910,7 @@ class BotsGame {
   showVSIntro(botIdx) {
     const bot = this.bots[botIdx];
     this.selectedBot = bot;
+    this.playerColor = Math.random() < 0.5 ? 'w' : 'b';
 
     this._resumeAudio();
     this.playVSIntroMusic();
@@ -1890,24 +1935,24 @@ class BotsGame {
         <div class="bots-vs-panel bots-vs-left">
           <div class="bots-vs-unskew">
             <div class="bots-vs-card">
-              <span class="bots-vs-badge" style="background: #fbbf24; color: #0a0a0a;">BLANCAS</span>
+              <span class="bots-vs-badge" style="background: ${this.playerColor === 'w' ? '#fbbf24' : '#1e293b'}; color: ${this.playerColor === 'w' ? '#0a0a0a' : '#ffffff'};">${this.playerColor === 'w' ? 'BLANCAS' : 'NEGRAS'}</span>
               <h2 class="bots-vs-name name-player">Jugador</h2>
               <div class="bots-vs-player-icon">
-                <span class="bots-vs-emoji-big">♔</span>
+                <span class="bots-vs-emoji-big">${this.playerColor === 'w' ? '♔' : '♚'}</span>
               </div>
-              <p class="bots-vs-quote">«Juegas con blancas. Primer movimiento.»</p>
+              <p class="bots-vs-quote">«Juegas con ${this.playerColor === 'w' ? 'blancas. Primer movimiento.' : 'negras. El oponente inicia.'}»</p>
             </div>
           </div>
         </div>
         <div class="bots-vs-panel bots-vs-right" style="--opp-color: ${bot.color};">
           <div class="bots-vs-unskew">
             <div class="bots-vs-card">
-              <span class="bots-vs-badge" style="background: ${bot.color}; color: #0a0a0a;">RIVAL</span>
+              <span class="bots-vs-badge" style="background: ${bot.color}; color: #0a0a0a;">${this.playerColor === 'w' ? 'NEGRAS' : 'BLANCAS'}</span>
               <h2 class="bots-vs-name" style="text-shadow: 0 0 25px ${bot.color};">${bot.name}</h2>
               <div class="bots-vs-player-icon">
                 <span class="bots-vs-emoji-big">${bot.emoji}</span>
               </div>
-              <p class="bots-vs-elo" style="color: ${bot.color}; font-size: 1.15rem; font-weight: 800;">Stockfish ELO ${bot.elo}</p>
+              <p class="bots-vs-elo" style="color: ${bot.color}; font-size: 1.15rem; font-weight: 800;">Stockfish ELO ${bot.elo} (${this.playerColor === 'w' ? 'NEGRAS' : 'BLANCAS'})</p>
               <p class="bots-vs-quote" style="color: #e2e8f0;">«${bot.quotes.greeting[0]}»</p>
             </div>
           </div>
@@ -1972,8 +2017,15 @@ class BotsGame {
     // Load Stockfish (or reset if already loaded)
     if (this.stockfishReady) {
       this._resetStockfishForNewGame();
+      if (this.playerColor === 'b') {
+        this.triggerEngineTurn();
+      }
     } else {
-      this.initStockfishWorker().catch(err => {
+      this.initStockfishWorker().then(() => {
+        if (this.playerColor === 'b' && this.gameActive) {
+          this.triggerEngineTurn();
+        }
+      }).catch(err => {
         console.warn('Stockfish init failed:', err.message);
         // Show error in UI
         this.updateStatus('⚠️ Error: ' + err.message, 'check');
@@ -2002,7 +2054,7 @@ class BotsGame {
             </div>
           </div>
           <span id="bots-status">
-            ¡Tu turno! Juegas con blancas.
+            ${this.playerColor === 'w' ? '● Tu turno (Blancas) ♔' : `${bot.name} piensa (Blancas) ♔`}
           </span>
         </div>
 
@@ -2112,12 +2164,17 @@ class BotsGame {
       squareClass: 'bots-chess-sq',
       pieceClass: 'bots-chess-pc',
       popupClass: 'bots-popup',
+      playerColor: this.playerColor,
       lightColor: bl, darkColor: bd,
       onSquareClick: (r, c, coord, piece) => this.handleSquareClick(r, c, coord, piece)
     });
 
     this.renderChessBoard();
-    this.updateStatus('● Tu turno', 'turn');
+    if (this.playerColor === 'w') {
+      this.updateStatus('● Tu turno (Blancas)', 'turn');
+    } else {
+      this.updateStatus(`${bot.name} piensa (Blancas)...`, 'thinking');
+    }
     this.updateCommentary();
     this.showBotComment(this.getBotQuote('greeting'));
 
@@ -2260,6 +2317,7 @@ class BotsGame {
         botElo: bot.elo,
         accuracy: accuracy,
         perfElo: perfElo,
+        playerColor: this.playerColor,
         moves: this.chessHistory.length,
         date: Date.now()
       });
@@ -2272,22 +2330,110 @@ class BotsGame {
   _getStats() {
     try {
       const history = JSON.parse(localStorage.getItem('martina_bots_history') || '[]');
-      const stats = { total: history.length, wins: 0, losses: 0, draws: 0, bestWin: null, byBot: {} };
+      const stats = {
+        total: history.length,
+        wins: 0,
+        losses: 0,
+        draws: 0,
+        bestWin: null,
+        byBot: {},
+        
+        // White vs Black stats
+        totalWhite: 0,
+        winsWhite: 0,
+        lossesWhite: 0,
+        drawsWhite: 0,
+        
+        totalBlack: 0,
+        winsBlack: 0,
+        lossesBlack: 0,
+        drawsBlack: 0,
+        
+        // ELO metrics
+        totalEloPlayed: 0,
+        highestEloPlayed: 0,
+        lowestEloPlayed: 9999,
+        
+        // Most played
+        botPlayCounts: {}
+      };
+
       history.forEach(g => {
-        if (g.result === 'win') stats.wins++;
-        else if (g.result === 'lose') stats.losses++;
+        const isWin = g.result === 'win';
+        const isLoss = g.result === 'lose';
+        const isDraw = !isWin && !isLoss;
+
+        if (isWin) stats.wins++;
+        else if (isLoss) stats.losses++;
         else stats.draws++;
-        if (g.result === 'win' && (!stats.bestWin || g.botElo > stats.bestWin.botElo)) {
+
+        // Track by color perspective (fallback to 'w' if undefined for old games)
+        const col = g.playerColor || 'w';
+        if (col === 'w') {
+          stats.totalWhite++;
+          if (isWin) stats.winsWhite++;
+          else if (isLoss) stats.lossesWhite++;
+          else stats.drawsWhite++;
+        } else {
+          stats.totalBlack++;
+          if (isWin) stats.winsBlack++;
+          else if (isLoss) stats.lossesBlack++;
+          else stats.drawsBlack++;
+        }
+
+        // ELO tracking
+        const elo = parseInt(g.botElo) || 0;
+        stats.totalEloPlayed += elo;
+        if (elo > stats.highestEloPlayed) stats.highestEloPlayed = elo;
+        if (elo < stats.lowestEloPlayed) stats.lowestEloPlayed = elo;
+
+        // Best win
+        if (isWin && (!stats.bestWin || elo > stats.bestWin.botElo)) {
           stats.bestWin = g;
         }
+
+        // Most played bot tracking
+        stats.botPlayCounts[g.botId] = (stats.botPlayCounts[g.botId] || 0) + 1;
+
+        // Per-bot stats
         if (!stats.byBot[g.botId]) stats.byBot[g.botId] = { wins: 0, losses: 0, draws: 0 };
-        if (g.result === 'win') stats.byBot[g.botId].wins++;
-        else if (g.result === 'lose') stats.byBot[g.botId].losses++;
+        if (isWin) stats.byBot[g.botId].wins++;
+        else if (isLoss) stats.byBot[g.botId].losses++;
         else stats.byBot[g.botId].draws++;
       });
+
       stats.winRate = stats.total > 0 ? Math.round((stats.wins / stats.total) * 100) : 0;
+      stats.winRateWhite = stats.totalWhite > 0 ? Math.round((stats.winsWhite / stats.totalWhite) * 100) : 0;
+      stats.winRateBlack = stats.totalBlack > 0 ? Math.round((stats.winsBlack / stats.totalBlack) * 100) : 0;
+      stats.averageElo = stats.total > 0 ? Math.round(stats.totalEloPlayed / stats.total) : 0;
+      
+      if (stats.lowestEloPlayed === 9999) stats.lowestEloPlayed = 0;
+
+      // Find most played bot name/emoji
+      let mostPlayedId = null;
+      let maxCount = 0;
+      for (const bid in stats.botPlayCounts) {
+        if (stats.botPlayCounts[bid] > maxCount) {
+          maxCount = stats.botPlayCounts[bid];
+          mostPlayedId = bid;
+        }
+      }
+      if (mostPlayedId) {
+        const matchingBot = this.bots.find(b => b.id === mostPlayedId);
+        stats.mostPlayed = matchingBot ? `${matchingBot.emoji} ${matchingBot.name}` : mostPlayedId;
+      } else {
+        stats.mostPlayed = 'Ninguno';
+      }
+
       return stats;
-    } catch(e) { return { total: 0, wins: 0, losses: 0, draws: 0, winRate: 0, byBot: {} }; }
+    } catch(e) {
+      return { 
+        total: 0, wins: 0, losses: 0, draws: 0, winRate: 0, byBot: {},
+        totalWhite: 0, winsWhite: 0, lossesWhite: 0, drawsWhite: 0, winRateWhite: 0,
+        totalBlack: 0, winsBlack: 0, lossesBlack: 0, drawsBlack: 0, winRateBlack: 0,
+        averageElo: 0, highestEloPlayed: 0, lowestEloPlayed: 0, mostPlayed: 'Ninguno'
+      };
+    }
   }
 
   destroy() {

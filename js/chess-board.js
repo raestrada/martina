@@ -11,6 +11,7 @@ class ChessBoard {
     this.darkColor = opts.darkColor || '#7c5c3e';
     this.onSquareClick = opts.onSquareClick || null;
     this.popupClass = opts.popupClass || 'chess-popup';
+    this.playerColor = opts.playerColor || 'w'; // 'w' or 'b' perspective
     this._lastMove = null;
     this._selected = null;
     this._accentColor = '#fbbf24';
@@ -29,16 +30,23 @@ class ChessBoard {
       'k': 'bK', 'q': 'bQ', 'r': 'bR', 'b': 'bB', 'n': 'bN', 'p': 'bP'
     };
 
+    const isBlackPerspective = this.playerColor === 'b';
+
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
         const light = (r + c) % 2 === 0;
-        const coord = `${String.fromCharCode(97 + c)}${8 - r}`;
+        
+        // Map DOM loop variables r, c to FEN row/column indices based on orientation
+        const r_idx = isBlackPerspective ? 7 - r : r;
+        const c_idx = isBlackPerspective ? 7 - c : c;
+
+        const coord = `${String.fromCharCode(97 + c_idx)}${8 - r_idx}`;
         const square = document.createElement('div');
         square.className = this.squareClass;
         square.style.backgroundColor = light ? this.lightColor : this.darkColor;
         square.setAttribute('data-coord', coord);
 
-        const piece = board[r][c];
+        const piece = board[r_idx][c_idx];
         if (piece) {
           const el = document.createElement('div');
           const isMovedPiece = this._lastMove && coord === this._lastMove.to;
@@ -65,7 +73,7 @@ class ChessBoard {
           }
         }
 
-        const rr = r, cc = c;
+        const rr = r_idx, cc = c_idx;
         square.addEventListener('click', () => {
           if (this.onSquareClick) this.onSquareClick(rr, cc, coord, piece);
         });
@@ -113,8 +121,11 @@ class ChessBoard {
     const dest = uciMove.substring(2,4);
     const board = document.getElementById(this.containerId);
     if (!board) return;
-    const file = dest.charCodeAt(0) - 97;
-    const rank = 8 - parseInt(dest[1]);
+    
+    const isBlackPerspective = this.playerColor === 'b';
+    const file = isBlackPerspective ? 7 - (dest.charCodeAt(0) - 97) : (dest.charCodeAt(0) - 97);
+    const rank = isBlackPerspective ? 7 - (8 - parseInt(dest[1])) : (8 - parseInt(dest[1]));
+    
     const rect = board.getBoundingClientRect();
     const sqSize = rect.width / 8;
     const x = rect.left + (file + 1) * sqSize - 6;
