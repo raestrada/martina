@@ -599,6 +599,11 @@ main {
   border-top: 4px solid var(--gold);
 }
 
+[data-theme="dark"] .site-footer {
+  background: var(--header-bg);
+  color: #f4f1de;
+}
+
 .site-footer::before {
   content: '♔ ♕ ♖ ♗ ♘ ♙';
   display: block;
