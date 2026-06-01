@@ -1,552 +1,176 @@
-// === CHESS DUEL MODULE — Engine propio ~300 ELO + UI ===
-// Motor de ajedrez inline (sin dependencias externas).
-// Evalúa material y posición, busca a profundidad 1 con blunders realistas.
-
+// === CHESS DUEL MODULE — Uses shared ChessEngine + ChessBoard ===
 window.ChessDuel = class ChessDuel {
   constructor(container, onWin, onLose, onStalemate) {
     this.container = container;
     this.onWin = onWin;
     this.onLose = onLose;
-    this.onStalemate = onStalemate || onWin; // fallback to win
+    this.onStalemate = onStalemate || onWin;
     this.fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-    this.turn = 'w';
-    this.selectedSquare = null;
-    this.playerColor = 'w';
     this.gameOver = false;
     this.moveHistory = [];
-    this.pieceValues = { p:1, n:3, b:3, r:5, q:9, k:0 };
     this.isThinking = false;
     this.lastMove = null;
+    this.board = null;
   }
 
   start() {
-    this.renderBoard();
+    // Clear container
+    this.container.querySelectorAll('.chess-duel-overlay').forEach(e => e.remove());
+    const overlay = document.createElement('div');
+    overlay.className = 'chess-duel-overlay';
+    overlay.style.cssText = 'position:absolute;inset:0;z-index:50;background:rgba(10,10,25,0.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;';
+    
+    // Status bar
+    const status = document.createElement('div');
+    status.id = 'chess-duel-status';
+    status.style.cssText = 'color:#fbbf24;font-family:Outfit,sans-serif;font-size:18px;font-weight:800;text-shadow:0 2px 8px rgba(0,0,0,0.8);text-align:center;';
+    status.textContent = '¡Tu turno! Juegas con blancas ♔';
+    overlay.appendChild(status);
+    
+    // Board container
+    const boardDiv = document.createElement('div');
+    boardDiv.id = 'chess-duel-board';
+    boardDiv.style.cssText = 'width:min(56vmin,340px);height:min(56vmin,340px);margin:0 auto;';
+    overlay.appendChild(boardDiv);
+    
+    // Buttons
+    const btns = document.createElement('div');
+    btns.style.cssText = 'display:flex;gap:8px;';
+    const resignBtn = document.createElement('button');
+    resignBtn.textContent = 'Rendirse';
+    resignBtn.style.cssText = 'background:#ef4444;color:#fff;border:none;padding:6px 16px;border-radius:6px;font-family:Outfit,sans-serif;font-weight:700;cursor:pointer;';
+    resignBtn.onclick = () => this.onLose();
+    btns.appendChild(resignBtn);
+    overlay.appendChild(btns);
+    
+    this.container.appendChild(overlay);
+    
+    // Init shared chess board
+    this.board = new ChessBoard({
+      containerId: 'chess-duel-board',
+      squareClass: 'chess-duel-sq',
+      pieceClass: 'chess-duel-pc',
+      popupClass: 'chess-duel-popup',
+      lightColor: '#e8d5b7',
+      darkColor: '#7c5c3e',
+      onSquareClick: (r, c, coord, piece) => this.handleClick(r, c, coord, piece)
+    });
+    
+    this.render();
     this.updateStatus('¡Tu turno! Juegas con blancas ♔');
   }
 
-  // --- ENGINE: Find best move for opponent (~300 ELO) ---
-  findOpponentMove() {
-    try {
-      const allMoves = this.getAllLegalMoves('b');
-      if (allMoves.length === 0) return null;
-      
-      // Filter: only moves that don't leave king in check
-      const validMoves = [];
-      for (const move of allMoves) {
-        const savedFEN = this.fen;
-        const savedHistory = [...this.moveHistory];
-        const savedTurn = this.turn;
-        this.executeMoveRaw(move);
-        if (!this.isKingInCheck('b')) {
-          validMoves.push(move);
-        }
-        this.fen = savedFEN;
-        this.moveHistory = savedHistory;
-        this.turn = savedTurn;
-      }
-      
-      if (validMoves.length === 0) return null; // checkmate
-      
-      // 300 ELO: 40% random among valid moves
-      if (Math.random() < 0.40) {
-        return validMoves[Math.floor(Math.random() * validMoves.length)];
-      }
-      
-      // Evaluate each valid move
-      let bestMove = validMoves[0];
-      let bestScore = -Infinity;
-      
-      for (const move of validMoves) {
-        const savedFEN = this.fen;
-        const savedHistory = [...this.moveHistory];
-        const savedTurn = this.turn;
-        
-        this.executeMoveRaw(move);
-        const score = this.evaluateBoard('b');
-        
-        this.fen = savedFEN;
-        this.moveHistory = savedHistory;
-        this.turn = savedTurn;
-        
-        if (score > bestScore) {
-          bestScore = score;
-          bestMove = move;
-        }
-      }
-      
-      // 15% blunder: pick suboptimal from valid moves
-      if (Math.random() < 0.15 && validMoves.length > 1) {
-        const others = validMoves.filter(m => m !== bestMove);
-        return others[Math.floor(Math.random() * others.length)];
-      }
-      
-      return bestMove;
-    } catch(e) {
-      console.error('Engine error:', e);
-      const moves = this.getAllLegalMoves('b');
-      return moves.length > 0 ? moves[Math.floor(Math.random() * moves.length)] : null;
-    }
+  render() {
+    if (!this.board) return;
+    this.board.setLastMove(this.lastMove?.from, this.lastMove?.to, '#fbbf24');
+    this.board.render(this.fen);
   }
 
-  // --- Simple board evaluation (material + position) ---
-  evaluateBoard(color) {
-    let score = 0;
-    for (let r = 0; r < 8; r++) {
-      for (let c = 0; c < 8; c++) {
-        const piece = this.getPiece(r, c);
-        if (!piece) continue;
-        const p = piece.toLowerCase();
-        const isWhite = piece === piece.toUpperCase();
-        const val = this.pieceValues[p] || 0;
-        
-        // Material
-        if (isWhite) {
-          score += val;
-          // Center control bonus (white perspective)
-          const centerDist = Math.abs(3.5 - r) + Math.abs(3.5 - c);
-          score += Math.max(0, (7 - centerDist) * 0.05);
-        } else {
-          score -= val;
-          const centerDist = Math.abs(3.5 - r) + Math.abs(3.5 - c);
-          score -= Math.max(0, (7 - centerDist) * 0.05);
-        }
-        
-        // Mobility bonus (piece can move = good for that side)
-        if (isWhite) score += this.generateMoves(r, c).length * 0.1;
-        else score -= this.generateMoves(r, c).length * 0.1;
-      }
-    }
-    return color === 'w' ? score : -score;
+  updateStatus(msg) {
+    const el = document.getElementById('chess-duel-status');
+    if (el) el.textContent = msg;
   }
 
-  // --- Raw move execution (modifies state, no checks) ---
-  executeMoveRaw(uciMove) {
-    const fromC = uciMove.charCodeAt(0) - 97;
-    const fromR = 8 - parseInt(uciMove[1]);
-    const toC = uciMove.charCodeAt(2) - 97;
-    const toR = 8 - parseInt(uciMove[3]);
-    
-    const { board, turn, castling, enPassant } = this.parseFEN();
-    
-    // Execute move
-    const piece = board[fromR][fromC];
-    board[toR][toC] = piece;
-    board[fromR][fromC] = null;
-    
-    // Castling: move rook too
-    if (piece && piece.toLowerCase() === 'k' && Math.abs(fromC - toC) === 2) {
-      if (toC === 6) { // kingside
-        board[toR][5] = board[toR][7];
-        board[toR][7] = null;
-      } else { // queenside
-        board[toR][3] = board[toR][0];
-        board[toR][0] = null;
-      }
-    }
-    
-    // Promotion
-    if (uciMove.length > 4) {
-      board[toR][toC] = turn === 'w' ? uciMove[4].toUpperCase() : uciMove[4].toLowerCase();
-    } else if (piece && piece.toLowerCase() === 'p' && (toR === 0 || toR === 7)) {
-      // Auto-promote to queen if not specified
-      board[toR][toC] = turn === 'w' ? 'Q' : 'q';
-    }
-    
-    let fenRows = [];
-    for (let r = 0; r < 8; r++) {
-      let row = '', empty = 0;
-      for (let c = 0; c < 8; c++) {
-        if (board[r][c]) { if (empty>0){row+=empty;empty=0;} row+=board[r][c]; }
-        else empty++;
-      }
-      if (empty>0) row+=empty;
-      fenRows.push(row);
-    }
-    const newTurn = turn === 'w' ? 'b' : 'w';
-    this.fen = fenRows.join('/') + ' ' + newTurn + ' ' + castling + ' ' + enPassant + ' 0 1';
-    this.turn = newTurn;
-    this.moveHistory.push(uciMove);
-    this.lastMove = { from: uciMove.substring(0,2), to: uciMove.substring(2,4) };
-  }
-
-  // --- PARSE FEN ---
-  parseFEN() {
+  handleClick(r, c, coord, piece) {
     const parts = this.fen.split(' ');
-    const rows = parts[0].split('/');
-    const board = [];
-    for (let r = 0; r < 8; r++) {
-      board[r] = [];
-      let c = 0;
-      for (const ch of rows[r]) {
-        if (ch >= '1' && ch <= '8') {
-          for (let i = 0; i < parseInt(ch); i++) board[r][c++] = null;
-        } else board[r][c++] = ch;
+    const turn = parts[1] || 'w';
+    if (turn !== 'w' || this.isThinking || this.gameOver) return;
+    if (!this.board) return;
+
+    if (this._selected) {
+      const fromCoord = this._selected.coord;
+      const uciMove = fromCoord + coord;
+      const validMoves = ChessEngine.getAllLegalMoves(this.fen, 'w');
+      const targetMove = validMoves.find(m => m.substring(0, 4) === uciMove.substring(0, 4));
+      if (targetMove) {
+        this._selected = null;
+        this.executeMove(targetMove, true);
+        return;
       }
+      this._selected = null;
+      this.board.clearHighlights();
     }
-    return { board, turn: parts[1], castling: parts[2], enPassant: parts[3] };
-  }
 
-  getPiece(r, c) {
-    const { board } = this.parseFEN();
-    return board[r] ? board[r][c] : null;
-  }
-
-  // --- GENERATE PSEUDO-LEGAL MOVES ---
-  generateMoves(r, c, skipCastling) {
-    const piece = this.getPiece(r, c);
-    if (!piece) return [];
-    const moves = [];
-    const color = piece === piece.toUpperCase() ? 'w' : 'b';
-    const p = piece.toLowerCase();
-
-    const add = (tr, tc) => {
-      if (tr < 0 || tr > 7 || tc < 0 || tc > 7) return false;
-      const t = this.getPiece(tr, tc);
-      if (t) {
-        const tCol = t === t.toUpperCase() ? 'w' : 'b';
-        if (tCol === color) return false;
-        moves.push({ r: tr, c: tc });
-        return false;
-      }
-      moves.push({ r: tr, c: tc });
-      return true;
-    };
-
-    const slide = (dr, dc) => { for (let i=1; i<8; i++) if (!add(r+dr*i, c+dc*i)) break; };
-
-    switch (p) {
-      case 'p': {
-        const dir = color === 'w' ? -1 : 1;
-        const sr = color === 'w' ? 6 : 1;
-        if (!this.getPiece(r+dir, c)) {
-          add(r+dir, c);
-          if (r===sr && !this.getPiece(r+2*dir, c)) add(r+2*dir, c);
-        }
-        [-1,1].forEach(dc => {
-          const t = this.getPiece(r+dir, c+dc);
-          if (t && ((t===t.toUpperCase())!==(color==='w'))) add(r+dir, c+dc);
-        });
-        break;
-      }
-      case 'n':
-        for (const [dr,dc] of [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]]) add(r+dr,c+dc);
-        break;
-      case 'b': slide(1,1);slide(1,-1);slide(-1,1);slide(-1,-1); break;
-      case 'r': slide(1,0);slide(-1,0);slide(0,1);slide(0,-1); break;
-      case 'q': slide(1,0);slide(-1,0);slide(0,1);slide(0,-1);slide(1,1);slide(1,-1);slide(-1,1);slide(-1,-1); break;
-      case 'k':
-        for (const [dr,dc] of [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]) add(r+dr,c+dc);
-        // Castling (skip when called from isSquareAttacked to avoid recursion)
-        if (!skipCastling && color === 'w' && r === 7 && c === 4) {
-          // Kingside
-          if (this.getPiece(7,7)==='R' && !this.getPiece(7,5) && !this.getPiece(7,6)
-              && !this.isSquareAttacked(7,4,'b') && !this.isSquareAttacked(7,5,'b') && !this.isSquareAttacked(7,6,'b')) {
-            moves.push({ r:7, c:6, castle: 'kingside' });
-          }
-          // Queenside
-          if (this.getPiece(7,0)==='R' && !this.getPiece(7,1) && !this.getPiece(7,2) && !this.getPiece(7,3)
-              && !this.isSquareAttacked(7,4,'b') && !this.isSquareAttacked(7,3,'b') && !this.isSquareAttacked(7,2,'b')) {
-            moves.push({ r:7, c:2, castle: 'queenside' });
-          }
-        }
-        if (!skipCastling && color === 'b' && r === 0 && c === 4) {
-          if (this.getPiece(0,7)==='r' && !this.getPiece(0,5) && !this.getPiece(0,6)
-              && !this.isSquareAttacked(0,4,'w') && !this.isSquareAttacked(0,5,'w') && !this.isSquareAttacked(0,6,'w')) {
-            moves.push({ r:0, c:6, castle: 'kingside' });
-          }
-          if (this.getPiece(0,0)==='r' && !this.getPiece(0,1) && !this.getPiece(0,2) && !this.getPiece(0,3)
-              && !this.isSquareAttacked(0,4,'w') && !this.isSquareAttacked(0,3,'w') && !this.isSquareAttacked(0,2,'w')) {
-            moves.push({ r:0, c:2, castle: 'queenside' });
-          }
-        }
-        break;
+    if (piece && piece === piece.toUpperCase()) {
+      this._selected = { r, c, coord };
+      this.board.setSelected(coord);
+      const moves = ChessEngine.getAllLegalMoves(this.fen, 'w');
+      this.board.showLegalMoves(moves, coord);
     }
-    return moves;
   }
 
-  // Check if a square is attacked by any piece of the given color
-  isSquareAttacked(r, c, byColor) {
-    for (let rr=0; rr<8; rr++) {
-      for (let cc=0; cc<8; cc++) {
-        const piece = this.getPiece(rr, cc);
-        if (!piece) continue;
-        const pCol = piece === piece.toUpperCase() ? 'w' : 'b';
-        if (pCol !== byColor) continue;
-        const moves = this.generateMoves(rr, cc, true);
-        if (moves.some(m => m.r === r && m.c === c)) return true;
-      }
-    }
-    return false;
-  }
-
-  // --- GET ALL LEGAL MOVES ---
-  getAllLegalMoves(color) {
-    const moves = [];
-    for (let r=0; r<8; r++) {
-      for (let c=0; c<8; c++) {
-        const piece = this.getPiece(r, c);
-        if (!piece) continue;
-        const isW = piece === piece.toUpperCase();
-        if ((color==='w'&&!isW)||(color==='b'&&isW)) continue;
-        this.generateMoves(r,c).forEach(to => {
-          const from = String.fromCharCode(97+c)+(8-r);
-          const toSq = String.fromCharCode(97+to.c)+(8-to.r);
-          let move = from+toSq;
-          // Add promotion piece
-          if (piece.toLowerCase()==='p' && (to.r===0||to.r===7)) move += 'q';
-          moves.push(move);
-        });
-      }
-    }
-    return moves;
-  }
-
-  // --- EXECUTE A MOVE (with validation) ---
   executeMove(uciMove, isPlayer) {
     if (this.gameOver) return;
-    // Only block player moves while thinking, not engine moves
     if (isPlayer && this.isThinking) return;
-    
-    const fromC = uciMove.charCodeAt(0) - 97;
-    const fromR = 8 - parseInt(uciMove[1]);
-    const toC = uciMove.charCodeAt(2) - 97;
-    const toR = 8 - parseInt(uciMove[3]);
-    
-    // Validate against our own king being left in check
-    const savedFEN = this.fen;
-    const savedHistory = [...this.moveHistory];
-    const savedTurn = this.turn;
-    
-    this.executeMoveRaw(uciMove);
-    
-    const currentColor = isPlayer ? 'w' : 'b';
-    if (this.isKingInCheck(currentColor)) {
-      this.fen = savedFEN;
-      this.moveHistory = savedHistory;
-      this.turn = savedTurn;
-      return;
-    }
-    
-    this.renderBoard();
-    
-    // Check game over — verify if any legal move exists (king safety)
-    const nextColor = this.turn;
-    const allMoves = this.getAllLegalMoves(nextColor);
-    let hasLegalMove = false;
-    for (const move of allMoves) {
-      const savedFEN = this.fen;
-      const savedHistory = [...this.moveHistory];
-      const savedTurn = this.turn;
-      this.executeMoveRaw(move);
-      if (!this.isKingInCheck(nextColor)) {
-        hasLegalMove = true;
-        this.fen = savedFEN;
-        this.moveHistory = savedHistory;
-        this.turn = savedTurn;
-        break;
-      }
-      this.fen = savedFEN;
-      this.moveHistory = savedHistory;
-      this.turn = savedTurn;
-    }
-    
-    if (!hasLegalMove) {
+
+    // Validate move doesn't leave own king in check
+    const color = isPlayer ? 'w' : 'b';
+    const nextFEN = ChessEngine.executeMoveRaw(this.fen, uciMove);
+    if (ChessEngine.isKingInCheck(nextFEN, color)) return;
+
+    this.fen = nextFEN;
+    this.moveHistory.push(uciMove);
+    this.lastMove = { from: uciMove.substring(0,2), to: uciMove.substring(2,4) };
+    this.render();
+
+    const newParts = this.fen.split(' ');
+    const nextTurn = newParts[1] || 'w';
+
+    // Check game end
+    if (ChessEngine.isCheckmate(this.fen, nextTurn)) {
       this.gameOver = true;
-      if (this.isKingInCheck(nextColor)) {
-        if (isPlayer) {
-          this.updateStatus('¡JAQUE MATE! ¡Ganaste! 🎉');
-          setTimeout(() => this.onWin(), 1500);
-        } else {
-          this.updateStatus('Jaque mate. Fin del juego 😞');
-          setTimeout(() => this.onLose(), 1500);
-        }
-      } else {
-        this.updateStatus('¡Ahogado! Tablas — vuelve a intentarlo 🔄');
-        setTimeout(() => this.onStalemate(), 1500);
-      }
+      this.updateStatus(isPlayer ? '¡JAQUE MATE! ¡Victoria!' : 'Jaque mate... Derrota.');
+      if (isPlayer) setTimeout(() => this.onWin(), 800);
+      else setTimeout(() => this.onLose(), 800);
       return;
     }
-    
-    // Opponent's turn
-    if (this.turn === 'b' && !this.gameOver) {
+    if (ChessEngine.isStalemate(this.fen, nextTurn)) {
+      this.gameOver = true;
+      this.updateStatus('¡Ahogado! Tablas.');
+      setTimeout(() => this.onStalemate(), 800);
+      return;
+    }
+
+    if (nextTurn === 'b' && isPlayer) {
       this.isThinking = true;
-      this.updateStatus('Equis está pensando... 🤔');
-      
-      setTimeout(() => {
-        if (this.gameOver) { this.isThinking = false; return; }
-        const move = this.findOpponentMove();
-        if (move) {
-          this.executeMove(move, false);
-        } else {
-          // No valid moves = engine detected checkmate
-          this.isThinking = false;
-        }
-        this.isThinking = false;
-      }, 500 + Math.random() * 600);
-    } else if (this.turn === 'w') {
+      this.updateStatus('Caballo de Ŋ está pensando...');
+      setTimeout(() => this.opponentMove(), 400 + Math.random() * 400);
+    } else if (!isPlayer) {
+      this.isThinking = false;
       this.updateStatus('¡Tu turno! ♔');
     }
   }
 
-  isKingInCheck(color) {
-    const king = color === 'w' ? 'K' : 'k';
-    let kr = -1, kc = -1;
-    for (let r=0; r<8; r++) {
-      for (let c=0; c<8; c++) {
-        if (this.getPiece(r,c)===king){kr=r;kc=c;break;}
-      }
-      if (kr>=0) break;
+  opponentMove() {
+    const validMoves = ChessEngine.getAllLegalMoves(this.fen, 'b');
+    if (validMoves.length === 0) {
+      this.isThinking = false;
+      this.render();
+      // Check game end for player
+      if (ChessEngine.isCheckmate(this.fen, 'w')) { this.gameOver = true; this.updateStatus('Jaque mate... Derrota.'); setTimeout(() => this.onLose(), 800); }
+      else { this.gameOver = true; this.updateStatus('¡Ahogado! Tablas.'); setTimeout(() => this.onStalemate(), 800); }
+      return;
     }
-    if (kr<0) return false;
-    const opp = color==='w'?'b':'w';
-    for (let r=0; r<8; r++) {
-      for (let c=0; c<8; c++) {
-        const p = this.getPiece(r,c);
-        if (!p) continue;
-        const pCol = p===p.toUpperCase()?'w':'b';
-        if (pCol!==opp) continue;
-        if (this.generateMoves(r,c).some(m=>m.r===kr&&m.c===kc)) return true;
-      }
-    }
-    return false;
-  }
 
-  // --- RENDER CHESS BOARD ---
-  renderBoard() {
-    const existing = document.getElementById('chess-overlay');
-    if (existing) existing.remove();
-    
-    const overlay = document.createElement('div');
-    overlay.id = 'chess-overlay';
-    overlay.style.cssText = `
-      position:absolute;inset:0;z-index:50;
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);
-      font-family:'Outfit',sans-serif;
-    `;
-    
-    overlay.innerHTML = `
-      <div style="background:rgba(20,15,10,0.92);border:3px solid #8B6914;border-radius:16px;padding:18px;text-align:center;">
-        <h2 style="color:#daa520;margin:0 0 6px 0;font-size:22px;">🐴 Desafío de Ajedrez — Equis</h2>
-        <p id="chess-status" style="color:#cbd5e1;font-size:13px;margin-bottom:10px;">Cargando...</p>
-        <div id="chess-board" style="display:grid;grid-template-columns:repeat(8,50px);grid-template-rows:repeat(8,50px);border:2px solid #5c3d0e;margin:0 auto;"></div>
-        <button id="chess-resign" style="margin-top:10px;background:#8b0000;color:#fff;border:none;padding:5px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif;">Rendirse ✕</button>
-      </div>
-    `;
-    
-    this.container.appendChild(overlay);
-    
-    const boardEl = document.getElementById('chess-board');
-    const { board } = this.parseFEN();
-    const sym = {
-      'K':'♔','Q':'♕','R':'♖','B':'♗','N':'♘','P':'♙',
-      'k':'♚','q':'♛','r':'♜','b':'♝','n':'♞','p':'♟'
-    };
-    
-    for (let r=0; r<8; r++) {
-      for (let c=0; c<8; c++) {
-        const sq = document.createElement('div');
-        const light = (r+c)%2===0;
-        sq.style.cssText = `
-          width:50px;height:50px;
-          background:${light?'#f0d9b5':'#b58863'};
-          display:flex;align-items:center;justify-content:center;
-          font-size:38px;cursor:pointer;user-select:none;
-          font-weight:700;
-        `;
-        sq.dataset.r=r; sq.dataset.c=c;
-        const piece = board[r][c];
-        if (piece) {
-          sq.textContent = sym[piece]||'';
-          // White pieces: bright ivory with dark shadow, Black: dark charcoal
-          sq.style.color = piece===piece.toUpperCase()?'#fffef0':'#1a1a1a';
-          sq.style.textShadow = piece===piece.toUpperCase()
-            ? '0 2px 3px rgba(0,0,0,0.4)'
-            : '0 1px 2px rgba(255,255,255,0.15)';
-        }
-        sq.addEventListener('click', ()=>this.handleClick(r,c));
-        // Highlight last move
-        if (this.lastMove) {
-          const fromCol = this.lastMove.from.charCodeAt(0) - 97;
-          const fromRow = 8 - parseInt(this.lastMove.from[1]);
-          const toCol = this.lastMove.to.charCodeAt(0) - 97;
-          const toRow = 8 - parseInt(this.lastMove.to[1]);
-          if ((r===fromRow && c===fromCol) || (r===toRow && c===toCol)) {
-            sq.style.background = (r+c)%2===0 ? '#c8d45a' : '#a8b440';
-          }
-        }
-        boardEl.appendChild(sq);
+    // Simple opponent AI (ELO ~400 with blunders)
+    let chosen;
+    if (Math.random() < 0.45) {
+      chosen = validMoves[Math.floor(Math.random() * validMoves.length)];
+    } else {
+      validMoves.sort((a, b) => {
+        const sa = ChessEngine.evaluateBoard(ChessEngine.executeMoveRaw(this.fen, a), 'b');
+        const sb = ChessEngine.evaluateBoard(ChessEngine.executeMoveRaw(this.fen, b), 'b');
+        return sb - sa;
+      });
+      chosen = validMoves[0];
+      // Blunder chance
+      if (Math.random() < 0.20 && validMoves.length > 1) {
+        const others = validMoves.filter(m => m !== chosen);
+        chosen = others[Math.floor(Math.random() * others.length)];
       }
     }
     
-    document.getElementById('chess-resign').addEventListener('click', ()=>{
-      this.gameOver = true;
-      this.updateStatus('Te rendiste 😞');
-      setTimeout(()=>this.onLose(), 1000);
-    });
-    
-    this.updateStatus(this.turn==='w'?'¡Tu turno! ♔':'Equis está pensando... 🤔');
-  }
-
-  handleClick(r, c) {
-    if (this.gameOver || this.turn!=='w' || this.isThinking) return;
-    
-    const piece = this.getPiece(r, c);
-    const isWhite = piece && piece===piece.toUpperCase();
-    
-    document.querySelectorAll('#chess-board div').forEach(sq=>{
-      sq.style.boxShadow=''; sq.style.outline='';
-    });
-    
-    if (this.selectedSquare) {
-      const fr=this.selectedSquare.r, fc=this.selectedSquare.c;
-      const moves=this.generateMoves(fr,fc);
-      if (moves.some(m=>m.r===r&&m.c===c)) {
-        const from=String.fromCharCode(97+fc)+(8-fr);
-        const to=String.fromCharCode(97+c)+(8-r);
-        // Auto-promote pawn to queen
-        const piece = this.getPiece(fr, fc);
-        let uci = from+to;
-        if (piece && piece.toLowerCase()==='p' && (r===0||r===7)) uci += 'q';
-        this.selectedSquare=null;
-        this.executeMove(uci, true);
-        return;
-      }
-      this.selectedSquare=null;
-      if (isWhite) {
-        this.selectedSquare={r,c};
-        this.highlight(r,c,'#4ade80');
-        this.highlightMoves(r,c);
-      }
-    } else if (isWhite) {
-      this.selectedSquare={r,c};
-      this.highlight(r,c,'#4ade80');
-      this.highlightMoves(r,c);
-    }
-  }
-
-  highlight(r,c,color) {
-    const sq=document.querySelector(`#chess-board div[data-r="${r}"][data-c="${c}"]`);
-    if (sq) sq.style.outline=`3px solid ${color}`;
-  }
-
-  highlightMoves(r,c) {
-    this.generateMoves(r,c).forEach(m=>{
-      const t=this.getPiece(m.r,m.c);
-      const color=t?'rgba(239,68,68,0.55)':'rgba(74,222,128,0.35)';
-      const sq=document.querySelector(`#chess-board div[data-r="${m.r}"][data-c="${m.c}"]`);
-      if (sq) sq.style.boxShadow=`inset 0 0 0 4px ${color}`;
-    });
-  }
-
-  updateStatus(msg) {
-    const el = document.getElementById('chess-status');
-    if (el) el.textContent = msg;
-  }
-
-  destroy() {
-    this.gameOver = true;
-    const overlay = document.getElementById('chess-overlay');
-    if (overlay) overlay.remove();
+    this.isThinking = false;
+    this.executeMove(chosen, false);
   }
 };
