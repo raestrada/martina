@@ -27,10 +27,10 @@ window.ChessDuel = class ChessDuel {
     status.textContent = '¡Tu turno! Juegas con blancas ♔';
     overlay.appendChild(status);
     
-    // Board container
+    // Board container — needs explicit grid for ChessBoard
     const boardDiv = document.createElement('div');
     boardDiv.id = 'chess-duel-board';
-    boardDiv.style.cssText = 'width:min(56vmin,340px);height:min(56vmin,340px);margin:0 auto;';
+    boardDiv.style.cssText = 'display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);width:min(50vmin,300px);height:min(50vmin,300px);margin:0 auto;border:3px solid #8B6914;border-radius:6px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.5);';
     overlay.appendChild(boardDiv);
     
     // Buttons
