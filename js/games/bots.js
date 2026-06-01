@@ -784,348 +784,14 @@ class BotsGame {
     return profiles[botId] || { gender: 'male', pitch: 'normal' };
   }
 
-  // ========== CHESS ENGINE ==========
-  parseFEN(fen) {
-    const parts = fen.split(' ');
-    const rows = parts[0].split('/');
-    const board = [];
-    for (let r = 0; r < 8; r++) {
-      board[r] = [];
-      let c = 0;
-      for (const ch of rows[r]) {
-        if (ch >= '1' && ch <= '8') {
-          for (let i = 0; i < parseInt(ch); i++) board[r][c++] = null;
-        } else {
-          board[r][c++] = ch;
-        }
-      }
-    }
-    return board;
-  }
-
-  buildFEN(board, turn, castling, epSquare, halfmove, fullmove) {
-    const rows = [];
-    for (let r = 0; r < 8; r++) {
-      let row = '', empty = 0;
-      for (let c = 0; c < 8; c++) {
-        if (board[r][c]) {
-          if (empty > 0) { row += empty; empty = 0; }
-          row += board[r][c];
-        } else {
-          empty++;
-        }
-      }
-      if (empty > 0) row += empty;
-      rows.push(row);
-    }
-    return `${rows.join('/')} ${turn} ${castling} ${epSquare} ${halfmove} ${fullmove}`;
-  }
-
-  executeMoveRaw(fen, uciMove) {
-    const fromC = uciMove.charCodeAt(0) - 97;
-    const fromR = 8 - parseInt(uciMove[1]);
-    const toC = uciMove.charCodeAt(2) - 97;
-    const toR = 8 - parseInt(uciMove[3]);
-    const promo = uciMove.length > 4 ? uciMove[4] : null;
-
-    const board = this.parseFEN(fen);
-    const parts = fen.split(' ');
-    const turn = parts[1] || 'w';
-    let castling = parts[2] || '-';
-    const epSquare = parts[3] || '-';
-    const halfmove = parseInt(parts[4] || '0');
-    const fullmove = parseInt(parts[5] || '1');
-
-    const piece = board[fromR][fromC];
-    const captured = board[toR][toC];
-
-    // En passant capture (only board manipulation, no UI tracking here)
-    if (piece && piece.toLowerCase() === 'p' && !captured && epSquare !== '-') {
-      const epC = epSquare.charCodeAt(0) - 97;
-      const epR = 8 - parseInt(epSquare[1]);
-      if (toC === epC && toR === epR) {
-        board[fromR][epC] = null;
-      }
-    }
-
-    board[toR][toC] = piece;
-    board[fromR][fromC] = null;
-
-    // Promotion
-    if (promo) {
-      board[toR][toC] = turn === 'w' ? promo.toUpperCase() : promo.toLowerCase();
-    } else if (piece && piece.toLowerCase() === 'p' && (toR === 0 || toR === 7)) {
-      board[toR][toC] = turn === 'w' ? 'Q' : 'q';
-    }
-
-    // Update castling rights
-    if (piece === 'K') castling = castling.replace('K', '').replace('Q', '');
-    if (piece === 'k') castling = castling.replace('k', '').replace('q', '');
-    if (fromR === 7 && fromC === 7) castling = castling.replace('K', '');
-    if (fromR === 7 && fromC === 0) castling = castling.replace('Q', '');
-    if (fromR === 0 && fromC === 7) castling = castling.replace('k', '');
-    if (fromR === 0 && fromC === 0) castling = castling.replace('q', '');
-    // Rook captured
-    if (toR === 7 && toC === 7) castling = castling.replace('K', '');
-    if (toR === 7 && toC === 0) castling = castling.replace('Q', '');
-    if (toR === 0 && toC === 7) castling = castling.replace('k', '');
-    if (toR === 0 && toC === 0) castling = castling.replace('q', '');
-    if (castling === '') castling = '-';
-
-    // Castling: move rook too
-    if (piece && piece.toLowerCase() === 'k' && Math.abs(fromC - toC) === 2) {
-      if (toC === 6) {
-        board[toR][5] = board[toR][7];
-        board[toR][7] = null;
-      } else {
-        board[toR][3] = board[toR][0];
-        board[toR][0] = null;
-      }
-    }
-
-    // Set en passant square
-    let newEp = '-';
-    if (piece && piece.toLowerCase() === 'p' && Math.abs(toR - fromR) === 2) {
-      const epR = (fromR + toR) / 2;
-      newEp = String.fromCharCode(97 + fromC) + (8 - epR);
-    }
-
-    const newTurn = turn === 'w' ? 'b' : 'w';
-    const newHalfmove = (piece && piece.toLowerCase() === 'p') || captured ? 0 : halfmove + 1;
-    const newFullmove = turn === 'b' ? fullmove + 1 : fullmove;
-
-    return this.buildFEN(board, newTurn, castling, newEp, newHalfmove, newFullmove);
-  }
-
-  generatePseudoMoves(fen, r, c, skipCastling) {
-    const board = this.parseFEN(fen);
-    const fenParts = fen.split(' ');
-    const castling = fenParts[2] || '-';
-    const epSquare = fenParts[3] || '-';
-
-    const piece = board[r] ? board[r][c] : null;
-    if (!piece) return [];
-
-    const moves = [];
-    const color = piece === piece.toUpperCase() ? 'w' : 'b';
-    const p = piece.toLowerCase();
-
-    const add = (tr, tc) => {
-      if (tr < 0 || tr > 7 || tc < 0 || tc > 7) return false;
-      const t = board[tr][tc];
-      if (t) {
-        const tCol = t === t.toUpperCase() ? 'w' : 'b';
-        if (tCol === color) return false;
-        moves.push({ r: tr, c: tc });
-        return false;
-      }
-      moves.push({ r: tr, c: tc });
-      return true;
-    };
-
-    const slide = (dr, dc) => {
-      for (let i = 1; i < 8; i++) {
-        if (!add(r + dr * i, c + dc * i)) break;
-      }
-    };
-
-    switch (p) {
-      case 'p': {
-        const dir = color === 'w' ? -1 : 1;
-        const sr = color === 'w' ? 6 : 1;
-        if (r + dir >= 0 && r + dir < 8 && !board[r + dir][c]) {
-          add(r + dir, c);
-          if (r === sr && !board[r + 2 * dir][c]) add(r + 2 * dir, c);
-        }
-        [-1, 1].forEach(dc => {
-          if (c + dc >= 0 && c + dc < 8 && r + dir >= 0 && r + dir < 8) {
-            const t = board[r + dir][c + dc];
-            if (t && (t === t.toUpperCase()) !== (color === 'w')) add(r + dir, c + dc);
-          }
-        });
-        // En passant
-        if (epSquare !== '-') {
-          const epC = epSquare.charCodeAt(0) - 97;
-          const epR = 8 - parseInt(epSquare[1]);
-          if (r + dir === epR && Math.abs(c - epC) === 1) {
-            moves.push({ r: epR, c: epC });
-          }
-        }
-        break;
-      }
-      case 'n':
-        for (const [dr, dc] of [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]]) {
-          add(r + dr, c + dc);
-        }
-        break;
-      case 'b': slide(1,1); slide(1,-1); slide(-1,1); slide(-1,-1); break;
-      case 'r': slide(1,0); slide(-1,0); slide(0,1); slide(0,-1); break;
-      case 'q': slide(1,0); slide(-1,0); slide(0,1); slide(0,-1); slide(1,1); slide(1,-1); slide(-1,1); slide(-1,-1); break;
-      case 'k':
-        for (const [dr, dc] of [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]) {
-          add(r + dr, c + dc);
-        }
-        if (!skipCastling) {
-          if (color === 'w' && r === 7 && c === 4) {
-            if (castling.includes('K') && board[7][7] === 'R' && !board[7][5] && !board[7][6] &&
-                !this.isSquareAttacked(fen, 7, 4, 'b') && !this.isSquareAttacked(fen, 7, 5, 'b') && !this.isSquareAttacked(fen, 7, 6, 'b')) {
-              moves.push({ r: 7, c: 6 });
-            }
-            if (castling.includes('Q') && board[7][0] === 'R' && !board[7][1] && !board[7][2] && !board[7][3] &&
-                !this.isSquareAttacked(fen, 7, 4, 'b') && !this.isSquareAttacked(fen, 7, 3, 'b') && !this.isSquareAttacked(fen, 7, 2, 'b')) {
-              moves.push({ r: 7, c: 2 });
-            }
-          }
-          if (color === 'b' && r === 0 && c === 4) {
-            if (castling.includes('k') && board[0][7] === 'r' && !board[0][5] && !board[0][6] &&
-                !this.isSquareAttacked(fen, 0, 4, 'w') && !this.isSquareAttacked(fen, 0, 5, 'w') && !this.isSquareAttacked(fen, 0, 6, 'w')) {
-              moves.push({ r: 0, c: 6 });
-            }
-            if (castling.includes('q') && board[0][0] === 'r' && !board[0][1] && !board[0][2] && !board[0][3] &&
-                !this.isSquareAttacked(fen, 0, 4, 'w') && !this.isSquareAttacked(fen, 0, 3, 'w') && !this.isSquareAttacked(fen, 0, 2, 'w')) {
-              moves.push({ r: 0, c: 2 });
-            }
-          }
-        }
-        break;
-    }
-    return moves;
-  }
-
-  isSquareAttacked(fen, r, c, byColor) {
-    const board = this.parseFEN(fen);
-    for (let rr = 0; rr < 8; rr++) {
-      for (let cc = 0; cc < 8; cc++) {
-        const piece = board[rr][cc];
-        if (!piece) continue;
-        const pCol = piece === piece.toUpperCase() ? 'w' : 'b';
-        if (pCol !== byColor) continue;
-        const moves = this.generatePseudoMoves(fen, rr, cc, true);
-        if (moves.some(m => m.r === r && m.c === c)) return true;
-      }
-    }
-    return false;
-  }
-
-  getAllLegalMoves(fen, color) {
-    const moves = [];
-    const board = this.parseFEN(fen);
-
-    for (let r = 0; r < 8; r++) {
-      for (let c = 0; c < 8; c++) {
-        const piece = board[r][c];
-        if (!piece) continue;
-        const isW = piece === piece.toUpperCase();
-        if ((color === 'w' && !isW) || (color === 'b' && isW)) continue;
-
-        const pseudo = this.generatePseudoMoves(fen, r, c);
-        pseudo.forEach(to => {
-          const from = String.fromCharCode(97 + c) + (8 - r);
-          const toSq = String.fromCharCode(97 + to.c) + (8 - to.r);
-          let m = from + toSq;
-          if (piece.toLowerCase() === 'p' && (to.r === 0 || to.r === 7)) m += 'q';
-
-          const nextFEN = this.executeMoveRaw(fen, m);
-          // Restore captured pieces tracking since this is just a validation
-          if (!this.isKingInCheck(nextFEN, color)) {
-            moves.push(m);
-          }
-        });
-      }
-    }
-    return moves;
-  }
-
-  isKingInCheck(fen, color) {
-    const board = this.parseFEN(fen);
-    const king = color === 'w' ? 'K' : 'k';
-    let kr = -1, kc = -1;
-
-    for (let r = 0; r < 8; r++) {
-      for (let c = 0; c < 8; c++) {
-        if (board[r][c] === king) { kr = r; kc = c; break; }
-      }
-      if (kr >= 0) break;
-    }
-    if (kr < 0) return false;
-
-    const opponentColor = color === 'w' ? 'b' : 'w';
-    return this.isSquareAttacked(fen, kr, kc, opponentColor);
-  }
-
-  isCheckmate(fen, color) {
-    const legalMoves = this.getAllLegalMoves(fen, color);
-    return legalMoves.length === 0 && this.isKingInCheck(fen, color);
-  }
-
-  isStalemate(fen, color) {
-    const legalMoves = this.getAllLegalMoves(fen, color);
-    return legalMoves.length === 0 && !this.isKingInCheck(fen, color);
-  }
-
-  getMoveCategory(fen, uciMove) {
-    const board = this.parseFEN(fen);
-    const fromC = uciMove.charCodeAt(0) - 97;
-    const fromR = 8 - parseInt(uciMove[1]);
-    const toC = uciMove.charCodeAt(2) - 97;
-    const toR = 8 - parseInt(uciMove[3]);
-
-    const piece = board[fromR][fromC];
-    const captured = board[toR][toC];
-
-    const nextFEN = this.executeMoveRaw(fen, uciMove);
-    const parts = fen.split(' ');
-    const turn = parts[1] || 'w';
-    const oppColor = turn === 'w' ? 'b' : 'w';
-
-    const categories = [];
-
-    if (captured) categories.push('capture');
-    if (this.isKingInCheck(nextFEN, oppColor)) categories.push('check');
-    if (piece && piece.toLowerCase() === 'p' && (toR === 0 || toR === 7)) categories.push('promotion');
-    if (piece && piece.toLowerCase() === 'k' && Math.abs(fromC - toC) === 2) categories.push('castle');
-
-    // Check if it's a sacrifice (captured a defended piece, or gave up material)
-    if (captured && !categories.includes('capture')) categories.push('capture');
-
-    return categories.length > 0 ? categories : ['move'];
-  }
-
-  evaluateBoardLocal(fen, color) {
-    const board = this.parseFEN(fen);
-    const pieceValues = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
-    let score = 0;
-
-    for (let r = 0; r < 8; r++) {
-      for (let c = 0; c < 8; c++) {
-        const piece = board[r][c];
-        if (!piece) continue;
-        const p = piece.toLowerCase();
-        const isWhite = piece === piece.toUpperCase();
-        const val = pieceValues[p] || 0;
-
-        if (isWhite) {
-          score += val;
-          const d = Math.abs(3.5 - r) + Math.abs(3.5 - c);
-          score += Math.max(0, (7 - d) * 0.04);
-        } else {
-          score -= val;
-          const d = Math.abs(3.5 - r) + Math.abs(3.5 - c);
-          score -= Math.max(0, (7 - d) * 0.04);
-        }
-      }
-    }
-    return color === 'w' ? score : -score;
-  }
-
   // ========== STOCKFISH INTEGRATION ==========
   _detectGameEnd(isPlayer) {
     const parts = this.chessFEN.split(' ');
     const nextTurn = parts[1] || 'w';
-    if (this.isCheckmate(this.chessFEN, nextTurn)) {
+    if (ChessEngine.isCheckmate(this.chessFEN, nextTurn)) {
       if (isPlayer) this.endGame('win', '¡JAQUE MATE!');
       else this.endGame('lose', 'Jaque mate.');
-    } else if (this.isStalemate(this.chessFEN, nextTurn)) {
+    } else if (ChessEngine.isStalemate(this.chessFEN, nextTurn)) {
       this.endGame('draw', '¡Ahogado! Tablas.');
     }
   }
@@ -1259,7 +925,7 @@ class BotsGame {
     const bl = bot.boardLight || '#e8d5b7';
     const bd = bot.boardDark || '#7c5c3e';
 
-    const board = this.parseFEN(this.chessFEN);
+    const board = ChessEngine.parseFEN(this.chessFEN);
     const pieceMap = {
       'K': 'wK', 'Q': 'wQ', 'R': 'wR', 'B': 'wB', 'N': 'wN', 'P': 'wP',
       'k': 'bK', 'q': 'bQ', 'r': 'bR', 'b': 'bB', 'n': 'bN', 'p': 'bP'
@@ -1316,7 +982,7 @@ class BotsGame {
     const turn = parts[1] || 'w';
     if (turn !== 'w' || this.isThinking || !this.gameActive) return;
 
-    const board = this.parseFEN(this.chessFEN);
+    const board = ChessEngine.parseFEN(this.chessFEN);
     const piece = board[r][c];
     const file = String.fromCharCode(97 + c);
     const rank = 8 - r;
@@ -1327,7 +993,7 @@ class BotsGame {
     if (this.selectedSquare) {
       const fromCoord = this.selectedSquare.coord;
       const uciMove = fromCoord + coord;
-      const validMoves = this.getAllLegalMoves(this.chessFEN, 'w');
+      const validMoves = ChessEngine.getAllLegalMoves(this.chessFEN, 'w');
       const targetMove = validMoves.find(m => m.substring(0, 4) === uciMove.substring(0, 4));
 
       if (targetMove) {
@@ -1343,7 +1009,7 @@ class BotsGame {
       const sq = document.querySelector(`#bots-board .bots-chess-sq[data-coord="${coord}"]`);
       if (sq) sq.style.outline = '3px solid #fbbf24';
 
-      const moves = this.getAllLegalMoves(this.chessFEN, 'w');
+      const moves = ChessEngine.getAllLegalMoves(this.chessFEN, 'w');
       moves.forEach(m => {
         if (m.substring(0, 2) === coord) {
           const dest = m.substring(2, 4);
@@ -1366,12 +1032,12 @@ class BotsGame {
 
     this.playMove();
 
-    const moveCategories = this.getMoveCategory(this.chessFEN, uciMove);
+    const moveCategories = ChessEngine.getMoveCategory(this.chessFEN, uciMove);
 
     // Track captured piece BEFORE executing move
     const fenParts = this.chessFEN.split(' ');
     const epSquare = fenParts[3] || '-';
-    const boardBefore = this.parseFEN(this.chessFEN);
+    const boardBefore = ChessEngine.parseFEN(this.chessFEN);
     const fromC = uciMove.charCodeAt(0) - 97;
     const fromR = 8 - parseInt(uciMove[1]);
     const toC = uciMove.charCodeAt(2) - 97;
@@ -1399,7 +1065,7 @@ class BotsGame {
     if (moveCategories.includes('check')) this.playCheck();
 
     // Evaluate BEFORE move for annotation
-    const evalBefore = this.evaluateBoardLocal(this.chessFEN, 'w');
+    const evalBefore = ChessEngine.evaluateBoard(this.chessFEN, 'w');
 
     // For opponent moves: flash from/to squares before rendering
     if (!isPlayer) {
@@ -1412,12 +1078,12 @@ class BotsGame {
       this.updateStatus(`${this.selectedBot.name} jugó ${uciMove}`, 'thinking');
     }
 
-    this.chessFEN = this.executeMoveRaw(this.chessFEN, uciMove);
+    this.chessFEN = ChessEngine.executeMoveRaw(this.chessFEN, uciMove);
     this.lastChessMove = { from: uciMove.substring(0, 2), to: uciMove.substring(2, 4) };
     this.chessHistory.push(uciMove);
 
     // Validate FEN integrity (should never fail, but catches rare engine bugs)
-    const boardAfter = this.parseFEN(this.chessFEN);
+    const boardAfter = ChessEngine.parseFEN(this.chessFEN);
     let pieceCount = 0;
     let kings = { K: 0, k: 0 };
     for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
@@ -1429,7 +1095,7 @@ class BotsGame {
     }
 
     // Evaluate AFTER move and classify
-    const evalAfter = this.evaluateBoardLocal(this.chessFEN, 'w');
+    const evalAfter = ChessEngine.evaluateBoard(this.chessFEN, 'w');
     const diff = isPlayer ? (evalAfter - evalBefore) : (evalBefore - evalAfter);
     this.moveAnnotations[uciMove] = this.classifyMove(diff, isPlayer, moveCategories);
     this.lastEval = evalAfter;
@@ -1476,7 +1142,7 @@ class BotsGame {
     const newParts = this.chessFEN.split(' ');
     const nextTurn = newParts[1] || 'w';
 
-    if (this.isCheckmate(this.chessFEN, nextTurn)) {
+    if (ChessEngine.isCheckmate(this.chessFEN, nextTurn)) {
       if (isPlayer) {
         this.endGame('win', '¡JAQUE MATE!');
       } else {
@@ -1485,7 +1151,7 @@ class BotsGame {
       return;
     }
 
-    if (this.isStalemate(this.chessFEN, nextTurn)) {
+    if (ChessEngine.isStalemate(this.chessFEN, nextTurn)) {
       this.endGame('draw', '¡Ahogado! Tablas.');
       return;
     }
@@ -1542,7 +1208,7 @@ class BotsGame {
   }
 
   updateCommentary() {
-    const score = this.evaluateBoardLocal(this.chessFEN, 'w');
+    const score = ChessEngine.evaluateBoard(this.chessFEN, 'w');
     const moves = this.chessHistory.length;
     const parts = this.chessFEN.split(' ');
     const fenPieces = parts[0].replace(/[0-9\/]/g, '').length;
@@ -1567,7 +1233,7 @@ class BotsGame {
     const updateMat = (id, big) => {
       const el = document.getElementById(id);
       if (!el) return;
-      const board = this.parseFEN(this.chessFEN);
+      const board = ChessEngine.parseFEN(this.chessFEN);
       const vals = {p:1,n:3,b:3,r:5,q:9,k:0};
       let mat = 0;
       for (let r = 0; r < 8; r++) {
