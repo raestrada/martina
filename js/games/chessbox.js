@@ -919,7 +919,7 @@ class ChessBoxGame {
   }
 
   // =========================================================================
-  // --- JAPANESE ANIME / MEGA MAN CHILLENGER PRESENTATION INTRO SCREEN ---
+  // --- JAPANESE ANIME / MEGA MAN CHALLENGER PRESENTATION INTRO SCREEN ---
   // =========================================================================
   showChallengerIntro(onComplete) {
     const levelIdx = this.currentLevelIndex;
@@ -934,10 +934,13 @@ class ChessBoxGame {
     // Stop any playing music
     this.stopMusic();
     
-    // Play SFX
+    // Play SFX & voice
     try {
       const audioCtx = this._getAudioCtx();
-      if (audioCtx) this.playAnimeIntroSound(audioCtx);
+      if (audioCtx) {
+        this.playAnimeIntroSound(audioCtx);
+        this.playAnnouncerVoice("¡Nuevo combate! ¿Preparados?");
+      }
     } catch (e) {
       console.warn("Could not play anime intro sound:", e);
     }
@@ -1011,13 +1014,16 @@ class ChessBoxGame {
       <!-- Center flashing diagonal slash -->
       <div class="intro-diagonal-slash"></div>
       
-      <!-- Giant VS in center -->
-      <div class="intro-vs-container">
+      <!-- Giant VS in center with flashing READY? -->
+      <div class="intro-vs-container" style="display: flex; flex-direction: column; align-items: center;">
         <div class="intro-vs-badge">VS</div>
+        <div class="bots-vs-ready-text">READY?</div>
       </div>
       
-      <!-- Skip button -->
-      <button class="intro-skip-btn">OMITIR <kbd>ENTER</kbd></button>
+      <!-- Skip button styled as epic fight CTA -->
+      <button class="bots-vs-skip-epic">
+        ¡A PELEAR! <kbd>ENTER</kbd>
+      </button>
     `;
     
     // Append to container
@@ -1077,6 +1083,9 @@ class ChessBoxGame {
         this.introSynthNotes = null;
       }
       
+      this.playFightSound();
+      this.playAnnouncerVoice("¡A luchar!");
+      
       // Remove keyboard listener
       window.removeEventListener('keydown', handleKeydown);
       
@@ -1104,15 +1113,12 @@ class ChessBoxGame {
     };
     
     // Skip button click
-    const skipBtn = introDiv.querySelector('.intro-skip-btn');
+    const skipBtn = introDiv.querySelector('.bots-vs-skip-epic');
     if (skipBtn) {
       skipBtn.addEventListener('click', cleanUpIntro);
     }
     
     window.addEventListener('keydown', handleKeydown);
-    
-    // Auto-skip after 4.5 seconds
-    setTimeout(cleanUpIntro, 4500);
   }
 
   // --- DRAW MARTINA FRONT PROFILE FOR INTRO CARD ---
@@ -2006,6 +2012,55 @@ class ChessBoxGame {
       desc: "Un oponente formidable con tácticas avanzadas de ajedrez y velocidad superior.",
       quote: "«¡Que gane el mejor estratega!»"
     };
+  }
+
+  playAnnouncerVoice(text) {
+    if (!this.musicEnabled || !window.speechSynthesis) return;
+    try {
+      speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      const voices = speechSynthesis.getVoices();
+      let voice = voices.find(v => v.lang.startsWith('es') && /Jorge|Diego|male/i.test(v.name));
+      if (!voice) voice = voices.find(v => v.lang.startsWith('es'));
+      if (voice) utter.voice = voice;
+      utter.pitch = 0.35; // Muy grave estilo presentador de pelea
+      utter.rate = 0.85;  // Imponente y pausado
+      utter.volume = 1.0;
+      speechSynthesis.speak(utter);
+    } catch(e) {}
+  }
+
+  playFightSound() {
+    const ctx = this._getAudioCtx();
+    if (!ctx || !this.musicEnabled) return;
+    try {
+      const now = ctx.currentTime;
+      // Gong metálico agudo estilo pelea
+      const note1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      note1.type = 'sawtooth';
+      note1.frequency.setValueAtTime(880, now);
+      note1.frequency.linearRampToValueAtTime(1200, now + 0.1);
+      gain1.gain.setValueAtTime(0.12, now);
+      gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+      note1.connect(gain1);
+      gain1.connect(ctx.destination);
+      note1.start(now);
+      note1.stop(now + 0.4);
+
+      // Impacto de caída de graves pesado
+      const note2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      note2.type = 'sine';
+      note2.frequency.setValueAtTime(80, now);
+      note2.frequency.exponentialRampToValueAtTime(25, now + 0.4);
+      gain2.gain.setValueAtTime(0.35, now);
+      gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+      note2.connect(gain2);
+      gain2.connect(ctx.destination);
+      note2.start(now);
+      note2.stop(now + 0.5);
+    } catch(e) {}
   }
 
   // --- PLAY RETRO CHIPTUNE SOUND SEQUENCE WITH WEB AUDIO API ---

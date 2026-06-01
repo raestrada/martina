@@ -1713,39 +1713,151 @@ class BotsGame {
       card.addEventListener('click', () => this.showVSIntro(idx));
       grid.appendChild(card);
     });
+  playVSIntroMusic() {
+    this.stopVSIntroMusic();
+    const ctx = this._resumeAudio();
+    if (!ctx || !this.soundEnabled) return;
+
+    // Metal dramático chiptune rápido al estilo Street Fighter / Guilty Gear
+    const melody = [
+      329.63, 329.63, 392.00, 329.63, 440.00, 329.63, 493.88, 440.00,
+      329.63, 329.63, 392.00, 329.63, 369.99, 392.00, 329.63, 0
+    ];
+    const bass = [
+      82.41, 82.41, 82.41, 82.41, 65.41, 65.41, 73.42, 73.42
+    ];
+    const tempo = 120; // 120ms (muy rápido!)
+
+    let step = 0;
+    this.vsMusicInterval = setInterval(() => {
+      const now = ctx.currentTime;
+
+      // Doble bombo acelerado
+      const beat = step % 4;
+      if (beat === 0 || beat === 2) {
+        try {
+          const kOsc = ctx.createOscillator();
+          const kGain = ctx.createGain();
+          kOsc.type = 'sine';
+          kOsc.frequency.setValueAtTime(150, now);
+          kOsc.frequency.exponentialRampToValueAtTime(35, now + 0.08);
+          kGain.gain.setValueAtTime(0.28, now);
+          kGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
+          kOsc.connect(kGain);
+          kGain.connect(ctx.destination);
+          kOsc.start(now);
+          kOsc.stop(now + 0.1);
+        } catch(e) {}
+      }
+
+      // Caja (snare) en tiempo 2
+      if (beat === 2) {
+        try {
+          const sOsc = ctx.createOscillator();
+          const sGain = ctx.createGain();
+          sOsc.type = 'triangle';
+          sOsc.frequency.setValueAtTime(320, now);
+          sGain.gain.setValueAtTime(0.12, now);
+          sGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
+          sOsc.connect(sGain);
+          sGain.connect(ctx.destination);
+          sOsc.start(now);
+          sOsc.stop(now + 0.08);
+        } catch(e) {}
+      }
+
+      // Melodía principal estilo guitarra metalera distorsionada
+      const leadFreq = melody[step % melody.length];
+      if (leadFreq > 0) {
+        try {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(leadFreq, now);
+          gain.gain.setValueAtTime(0.024, now);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.11);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.12);
+        } catch(e) {}
+      }
+
+      // Bajo pesado y constante
+      const bassIndex = Math.floor(step / 2) % bass.length;
+      const bassFreq = bass[bassIndex];
+      if (bassFreq > 0 && step % 2 === 0) {
+        try {
+          const bOsc = ctx.createOscillator();
+          const bGain = ctx.createGain();
+          bOsc.type = 'triangle';
+          bOsc.frequency.setValueAtTime(bassFreq, now);
+          bGain.gain.setValueAtTime(0.045, now);
+          bGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+          bOsc.connect(bGain);
+          bGain.connect(ctx.destination);
+          bOsc.start(now);
+          bOsc.stop(now + 0.24);
+        } catch(e) {}
+      }
+
+      step++;
+    }, tempo);
   }
 
-  playVSIntroMusic() {
+  stopVSIntroMusic() {
+    if (this.vsMusicInterval) {
+      clearInterval(this.vsMusicInterval);
+      this.vsMusicInterval = null;
+    }
+  }
+
+  playFightSound() {
     const ctx = this._resumeAudio();
     if (!ctx || !this.soundEnabled) return;
     try {
       const now = ctx.currentTime;
-      // Fast ascending arpeggio — Mega Man style
-      const notes = [130.81, 164.81, 196.00, 261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
-      notes.forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(freq, now + i * 0.04);
-        gain.gain.setValueAtTime(0.06, now + i * 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.04 + 0.15);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now + i * 0.04);
-        osc.stop(now + i * 0.04 + 0.18);
-      });
-      // Heavy impact bass at end
-      const bOsc = ctx.createOscillator();
-      const bGain = ctx.createGain();
-      bOsc.type = 'sine';
-      bOsc.frequency.setValueAtTime(40, now + notes.length * 0.04);
-      bOsc.frequency.exponentialRampToValueAtTime(20, now + notes.length * 0.04 + 0.3);
-      bGain.gain.setValueAtTime(0.2, now + notes.length * 0.04);
-      bGain.gain.exponentialRampToValueAtTime(0.0001, now + notes.length * 0.04 + 0.5);
-      bOsc.connect(bGain);
-      bGain.connect(ctx.destination);
-      bOsc.start(now + notes.length * 0.04);
-      bOsc.stop(now + notes.length * 0.04 + 0.55);
+      // Gong metálico agudo estilo pelea
+      const note1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      note1.type = 'sawtooth';
+      note1.frequency.setValueAtTime(880, now);
+      note1.frequency.linearRampToValueAtTime(1200, now + 0.1);
+      gain1.gain.setValueAtTime(0.12, now);
+      gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+      note1.connect(gain1);
+      gain1.connect(ctx.destination);
+      note1.start(now);
+      note1.stop(now + 0.4);
+
+      // Impacto de caída de graves pesado
+      const note2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      note2.type = 'sine';
+      note2.frequency.setValueAtTime(80, now);
+      note2.frequency.exponentialRampToValueAtTime(25, now + 0.4);
+      gain2.gain.setValueAtTime(0.35, now);
+      gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+      note2.connect(gain2);
+      gain2.connect(ctx.destination);
+      note2.start(now);
+      note2.stop(now + 0.5);
+    } catch(e) {}
+  }
+
+  playAnnouncerVoice(text) {
+    if (!this.soundEnabled || !window.speechSynthesis) return;
+    try {
+      speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      const voices = speechSynthesis.getVoices();
+      let voice = voices.find(v => v.lang.startsWith('es') && /Jorge|Diego|male/i.test(v.name));
+      if (!voice) voice = voices.find(v => v.lang.startsWith('es'));
+      if (voice) utter.voice = voice;
+      utter.pitch = 0.35; // Muy grave estilo presentador de pelea
+      utter.rate = 0.85;  // Imponente y pausado
+      utter.volume = 1.0;
+      speechSynthesis.speak(utter);
     } catch(e) {}
   }
 
@@ -1755,6 +1867,7 @@ class BotsGame {
 
     this._resumeAudio();
     this.playVSIntroMusic();
+    this.playAnnouncerVoice(`¡Nuevo combate! ¿Preparados?`);
 
     const overlay = document.createElement('div');
     overlay.className = 'bots-vs-overlay';
@@ -1800,9 +1913,12 @@ class BotsGame {
       </div>
       <div class="bots-vs-center">
         <div class="bots-vs-vs">VS</div>
+        <div class="bots-vs-ready-text">READY?</div>
       </div>
       <div class="bots-vs-energy"></div>
-      <button class="bots-vs-skip">OMITIR <kbd>ENTER</kbd></button>
+      <button class="bots-vs-skip-epic">
+        ¡A PELEAR! <kbd>ENTER</kbd>
+      </button>
     `;
 
     document.body.appendChild(overlay);
@@ -1811,6 +1927,11 @@ class BotsGame {
     const cleanup = () => {
       if (cleaned) return;
       cleaned = true;
+      
+      this.stopVSIntroMusic();
+      this.playFightSound();
+      this.playAnnouncerVoice("¡A luchar!");
+      
       overlay.style.opacity = '0';
       overlay.style.transition = 'opacity 0.3s ease-out';
       setTimeout(() => {
@@ -1819,7 +1940,7 @@ class BotsGame {
       }, 350);
     };
 
-    overlay.querySelector('.bots-vs-skip').addEventListener('click', cleanup);
+    overlay.querySelector('.bots-vs-skip-epic').addEventListener('click', cleanup);
 
     const keyHandler = (e) => {
       if (e.key === 'Enter') {
@@ -1828,11 +1949,6 @@ class BotsGame {
       }
     };
     document.addEventListener('keydown', keyHandler);
-
-    setTimeout(() => {
-      document.removeEventListener('keydown', keyHandler);
-      cleanup();
-    }, 7000);
   }
 
   startGame() {
