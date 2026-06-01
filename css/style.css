@@ -168,6 +168,10 @@ a:hover, a:focus { color: var(--magic-blue); }
   color: var(--warm-white);
 }
 
+[data-theme="dark"] .nav-link {
+  color: var(--text-color);
+}
+
 /* Make sure header links are unstyled initially */
 .site-title-compact a {
   text-decoration: none;
