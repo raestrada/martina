@@ -4156,11 +4156,12 @@
   }
 }
 
-/* Pulsing fighting game CTA button */
+/* Pulsing fighting game CTA button centered at bottom */
 .bots-vs-skip-epic {
   position: absolute;
   bottom: 35px;
-  right: 35px;
+  left: 50%;
+  transform: translateX(-50%) scale(1);
   z-index: 200;
   animation: botsVsPulseBtn 0.6s ease-in-out infinite alternate;
   padding: 14px 36px;
@@ -4180,16 +4181,17 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  white-space: nowrap;
 }
 
 .bots-vs-skip-epic:hover {
-  transform: scale(1.1) translateY(-3px);
+  transform: translateX(-50%) scale(1.1) translateY(-3px);
   background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);
   box-shadow: 0 0 45px rgba(239, 68, 68, 0.95), inset 0 2px 4px rgba(255,255,255,0.6);
 }
 
 .bots-vs-skip-epic:active {
-  transform: scale(0.95) translateY(0);
+  transform: translateX(-50%) scale(0.95) translateY(0);
 }
 
 .bots-vs-skip-epic kbd {
@@ -4204,12 +4206,28 @@
 
 @keyframes botsVsPulseBtn {
   from {
-    transform: scale(1);
+    transform: translateX(-50%) scale(1);
     box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
   }
   to {
-    transform: scale(1.05);
+    transform: translateX(-50%) scale(1.05);
     box-shadow: 0 0 40px rgba(239, 68, 68, 0.9);
   }
 }
+
+/* Responsive button scaling for mobile */
+@media (max-width: 600px) {
+  .bots-vs-skip-epic {
+    bottom: 20px;
+    padding: 10px 24px;
+    font-size: 0.95rem;
+    border-radius: 10px;
+    border-width: 2px;
+  }
+  .bots-vs-skip-epic kbd {
+    font-size: 0.75rem;
+    padding: 1px 4px;
+  }
+}
+
 
