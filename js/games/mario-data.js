@@ -369,7 +369,7 @@ window.MartinaLevels = {
       // Chess duel room instead of boss
       chessRoom: {
         triggerX: 2100,
-        roomLeft: 2080,
+        roomLeft: 2150,
         roomRight: 2400,
         elo: 300
       },
