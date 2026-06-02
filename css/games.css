@@ -1845,14 +1845,31 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-  background: #111222;
-  border-bottom: 2px solid #1a1c2e;
+  background: linear-gradient(180deg, #0c0d1a 0%, #111222 40%, #0a0b16 100%);
+  border-bottom: 3px solid #1a1c2e;
   padding: 0.8rem 1.5rem;
   font-family: 'Outfit', sans-serif;
   color: var(--warm-white);
   gap: 1rem;
   flex-wrap: wrap;
   align-items: center;
+  position: relative;
+  z-index: 10;
+}
+/* Retro scanline overlay on HUD */
+.mario-hud-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
 }
 
 .mario-hud-group {
@@ -1879,24 +1896,33 @@
 .mario-hud-val {
   color: var(--gold-light);
   font-weight: 800;
+  text-shadow: 0 0 8px rgba(250, 204, 21, 0.3), 0 0 3px rgba(250, 204, 21, 0.15);
+  font-variant-numeric: tabular-nums;
 }
 
 .mario-hud-btn {
-  background: rgba(255, 255, 255, 0.05);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--warm-white);
   padding: 0.4rem 0.8rem;
-  border-radius: 12px;
+  border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
-
 .mario-hud-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.06) 100%);
+  border-color: rgba(255, 255, 255, 0.35);
   transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.mario-hud-btn:active {
+  transform: translateY(0);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 /* Active Canvas */

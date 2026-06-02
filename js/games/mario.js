@@ -554,13 +554,22 @@ class MarioGame {
           sparkleCanvas.width = 16;
           sparkleCanvas.height = 16;
           const sctx = sparkleCanvas.getContext('2d');
+          // 4-pointed star sparkle
           const sgrad = sctx.createRadialGradient(8, 8, 0, 8, 8, 8);
-          sgrad.addColorStop(0, 'rgba(255, 223, 0, 1)');
-          sgrad.addColorStop(0.3, 'rgba(255, 180, 0, 0.8)');
+          sgrad.addColorStop(0, 'rgba(255, 255, 220, 1)');
+          sgrad.addColorStop(0.4, 'rgba(255, 223, 0, 0.9)');
           sgrad.addColorStop(1, 'rgba(255, 180, 0, 0)');
           sctx.fillStyle = sgrad;
           sctx.beginPath();
-          sctx.arc(8, 8, 8, 0, Math.PI * 2);
+          sctx.moveTo(8, 0); sctx.lineTo(10, 6); sctx.lineTo(16, 8);
+          sctx.lineTo(10, 10); sctx.lineTo(8, 16);
+          sctx.lineTo(6, 10); sctx.lineTo(0, 8);
+          sctx.lineTo(6, 6); sctx.closePath();
+          sctx.fill();
+          // Central bright core
+          sctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+          sctx.beginPath();
+          sctx.arc(8, 8, 2.5, 0, Math.PI*2);
           sctx.fill();
           scene.textures.addCanvas('sparkle', sparkleCanvas);
           
@@ -570,12 +579,19 @@ class MarioGame {
           sparkleCyan.height = 16;
           const sctx2 = sparkleCyan.getContext('2d');
           const sgrad2 = sctx2.createRadialGradient(8, 8, 0, 8, 8, 8);
-          sgrad2.addColorStop(0, 'rgba(34, 211, 238, 1)');
-          sgrad2.addColorStop(0.3, 'rgba(56, 189, 248, 0.8)');
+          sgrad2.addColorStop(0, 'rgba(220, 255, 255, 1)');
+          sgrad2.addColorStop(0.4, 'rgba(34, 211, 238, 0.9)');
           sgrad2.addColorStop(1, 'rgba(56, 189, 248, 0)');
           sctx2.fillStyle = sgrad2;
           sctx2.beginPath();
-          sctx2.arc(8, 8, 8, 0, Math.PI * 2);
+          sctx2.moveTo(8, 0); sctx2.lineTo(10, 6); sctx2.lineTo(16, 8);
+          sctx2.lineTo(10, 10); sctx2.lineTo(8, 16);
+          sctx2.lineTo(6, 10); sctx2.lineTo(0, 8);
+          sctx2.lineTo(6, 6); sctx2.closePath();
+          sctx2.fill();
+          sctx2.fillStyle = 'rgba(255, 255, 255, 0.7)';
+          sctx2.beginPath();
+          sctx2.arc(8, 8, 2.2, 0, Math.PI*2);
           sctx2.fill();
           scene.textures.addCanvas('sparkle_cyan', sparkleCyan);
           
@@ -585,12 +601,19 @@ class MarioGame {
           sparklePurple.height = 16;
           const sctx3 = sparklePurple.getContext('2d');
           const sgrad3 = sctx3.createRadialGradient(8, 8, 0, 8, 8, 8);
-          sgrad3.addColorStop(0, 'rgba(167, 139, 250, 1)');
-          sgrad3.addColorStop(0.3, 'rgba(139, 92, 246, 0.8)');
+          sgrad3.addColorStop(0, 'rgba(240, 220, 255, 1)');
+          sgrad3.addColorStop(0.4, 'rgba(167, 139, 250, 0.9)');
           sgrad3.addColorStop(1, 'rgba(139, 92, 246, 0)');
           sctx3.fillStyle = sgrad3;
           sctx3.beginPath();
-          sctx3.arc(8, 8, 8, 0, Math.PI * 2);
+          sctx3.moveTo(8, 0); sctx3.lineTo(10, 6); sctx3.lineTo(16, 8);
+          sctx3.lineTo(10, 10); sctx3.lineTo(8, 16);
+          sctx3.lineTo(6, 10); sctx3.lineTo(0, 8);
+          sctx3.lineTo(6, 6); sctx3.closePath();
+          sctx3.fill();
+          sctx3.fillStyle = 'rgba(255, 255, 255, 0.7)';
+          sctx3.beginPath();
+          sctx3.arc(8, 8, 2.2, 0, Math.PI*2);
           sctx3.fill();
           scene.textures.addCanvas('sparkle_purple', sparklePurple);
           
@@ -2043,38 +2066,137 @@ class MarioGame {
             
             scene.textures.addCanvas('knight_burst', kCanvas);
 
-            // 7. Gold Crown Secret Collectible Canvas (size 32x32)
+            // 7. Gold Crown Secret Collectible Canvas (size 36x36 — enlarged for detail)
             const crCanvas = document.createElement('canvas');
-            crCanvas.width = 32;
-            crCanvas.height = 32;
+            crCanvas.width = 36;
+            crCanvas.height = 36;
             const crCtx = crCanvas.getContext('2d');
-            const crGrad = crCtx.createLinearGradient(4, 4, 28, 28);
-            crGrad.addColorStop(0, '#fbbf24'); // Yellow Amber
-            crGrad.addColorStop(1, '#d97706'); // Gold Bronze
+            // Rich gold gradient body
+            const crGrad = crCtx.createLinearGradient(6, 6, 30, 30);
+            crGrad.addColorStop(0, '#fef3c7');
+            crGrad.addColorStop(0.3, '#fbbf24');
+            crGrad.addColorStop(0.7, '#f59e0b');
+            crGrad.addColorStop(1, '#b45309');
             crCtx.fillStyle = crGrad;
             crCtx.beginPath();
-            crCtx.moveTo(4, 26);
-            crCtx.lineTo(28, 26);
-            crCtx.lineTo(26, 12);
-            crCtx.lineTo(20, 18);
-            crCtx.lineTo(16, 8); // center crown peak
-            crCtx.lineTo(12, 18);
-            crCtx.lineTo(6, 12);
+            crCtx.moveTo(5, 30);
+            crCtx.lineTo(31, 30);
+            crCtx.lineTo(29, 14);
+            crCtx.lineTo(23, 20);
+            crCtx.lineTo(18, 7); // center crown peak (taller)
+            crCtx.lineTo(13, 20);
+            crCtx.lineTo(7, 14);
             crCtx.closePath();
             crCtx.fill();
-            
-            // Ruby and sapphire jewels on crown peaks
-            crCtx.fillStyle = '#ef4444'; // Red center ruby
+            // Golden outline
+            crCtx.strokeStyle = '#92400e';
+            crCtx.lineWidth = 1;
+            crCtx.stroke();
+            // Inner highlight
+            crCtx.strokeStyle = '#fef3c7';
+            crCtx.lineWidth = 0.8;
             crCtx.beginPath();
-            crCtx.arc(16, 6, 2, 0, Math.PI*2);
+            crCtx.moveTo(18, 8);
+            crCtx.lineTo(18, 28);
+            crCtx.stroke();
+            // Base rim
+            crCtx.fillStyle = '#78350f';
+            crCtx.fillRect(4, 29, 28, 4);
+            crCtx.fillStyle = '#fbbf24';
+            crCtx.fillRect(4, 29, 28, 1.5);
+            // Center ruby — larger and glowing
+            const rubyGlow = crCtx.createRadialGradient(18, 6, 0, 18, 6, 4);
+            rubyGlow.addColorStop(0, '#ffffff');
+            rubyGlow.addColorStop(0.3, '#fca5a5');
+            rubyGlow.addColorStop(1, '#ef4444');
+            crCtx.fillStyle = rubyGlow;
+            crCtx.beginPath();
+            crCtx.arc(18, 6, 3, 0, Math.PI*2);
             crCtx.fill();
-            crCtx.fillStyle = '#3b82f6'; // Blue sapphires on side peaks
+            // Side sapphires
+            const sapGlow = crCtx.createRadialGradient(7, 12, 0, 7, 12, 2.5);
+            sapGlow.addColorStop(0, '#ffffff');
+            sapGlow.addColorStop(0.3, '#93c5fd');
+            sapGlow.addColorStop(1, '#3b82f6');
+            crCtx.fillStyle = sapGlow;
             crCtx.beginPath();
-            crCtx.arc(6, 10, 1.5, 0, Math.PI*2);
-            crCtx.arc(26, 10, 1.5, 0, Math.PI*2);
+            crCtx.arc(7, 12, 2, 0, Math.PI*2);
+            crCtx.fill();
+            crCtx.beginPath();
+            crCtx.arc(29, 12, 2, 0, Math.PI*2);
+            crCtx.fill();
+            // Jewel sparkle highlights
+            crCtx.fillStyle = 'rgba(255,255,255,0.7)';
+            crCtx.beginPath();
+            crCtx.arc(17.5, 5, 1, 0, Math.PI*2);
             crCtx.fill();
             
             scene.textures.addCanvas('crown_gold', crCanvas);
+
+            // 7.5. Spin Coin Collectible Canvas (4 frames for rotation animation, size 24x24)
+            if (!scene.textures.exists('coin_0')) {
+              const drawCoinFrame = (squash) => {
+                const coCanvas = document.createElement('canvas');
+                coCanvas.width = 24;
+                coCanvas.height = 24;
+                const coCtx = coCanvas.getContext('2d');
+                const cx = 12, cy = 12;
+                // Metallic gold gradient
+                const coinGrad = coCtx.createLinearGradient(cx - 8, cy - 8, cx + 8, cy + 8);
+                coinGrad.addColorStop(0, '#fef3c7');
+                coinGrad.addColorStop(0.3, '#fbbf24');
+                coinGrad.addColorStop(0.6, '#f59e0b');
+                coinGrad.addColorStop(1, '#b45309');
+                coCtx.fillStyle = coinGrad;
+                coCtx.beginPath();
+                // Draw a smooth 5-pointed star coin
+                const outerR = 9, innerR = 3.5;
+                for (let i = 0; i < 5; i++) {
+                  const aOuter = (i * 72 - 90) * Math.PI / 180;
+                  const aInner = (i * 72 - 90 + 36) * Math.PI / 180;
+                  const ox = cx + Math.cos(aOuter) * outerR * (1 - squash * 0.3);
+                  const oy = cy + Math.sin(aOuter) * outerR;
+                  const ix = cx + Math.cos(aInner) * innerR * (1 - squash * 0.3);
+                  const iy = cy + Math.sin(aInner) * innerR;
+                  if (i === 0) coCtx.moveTo(ox, oy);
+                  else coCtx.lineTo(ox, oy);
+                  coCtx.lineTo(ix, iy);
+                }
+                coCtx.closePath();
+                coCtx.fill();
+                // Dark gold border
+                coCtx.strokeStyle = '#92400e';
+                coCtx.lineWidth = 1.2;
+                coCtx.stroke();
+                // Bright highlight on top-left
+                coCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                coCtx.beginPath();
+                coCtx.arc(cx - 2, cy - 2, 3, 0, Math.PI*2);
+                coCtx.fill();
+                // Central shine dot
+                coCtx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                coCtx.beginPath();
+                coCtx.arc(cx, cy, 1.5, 0, Math.PI*2);
+                coCtx.fill();
+                return coCanvas;
+              };
+              // 4 frames: head-on, 1/4 turn, edge-on, 3/4 turn
+              scene.textures.addCanvas('coin_0', drawCoinFrame(0));   // full face
+              scene.textures.addCanvas('coin_1', drawCoinFrame(0.4)); // slight turn
+              scene.textures.addCanvas('coin_2', drawCoinFrame(0.8)); // almost edge
+              scene.textures.addCanvas('coin_3', drawCoinFrame(0.5)); // mid turn
+              // Coin spin animation
+              scene.anims.create({
+                key: 'coin-spin',
+                frames: [
+                  { key: 'coin_0' }, { key: 'coin_1' },
+                  { key: 'coin_2' }, { key: 'coin_3' },
+                  { key: 'coin_1' }
+                ],
+                frameRate: 10,
+                repeat: -1
+              });
+            }
             
             // 7.9. Tournament Trophy canvas (size 56x80) — for clockwork/real-world levels
             if (!scene.textures.exists('trophy')) {
@@ -2412,6 +2534,80 @@ class MarioGame {
           scene.bgFg.setAlpha(0.50);
           scene.bgFg.setScrollFactor(0.3); // Foreground decorations scroll faster for depth
 
+          // Ambient atmospheric particles per biome
+          scene.ambientParticles = [];
+          if (biome === 'grass') {
+            // Floating magical sparkles drifting upward
+            const ambEmitter = scene.add.particles(0, 0, 'sparkle', {
+              x: { min: 0, max: levelDef.worldWidth },
+              y: { min: 100, max: 420 },
+              speed: { min: 3, max: 15 },
+              angle: { min: 250, max: 290 },
+              scale: { start: 0.35, end: 0 },
+              alpha: { start: 0.3, end: 0 },
+              lifespan: { min: 3000, max: 6000 },
+              frequency: 400,
+              quantity: 1,
+              blendMode: 'ADD'
+            });
+            ambEmitter.setDepth(0);
+            ambEmitter.setScrollFactor(0.3);
+            scene.ambientParticles.push(ambEmitter);
+          } else if (biome === 'neon') {
+            // Floating digital particles drifting up
+            const ambEmitter = scene.add.particles(0, 0, 'sparkle_purple', {
+              x: { min: 0, max: levelDef.worldWidth },
+              y: { min: 80, max: 400 },
+              speed: { min: 5, max: 20 },
+              angle: { min: 260, max: 280 },
+              scale: { start: 0.4, end: 0.05 },
+              alpha: { start: 0.25, end: 0 },
+              lifespan: { min: 2500, max: 5000 },
+              frequency: 350,
+              quantity: 1,
+              blendMode: 'ADD'
+            });
+            ambEmitter.setDepth(0);
+            ambEmitter.setScrollFactor(0.3);
+            scene.ambientParticles.push(ambEmitter);
+          } else if (biome === 'prairie') {
+            // Floating pollen/leaves in the air
+            const ambEmitter = scene.add.particles(0, 0, 'sparkle', {
+              x: { min: 0, max: levelDef.worldWidth },
+              y: { min: 60, max: 380 },
+              speed: { min: 2, max: 8 },
+              angle: { min: 240, max: 300 },
+              scale: { start: 0.25, end: 0 },
+              alpha: { start: 0.2, end: 0 },
+              lifespan: { min: 4000, max: 8000 },
+              frequency: 600,
+              quantity: 1,
+              tint: [0xfacc15, 0x4ade80, 0xffffff],
+              blendMode: 'NORMAL'
+            });
+            ambEmitter.setDepth(0);
+            ambEmitter.setScrollFactor(0.3);
+            scene.ambientParticles.push(ambEmitter);
+          } else if (biome === 'clockwork') {
+            // Tiny floating gear sparks
+            const ambEmitter = scene.add.particles(0, 0, 'sparkle', {
+              x: { min: 0, max: levelDef.worldWidth },
+              y: { min: 80, max: 380 },
+              speed: { min: 2, max: 10 },
+              angle: { min: 250, max: 290 },
+              scale: { start: 0.3, end: 0 },
+              alpha: { start: 0.2, end: 0 },
+              lifespan: { min: 3000, max: 5500 },
+              frequency: 500,
+              quantity: 1,
+              tint: [0xfbbf24, 0xd4b84c, 0xc9a84c],
+              blendMode: 'ADD'
+            });
+            ambEmitter.setDepth(0);
+            ambEmitter.setScrollFactor(0.3);
+            scene.ambientParticles.push(ambEmitter);
+          }
+
           // 2. Physics Static Platforms Group
           scene.platforms = scene.physics.add.staticGroup();
 
@@ -2500,46 +2696,124 @@ class MarioGame {
               block.fillRect(p.x + 2, p.y + 5, p.w - 4, 1);
               block.lineStyle(1.5, 0x6b5328, 0.8);
               block.strokeRect(p.x, p.y, p.w, p.h);
-            } else {
-              // Premium chess-themed platform block
-              // Base body — deep magical blue
-              const bodyGrad = [0x1e3a8a, 0x1e40af, 0x1d4ed8]; // subtle gradient via layers
-              block.fillStyle(bodyGrad[0], 0.85);
+            } else if (biome === 'neon') {
+              // Neon crystal obsidian platforms — dark purple with glowing edges
+              block.fillStyle(0x0a0025, 0.95);
               block.fillRect(p.x, p.y, p.w, p.h);
-              block.fillStyle(bodyGrad[1], 0.45);
-              block.fillRect(p.x, p.y + 2, p.w, p.h - 4);
-              
-              // Glowing cyan neon grass edge (thick)
-              block.fillStyle(0x38bdf8, 0.55);
-              block.fillRect(p.x, p.y, p.w, 6);
-              block.fillStyle(0x7dd3fc, 0.45);
+              block.fillStyle(0x120835, 0.6);
+              block.fillRect(p.x + 2, p.y + 2, p.w - 4, p.h - 4);
+              // Neon purple glowing top edge
+              block.fillStyle(0x8b5cf6, 0.65);
+              block.fillRect(p.x, p.y, p.w, 4);
+              block.fillStyle(0xc084fc, 0.45);
+              block.fillRect(p.x, p.y, p.w, 1.5);
+              // Circuit-like diagonal lines
+              block.lineStyle(1, 0x7c3aed, 0.25);
+              for (let lx = p.x + 8; lx < p.x + p.w - 8; lx += 24) {
+                block.beginPath();
+                block.moveTo(lx, p.y + 6);
+                block.lineTo(lx + 12, p.y + p.h - 4);
+                block.strokePath();
+                block.beginPath();
+                block.moveTo(lx + 6, p.y + p.h - 4);
+                block.lineTo(lx + 18, p.y + 6);
+                block.strokePath();
+              }
+              // Glowing dots along the edge
+              block.fillStyle(0xc084fc, 0.5);
+              for (let dx = p.x + 6; dx < p.x + p.w - 6; dx += 14) {
+                block.fillRect(dx, p.y + 2, 3, 3);
+              }
+              // Crystal facets
+              block.fillStyle(0x4c1d95, 0.25);
+              for (let fx = p.x + 4; fx < p.x + p.w - 8; fx += 20) {
+                block.fillRect(fx, p.y + 8, 8, 8);
+                block.fillRect(fx + 10, p.y + 18, 6, 6);
+              }
+              block.lineStyle(1.5, 0x7c3aed, 0.6);
+              block.strokeRect(p.x, p.y, p.w, p.h);
+              block.lineStyle(1, 0xa78bfa, 0.2);
+              block.strokeRect(p.x + 1, p.y + 1, p.w - 2, p.h - 2);
+            } else if (biome === 'prairie') {
+              // Wooden planks — warm rustic stable style
+              block.fillStyle(0x5c3a1e, 0.95);
+              block.fillRect(p.x, p.y, p.w, p.h);
+              block.fillStyle(0x6B4226, 0.6);
+              block.fillRect(p.x + 2, p.y + 2, p.w - 4, p.h - 4);
+              // Top edge highlight
+              block.fillStyle(0x8B6914, 0.7);
+              block.fillRect(p.x, p.y, p.w, 4);
+              block.fillStyle(0xa0782c, 0.5);
+              block.fillRect(p.x, p.y, p.w, 1.5);
+              // Horizontal plank lines
+              block.fillStyle(0x3a1f0a, 0.35);
+              block.fillRect(p.x, p.y + p.h / 2 - 1, p.w, 2);
+              block.fillRect(p.x, p.y + p.h * 0.75 - 1, p.w, 1.5);
+              // Vertical wood grain lines
+              block.fillStyle(0x4a2a10, 0.2);
+              for (let gx = p.x + 6; gx < p.x + p.w - 4; gx += 12) {
+                block.fillRect(gx, p.y + 5, 1, p.h - 8);
+              }
+              // Nail dots at corners
+              block.fillStyle(0x1a0a04, 0.5);
+              const nailSize = 2.5;
+              const nailMargin = 10;
+              block.fillRect(p.x + nailMargin, p.y + nailMargin - 2, nailSize, nailSize);
+              block.fillRect(p.x + p.w - nailMargin - nailSize, p.y + nailMargin - 2, nailSize, nailSize);
+              block.fillStyle(0x8B6914, 0.4);
+              block.fillRect(p.x + nailMargin + 0.5, p.y + nailMargin - 1.5, 1.5, 1.5);
+              block.fillRect(p.x + p.w - nailMargin - nailSize + 0.5, p.y + nailMargin - 1.5, 1.5, 1.5);
+              block.lineStyle(1.5, 0x3a1f0a, 0.6);
+              block.strokeRect(p.x, p.y, p.w, p.h);
+              block.lineStyle(1, 0x8B6914, 0.2);
+              block.strokeRect(p.x + 1, p.y + 1, p.w - 2, p.h - 2);
+            } else {
+              // Grass biome — rich earth platforms with lush grass top
+              block.fillStyle(0x4a3728, 0.95);
+              block.fillRect(p.x, p.y, p.w, p.h);
+              block.fillStyle(0x5c4535, 0.5);
+              block.fillRect(p.x + 2, p.y + 2, p.w - 4, p.h - 4);
+              // Dark soil bottom layer
+              block.fillStyle(0x2d1f14, 0.3);
+              block.fillRect(p.x, p.y + p.h - 8, p.w, 8);
+              // Rich green grass top
+              block.fillStyle(0x4ade80, 0.7);
+              block.fillRect(p.x, p.y, p.w, 5);
+              block.fillStyle(0x86efac, 0.5);
               block.fillRect(p.x, p.y, p.w, 2);
-              
-              // Grass blade tufts along the top
-              block.fillStyle(0x34d399, 0.35);
-              for (let gx = p.x + 2; gx < p.x + p.w - 4; gx += 6) {
-                const bh = 2 + Math.random() * 3;
-                block.fillRect(gx + Math.random(), p.y - bh, 1.5, bh);
+              // Darker green base under grass
+              block.fillStyle(0x22c55e, 0.45);
+              block.fillRect(p.x, p.y + 4, p.w, 3);
+              // Grass tufts along top
+              for (let gx = p.x + 3; gx < p.x + p.w - 3; gx += 5) {
+                const bh = 3 + (Math.sin(gx * 0.7) * 0.5 + 0.5) * 4;
+                const bw = 1.2 + Math.random() * 0.8;
+                block.fillStyle(0x4ade80, 0.5);
+                block.fillRect(gx, p.y - bh, bw, bh);
+                if (Math.random() > 0.5) {
+                  block.fillStyle(0x22c55e, 0.4);
+                  block.fillRect(gx + 1.5, p.y - bh * 0.7, bw * 0.7, bh * 0.6);
+                }
               }
-              
-              // Checkered grid detail on body
-              block.fillStyle(0x1d4ed8, 0.20);
-              for (let x = p.x; x < p.x + p.w; x += 16) {
-                block.fillRect(x, p.y + 8, 8, 6);
-                block.fillRect(x + 8, p.y + 14, 8, 6);
+              // Tiny random flowers
+              for (let fx = p.x + 8; fx < p.x + p.w - 8; fx += 22 + Math.random() * 18) {
+                if (Math.random() > 0.45) {
+                  block.fillStyle([
+                    0xfacc15, 0xf472b6, 0x60a5fa, 0xffffff
+                  ][Math.floor(Math.random() * 4)], 0.6);
+                  block.fillRect(fx, p.y - 3, 2, 2);
+                  block.fillRect(fx - 1, p.y - 2, 4, 1);
+                }
               }
-              
-              // Bevel highlight (top-left inner)
-              block.fillStyle(0x93c5fd, 0.12);
+              // Soil texture specks
+              block.fillStyle(0x6b5340, 0.2);
+              for (let i = 0; i < 20; i++) {
+                block.fillRect(p.x + 6 + Math.random() * (p.w - 12), p.y + 8 + Math.random() * (p.h - 16), 1.5, 1.5);
+              }
+              // Light bevel top
+              block.fillStyle(0x86efac, 0.12);
               block.fillRect(p.x + 2, p.y + 6, p.w - 4, 1);
-              block.fillRect(p.x + 1, p.y + 6, 1, p.h - 8);
-              
-              // Bevel shadow (bottom-right inner)
-              block.fillStyle(0x0f172a, 0.15);
-              block.fillRect(p.x + 2, p.y + p.h - 2, p.w - 4, 1);
-              
-              // Crisp outline
-              block.lineStyle(1.5, 0x1d4ed8, 0.8);
+              block.lineStyle(1.5, 0x3d2e1a, 0.7);
               block.strokeRect(p.x, p.y, p.w, p.h);
             }
 
@@ -2572,7 +2846,7 @@ class MarioGame {
           self.player = scene.player;
           scene.lastSafeX = 80; // track last safe position for pit respawn
 
-          // Damage animation helper — red flash, particles, camera shake
+          // Damage animation helper — red flash, star particles, camera shake
           scene.doDamageAnim = () => {
             const p = scene.player;
             // Red tint flash
@@ -2580,25 +2854,31 @@ class MarioGame {
             scene.time.delayedCall(120, () => {
               if (p.active) p.clearTint();
             });
-            // Red damage particles burst outward
-            for (let i = 0; i < 12; i++) {
-              const angle = (i / 12) * Math.PI * 2 + Math.random() * 0.5;
-              const speed = 70 + Math.random() * 110;
-              const dp = scene.add.circle(p.x, p.y, Math.random() * 3 + 1.5, 0xff4444, 0.9);
+            // Star-shaped red and white damage particles burst outward
+            for (let i = 0; i < 14; i++) {
+              const angle = (i / 14) * Math.PI * 2 + Math.random() * 0.4;
+              const speed = 80 + Math.random() * 130;
+              const size = Math.random() * 2.5 + 1.5;
+              const dp = scene.add.circle(p.x, p.y, size, i % 3 === 0 ? 0xffffff : 0xff4444, 0.9);
               scene.physics.add.existing(dp, false);
               dp.body.allowGravity = true;
-              dp.body.setGravityY(350);
-              dp.body.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed - 80);
+              dp.body.setGravityY(400);
+              dp.body.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed - 100);
               scene.tweens.add({
                 targets: dp,
                 alpha: 0,
-                scale: 0.05,
-                duration: 450 + Math.random() * 250,
+                scaleX: 0.05,
+                scaleY: 0.05,
+                duration: 500 + Math.random() * 300,
+                ease: 'Quad.easeOut',
                 onComplete: () => dp.destroy()
               });
             }
-            // Subtle camera shake
-            scene.cameras.main.shake(100, 0.005);
+            // Stronger camera shake
+            scene.cameras.main.shake(150, 0.008);
+            // Brief slow-motion effect
+            scene.time.timeScale = 0.6;
+            scene.time.delayedCall(120, () => { scene.time.timeScale = 1; });
           };
 
           // Register procedural animations for Martina (Hollow Knight / Celeste style)
@@ -2658,22 +2938,12 @@ class MarioGame {
 
           scene.coins = scene.physics.add.group({ allowGravity: false, immovable: true });
           coinsData.forEach(c => {
-            const coin = scene.add.graphics({x: c.x, y: c.y});
-            // Draw a beautiful rotating/pulsing gold star coin
-            coin.fillStyle(0xfacc15, 1);
-            coin.beginPath();
-            // Draw a star shape
-            for (let i = 0; i < 5; i++) {
-              coin.lineTo(Math.cos((18 + i * 72) * Math.PI / 180) * 8, Math.sin((18 + i * 72) * Math.PI / 180) * 8);
-              coin.lineTo(Math.cos((54 + i * 72) * Math.PI / 180) * 3, Math.sin((54 + i * 72) * Math.PI / 180) * 3);
-            }
-            coin.closePath();
-            coin.fill();
-            coin.lineStyle(1.2, 0xe76f51, 1);
-            coin.stroke();
+            const coin = scene.add.sprite(c.x, c.y, 'coin_0');
+            coin.play('coin-spin');
+            coin.setDisplaySize(22, 22);
 
-            scene.coins.add(coin); // Add first to the grav-safe group
-            coin.body.setCircle(10, -10, -10);
+            scene.coins.add(coin);
+            coin.body.setCircle(11, -11, -11);
             coin.body.allowGravity = false;
             coin.body.setImmovable(true);
             
@@ -3232,20 +3502,12 @@ class MarioGame {
 
               // Spawn 5 star coins that burst out when stomped! Excellent gameplay incentive!
               for (let i = 0; i < 5; i++) {
-                const coin = scene.add.graphics({x: enemy.x, y: enemy.y - 12});
-                coin.fillStyle(0xfacc15, 1);
-                coin.beginPath();
-                for (let s = 0; s < 5; s++) {
-                  coin.lineTo(Math.cos((18 + s * 72) * Math.PI / 180) * 8, Math.sin((18 + s * 72) * Math.PI / 180) * 8);
-                  coin.lineTo(Math.cos((54 + s * 72) * Math.PI / 180) * 3, Math.sin((54 + s * 72) * Math.PI / 180) * 3);
-                }
-                coin.closePath();
-                coin.fill();
-                coin.lineStyle(1.2, 0xe76f51, 1);
-                coin.stroke();
+                const coin = scene.add.sprite(enemy.x, enemy.y - 12, 'coin_0');
+                coin.play('coin-spin');
+                coin.setDisplaySize(22, 22);
                 
                 scene.coins.add(coin);
-                coin.body.setCircle(10, -10, -10);
+                coin.body.setCircle(11, -11, -11);
                 coin.body.allowGravity = false;
                 coin.body.setImmovable(true);
                 
