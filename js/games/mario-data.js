@@ -10,7 +10,8 @@ window.MartinaLevels = {
         2: 9900,
         3: 9900,
         4: 12000,
-        5: 9900
+        5: 9900,
+        6: 9900
       },
 
   levels: [
@@ -558,6 +559,111 @@ window.MartinaLevels = {
       goal: {
         type: 'portal_queen',
         portalX: 3750, portalY: 245
+      }
+    },
+
+    // ================================================================
+    // LEVEL 7 — "El Pescador y el Elegante" — River / Aquatic Biome
+    // ================================================================
+    {
+      biome: 'river',
+      worldWidth: 3500,
+      backgroundColor: '#082f49',
+
+      platformsData: [
+        // Continuous solid ceiling rock across the entire level width
+        { x: 0, y: 0, w: 3500, h: 90 },
+
+        // Ground - bumpy coral reef base with recessed trenches
+        { x: 0, y: 410, w: 800, h: 40 },
+        { x: 800, y: 430, w: 150, h: 20 }, // Trench 1
+        { x: 950, y: 410, w: 900, h: 40 },
+        { x: 1850, y: 430, w: 120, h: 20 }, // Trench 2
+        { x: 1970, y: 410, w: 1530, h: 40 }, // Ground to end
+
+        // Cavern stalactites (hanging rocks from ceiling y=90, gap >= 120px)
+        { x: 400, y: 90, w: 120, h: 120 },
+        { x: 1500, y: 90, w: 120, h: 120 },
+        { x: 2600, y: 90, w: 120, h: 120 },
+
+        // Standing stalagmites (rising rocks from ground y=410, gap >= 120px)
+        { x: 950, y: 260, w: 120, h: 150 },
+        { x: 2050, y: 260, w: 120, h: 150 },
+
+        // Floating coral boulders (with safe gaps above and below >= 110px)
+        { x: 700, y: 220, w: 80, h: 70 },
+        { x: 1250, y: 200, w: 80, h: 80 },
+        { x: 1800, y: 220, w: 80, h: 70 },
+        { x: 2350, y: 200, w: 80, h: 80 }
+      ],
+
+      coinsData: [
+        // Curves guiding through open channels
+        { x: 200, y: 250 }, { x: 240, y: 250 }, { x: 280, y: 250 },
+        { x: 460, y: 330 },
+        { x: 710, y: 150 }, { x: 740, y: 140 }, { x: 770, y: 150 },
+        { x: 710, y: 350 }, { x: 740, y: 360 }, { x: 770, y: 350 },
+        { x: 840, y: 380 }, { x: 875, y: 380 }, { x: 910, y: 380 },
+        { x: 1010, y: 170 },
+        { x: 1260, y: 140 }, { x: 1290, y: 130 }, { x: 1320, y: 140 },
+        { x: 1260, y: 340 }, { x: 1290, y: 350 }, { x: 1320, y: 340 },
+        { x: 1560, y: 330 },
+        { x: 1810, y: 150 }, { x: 1840, y: 140 },
+        { x: 1880, y: 380 }, { x: 1910, y: 380 }, { x: 1940, y: 380 },
+        { x: 2110, y: 170 },
+        { x: 2360, y: 140 }, { x: 2390, y: 130 }, { x: 2420, y: 140 },
+        { x: 2360, y: 340 }, { x: 2390, y: 350 }, { x: 2420, y: 340 },
+        { x: 2660, y: 330 },
+        { x: 2800, y: 300 }, { x: 2830, y: 300 }, { x: 2860, y: 300 }
+      ],
+
+      enemiesData: [
+        { x: 320, y: 220, left: 320, right: 320, speed: 40, type: 'medusa' },
+        { x: 580, y: 330, left: 540, right: 630, speed: 60, type: 'pez' },
+        { x: 875, y: 220, left: 875, right: 875, speed: 50, type: 'medusa' },
+        { x: 1120, y: 330, left: 1090, right: 1210, speed: 70, type: 'pez' },
+        { x: 1420, y: 200, left: 1420, right: 1420, speed: 55, type: 'medusa' },
+        { x: 1680, y: 330, left: 1640, right: 1760, speed: 65, type: 'pez' },
+        { x: 1920, y: 220, left: 1920, right: 1920, speed: 50, type: 'medusa' },
+        { x: 2220, y: 330, left: 2190, right: 2310, speed: 75, type: 'pez' },
+        { x: 2500, y: 200, left: 2500, right: 2500, speed: 45, type: 'medusa' },
+        { x: 2780, y: 330, left: 2740, right: 2860, speed: 70, type: 'pez' }
+      ],
+
+      airEnemiesData: [
+        { x: 700, y: 150, pattern: 'horizontal', minX: 620, maxX: 780, speed: 80 },
+        { x: 1300, y: 130, pattern: 'diagonal', minX: 1200, maxX: 1400, minY: 110, maxY: 170, speed: 70, speedY: 40 },
+        { x: 2400, y: 140, pattern: 'sinusoidal', minX: 2300, maxX: 2500, baseY: 130, ampY: 35, speed: 80 }
+      ],
+
+      crownsData: [
+        { x: 1010, y: 150 },
+        { x: 875, y: 330 },
+        { x: 2110, y: 150 }
+      ],
+
+      // Currents data (X, Y, Width, Height, ForceX, ForceY)
+      currentsData: [
+        { x: 600, y: 100, w: 300, h: 180, forceX: 130, forceY: 0 },
+        { x: 1550, y: 120, w: 350, h: 200, forceX: -110, forceY: 0 },
+        { x: 2350, y: 100, w: 300, h: 180, forceX: 120, forceY: 0 }
+      ],
+
+      // Boss: El Elegante Veriss
+      bossData: {
+        type: 'elegante_veriss',
+        hp: 4,
+        roomLeft: 2900,
+        roomRight: 3450,
+        x: 3150, y: 200,
+        speed: 85,
+        projectileSpeed: 180,
+        projectileInterval: 75
+      },
+
+      goal: {
+        type: 'portal_queen',
+        portalX: 3380, portalY: 245
       }
     }
   ]

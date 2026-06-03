@@ -16,17 +16,6 @@ class MarioGame {
     this.gameState = 'welcome'; // 'welcome', 'playing', 'gameover', 'victory'
     this.musicEnabled = localStorage.getItem('martina_mario_mute') !== 'true';
     
-    // Unlocked levels progress tracking
-    this.unlockedLevels = JSON.parse(localStorage.getItem('martina_mario_unlocked')) || [true];
-    while (this.unlockedLevels.length < 16) {
-      this.unlockedLevels.push(false);
-    }
-
-    // Best score per level tracking (for trophies & completion %)
-    this.bestScores = JSON.parse(localStorage.getItem('martina_mario_bestscores')) || {};
-    // Max possible score per level
-    this.maxScores = (window.MartinaLevels && window.MartinaLevels.maxScore) || { 0: 9900 };
-
     // Chapters levels information
     this.levels = [
       { num: 1, name: "El Primer Movimiento", icon: "👣", biome: "grass", unlocked: true, desc: "Pradera del Centro. El tablero mágico despierta entre campos verdes." },
@@ -47,6 +36,17 @@ class MarioGame {
       { num: 16, name: "Fuego contra Todos", icon: "🌋", biome: "lava", unlocked: false, desc: "El Volcán del Final. El desafío definitivo en el cráter de fuego." }
     ];
 
+    // Unlocked levels progress tracking
+    this.unlockedLevels = JSON.parse(localStorage.getItem('martina_mario_unlocked')) || [true];
+    while (this.unlockedLevels.length < this.levels.length) {
+      this.unlockedLevels.push(false);
+    }
+
+    // Best score per level tracking (for trophies & completion %)
+    this.bestScores = JSON.parse(localStorage.getItem('martina_mario_bestscores')) || {};
+    // Max possible score per level
+    this.maxScores = (window.MartinaLevels && window.MartinaLevels.maxScore) || { 0: 9900 };
+
     // Audio sequencer loops
     this.musicInterval = null;
     this.synthNotes = [];
@@ -63,7 +63,7 @@ class MarioGame {
     
     // Load unlocked levels from localStorage (persist across sessions)
     this.unlockedLevels = JSON.parse(localStorage.getItem('martina_mario_unlocked')) || [true];
-    while (this.unlockedLevels.length < 16) {
+    while (this.unlockedLevels.length < this.levels.length) {
       this.unlockedLevels.push(false);
     }
     
@@ -97,7 +97,7 @@ class MarioGame {
         ? (pct >= 100 ? '🏆' : pct >= 75 ? '🥇' : pct >= 50 ? '🥈' : pct >= 25 ? '🥉' : '👣')
         : '';
       
-      const displayDesc = idx === 0 ? level.desc : `${level.desc} (Próximamente)`;
+      const displayDesc = idx < maxImplemented ? level.desc : `${level.desc} (Próximamente)`;
       
       const statsHTML = isUnlocked ? `
         <div class="mario-level-progress">
@@ -1602,167 +1602,281 @@ class MarioGame {
             const pCtx = pCanvas.getContext('2d');
             
             // Hair back (behind the face)
-            const drawMartinaFrame = (frameType) => {
-              const pCanvas = document.createElement('canvas');
-              pCanvas.width = 32;
-              pCanvas.height = 48;
-              const pCtx = pCanvas.getContext('2d');
-              
-              // Hair back (behind the face)
-              pCtx.fillStyle = '#3f1d0b'; // Dark brown
-              pCtx.beginPath();
-              pCtx.arc(16, 17, 9, Math.PI, 0); // top half
-              pCtx.rect(7, 17, 18, 13); // back locks
-              pCtx.fill();
-              
-              // Head (skin tone)
-              pCtx.fillStyle = '#fed7aa'; // Soft peach skin
-              pCtx.beginPath();
-              pCtx.arc(16, 16, 7, 0, Math.PI * 2);
-              pCtx.fill();
-              
-              // Hair bangs (front)
-              pCtx.fillStyle = '#3f1d0b';
-              pCtx.beginPath();
-              pCtx.arc(16, 13, 7, Math.PI * 1.1, Math.PI * 1.9);
-              pCtx.fill();
-              
-              // Glasses (Black frames, signature Martina - rounder and thinner to avoid mask effect!)
-              pCtx.lineWidth = 0.6; // Extra thin frame
-              pCtx.strokeStyle = '#1e293b'; // Dark slate frame
-              
-              // Draw small cute eyes behind the glass lenses first!
-              pCtx.fillStyle = '#1e293b';
-              pCtx.beginPath();
-              pCtx.arc(12.5, 16, 0.75, 0, Math.PI * 2);
-              pCtx.arc(19.5, 16, 0.75, 0, Math.PI * 2);
-              pCtx.fill();
-              
-              // Left eye lens (round)
-              pCtx.beginPath();
-              pCtx.arc(12.5, 16, 2.2, 0, Math.PI * 2);
-              pCtx.stroke();
-              // Right eye lens (round)
-              pCtx.beginPath();
-              pCtx.arc(19.5, 16, 2.2, 0, Math.PI * 2);
-              pCtx.stroke();
-              // Bridge (curve bridge)
-              pCtx.beginPath();
-              pCtx.moveTo(14.7, 16);
-              pCtx.quadraticCurveTo(16, 15.2, 17.3, 16);
-              pCtx.stroke();
-              // Temple arms (thin frames going to the sides)
-              pCtx.beginPath();
-              pCtx.moveTo(10.3, 16);
-              pCtx.lineTo(8.5, 16);
-              pCtx.moveTo(21.7, 16);
-              pCtx.lineTo(23.5, 16);
-              pCtx.stroke();
-              // Glare lens reflections (small cute white sparkles)
-              pCtx.fillStyle = '#ffffff';
-              pCtx.beginPath();
-              pCtx.arc(13.3, 15.2, 0.5, 0, Math.PI*2);
-              pCtx.arc(20.3, 15.2, 0.5, 0, Math.PI*2);
-              pCtx.fill();
-              
-              // White Polo Shirt (Body)
-              pCtx.fillStyle = '#ffffff';
-              pCtx.beginPath();
-              pCtx.moveTo(12, 23);
-              pCtx.lineTo(20, 23);
-              pCtx.lineTo(22, 33);
-              pCtx.lineTo(10, 33);
-              pCtx.closePath();
-              pCtx.fill();
-              
-              // Red emblem on chest
-              pCtx.fillStyle = '#ef4444';
-              pCtx.fillRect(15, 26, 2, 2);
-              
-              // Blue Voley Shorts
-              pCtx.fillStyle = '#1d4ed8'; // Royal blue
-              pCtx.fillRect(10, 33, 12, 5);
-              
-              // Draw Arms
-              pCtx.fillStyle = '#ffffff'; // Sleeves
-              pCtx.fillRect(8, 23, 2, 4);
-              pCtx.fillRect(22, 23, 2, 4);
-              pCtx.fillStyle = '#fed7aa'; // Hands
-              pCtx.beginPath();
-              pCtx.arc(9, 28, 2, 0, Math.PI*2);
-              pCtx.arc(23, 28, 2, 0, Math.PI*2);
-              pCtx.fill();
-              
-              // --- ANCHOR DYNAMIC LEGS DRAWING BASED ON FRAMES ---
-              pCtx.fillStyle = '#fed7aa'; // Skin tone legs
-              if (frameType === 'idle') {
-                pCtx.fillRect(12, 38, 3, 6);
-                pCtx.fillRect(17, 38, 3, 6);
-                pCtx.fillStyle = '#ffffff'; // Socks
-                pCtx.fillRect(12, 42, 3, 2);
-                pCtx.fillRect(17, 42, 3, 2);
-                pCtx.fillStyle = '#dc2626'; // Sneakers
-                pCtx.fillRect(11, 44, 4, 3);
-                pCtx.fillRect(17, 44, 4, 3);
-                pCtx.fillStyle = '#000000'; // Sole
-                pCtx.fillRect(10, 47, 5, 1);
-                pCtx.fillRect(16, 47, 5, 1);
-              } else if (frameType === 'run1') {
-                // Left leg forward, right leg backward
-                pCtx.fillRect(10, 38, 3, 6);
-                pCtx.fillRect(19, 38, 3, 6);
-                pCtx.fillStyle = '#ffffff'; // Socks
-                pCtx.fillRect(10, 42, 3, 2);
-                pCtx.fillRect(19, 42, 3, 2);
-                pCtx.fillStyle = '#dc2626'; // Sneakers
-                pCtx.fillRect(9, 44, 4, 3);
-                pCtx.fillRect(19, 44, 4, 3);
-                pCtx.fillStyle = '#000000'; // Sole
-                pCtx.fillRect(8, 47, 5, 1);
-                pCtx.fillRect(18, 47, 5, 1);
-              } else if (frameType === 'run2') {
-                // Pass position: legs overlapping in center
-                pCtx.fillRect(13, 38, 3, 6);
-                pCtx.fillRect(16, 38, 3, 6);
-                pCtx.fillStyle = '#ffffff'; // Socks
-                pCtx.fillRect(13, 42, 3, 2);
-                pCtx.fillRect(16, 42, 3, 2);
-                pCtx.fillStyle = '#dc2626'; // Sneakers
-                pCtx.fillRect(12, 44, 4, 3);
-                pCtx.fillRect(16, 44, 4, 3);
-                pCtx.fillStyle = '#000000'; // Sole
-                pCtx.fillRect(11, 47, 5, 1);
-                pCtx.fillRect(15, 47, 5, 1);
-              } else if (frameType === 'run3') {
-                // Right leg forward, left leg backward
-                pCtx.fillRect(19, 38, 3, 6);
-                pCtx.fillRect(10, 38, 3, 6);
-                pCtx.fillStyle = '#ffffff'; // Socks
-                pCtx.fillRect(19, 42, 3, 2);
-                pCtx.fillRect(10, 42, 3, 2);
-                pCtx.fillStyle = '#dc2626'; // Sneakers
-                pCtx.fillRect(19, 44, 4, 3);
-                pCtx.fillRect(9, 44, 4, 3);
-                pCtx.fillStyle = '#000000'; // Sole
-                pCtx.fillRect(18, 47, 5, 1);
-                pCtx.fillRect(8, 47, 5, 1);
-              } else if (frameType === 'jump') {
-                // Legs bent slightly higher!
-                pCtx.fillRect(11, 38, 3, 4);
-                pCtx.fillRect(18, 38, 3, 4);
-                pCtx.fillStyle = '#ffffff'; // Socks
-                pCtx.fillRect(11, 40, 3, 2);
-                pCtx.fillRect(18, 40, 3, 2);
-                pCtx.fillStyle = '#dc2626'; // Sneakers
-                pCtx.fillRect(10, 42, 4, 3);
-                pCtx.fillRect(18, 42, 4, 3);
-                pCtx.fillStyle = '#000000'; // Sole
-                pCtx.fillRect(9, 45, 5, 1);
-                pCtx.fillRect(17, 45, 5, 1);
-              }
-              
-              return pCanvas;
-            };
+             const drawMartinaFrame = (frameType) => {
+               const pCanvas = document.createElement('canvas');
+               pCanvas.width = 32;
+               pCanvas.height = 48;
+               const pCtx = pCanvas.getContext('2d');
+               const isDiving = (biome === 'river');
+               
+               // Hair back (behind the face)
+               pCtx.fillStyle = '#3f1d0b'; // Dark brown
+               pCtx.beginPath();
+               pCtx.arc(16, 17, 9, Math.PI, 0); // top half
+               pCtx.rect(7, 17, 18, 13); // back locks
+               pCtx.fill();
+
+               // Oxygen tank on back (if diving, drawn behind body but in front of back hair)
+               if (isDiving) {
+                 pCtx.fillStyle = '#94a3b8'; // Slate gray tank
+                 pCtx.fillRect(4, 21, 5, 14);
+                 pCtx.fillStyle = '#64748b'; // tank top
+                 pCtx.fillRect(4, 18, 4, 3);
+                 pCtx.fillStyle = '#eab308'; // strap details
+                 pCtx.fillRect(5, 23, 3, 1.5);
+                 pCtx.fillRect(5, 29, 3, 1.5);
+               }
+               
+               // Head (skin tone)
+               pCtx.fillStyle = '#fed7aa'; // Soft peach skin
+               pCtx.beginPath();
+               pCtx.arc(16, 16, 7, 0, Math.PI * 2);
+               pCtx.fill();
+               
+               // Hair bangs (front)
+               pCtx.fillStyle = '#3f1d0b';
+               pCtx.beginPath();
+               pCtx.arc(16, 13, 7, Math.PI * 1.1, Math.PI * 1.9);
+               pCtx.fill();
+               
+               if (isDiving) {
+                 // Draw mask skirt (translucent cyan)
+                 pCtx.fillStyle = 'rgba(34, 211, 238, 0.45)';
+                 pCtx.beginPath();
+                 pCtx.ellipse(16, 16, 8, 4, 0, 0, Math.PI * 2);
+                 pCtx.fill();
+
+                 // Mask frame (cyan-blue)
+                 pCtx.strokeStyle = '#0891b2';
+                 pCtx.lineWidth = 1.2;
+                 pCtx.beginPath();
+                 pCtx.ellipse(16, 16, 8, 4, 0, 0, Math.PI * 2);
+                 pCtx.stroke();
+
+                 // Eyes behind mask
+                 pCtx.fillStyle = '#1e293b';
+                 pCtx.beginPath();
+                 pCtx.arc(12.5, 16, 0.8, 0, Math.PI * 2);
+                 pCtx.arc(19.5, 16, 0.8, 0, Math.PI * 2);
+                 pCtx.fill();
+
+                 // Glare reflections on glass
+                 pCtx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                 pCtx.beginPath();
+                 pCtx.arc(13.5, 15.2, 0.6, 0, Math.PI * 2);
+                 pCtx.arc(18.5, 15.2, 0.4, 0, Math.PI * 2);
+                 pCtx.fill();
+
+                 // Snorkel tube (orange, right side)
+                 pCtx.strokeStyle = '#ea580c';
+                 pCtx.lineWidth = 1.8;
+                 pCtx.beginPath();
+                 pCtx.moveTo(19, 18);
+                 pCtx.quadraticCurveTo(24, 20, 25, 14);
+                 pCtx.lineTo(25, 6);
+                 pCtx.stroke();
+                 pCtx.fillStyle = '#ea580c';
+                 pCtx.fillRect(24, 5, 2, 2);
+               } else {
+                 // Glasses (Black frames, signature Martina - rounder and thinner to avoid mask effect!)
+                 pCtx.lineWidth = 0.6; // Extra thin frame
+                 pCtx.strokeStyle = '#1e293b'; // Dark slate frame
+                 
+                 // Draw small cute eyes behind the glass lenses first!
+                 pCtx.fillStyle = '#1e293b';
+                 pCtx.beginPath();
+                 pCtx.arc(12.5, 16, 0.75, 0, Math.PI * 2);
+                 pCtx.arc(19.5, 16, 0.75, 0, Math.PI * 2);
+                 pCtx.fill();
+                 
+                 // Left eye lens (round)
+                 pCtx.beginPath();
+                 pCtx.arc(12.5, 16, 2.2, 0, Math.PI * 2);
+                 pCtx.stroke();
+                 // Right eye lens (round)
+                 pCtx.beginPath();
+                 pCtx.arc(19.5, 16, 2.2, 0, Math.PI * 2);
+                 pCtx.stroke();
+                 // Bridge (curve bridge)
+                 pCtx.beginPath();
+                 pCtx.moveTo(14.7, 16);
+                 pCtx.quadraticCurveTo(16, 15.2, 17.3, 16);
+                 pCtx.stroke();
+                 // Temple arms (thin frames going to the sides)
+                 pCtx.beginPath();
+                 pCtx.moveTo(10.3, 16);
+                 pCtx.lineTo(8.5, 16);
+                 pCtx.moveTo(21.7, 16);
+                 pCtx.lineTo(23.5, 16);
+                 pCtx.stroke();
+                 // Glare lens reflections (small cute white sparkles)
+                 pCtx.fillStyle = '#ffffff';
+                 pCtx.beginPath();
+                 pCtx.arc(13.3, 15.2, 0.5, 0, Math.PI*2);
+                 pCtx.arc(20.3, 15.2, 0.5, 0, Math.PI*2);
+                 pCtx.fill();
+               }
+               
+               if (isDiving) {
+                 // Sleek wetsuit (dark navy blue with neon green lines)
+                 pCtx.fillStyle = '#0f172a';
+                 pCtx.beginPath();
+                 pCtx.moveTo(12, 23);
+                 pCtx.lineTo(20, 23);
+                 pCtx.lineTo(22, 33);
+                 pCtx.lineTo(10, 33);
+                 pCtx.closePath();
+                 pCtx.fill();
+
+                 pCtx.strokeStyle = '#22c55e'; // neon green details
+                 pCtx.lineWidth = 1;
+                 pCtx.beginPath();
+                 pCtx.moveTo(14, 23); pCtx.lineTo(13, 33);
+                 pCtx.moveTo(18, 23); pCtx.lineTo(19, 33);
+                 pCtx.stroke();
+
+                 // Yellow belt
+                 pCtx.fillStyle = '#eab308';
+                 pCtx.fillRect(10, 33, 12, 1.5);
+               } else {
+                 // White Polo Shirt (Body)
+                 pCtx.fillStyle = '#ffffff';
+                 pCtx.beginPath();
+                 pCtx.moveTo(12, 23);
+                 pCtx.lineTo(20, 23);
+                 pCtx.lineTo(22, 33);
+                 pCtx.lineTo(10, 33);
+                 pCtx.closePath();
+                 pCtx.fill();
+                 
+                 // Red emblem on chest
+                 pCtx.fillStyle = '#ef4444';
+                 pCtx.fillRect(15, 26, 2, 2);
+                 
+                 // Blue Voley Shorts
+                 pCtx.fillStyle = '#1d4ed8'; // Royal blue
+                 pCtx.fillRect(10, 33, 12, 5);
+               }
+               
+               // Draw Arms
+               if (isDiving) {
+                 pCtx.fillStyle = '#0f172a'; // long wetsuit sleeves
+                 pCtx.fillRect(8, 23, 2, 5);
+                 pCtx.fillRect(22, 23, 2, 5);
+                 pCtx.fillStyle = '#06b6d4'; // cyan gloves
+                 pCtx.beginPath();
+                 pCtx.arc(9, 29, 2, 0, Math.PI*2);
+                 pCtx.arc(23, 29, 2, 0, Math.PI*2);
+                 pCtx.fill();
+               } else {
+                 pCtx.fillStyle = '#ffffff'; // Sleeves
+                 pCtx.fillRect(8, 23, 2, 4);
+                 pCtx.fillRect(22, 23, 2, 4);
+                 pCtx.fillStyle = '#fed7aa'; // Hands
+                 pCtx.beginPath();
+                 pCtx.arc(9, 28, 2, 0, Math.PI*2);
+                 pCtx.arc(23, 28, 2, 0, Math.PI*2);
+                 pCtx.fill();
+               }
+               
+               // --- ANCHOR DYNAMIC LEGS DRAWING BASED ON FRAMES ---
+               if (isDiving) {
+                 pCtx.fillStyle = '#0f172a'; // wetsuit legs
+                 pCtx.fillRect(12, 38, 3, 5);
+                 pCtx.fillRect(17, 38, 3, 5);
+
+                 // Flippers / Fins (Vivid yellow/orange)
+                 pCtx.fillStyle = '#eab308';
+                 pCtx.beginPath();
+                 if (frameType === 'idle') {
+                   pCtx.moveTo(12, 42); pCtx.lineTo(6, 47); pCtx.lineTo(15, 47);
+                   pCtx.moveTo(19, 42); pCtx.lineTo(16, 47); pCtx.lineTo(25, 47);
+                 } else if (frameType === 'run1') {
+                   // flutter 1
+                   pCtx.moveTo(10, 42); pCtx.lineTo(4, 47); pCtx.lineTo(13, 47);
+                   pCtx.moveTo(20, 42); pCtx.lineTo(15, 47); pCtx.lineTo(24, 47);
+                 } else if (frameType === 'run2') {
+                   // flutter 2 (neutral overlap)
+                   pCtx.moveTo(13, 42); pCtx.lineTo(7, 47); pCtx.lineTo(16, 47);
+                   pCtx.moveTo(16, 42); pCtx.lineTo(13, 47); pCtx.lineTo(22, 47);
+                 } else if (frameType === 'run3') {
+                   // flutter 3
+                   pCtx.moveTo(20, 42); pCtx.lineTo(15, 47); pCtx.lineTo(24, 47);
+                   pCtx.moveTo(10, 42); pCtx.lineTo(4, 47); pCtx.lineTo(13, 47);
+                 } else if (frameType === 'jump') {
+                   pCtx.moveTo(11, 40); pCtx.lineTo(5, 46); pCtx.lineTo(14, 46);
+                   pCtx.moveTo(18, 40); pCtx.lineTo(14, 46); pCtx.lineTo(23, 46);
+                 }
+                 pCtx.closePath();
+                 pCtx.fill();
+               } else {
+                 pCtx.fillStyle = '#fed7aa'; // Skin tone legs
+                 if (frameType === 'idle') {
+                   pCtx.fillRect(12, 38, 3, 6);
+                   pCtx.fillRect(17, 38, 3, 6);
+                   pCtx.fillStyle = '#ffffff'; // Socks
+                   pCtx.fillRect(12, 42, 3, 2);
+                   pCtx.fillRect(17, 42, 3, 2);
+                   pCtx.fillStyle = '#dc2626'; // Sneakers
+                   pCtx.fillRect(11, 44, 4, 3);
+                   pCtx.fillRect(17, 44, 4, 3);
+                   pCtx.fillStyle = '#000000'; // Sole
+                   pCtx.fillRect(10, 47, 5, 1);
+                   pCtx.fillRect(16, 47, 5, 1);
+                 } else if (frameType === 'run1') {
+                   pCtx.fillRect(10, 38, 3, 6);
+                   pCtx.fillRect(19, 38, 3, 6);
+                   pCtx.fillStyle = '#ffffff'; // Socks
+                   pCtx.fillRect(10, 42, 3, 2);
+                   pCtx.fillRect(19, 42, 3, 2);
+                   pCtx.fillStyle = '#dc2626'; // Sneakers
+                   pCtx.fillRect(9, 44, 4, 3);
+                   pCtx.fillRect(19, 44, 4, 3);
+                   pCtx.fillStyle = '#000000'; // Sole
+                   pCtx.fillRect(8, 47, 5, 1);
+                   pCtx.fillRect(18, 47, 5, 1);
+                 } else if (frameType === 'run2') {
+                   pCtx.fillRect(13, 38, 3, 6);
+                   pCtx.fillRect(16, 38, 3, 6);
+                   pCtx.fillStyle = '#ffffff'; // Socks
+                   pCtx.fillRect(13, 42, 3, 2);
+                   pCtx.fillRect(16, 42, 3, 2);
+                   pCtx.fillStyle = '#dc2626'; // Sneakers
+                   pCtx.fillRect(12, 44, 4, 3);
+                   pCtx.fillRect(16, 44, 4, 3);
+                   pCtx.fillStyle = '#000000'; // Sole
+                   pCtx.fillRect(11, 47, 5, 1);
+                   pCtx.fillRect(15, 47, 5, 1);
+                 } else if (frameType === 'run3') {
+                   pCtx.fillRect(19, 38, 3, 6);
+                   pCtx.fillRect(10, 38, 3, 6);
+                   pCtx.fillStyle = '#ffffff'; // Socks
+                   pCtx.fillRect(19, 42, 3, 2);
+                   pCtx.fillRect(10, 42, 3, 2);
+                   pCtx.fillStyle = '#dc2626'; // Sneakers
+                   pCtx.fillRect(19, 44, 4, 3);
+                   pCtx.fillRect(9, 44, 4, 3);
+                   pCtx.fillStyle = '#000000'; // Sole
+                   pCtx.fillRect(18, 47, 5, 1);
+                   pCtx.fillRect(8, 47, 5, 1);
+                 } else if (frameType === 'jump') {
+                   pCtx.fillRect(11, 38, 3, 4);
+                   pCtx.fillRect(18, 38, 3, 4);
+                   pCtx.fillStyle = '#ffffff'; // Socks
+                   pCtx.fillRect(11, 40, 3, 2);
+                   pCtx.fillRect(18, 40, 3, 2);
+                   pCtx.fillStyle = '#dc2626'; // Sneakers
+                   pCtx.fillRect(10, 42, 4, 3);
+                   pCtx.fillRect(18, 42, 4, 3);
+                   pCtx.fillStyle = '#000000'; // Sole
+                   pCtx.fillRect(9, 45, 5, 1);
+                   pCtx.fillRect(17, 45, 5, 1);
+                 }
+               }
+               
+               return pCanvas;
+             };
+
             
             // Register 5 individual frame textures
             scene.textures.addCanvas('player-idle', drawMartinaFrame('idle'));
@@ -2710,133 +2824,196 @@ class MarioGame {
                 bgCtx.arc(gx, gy, 1.5, 0, Math.PI*2);
                 bgCtx.fill();
               }
+            } else if (biome === 'river') {
+              // --- RIVER BACKGROUND: Beautiful bright coral reef ocean depths ---
+              const rGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
+              rGrad.addColorStop(0, '#0e7490');   // Bright turquoise ocean surface
+              rGrad.addColorStop(0.3, '#06b6d4'); // Cyan water column
+              rGrad.addColorStop(0.7, '#0891b2'); // Soft cyan-teal
+              rGrad.addColorStop(1, '#0e5a70');   // Deep ocean teal
+              bgCtx.fillStyle = rGrad;
+              bgCtx.fillRect(0, 0, 800, 450);
+
+              // Sun rays penetrating the water from top-left to bottom-right
+              bgCtx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+              bgCtx.beginPath();
+              bgCtx.moveTo(0, 0);
+              bgCtx.lineTo(150, 0);
+              bgCtx.lineTo(550, 450);
+              bgCtx.lineTo(350, 450);
+              bgCtx.closePath();
+              bgCtx.fill();
+
+              bgCtx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+              bgCtx.beginPath();
+              bgCtx.moveTo(80, 0);
+              bgCtx.lineTo(260, 0);
+              bgCtx.lineTo(800, 420);
+              bgCtx.lineTo(650, 450);
+              bgCtx.closePath();
+              bgCtx.fill();
+
+              // Ethereal sun rays
+              bgCtx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+              bgCtx.beginPath();
+              bgCtx.moveTo(0, 50);
+              bgCtx.lineTo(0, 180);
+              bgCtx.lineTo(270, 450);
+              bgCtx.lineTo(150, 450);
+              bgCtx.closePath();
+              bgCtx.fill();
+
+              // Far background coral and reef rock silhouettes (soft teal-blue shadows)
+              bgCtx.fillStyle = '#065466'; // deep silhouette tone
+              bgCtx.beginPath();
+              bgCtx.moveTo(0, 450);
+              bgCtx.lineTo(0, 380);
+              bgCtx.quadraticCurveTo(150, 320, 250, 390);
+              bgCtx.quadraticCurveTo(380, 450, 500, 360);
+              bgCtx.quadraticCurveTo(620, 280, 720, 370);
+              bgCtx.quadraticCurveTo(770, 410, 800, 390);
+              bgCtx.lineTo(800, 450);
+              bgCtx.closePath();
+              bgCtx.fill();
+
+              // Another layer of far background coral silhouettes
+              bgCtx.fillStyle = '#0a4252';
+              bgCtx.beginPath();
+              bgCtx.moveTo(0, 450);
+              bgCtx.lineTo(0, 420);
+              bgCtx.quadraticCurveTo(80, 390, 160, 410);
+              bgCtx.quadraticCurveTo(300, 340, 420, 410);
+              bgCtx.quadraticCurveTo(550, 380, 680, 420);
+              bgCtx.lineTo(800, 410);
+              bgCtx.lineTo(800, 450);
+              bgCtx.closePath();
+              bgCtx.fill();
             } else {
               // --- GRASS BACKGROUND: Magical realm dreamscape ---
-            const skyGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
-            skyGrad.addColorStop(0, '#020113');   // Near-black void
-            skyGrad.addColorStop(0.15, '#0a0525'); // Deep indigo
-            skyGrad.addColorStop(0.35, '#170b3b'); // Twilight purple
-            skyGrad.addColorStop(0.55, '#1e1050'); // Rich violet
-            skyGrad.addColorStop(0.75, '#2d1b69'); // Magical lilac
-            skyGrad.addColorStop(0.9, '#4c1d95');  // Bright horizon
-            skyGrad.addColorStop(1, '#1e0b3b');    // Deep magical base
-            bgCtx.fillStyle = skyGrad;
-            bgCtx.fillRect(0, 0, 800, 450);
-            
-            // Nebula patches — soft color blends
-            bgCtx.globalAlpha = 0.04;
-            const drawNebula = (x, y, r, color) => {
-              const ng = bgCtx.createRadialGradient(x, y, 0, x, y, r);
-              ng.addColorStop(0, color);
-              ng.addColorStop(1, 'transparent');
-              bgCtx.fillStyle = ng;
-              bgCtx.beginPath();
-              bgCtx.arc(x, y, r, 0, Math.PI * 2);
-              bgCtx.fill();
-            };
-            drawNebula(200, 100, 160, '#22d3ee');
-            drawNebula(550, 180, 190, '#a855f7');
-            drawNebula(100, 250, 140, '#fbbf24');
-            drawNebula(700, 80, 130, '#38bdf8');
-            drawNebula(380, 130, 100, '#f472b6');
-            bgCtx.globalAlpha = 1;
-            
-            // Dense star field — 3 tiers of brightness
-            for (let r = 0; r < 16; r++) {
-              for (let c = 0; c < 26; c++) {
-                const sx = c * 31 + (Math.random() * 20 - 10);
-                const sy = r * 29 + (Math.random() * 20 - 10);
-                if (sy > 260) continue;
-                const dice = Math.random();
-                if (dice < 0.42) {
-                  const sz = dice < 0.08 ? 1.0 : dice < 0.22 ? 0.7 : 0.45;
-                  bgCtx.fillStyle = dice < 0.08 ? 'rgba(255,255,255,0.85)'
-                    : dice < 0.22 ? 'rgba(255,255,255,0.55)'
-                    : 'rgba(200,210,255,0.35)';
-                  bgCtx.beginPath();
-                  bgCtx.arc(sx, sy, sz, 0, Math.PI * 2);
-                  bgCtx.fill();
+              const skyGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
+              skyGrad.addColorStop(0, '#020113');   // Near-black void
+              skyGrad.addColorStop(0.15, '#0a0525'); // Deep indigo
+              skyGrad.addColorStop(0.35, '#170b3b'); // Twilight purple
+              skyGrad.addColorStop(0.55, '#1e1050'); // Rich violet
+              skyGrad.addColorStop(0.75, '#2d1b69'); // Magical lilac
+              skyGrad.addColorStop(0.9, '#4c1d95');  // Bright horizon
+              skyGrad.addColorStop(1, '#1e0b3b');    // Deep magical base
+              bgCtx.fillStyle = skyGrad;
+              bgCtx.fillRect(0, 0, 800, 450);
+              
+              // Nebula patches — soft color blends
+              bgCtx.globalAlpha = 0.04;
+              const drawNebula = (x, y, r, color) => {
+                const ng = bgCtx.createRadialGradient(x, y, 0, x, y, r);
+                ng.addColorStop(0, color);
+                ng.addColorStop(1, 'transparent');
+                bgCtx.fillStyle = ng;
+                bgCtx.beginPath();
+                bgCtx.arc(x, y, r, 0, Math.PI * 2);
+                bgCtx.fill();
+              };
+              drawNebula(200, 100, 160, '#22d3ee');
+              drawNebula(550, 180, 190, '#a855f7');
+              drawNebula(100, 250, 140, '#fbbf24');
+              drawNebula(700, 80, 130, '#38bdf8');
+              drawNebula(380, 130, 100, '#f472b6');
+              bgCtx.globalAlpha = 1;
+              
+              // Dense star field — 3 tiers of brightness
+              for (let r = 0; r < 16; r++) {
+                for (let c = 0; c < 26; c++) {
+                  const sx = c * 31 + (Math.random() * 20 - 10);
+                  const sy = r * 29 + (Math.random() * 20 - 10);
+                  if (sy > 260) continue;
+                  const dice = Math.random();
+                  if (dice < 0.42) {
+                    const sz = dice < 0.08 ? 1.0 : dice < 0.22 ? 0.7 : 0.45;
+                    bgCtx.fillStyle = dice < 0.08 ? 'rgba(255,255,255,0.85)'
+                      : dice < 0.22 ? 'rgba(255,255,255,0.55)'
+                      : 'rgba(200,210,255,0.35)';
+                    bgCtx.beginPath();
+                    bgCtx.arc(sx, sy, sz, 0, Math.PI * 2);
+                    bgCtx.fill();
+                  }
                 }
               }
-            }
-            
-            // Golden scattered stars (rarer, brighter, with cross sparkle)
-            const goldStars = [
-              {x:90,y:30},{x:210,y:60},{x:320,y:22},{x:430,y:55},
-              {x:178,y:95},{x:560,y:40},{x:620,y:85},{x:720,y:35},
-              {x:380,y:18},{x:660,y:58}
-            ];
-            goldStars.forEach((gs, i) => {
-              bgCtx.fillStyle = '#fbbf24';
-              bgCtx.shadowColor = 'rgba(251,191,36,0.7)';
-              bgCtx.shadowBlur = 3;
-              bgCtx.beginPath();
-              bgCtx.arc(gs.x, gs.y, 1.8, 0, Math.PI * 2);
-              bgCtx.fill();
-              bgCtx.shadowBlur = 0;
-              if (i % 3 === 0) {
-                bgCtx.strokeStyle = 'rgba(251,191,36,0.35)';
-                bgCtx.lineWidth = 0.6;
+              
+              // Golden scattered stars (rarer, brighter, with cross sparkle)
+              const goldStars = [
+                {x:90,y:30},{x:210,y:60},{x:320,y:22},{x:430,y:55},
+                {x:178,y:95},{x:560,y:40},{x:620,y:85},{x:720,y:35},
+                {x:380,y:18},{x:660,y:58}
+              ];
+              goldStars.forEach((gs, i) => {
+                bgCtx.fillStyle = '#fbbf24';
+                bgCtx.shadowColor = 'rgba(251,191,36,0.7)';
+                bgCtx.shadowBlur = 3;
                 bgCtx.beginPath();
-                bgCtx.moveTo(gs.x - 5, gs.y);
-                bgCtx.lineTo(gs.x + 5, gs.y);
-                bgCtx.moveTo(gs.x, gs.y - 5);
-                bgCtx.lineTo(gs.x, gs.y + 5);
+                bgCtx.arc(gs.x, gs.y, 1.8, 0, Math.PI * 2);
+                bgCtx.fill();
+                bgCtx.shadowBlur = 0;
+                if (i % 3 === 0) {
+                  bgCtx.strokeStyle = 'rgba(251,191,36,0.35)';
+                  bgCtx.lineWidth = 0.6;
+                  bgCtx.beginPath();
+                  bgCtx.moveTo(gs.x - 5, gs.y);
+                  bgCtx.lineTo(gs.x + 5, gs.y);
+                  bgCtx.moveTo(gs.x, gs.y - 5);
+                  bgCtx.lineTo(gs.x, gs.y + 5);
+                  bgCtx.stroke();
+                }
+              });
+              
+              // Multi-layer auroras — dream energy waves
+              const drawAurora = (y0, y1, y2, y3, color, width, alpha) => {
+                bgCtx.globalAlpha = alpha;
+                bgCtx.strokeStyle = color;
+                bgCtx.lineWidth = width;
+                bgCtx.beginPath();
+                bgCtx.moveTo(0, y0);
+                bgCtx.bezierCurveTo(200, y1, 400, y2, 800, y3);
+                bgCtx.stroke();
+                bgCtx.globalAlpha = 1;
+              };
+              drawAurora(160, 40, 260, 90, 'rgba(34,211,238,0.07)', 22, 1);
+              drawAurora(120, 200, 30, 160, 'rgba(167,139,250,0.06)', 28, 1);
+              drawAurora(190, 110, 180, 140, 'rgba(251,191,36,0.04)', 16, 1);
+              drawAurora(70, 170, 90, 50, 'rgba(244,114,182,0.04)', 20, 1);
+              drawAurora(220, 150, 300, 170, 'rgba(56,189,248,0.03)', 18, 1);
+
+              // 3D Perspective Chessboard Grid stretching to the horizon Y=270 — refined lines
+              bgCtx.strokeStyle = 'rgba(139, 92, 246, 0.10)';
+              bgCtx.lineWidth = 0.7;
+              const horizonY = 270;
+              const vanishingX = 400;
+              for (let angle = -8; angle <= 8; angle++) {
+                bgCtx.beginPath();
+                bgCtx.moveTo(vanishingX, horizonY);
+                bgCtx.lineTo(vanishingX + angle * 120, 450);
                 bgCtx.stroke();
               }
-            });
-            
-            // Multi-layer auroras — dream energy waves
-            const drawAurora = (y0, y1, y2, y3, color, width, alpha) => {
-              bgCtx.globalAlpha = alpha;
-              bgCtx.strokeStyle = color;
-              bgCtx.lineWidth = width;
-              bgCtx.beginPath();
-              bgCtx.moveTo(0, y0);
-              bgCtx.bezierCurveTo(200, y1, 400, y2, 800, y3);
-              bgCtx.stroke();
-              bgCtx.globalAlpha = 1;
-            };
-            drawAurora(160, 40, 260, 90, 'rgba(34,211,238,0.07)', 22, 1);
-            drawAurora(120, 200, 30, 160, 'rgba(167,139,250,0.06)', 28, 1);
-            drawAurora(190, 110, 180, 140, 'rgba(251,191,36,0.04)', 16, 1);
-            drawAurora(70, 170, 90, 50, 'rgba(244,114,182,0.04)', 20, 1);
-            drawAurora(220, 150, 300, 170, 'rgba(56,189,248,0.03)', 18, 1);
-
-            // 3D Perspective Chessboard Grid stretching to the horizon Y=270 — refined lines
-            bgCtx.strokeStyle = 'rgba(139, 92, 246, 0.10)';
-            bgCtx.lineWidth = 0.7;
-            const horizonY = 270;
-            const vanishingX = 400;
-            for (let angle = -8; angle <= 8; angle++) {
-              bgCtx.beginPath();
-              bgCtx.moveTo(vanishingX, horizonY);
-              bgCtx.lineTo(vanishingX + angle * 120, 450);
-              bgCtx.stroke();
-            }
-            for (let i = 0; i < 20; i++) {
-              const y = horizonY + Math.pow(i / 20, 2.5) * (450 - horizonY);
-              bgCtx.strokeStyle = `rgba(139,92,246,${0.06 + (20-i)*0.005})`;
-              bgCtx.beginPath();
-              bgCtx.moveTo(0, y);
-              bgCtx.lineTo(800, y);
-              bgCtx.stroke();
-            }
-            
-            // Square clouds — more ethereal, faint
-            bgCtx.fillStyle = 'rgba(255, 255, 255, 0.03)';
-            const drawSquareCloud = (cx, cy, cw, ch) => {
-              bgCtx.fillRect(cx, cy, cw, ch);
-              bgCtx.fillRect(cx + cw * 0.2, cy - ch * 0.3, cw * 0.6, ch * 0.3);
-              bgCtx.fillRect(cx - cw * 0.15, cy + ch * 0.2, cw * 0.3, ch * 0.6);
-              bgCtx.fillRect(cx + cw * 0.85, cy + ch * 0.2, cw * 0.3, ch * 0.6);
-            };
-            drawSquareCloud(60, 60, 90, 18);
-            drawSquareCloud(420, 100, 110, 22);
-            drawSquareCloud(670, 45, 75, 15);
-            drawSquareCloud(240, 38, 65, 13);
-            drawSquareCloud(520, 170, 80, 16);
-            
+              for (let i = 0; i < 20; i++) {
+                const y = horizonY + Math.pow(i / 20, 2.5) * (450 - horizonY);
+                bgCtx.strokeStyle = `rgba(139,92,246,${0.06 + (20-i)*0.005})`;
+                bgCtx.beginPath();
+                bgCtx.moveTo(0, y);
+                bgCtx.lineTo(800, y);
+                bgCtx.stroke();
+              }
+              
+              // Square clouds — more ethereal, faint
+              bgCtx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+              const drawSquareCloud = (cx, cy, cw, ch) => {
+                bgCtx.fillRect(cx, cy, cw, ch);
+                bgCtx.fillRect(cx + cw * 0.2, cy - ch * 0.3, cw * 0.6, ch * 0.3);
+                bgCtx.fillRect(cx - cw * 0.15, cy + ch * 0.2, cw * 0.3, ch * 0.6);
+                bgCtx.fillRect(cx + cw * 0.85, cy + ch * 0.2, cw * 0.3, ch * 0.6);
+              };
+              drawSquareCloud(60, 60, 90, 18);
+              drawSquareCloud(420, 100, 110, 22);
+              drawSquareCloud(670, 45, 75, 15);
+              drawSquareCloud(240, 38, 65, 13);
+              drawSquareCloud(520, 170, 80, 16);
             } // end biome background if/else
             scene.textures.addCanvas('background', bgCanvas);
 
@@ -3083,150 +3260,215 @@ class MarioGame {
                 midCtx.arc(px, py, Math.random()*2+0.5, 0, Math.PI*2);
                 midCtx.fill();
               }
-            } else {
-            const drawIsland = (x, y, w, h, underH) => {
-              // Island top surface with checkered pattern
-              const topGrad = midCtx.createLinearGradient(x, y, x, y + h);
-              topGrad.addColorStop(0, 'rgba(109,40,217,0.55)');
-              topGrad.addColorStop(1, 'rgba(76,29,149,0.35)');
-              midCtx.fillStyle = topGrad;
-              midCtx.beginPath();
-              midCtx.moveTo(x, y);
-              midCtx.lineTo(x + w, y);
-              midCtx.lineTo(x + w - 20, y + h);
-              midCtx.lineTo(x + 20, y + h);
-              midCtx.closePath();
-              midCtx.fill();
-              
-              // Chess checkers on surface
-              midCtx.fillStyle = 'rgba(139,92,246,0.25)';
-              for (let cx = x + 4; cx < x + w - 4; cx += 28) {
-                midCtx.fillRect(cx, y + 2, 14, 12);
-                midCtx.fillRect(cx + 14, y + 14, 14, 12);
+            } else if (biome === 'river') {
+              // --- RIVER MIDGROUND: Colorful waving kelp, corals, and parallax fish schools ---
+              // Translucent water overlay
+              midCtx.fillStyle = 'rgba(6, 182, 212, 0.03)';
+              midCtx.fillRect(0, 0, 800, 450);
+
+              // 1. Draw waving kelp/seaweed (multiple columns at random positions)
+              const drawKelp = (x, h, color, offset) => {
+                midCtx.strokeStyle = color;
+                midCtx.lineWidth = 6;
+                midCtx.lineCap = 'round';
+                midCtx.beginPath();
+                midCtx.moveTo(x, 450);
+                
+                // Draw waving bezier curve
+                const wave = Math.sin(scene.time.now * 0.002 + offset) * 15;
+                midCtx.bezierCurveTo(x - 10 + wave, 350, x + 10 - wave, 250, x + wave, 450 - h);
+                midCtx.stroke();
+              };
+
+              // Green, purple, and orange kelp plants
+              drawKelp(100, 200, 'rgba(16, 185, 129, 0.35)', 0);
+              drawKelp(120, 240, 'rgba(52, 211, 153, 0.30)', 1.5);
+              drawKelp(250, 180, 'rgba(168, 85, 247, 0.30)', 3);
+              drawKelp(380, 220, 'rgba(236, 72, 153, 0.30)', 0.5);
+              drawKelp(520, 250, 'rgba(16, 185, 129, 0.35)', 2);
+              drawKelp(650, 190, 'rgba(251, 146, 60, 0.30)', 4);
+              drawKelp(720, 230, 'rgba(139, 92, 246, 0.30)', 1);
+
+              // 2. Draw glowing coral clusters on the seafloor
+              const drawCoral = (cx, cy, scale, color) => {
+                midCtx.fillStyle = color;
+                midCtx.beginPath();
+                midCtx.arc(cx, cy, 14 * scale, 0, Math.PI*2);
+                midCtx.arc(cx - 10 * scale, cy + 8 * scale, 10 * scale, 0, Math.PI*2);
+                midCtx.arc(cx + 10 * scale, cy + 8 * scale, 10 * scale, 0, Math.PI*2);
+                midCtx.fill();
+                // highlights
+                midCtx.fillStyle = 'rgba(255,255,255,0.3)';
+                midCtx.beginPath();
+                midCtx.arc(cx - 3, cy - 3, 3 * scale, 0, Math.PI*2);
+                midCtx.fill();
+              };
+              drawCoral(80, 440, 1.2, 'rgba(244, 114, 182, 0.4)');
+              drawCoral(300, 442, 0.9, 'rgba(251, 146, 60, 0.4)');
+              drawCoral(450, 445, 1.4, 'rgba(52, 211, 153, 0.4)');
+              drawCoral(600, 439, 1.0, 'rgba(167, 139, 250, 0.4)');
+
+              // 3. Parallax fish schools swimming across the midground
+              midCtx.fillStyle = 'rgba(251, 243, 60, 0.35)'; // translucent yellow fish
+              const fishTime = scene.time.now * 0.0015;
+              for (let i = 0; i < 6; i++) {
+                // School 1
+                const fx = (150 + i * 25 - fishTime * 40) % 900 - 50;
+                const fy = 120 + Math.sin(fishTime + i) * 12 + i * 10;
+                midCtx.beginPath();
+                midCtx.ellipse(fx, fy, 6, 3, 0, 0, Math.PI*2);
+                midCtx.fill();
+                // small tail
+                midCtx.beginPath();
+                midCtx.moveTo(fx - 6, fy);
+                midCtx.lineTo(fx - 10, fy - 3);
+                midCtx.lineTo(fx - 10, fy + 3);
+                midCtx.closePath();
+                midCtx.fill();
               }
+            } else {
+              const drawIsland = (x, y, w, h, underH) => {
+                // Island top surface with checkered pattern
+                const topGrad = midCtx.createLinearGradient(x, y, x, y + h);
+                topGrad.addColorStop(0, 'rgba(109,40,217,0.55)');
+                topGrad.addColorStop(1, 'rgba(76,29,149,0.35)');
+                midCtx.fillStyle = topGrad;
+                midCtx.beginPath();
+                midCtx.moveTo(x, y);
+                midCtx.lineTo(x + w, y);
+                midCtx.lineTo(x + w - 20, y + h);
+                midCtx.lineTo(x + 20, y + h);
+                midCtx.closePath();
+                midCtx.fill();
+                
+                // Chess checkers on surface
+                midCtx.fillStyle = 'rgba(139,92,246,0.25)';
+                for (let cx = x + 4; cx < x + w - 4; cx += 28) {
+                  midCtx.fillRect(cx, y + 2, 14, 12);
+                  midCtx.fillRect(cx + 14, y + 14, 14, 12);
+                }
+                
+                // Gold trim on edge
+                midCtx.strokeStyle = 'rgba(251,191,36,0.25)';
+                midCtx.lineWidth = 1;
+                midCtx.beginPath();
+                midCtx.moveTo(x, y);
+                midCtx.lineTo(x + w, y);
+                midCtx.stroke();
+                
+                // Underside shadow
+                const underGrad = midCtx.createLinearGradient(0, y + h, 0, y + h + underH);
+                underGrad.addColorStop(0, 'rgba(58,20,112,0.55)');
+                underGrad.addColorStop(1, 'rgba(30,10,60,0.15)');
+                midCtx.fillStyle = underGrad;
+                midCtx.beginPath();
+                midCtx.moveTo(x + 20, y + h);
+                midCtx.lineTo(x + w - 20, y + h);
+                midCtx.lineTo(x + w / 2, y + h + underH);
+                midCtx.closePath();
+                midCtx.fill();
+              };
               
-              // Gold trim on edge
-              midCtx.strokeStyle = 'rgba(251,191,36,0.25)';
-              midCtx.lineWidth = 1;
+              // Island 1 — Torreta Rook Shop
+              drawIsland(60, 320, 200, 20, 55);
+              midCtx.fillStyle = 'rgba(109, 40, 217, 0.5)';
+              midCtx.fillRect(135, 258, 30, 62);
+              midCtx.fillRect(130, 248, 40, 10);
+              // Crenellations with gold dots
+              midCtx.clearRect(140, 248, 4, 6);
+              midCtx.clearRect(156, 248, 4, 6);
+              midCtx.fillStyle = 'rgba(251,191,36,0.5)';
               midCtx.beginPath();
-              midCtx.moveTo(x, y);
-              midCtx.lineTo(x + w, y);
-              midCtx.stroke();
-              
-              // Underside shadow
-              const underGrad = midCtx.createLinearGradient(0, y + h, 0, y + h + underH);
-              underGrad.addColorStop(0, 'rgba(58,20,112,0.55)');
-              underGrad.addColorStop(1, 'rgba(30,10,60,0.15)');
-              midCtx.fillStyle = underGrad;
+              midCtx.arc(142, 250, 1.2, 0, Math.PI*2);
+              midCtx.arc(158, 250, 1.2, 0, Math.PI*2);
+              midCtx.fill();
+              // Canopy
+              midCtx.fillStyle = 'rgba(167,139,250,0.55)';
               midCtx.beginPath();
-              midCtx.moveTo(x + 20, y + h);
-              midCtx.lineTo(x + w - 20, y + h);
-              midCtx.lineTo(x + w / 2, y + h + underH);
+              midCtx.moveTo(120, 278);
+              midCtx.lineTo(150, 272);
+              midCtx.lineTo(180, 278);
+              midCtx.lineTo(170, 286);
+              midCtx.lineTo(130, 286);
               midCtx.closePath();
               midCtx.fill();
-            };
-            
-            // Island 1 — Torreta Rook Shop
-            drawIsland(60, 320, 200, 20, 55);
-            midCtx.fillStyle = 'rgba(109, 40, 217, 0.5)';
-            midCtx.fillRect(135, 258, 30, 62);
-            midCtx.fillRect(130, 248, 40, 10);
-            // Crenellations with gold dots
-            midCtx.clearRect(140, 248, 4, 6);
-            midCtx.clearRect(156, 248, 4, 6);
-            midCtx.fillStyle = 'rgba(251,191,36,0.5)';
-            midCtx.beginPath();
-            midCtx.arc(142, 250, 1.2, 0, Math.PI*2);
-            midCtx.arc(158, 250, 1.2, 0, Math.PI*2);
-            midCtx.fill();
-            // Canopy
-            midCtx.fillStyle = 'rgba(167,139,250,0.55)';
-            midCtx.beginPath();
-            midCtx.moveTo(120, 278);
-            midCtx.lineTo(150, 272);
-            midCtx.lineTo(180, 278);
-            midCtx.lineTo(170, 286);
-            midCtx.lineTo(130, 286);
-            midCtx.closePath();
-            midCtx.fill();
-            // Empanada sign with glow
-            midCtx.fillStyle = 'rgba(251,191,36,0.55)';
-            midCtx.beginPath();
-            midCtx.arc(115, 290, 5, 0, Math.PI, true);
-            midCtx.closePath();
-            midCtx.fill();
-            midCtx.fillStyle = 'rgba(251,191,36,0.25)';
-            midCtx.beginPath();
-            midCtx.arc(115, 290, 8, 0, Math.PI*2);
-            midCtx.fill();
-            
-            // Island 2 — Giant Knight statue
-            drawIsland(450, 278, 230, 22, 55);
-            midCtx.fillStyle = 'rgba(109, 40, 217, 0.5)';
-            midCtx.beginPath();
-            midCtx.moveTo(560, 278);
-            midCtx.quadraticCurveTo(554, 235, 570, 212);
-            midCtx.quadraticCurveTo(558, 185, 564, 174);
-            midCtx.lineTo(572, 164);
-            midCtx.lineTo(576, 185);
-            midCtx.quadraticCurveTo(594, 188, 598, 202);
-            midCtx.quadraticCurveTo(608, 214, 598, 226);
-            midCtx.lineTo(584, 226);
-            midCtx.quadraticCurveTo(574, 238, 574, 260);
-            midCtx.lineTo(594, 278);
-            midCtx.closePath();
-            midCtx.fill();
-            // Knight eye glow
-            midCtx.fillStyle = 'rgba(34,211,238,0.45)';
-            midCtx.beginPath();
-            midCtx.arc(586, 202, 2.5, 0, Math.PI*2);
-            midCtx.fill();
-            
-            // Island 3 — Peoncito & giant mustache
-            drawIsland(275, 198, 130, 16, 30);
-            midCtx.fillStyle = 'rgba(109, 40, 217, 0.5)';
-            midCtx.beginPath();
-            midCtx.arc(340, 170, 7.5, 0, Math.PI*2);
-            midCtx.fill();
-            midCtx.beginPath();
-            midCtx.moveTo(331, 198);
-            midCtx.quadraticCurveTo(333, 179, 340, 174);
-            midCtx.quadraticCurveTo(347, 179, 349, 198);
-            midCtx.closePath();
-            midCtx.fill();
-            // Giant mustache with highlight
-            midCtx.fillStyle = 'rgba(167,139,250,0.5)';
-            midCtx.beginPath();
-            midCtx.moveTo(340, 159);
-            midCtx.quadraticCurveTo(318, 148, 312, 165);
-            midCtx.quadraticCurveTo(323, 177, 340, 169);
-            midCtx.quadraticCurveTo(357, 177, 368, 165);
-            midCtx.quadraticCurveTo(362, 148, 340, 159);
-            midCtx.closePath();
-            midCtx.fill();
-            midCtx.fillStyle = 'rgba(251,191,36,0.15)';
-            midCtx.beginPath();
-            midCtx.arc(340, 162, 4, 0, Math.PI*2);
-            midCtx.fill();
-            
-            // Floating crystal decorations
-            midCtx.fillStyle = 'rgba(34,211,238,0.12)';
-            midCtx.beginPath();
-            midCtx.arc(180, 280, 4, 0, Math.PI*2);
-            midCtx.arc(530, 238, 3.5, 0, Math.PI*2);
-            midCtx.arc(400, 160, 5, 0, Math.PI*2);
-            midCtx.fill();
-            midCtx.strokeStyle = 'rgba(34,211,238,0.2)';
-            midCtx.lineWidth = 0.6;
-            midCtx.beginPath();
-            midCtx.moveTo(176, 286);
-            midCtx.lineTo(184, 278);
-            midCtx.moveTo(526, 244);
-            midCtx.lineTo(534, 236);
-            midCtx.moveTo(396, 166);
-            midCtx.lineTo(404, 158);
-            midCtx.stroke();
-            
+              // Empanada sign with glow
+              midCtx.fillStyle = 'rgba(251,191,36,0.55)';
+              midCtx.beginPath();
+              midCtx.arc(115, 290, 5, 0, Math.PI, true);
+              midCtx.closePath();
+              midCtx.fill();
+              midCtx.fillStyle = 'rgba(251,191,36,0.25)';
+              midCtx.beginPath();
+              midCtx.arc(115, 290, 8, 0, Math.PI*2);
+              midCtx.fill();
+              
+              // Island 2 — Giant Knight statue
+              drawIsland(450, 278, 230, 22, 55);
+              midCtx.fillStyle = 'rgba(109, 40, 217, 0.5)';
+              midCtx.beginPath();
+              midCtx.moveTo(560, 278);
+              midCtx.quadraticCurveTo(554, 235, 570, 212);
+              midCtx.quadraticCurveTo(558, 185, 564, 174);
+              midCtx.lineTo(572, 164);
+              midCtx.lineTo(576, 185);
+              midCtx.quadraticCurveTo(594, 188, 598, 202);
+              midCtx.quadraticCurveTo(608, 214, 598, 226);
+              midCtx.lineTo(584, 226);
+              midCtx.quadraticCurveTo(574, 238, 574, 260);
+              midCtx.lineTo(594, 278);
+              midCtx.closePath();
+              midCtx.fill();
+              // Knight eye glow
+              midCtx.fillStyle = 'rgba(34,211,238,0.45)';
+              midCtx.beginPath();
+              midCtx.arc(586, 202, 2.5, 0, Math.PI*2);
+              midCtx.fill();
+              
+              // Island 3 — Peoncito & giant mustache
+              drawIsland(275, 198, 130, 16, 30);
+              midCtx.fillStyle = 'rgba(109, 40, 217, 0.5)';
+              midCtx.beginPath();
+              midCtx.arc(340, 170, 7.5, 0, Math.PI*2);
+              midCtx.fill();
+              midCtx.beginPath();
+              midCtx.moveTo(331, 198);
+              midCtx.quadraticCurveTo(333, 179, 340, 174);
+              midCtx.quadraticCurveTo(347, 179, 349, 198);
+              midCtx.closePath();
+              midCtx.fill();
+              // Giant mustache with highlight
+              midCtx.fillStyle = 'rgba(167,139,250,0.5)';
+              midCtx.beginPath();
+              midCtx.moveTo(340, 159);
+              midCtx.quadraticCurveTo(318, 148, 312, 165);
+              midCtx.quadraticCurveTo(323, 177, 340, 169);
+              midCtx.quadraticCurveTo(357, 177, 368, 165);
+              midCtx.quadraticCurveTo(362, 148, 340, 159);
+              midCtx.closePath();
+              midCtx.fill();
+              midCtx.fillStyle = 'rgba(251,191,36,0.15)';
+              midCtx.beginPath();
+              midCtx.arc(340, 162, 4, 0, Math.PI*2);
+              midCtx.fill();
+              
+              // Floating crystal decorations
+              midCtx.fillStyle = 'rgba(34,211,238,0.12)';
+              midCtx.beginPath();
+              midCtx.arc(180, 280, 4, 0, Math.PI*2);
+              midCtx.arc(530, 238, 3.5, 0, Math.PI*2);
+              midCtx.arc(400, 160, 5, 0, Math.PI*2);
+              midCtx.fill();
+              midCtx.strokeStyle = 'rgba(34,211,238,0.2)';
+              midCtx.lineWidth = 0.6;
+              midCtx.beginPath();
+              midCtx.moveTo(176, 286);
+              midCtx.lineTo(184, 278);
+              midCtx.moveTo(526, 244);
+              midCtx.lineTo(534, 236);
+              midCtx.moveTo(396, 166);
+              midCtx.lineTo(404, 158);
+              midCtx.stroke();
             } // end biome midground if/else
             scene.textures.addCanvas('bg_middle', midCanvas);
 
@@ -3629,6 +3871,241 @@ class MarioGame {
               
               scene.textures.addCanvas('boss_alfil', bCanvas);
             }
+
+            // Boss texture: El Elegante Veriss (aquatic king boss, size 64x96) (REDESIGNED)
+            if (!scene.textures.exists('boss_elegante')) {
+              const bCanvas = document.createElement('canvas');
+              bCanvas.width = 64;
+              bCanvas.height = 96;
+              const bCtx = bCanvas.getContext('2d');
+              
+              // Base - elegant pedestal with scale patterns
+              const bGrad = bCtx.createLinearGradient(16, 20, 48, 88);
+              bGrad.addColorStop(0, '#0284c7'); // sky blue
+              bGrad.addColorStop(0.5, '#0d9488'); // teal
+              bGrad.addColorStop(1, '#0f172a'); // slate dark
+              bCtx.fillStyle = bGrad;
+              bCtx.beginPath();
+              bCtx.moveTo(18, 20); bCtx.lineTo(46, 20);
+              bCtx.quadraticCurveTo(52, 50, 48, 88);
+              bCtx.lineTo(16, 88);
+              bCtx.quadraticCurveTo(12, 50, 18, 20);
+              bCtx.closePath();
+              bCtx.fill();
+              
+              // Scale patterns on pedestal
+              bCtx.strokeStyle = 'rgba(34, 211, 238, 0.25)';
+              bCtx.lineWidth = 1.5;
+              for (let sy = 30; sy < 80; sy += 10) {
+                for (let sx = 20; sx < 44; sx += 8) {
+                  bCtx.beginPath();
+                  bCtx.arc(sx + (sy % 20 === 0 ? 4 : 0), sy, 5, 0, Math.PI);
+                  bCtx.stroke();
+                }
+              }
+
+              // Gold outlines and trims
+              bCtx.strokeStyle = '#fbbf24'; // bright gold
+              bCtx.lineWidth = 2.5;
+              bCtx.beginPath();
+              bCtx.moveTo(18, 20); bCtx.lineTo(46, 20);
+              bCtx.quadraticCurveTo(52, 50, 48, 88);
+              bCtx.lineTo(16, 88);
+              bCtx.quadraticCurveTo(12, 50, 18, 20);
+              bCtx.closePath();
+              bCtx.stroke();
+              
+              // Royal Seaweed Cape / Symmetrical fins
+              bCtx.fillStyle = 'rgba(34, 211, 238, 0.45)'; // cyan translucent
+              bCtx.beginPath();
+              // Left flowing seaweed cape
+              bCtx.moveTo(16, 24);
+              bCtx.bezierCurveTo(-2, 35, -4, 75, 14, 85);
+              bCtx.bezierCurveTo(8, 70, 6, 40, 16, 24);
+              // Right flowing seaweed cape
+              bCtx.moveTo(48, 24);
+              bCtx.bezierCurveTo(66, 35, 68, 75, 50, 85);
+              bCtx.bezierCurveTo(58, 70, 56, 40, 48, 24);
+              bCtx.closePath();
+              bCtx.fill();
+              
+              // Flowing seaweed cape strokes
+              bCtx.strokeStyle = 'rgba(6, 182, 212, 0.7)';
+              bCtx.lineWidth = 1.5;
+              bCtx.beginPath();
+              bCtx.moveTo(16, 24); bCtx.quadraticCurveTo(2, 50, 14, 85);
+              bCtx.moveTo(48, 24); bCtx.quadraticCurveTo(62, 50, 50, 85);
+              bCtx.stroke();
+              
+              // Gold patterns on body (King cross)
+              bCtx.strokeStyle = '#fbbf24';
+              bCtx.lineWidth = 2;
+              bCtx.beginPath();
+              bCtx.arc(32, 45, 10, 0, Math.PI*2);
+              bCtx.moveTo(32, 35); bCtx.lineTo(32, 55);
+              bCtx.moveTo(22, 45); bCtx.lineTo(42, 45);
+              bCtx.stroke();
+              
+              // Glowing emerald gem in the center
+              bCtx.fillStyle = '#10b981'; // emerald green
+              bCtx.beginPath();
+              bCtx.moveTo(32, 40); bCtx.lineTo(36, 45); bCtx.lineTo(32, 50); bCtx.lineTo(28, 45);
+              bCtx.closePath();
+              bCtx.fill();
+              bCtx.strokeStyle = '#34d399';
+              bCtx.lineWidth = 1;
+              bCtx.stroke();
+              
+              // Head (white marble and gold)
+              const hGrad = bCtx.createRadialGradient(32, 12, 2, 32, 14, 8);
+              hGrad.addColorStop(0, '#ffffff');
+              hGrad.addColorStop(0.5, '#e0f2fe'); // light sky blue
+              hGrad.addColorStop(1, '#0284c7');
+              bCtx.fillStyle = hGrad;
+              bCtx.beginPath(); bCtx.arc(32, 12, 8, 0, Math.PI*2); bCtx.fill();
+              
+              // Gold Crown of Coral Points
+              bCtx.fillStyle = '#fbbf24';
+              bCtx.beginPath();
+              bCtx.moveTo(20, 8);
+              bCtx.lineTo(44, 8);
+              bCtx.lineTo(42, -2);
+              bCtx.lineTo(37, 2);
+              bCtx.lineTo(32, -6); // center spire (king cross point)
+              bCtx.lineTo(27, 2);
+              bCtx.lineTo(22, -2);
+              bCtx.closePath();
+              bCtx.fill();
+              
+              // Crown cross detail
+              bCtx.strokeStyle = '#fbbf24';
+              bCtx.lineWidth = 1.5;
+              bCtx.beginPath();
+              bCtx.moveTo(32, -9); bCtx.lineTo(32, -5);
+              bCtx.moveTo(30, -7); bCtx.lineTo(34, -7);
+              bCtx.stroke();
+              
+              // Glowing gold eyes (King eyes)
+              bCtx.fillStyle = '#fef08a';
+              bCtx.beginPath(); bCtx.arc(28, 12, 1.8, 0, Math.PI*2); bCtx.fill();
+              bCtx.beginPath(); bCtx.arc(36, 12, 1.8, 0, Math.PI*2); bCtx.fill();
+              
+              // The Golden Trident of Veriss (held on his left side)
+              bCtx.fillStyle = '#d97706'; // darker gold staff
+              bCtx.fillRect(8, 14, 3, 76); // vertical staff on left side
+              bCtx.fillStyle = '#fbbf24'; // bright gold trident head
+              bCtx.beginPath();
+              // Middle point
+              bCtx.moveTo(9.5, -2); bCtx.lineTo(11.5, 6); bCtx.lineTo(7.5, 6); bCtx.closePath(); bCtx.fill();
+              // Left point
+              bCtx.beginPath();
+              bCtx.moveTo(4, 2); bCtx.lineTo(6, 8); bCtx.lineTo(3, 8); bCtx.closePath(); bCtx.fill();
+              // Right point
+              bCtx.beginPath();
+              bCtx.moveTo(15, 2); bCtx.lineTo(16, 8); bCtx.lineTo(13, 8); bCtx.closePath(); bCtx.fill();
+              // Crossbar
+              bCtx.fillRect(4, 8, 12, 4);
+              
+              // Gold base plate
+              bCtx.fillStyle = '#d97706';
+              bCtx.fillRect(12, 88, 40, 6);
+              bCtx.fillStyle = '#fbbf24';
+              bCtx.fillRect(12, 88, 40, 2);
+              
+              scene.textures.addCanvas('boss_elegante', bCanvas);
+            }
+
+            // Aquatic fish enemy texture
+            if (!scene.textures.exists('pez_enemy')) {
+              const pezCanvas = document.createElement('canvas');
+              pezCanvas.width = 32;
+              pezCanvas.height = 32;
+              const pezCtx = pezCanvas.getContext('2d');
+              
+              // Fish body - neon orange oval
+              const fGrad = pezCtx.createLinearGradient(4, 16, 28, 16);
+              fGrad.addColorStop(0, '#f97316'); // orange
+              fGrad.addColorStop(1, '#ef4444'); // red-orange
+              pezCtx.fillStyle = fGrad;
+              pezCtx.beginPath();
+              pezCtx.ellipse(16, 16, 11, 7, 0, 0, Math.PI*2);
+              pezCtx.fill();
+              
+              // Tail fin - fuchsia/pink triangle
+              pezCtx.fillStyle = '#ec4899'; // fuchsia
+              pezCtx.beginPath();
+              pezCtx.moveTo(5, 16);
+              pezCtx.lineTo(0, 10);
+              pezCtx.lineTo(0, 22);
+              pezCtx.closePath();
+              pezCtx.fill();
+              
+              // Dorsal/ventral fins
+              pezCtx.fillStyle = '#eab308'; // yellow
+              pezCtx.beginPath();
+              // top fin
+              pezCtx.moveTo(12, 9); pezCtx.quadraticCurveTo(16, 3, 20, 9);
+              // bottom fin
+              pezCtx.moveTo(12, 23); pezCtx.quadraticCurveTo(16, 29, 20, 23);
+              pezCtx.closePath();
+              pezCtx.fill();
+              
+              // Fuchsia stripes
+              pezCtx.strokeStyle = '#ec4899';
+              pezCtx.lineWidth = 2;
+              pezCtx.beginPath();
+              pezCtx.moveTo(12, 10); pezCtx.lineTo(10, 22);
+              pezCtx.moveTo(17, 9); pezCtx.lineTo(15, 23);
+              pezCtx.stroke();
+              
+              // Eye (large cute cartoon eye)
+              pezCtx.fillStyle = '#ffffff';
+              pezCtx.beginPath(); pezCtx.arc(22, 13, 3, 0, Math.PI*2); pezCtx.fill();
+              pezCtx.fillStyle = '#000000';
+              pezCtx.beginPath(); pezCtx.arc(23, 13, 1.2, 0, Math.PI*2); pezCtx.fill();
+              
+              scene.textures.addCanvas('pez_enemy', pezCanvas);
+            }
+
+            // Aquatic jellyfish enemy texture
+            if (!scene.textures.exists('medusa_enemy')) {
+              const jCanvas = document.createElement('canvas');
+              jCanvas.width = 32;
+              jCanvas.height = 32;
+              const jCtx = jCanvas.getContext('2d');
+              
+              // Tentacles - yellow wavy lines
+              jCtx.strokeStyle = '#eab308';
+              jCtx.lineWidth = 1.5;
+              for (let i = 0; i < 4; i++) {
+                const tx = 9 + i * 4.5;
+                jCtx.beginPath();
+                jCtx.moveTo(tx, 16);
+                jCtx.quadraticCurveTo(tx - 2, 22, tx, 28);
+                jCtx.stroke();
+              }
+              
+              // Translucent pink dome
+              const dGrad = jCtx.createRadialGradient(16, 12, 1, 16, 12, 10);
+              dGrad.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+              dGrad.addColorStop(0.4, 'rgba(168, 85, 247, 0.8)'); // purple
+              dGrad.addColorStop(1, 'rgba(236, 72, 153, 0.6)'); // pink
+              jCtx.fillStyle = dGrad;
+              jCtx.beginPath();
+              jCtx.arc(16, 14, 10, Math.PI, 0); // semi-circle
+              jCtx.lineTo(26, 16);
+              jCtx.quadraticCurveTo(16, 18, 6, 16);
+              jCtx.closePath();
+              jCtx.fill();
+              
+              // Electric core highlight
+              jCtx.fillStyle = '#34d399'; // glowing mint green core
+              jCtx.beginPath();
+              jCtx.arc(16, 13, 2.5, 0, Math.PI*2);
+              jCtx.fill();
+              
+              scene.textures.addCanvas('medusa_enemy', jCanvas);
+            }
             
             // Wild knight texture (L-jump hazard for level 4)
             if (!scene.textures.exists('wild_knight')) {
@@ -3895,6 +4372,23 @@ class MarioGame {
             ambEmitter.setDepth(0);
             ambEmitter.setScrollFactor(0.3);
             scene.ambientParticles.push(ambEmitter);
+          } else if (biome === 'river') {
+            // Floating water bubbles drifting upward slowly
+            const ambEmitter = scene.add.particles(0, 0, 'sparkle_cyan', {
+              x: { min: 0, max: levelDef.worldWidth },
+              y: { min: 100, max: 430 },
+              speed: { min: 4, max: 15 },
+              angle: { min: 260, max: 280 }, // straight up
+              scale: { start: 0.3, end: 0.05 },
+              alpha: { start: 0.2, end: 0 },
+              lifespan: { min: 4000, max: 7000 },
+              frequency: 250, // frequent bubbles
+              quantity: 1,
+              blendMode: 'ADD'
+            });
+            ambEmitter.setDepth(0);
+            ambEmitter.setScrollFactor(0.3);
+            scene.ambientParticles.push(ambEmitter);
           }
 
           // 2. Physics Static Platforms Group
@@ -4117,6 +4611,126 @@ class MarioGame {
               block.fillRect(p.x + 2, p.y + 6, p.w - 4, 1);
               block.lineStyle(1.5, 0x92400e, 0.7);
               block.strokeRect(p.x, p.y, p.w, p.h);
+            } else if (biome === 'river') {
+              // River/Reef biome — organic reef rocks with bumpy edges (OPTIMIZED)
+              block.fillStyle(0x0a2540, 0.98); // Deep indigo dark base
+              
+              // Draw main base body
+              block.fillRect(p.x + 8, p.y + 8, p.w - 16, p.h - 16);
+              
+              // Draw overlapping circles along the border to create a bumpy rock look (Step increased from 14 to 32)
+              const drawBumpyEdge = (color) => {
+                block.fillStyle(color);
+                
+                // Top & bottom edges bumps (Step: 32px, Radius scaled up to 12 + sin*6)
+                for (let x = p.x + 10; x <= p.x + p.w - 10; x += 32) {
+                  // Top bumps
+                  const topR = 12 + (Math.sin(x * 0.03) * 6 + 6);
+                  block.fillCircle(x, p.y + 6, topR);
+                  // Bottom bumps
+                  const botR = 12 + (Math.cos(x * 0.03) * 6 + 6);
+                  block.fillCircle(x, p.y + p.h - 6, botR);
+                }
+                
+                // Left & right edges bumps (Step: 32px)
+                for (let y = p.y + 10; y <= p.y + p.h - 10; y += 32) {
+                  // Left bumps
+                  const leftR = 12 + (Math.sin(y * 0.03) * 6 + 6);
+                  block.fillCircle(p.x + 6, y, leftR);
+                  // Right bumps
+                  const rightR = 12 + (Math.cos(y * 0.03) * 6 + 6);
+                  block.fillCircle(p.x + p.w - 6, y, rightR);
+                }
+              };
+              
+              // Draw base dark bumps
+              drawBumpyEdge(0x0a2540);
+              
+              // Draw lighter inner core bumps for 3D depth
+              block.fillStyle(0x0f3e6a); // Mid-tone reef blue
+              block.fillRect(p.x + 12, p.y + 12, p.w - 24, p.h - 24);
+              
+              // Draw overlapping inner mid-tone bumps (Step increased from 18 to 36, Radius to 10 + sin*4)
+              for (let x = p.x + 16; x <= p.x + p.w - 16; x += 36) {
+                const r1 = 10 + (Math.sin(x * 0.05) * 4 + 4);
+                block.fillCircle(x, p.y + 10, r1);
+                block.fillCircle(x, p.y + p.h - 10, r1);
+              }
+              for (let y = p.y + 16; y <= p.y + p.h - 16; y += 36) {
+                const r2 = 10 + (Math.cos(y * 0.05) * 4 + 4);
+                block.fillCircle(p.x + 10, y, r2);
+                block.fillCircle(p.x + p.w - 10, y, r2);
+              }
+              
+              // Draw vivid pink coral cover dynamically
+              block.fillStyle(0xdb2777); // Deep pink
+              block.fillStyle(0xf472b6); // Bright pink highlights
+              
+              // For ceiling blocks (y <= 90), draw coral hanging from bottom (Step increased from 14 to 32)
+              if (p.y <= 90) {
+                block.fillStyle(0xdb2777);
+                block.fillRect(p.x, p.y + p.h - 6, p.w, 6);
+                
+                block.fillStyle(0xf472b6);
+                const bumpCount = Math.max(3, Math.floor(p.w / 32));
+                for (let i = 0; i < bumpCount; i++) {
+                  const bx = p.x + (i + 0.5) * (p.w / bumpCount);
+                  const by = p.y + p.h - 3;
+                  const br = 8 + (i % 3) * 5;
+                  block.fillCircle(bx, by, br);
+                  
+                  // Add light highlight dot
+                  block.fillStyle(0xfce7f3);
+                  block.fillCircle(bx - 3, by - 2, br * 0.35);
+                  block.fillStyle(0xf472b6);
+                }
+              } else {
+                // Ground rocks, stalagmites, and floating boulders: coral sits on top (Step increased from 14 to 32)
+                block.fillStyle(0xdb2777);
+                block.fillRect(p.x, p.y, p.w, 6);
+                
+                block.fillStyle(0xf472b6);
+                const bumpCount = Math.max(3, Math.floor(p.w / 32));
+                for (let i = 0; i < bumpCount; i++) {
+                  const bx = p.x + (i + 0.5) * (p.w / bumpCount);
+                  const by = p.y + 3;
+                  const br = 8 + (i % 3) * 5;
+                  block.fillCircle(bx, by, br);
+                  
+                  // Add light highlight dot
+                  block.fillStyle(0xfce7f3);
+                  block.fillCircle(bx - 3, by - 2, br * 0.35);
+                  block.fillStyle(0xf472b6);
+                }
+              }
+              
+              // Crevices and rock surface shading lines
+              block.lineStyle(1.5, 0x051b30, 0.7); // Dark crevice lines
+              for (let i = 0; i < Math.max(1, Math.floor(p.w / 60)); i++) {
+                const cx1 = p.x + 20 + i * 50;
+                const cy1 = p.y + 15;
+                const cx2 = cx1 + (i % 2 === 0 ? 10 : -10);
+                const cy2 = p.y + p.h - 15;
+                
+                block.beginPath();
+                block.moveTo(cx1, cy1);
+                block.lineTo(cx2, cy2);
+                block.strokePath();
+              }
+              
+              // Small details: yellow starfish on sides
+              block.fillStyle(0xfacc15); // Yellow starfish
+              if (p.w > 40 && p.h > 40) {
+                const sfx1 = p.x + 20 + Math.random() * (p.w - 40);
+                const sfy1 = p.y + 20 + Math.random() * (p.h - 40);
+                block.fillRect(sfx1, sfy1, 4, 4);
+                block.fillRect(sfx1 - 2, sfy1 + 1, 8, 2);
+                block.fillRect(sfx1 + 1, sfy1 - 2, 2, 8);
+              }
+              
+              // Cyan glow frame (soft neon water outline)
+              block.lineStyle(1.8, 0x06b6d4, 0.85);
+              block.strokeRoundedRect(p.x, p.y, p.w, p.h, 6);
             } else {
               // Grass biome — rich earth platforms with lush grass top
               block.fillStyle(0x4a3728, 0.95);
@@ -4171,6 +4785,8 @@ class MarioGame {
             scene.physics.add.existing(block, true);
             block.body.setSize(p.w, p.h);
             block.body.setOffset(p.x, p.y);
+            scene.physics.world.staticTree.remove(block.body);
+            scene.physics.world.staticTree.insert(block.body);
             
             scene.platforms.add(block);
           });
@@ -4269,11 +4885,20 @@ class MarioGame {
           // 3. Create Player (Martina using the actual cuento illustration!)
           scene.player = scene.physics.add.sprite(80, 200, 'player');
           scene.player.setCollideWorldBounds(true);
-          scene.player.setSize(26, 44);
-          scene.player.setOffset(10, 8);
+          if (biome === 'river') {
+            scene.player.setSize(44, 26);
+            scene.player.setOffset(-6, 11);
+          } else {
+            scene.player.setSize(26, 44);
+            scene.player.setOffset(10, 8);
+          }
           // Scale her illustration down to fit the platform grids perfectly
           scene.player.setDisplaySize(38, 56);
-          scene.player.body.setGravityY(100); // stable arcade physics gravity
+          if (biome === 'river') {
+            scene.player.body.setGravityY(-550); // net gravity = 150 (very floaty!)
+          } else {
+            scene.player.body.setGravityY(100); // stable arcade physics gravity
+          }
           scene.player.invincibility = 0;
           scene.player.wasOnGround = true;
           scene.player.landingSquashTimer = 0;
@@ -4482,11 +5107,24 @@ class MarioGame {
           // 6. Chess Peoncito Enemies Group
           scene.enemies = scene.physics.add.group();
           enemiesData.forEach(e => {
-            const enemy = scene.physics.add.sprite(e.x, e.y, 'enemy');
-            enemy.setDisplaySize(32, 42);
-            enemy.setSize(24, 34);
-            enemy.setOffset(4, 4);
+            let tex = 'enemy';
+            let displayW = 32, displayH = 42;
+            let sizeW = 24, sizeH = 34;
+            let offX = 4, offY = 4;
+            if (biome === 'river') {
+              tex = e.type === 'medusa' ? 'medusa_enemy' : 'pez_enemy';
+              displayW = 32; displayH = 32;
+              sizeW = 24; sizeH = 24;
+              offX = 4; offY = 4;
+            }
+            const enemy = scene.physics.add.sprite(e.x, e.y, tex);
+            enemy.setDisplaySize(displayW, displayH);
+            enemy.setSize(sizeW, sizeH);
+            enemy.setOffset(offX, offY);
             enemy.setCollideWorldBounds(true);
+            if (biome === 'river' && e.type === 'medusa') {
+              enemy.body.allowGravity = false;
+            }
             enemy.leftBound = e.left;
             enemy.rightBound = e.right;
             enemy.speed = e.speed;
@@ -4502,9 +5140,17 @@ class MarioGame {
           const airEnemiesData = levelDef.airEnemiesData || [];
           
           airEnemiesData.forEach(ae => {
-            const airEnemy = scene.physics.add.sprite(ae.x, ae.y, 'flying_bishop_0');
-            airEnemy.setDisplaySize(28, 42);
-            airEnemy.setSize(22, 34);
+            let tex = 'flying_bishop_0';
+            let displayW = 28, displayH = 42;
+            let sizeW = 22, sizeH = 34;
+            if (biome === 'river') {
+              tex = 'pez_enemy';
+              displayW = 32; displayH = 32;
+              sizeW = 24; sizeH = 24;
+            }
+            const airEnemy = scene.physics.add.sprite(ae.x, ae.y, tex);
+            airEnemy.setDisplaySize(displayW, displayH);
+            airEnemy.setSize(sizeW, sizeH);
             airEnemy.setOffset(3, 4);
             scene.airEnemies.add(airEnemy);
             airEnemy.body.allowGravity = false;
@@ -4664,18 +5310,33 @@ class MarioGame {
             });
           }
 
-          // 6.9 Boss System — Alfil Exiliado (level 3 neon biome)
+          // 6.9 Boss System — Alfil Exiliado / El Elegante Veriss
           scene.bossActive = false;
           scene.bossDefeated = false;
           scene.bossRoomActive = false;
           scene.bossHP = 0;
           scene.bossInvincible = 0;
           
-          if (biome === 'neon' && levelDef.bossData) {
+          if ((biome === 'neon' || biome === 'river') && levelDef.bossData) {
             const bd = levelDef.bossData;
             
+            let bossTex = 'boss_alfil';
+            let bossName = 'Alfil Exiliado';
+            let barBorderColor = '#8b5cf6';
+            let barFillGrad = 'linear-gradient(90deg,#ef4444,#a855f7)';
+            let wallGlowColor1 = 0xa855f7;
+            let wallGlowColor2 = 0xc084fc;
+            if (biome === 'river') {
+              bossTex = 'boss_elegante';
+              bossName = 'El Elegante Veriss';
+              barBorderColor = '#06b6d4';
+              barFillGrad = 'linear-gradient(90deg,#ef4444,#34d399)';
+              wallGlowColor1 = 0x06b6d4;
+              wallGlowColor2 = 0x34d399;
+            }
+            
             // Boss sprite (invisible until room activated)
-            scene.boss = scene.physics.add.sprite(bd.x, bd.y, 'boss_alfil');
+            scene.boss = scene.physics.add.sprite(bd.x, bd.y, bossTex);
             scene.boss.setDisplaySize(56, 84);
             scene.boss.setSize(40, 72);
             scene.boss.setOffset(12, 12);
@@ -4687,7 +5348,7 @@ class MarioGame {
             scene.boss.speed = bd.speed;
             scene.boss.projInterval = bd.projectileInterval;
             scene.boss.projTimer = 0;
-            scene.boss.state = 'idle'; // idle, moving, shooting
+            scene.boss.state = biome === 'river' ? 'floating' : 'idle'; // idle, moving, shooting
             scene.boss.moveDir = 1;
             scene.boss.moveDirX = 1;
             scene.boss.moveDirY = -1;
@@ -4696,35 +5357,39 @@ class MarioGame {
             scene.boss.maxX = bd.roomRight - 40;
             scene.boss.minY = 180;
             scene.boss.maxY = 340;
+            if (biome === 'river') {
+              scene.boss.baseY = bd.y;
+              scene.boss.floatAngle = 0;
+              scene.boss.chargeTimer = 0;
+            }
             
             // Boss room walls — created dynamically when room activates
             scene.bossWalls = null;
             scene.bossWallGlow = null;
             scene.bossRoomActive = false;
             
-            // Dark overlay for outside the boss room (dramatic effect)
+            // Dark overlay for outside the boss room (dramatic effect - OPTIMIZED: scrolls with world coordinates)
             scene.bossOverlay = scene.add.graphics();
             scene.bossOverlay.setDepth(15);
-            scene.bossOverlay.setScrollFactor(0);
+            scene.bossOverlay.setScrollFactor(1); // Set to 1 so it scrolls statically with the map
             scene.bossOverlay.setVisible(false);
-
+ 
             scene.drawBossOverlay = function() {
-              const camX = scene.cameras.main.scrollX;
-              const rx = bd.roomLeft - camX;
+              const rx = bd.roomLeft;
               const rw = bd.roomRight - bd.roomLeft;
               const ry = 82, rh = 348;
               scene.bossOverlay.clear();
               scene.bossOverlay.fillStyle(0x040010, 0.5);
-              // Draw 4 rectangles around the room instead of trying to punch a hole
-              scene.bossOverlay.fillRect(0, 0, 800, ry);                    // top
-              scene.bossOverlay.fillRect(0, ry + rh, 800, 450 - ry - rh);   // bottom
-              scene.bossOverlay.fillRect(0, ry, rx, rh);                     // left
-              scene.bossOverlay.fillRect(rx + rw, ry, 800 - rx - rw, rh);   // right
-              // Neon border
-              scene.bossOverlay.lineStyle(2.5, 0xa855f7, 0.85);
+              // Draw 4 rectangles around the room in absolute world coordinates
+              scene.bossOverlay.fillRect(0, 0, levelDef.worldWidth, ry);                               // top
+              scene.bossOverlay.fillRect(0, ry + rh, levelDef.worldWidth, 450 - ry - rh);              // bottom
+              scene.bossOverlay.fillRect(0, ry, rx, rh);                                                // left
+              scene.bossOverlay.fillRect(rx + rw, ry, levelDef.worldWidth - rx - rw, rh);               // right
+              // border
+              scene.bossOverlay.lineStyle(2.5, wallGlowColor1, 0.85);
               scene.bossOverlay.strokeRect(rx, ry, rw, rh);
             };
-
+ 
             scene.createBossWalls = function() {
               if (scene.bossWalls) return;
               scene.bossWalls = scene.physics.add.staticGroup();
@@ -4757,9 +5422,9 @@ class MarioGame {
               // Glow
               scene.bossWallGlow = scene.add.graphics();
               scene.bossWallGlow.setDepth(5);
-              scene.bossWallGlow.lineStyle(3, 0xa855f7, 0.9);
+              scene.bossWallGlow.lineStyle(3, wallGlowColor1, 0.9);
               scene.bossWallGlow.strokeRect(bd.roomLeft, 90, rw, 330);
-              scene.bossWallGlow.lineStyle(1, 0xc084fc, 0.4);
+              scene.bossWallGlow.lineStyle(1, wallGlowColor2, 0.4);
               scene.bossWallGlow.strokeRect(bd.roomLeft+3, 93, rw-6, 324);
               scene.tweens.add({
                 targets: scene.bossWallGlow, alpha: 0.5,
@@ -4767,15 +5432,15 @@ class MarioGame {
               });
               scene.physics.add.collider(scene.player, scene.bossWalls);
             };
-
+ 
             // Boss projectiles group
             scene.bossProjectiles = scene.physics.add.group({ allowGravity: false });
             
             // Boss health bar HTML overlay
             const healthBarHTML = document.createElement('div');
             healthBarHTML.id = 'boss-health-bar';
-            healthBarHTML.style.cssText = 'display:none;position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:100;background:rgba(0,0,0,0.7);border:2px solid #8b5cf6;border-radius:10px;padding:6px 14px;color:#fff;font-family:Outfit,sans-serif;font-size:13px;font-weight:700;text-align:center;min-width:200px;';
-            healthBarHTML.innerHTML = '<span style="color:#c084fc;">Alfil Exiliado</span><div style="background:rgba(255,255,255,0.1);height:8px;border-radius:4px;margin-top:4px;overflow:hidden;"><div id="boss-hp-fill" style="background:linear-gradient(90deg,#ef4444,#a855f7);height:100%;width:100%;border-radius:4px;transition:width 0.3s;"></div></div>';
+            healthBarHTML.style.cssText = 'display:none;position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:100;background:rgba(0,0,0,0.7);border:2px solid ' + barBorderColor + ';border-radius:10px;padding:6px 14px;color:#fff;font-family:Outfit,sans-serif;font-size:13px;font-weight:700;text-align:center;min-width:200px;';
+            healthBarHTML.innerHTML = '<span style="color:' + barBorderColor + ';">' + bossName + '</span><div style="background:rgba(255,255,255,0.1);height:8px;border-radius:4px;margin-top:4px;overflow:hidden;"><div id="boss-hp-fill" style="background:' + barFillGrad + ';height:100%;width:100%;border-radius:4px;transition:width 0.3s;"></div></div>';
             document.getElementById('phaser-game-parent').appendChild(healthBarHTML);
             
             // Collider: player vs boss walls
@@ -4988,41 +5653,52 @@ class MarioGame {
           scene.portal = scene.add.sprite(gx, gy, 'portal_texture');
           scene.portal.setDisplaySize(175, 175);
           scene.portal.setDepth(1);
+          if (levelDef.bossData) {
+            scene.portal.setVisible(false);
+          }
           scene.portalGlow = scene.add.graphics();
           scene.portalGlow.fillStyle(0x7e22ce, 0.15);
           scene.portalGlow.beginPath();
           scene.portalGlow.arc(gx, gy, 100, 0, Math.PI * 2);
           scene.portalGlow.fill();
           scene.portalGlow.setDepth(0);
+          if (levelDef.bossData) {
+            scene.portalGlow.setVisible(false);
+          }
           // 7.2. White Queen
-          scene.whiteQueen = scene.physics.add.staticSprite(gx, gy, 'white_queen');
-          scene.whiteQueen.setDisplaySize(60, 120);
-          scene.whiteQueen.body.setSize(44, 120);
-          scene.whiteQueen.body.setOffset(8, 0);
-          scene.whiteQueen.setDepth(2);
-          scene.queenGlow = scene.add.graphics();
-          scene.queenGlow.fillStyle(0xfacc15, 0.08);
-          scene.queenGlow.beginPath();
-          scene.queenGlow.arc(gx, gy, 90, 0, Math.PI * 2);
-          scene.queenGlow.fill();
-          scene.queenGlow.setDepth(1);
-          for (let i = 0; i < 18; i++) {
-            const sa = (i * Math.PI * 2) / 18;
-            const sr = 65 + Math.random() * 45;
-            const sx = gx + Math.cos(sa) * sr;
-            const sy = gy + Math.sin(sa) * sr;
-            const sc = scene.add.circle(sx, sy, Math.random() * 1.8 + 0.8, i % 3 === 0 ? 0xfef08a : 0x22d3ee, 0.4);
-            sc.setDepth(3);
-            scene.tweens.add({
-              targets: sc, y: sy - 10, alpha: 0.15, scale: 0.5,
-              duration: 1200 + Math.random() * 600, yoyo: true, repeat: -1,
-              ease: 'Sine.easeInOut', delay: i * 100
-            });
+          if (!levelDef.bossData) {
+            scene.whiteQueen = scene.physics.add.staticSprite(gx, gy, 'white_queen');
+            scene.whiteQueen.setDisplaySize(60, 120);
+            scene.whiteQueen.body.setSize(44, 120);
+            scene.whiteQueen.body.setOffset(8, 0);
+            scene.whiteQueen.setDepth(2);
+            scene.queenGlow = scene.add.graphics();
+            scene.queenGlow.fillStyle(0xfacc15, 0.08);
+            scene.queenGlow.beginPath();
+            scene.queenGlow.arc(gx, gy, 90, 0, Math.PI * 2);
+            scene.queenGlow.fill();
+            scene.queenGlow.setDepth(1);
+            for (let i = 0; i < 18; i++) {
+              const sa = (i * Math.PI * 2) / 18;
+              const sr = 65 + Math.random() * 45;
+              const sx = gx + Math.cos(sa) * sr;
+              const sy = gy + Math.sin(sa) * sr;
+              const sc = scene.add.circle(sx, sy, Math.random() * 1.8 + 0.8, i % 3 === 0 ? 0xfef08a : 0x22d3ee, 0.4);
+              sc.setDepth(3);
+              scene.tweens.add({
+                targets: sc, y: sy - 10, alpha: 0.15, scale: 0.5,
+                duration: 1200 + Math.random() * 600, yoyo: true, repeat: -1,
+                ease: 'Sine.easeInOut', delay: i * 100
+              });
+            }
           }
           // 7.3. Peoncito
           scene.peoncitoGoal = scene.add.sprite(gx - 80, gy + 45, 'peoncito_friendly');
           scene.peoncitoGoal.setDisplaySize(32, 42);
           scene.peoncitoGoal.setDepth(2);
+          if (levelDef.bossData) {
+            scene.peoncitoGoal.setVisible(false);
+          }
           scene.tweens.add({
             targets: scene.peoncitoGoal,
             y: gy + 35, angle: 5,
@@ -5448,6 +6124,68 @@ class MarioGame {
             return;
           }
 
+          // --- WATER BIOME SPECIAL MECHANICS (currents and breathing bubbles) ---
+          if (biome === 'river') {
+            scene.player.setTint(0x7df9ff); // tint blue/cyan
+            
+            // Auto breathing bubbles from mouth (OPTIMIZED: timer-based, no physics)
+            if (!scene._lastBreathTime) scene._lastBreathTime = 0;
+            if (scene.time.now - scene._lastBreathTime > 1600) {
+              scene._lastBreathTime = scene.time.now;
+              for (let i = 0; i < 3; i++) {
+                scene.time.delayedCall(i * 150, () => {
+                  if (!scene.player || !scene.player.active) return;
+                  const bx = scene.player.x + (scene.player.flipX ? -8 : 8);
+                  const by = scene.player.y - 12;
+                  const bub = scene.add.circle(bx, by, Math.random() * 2 + 1, 0xffffff, 0.6);
+                  bub.setDepth(3);
+                  const targetX = bx + (Math.random() * 20 - 10);
+                  const targetY = by - (40 + Math.random() * 30);
+                  scene.tweens.add({
+                    targets: bub,
+                    x: targetX,
+                    y: targetY,
+                    alpha: 0,
+                    scale: 0.1,
+                    duration: 1000 + Math.random() * 400,
+                    onComplete: () => bub.destroy()
+                  });
+                });
+              }
+            }
+
+            // Water currents handling (OPTIMIZED: no physics on drift particles, reduced frequency)
+            if (levelDef.currentsData) {
+              levelDef.currentsData.forEach(c => {
+                // If player is inside, push player gently
+                if (scene.player.x >= c.x && scene.player.x <= c.x + c.w &&
+                    scene.player.y >= c.y && scene.player.y <= c.y + c.h) {
+                  scene.player.body.setVelocityX(scene.player.body.velocity.x + c.forceX * 0.05);
+                  scene.player.body.setVelocityY(scene.player.body.velocity.y + c.forceY * 0.05);
+                  
+                  // Spawn indicator drift bubbles
+                  if (Math.random() < 0.08) {
+                    const startX = c.x + Math.random() * c.w;
+                    const startY = c.y + Math.random() * c.h;
+                    const cb = scene.add.circle(startX, startY, Math.random() * 2 + 1, 0xffffff, 0.45);
+                    cb.setDepth(1);
+                    const distX = c.forceX * 1.2;
+                    const distY = (c.forceY * 1.2) + (Math.random() * 30 - 15);
+                    scene.tweens.add({
+                      targets: cb,
+                      x: startX + distX,
+                      y: startY + distY,
+                      alpha: 0,
+                      scale: 0.1,
+                      duration: 1200,
+                      onComplete: () => cb.destroy()
+                    });
+                  }
+                }
+              });
+            }
+          }
+
           // Cycle particle textures for rainbow trail effect
           if (scene.particleTextures && scene.particles) {
             scene.particleFrameCounter++;
@@ -5514,16 +6252,56 @@ class MarioGame {
           scene.enemies.getChildren().forEach(enemy => {
             if (enemy.dead) return;
             
-            // Wobble patrol walk!
-            const wobble = Math.sin(scene.time.now * 0.01 + enemy.x) * 6;
-            enemy.setAngle(wobble);
-            
-            if (enemy.x <= enemy.leftBound) {
-              enemy.body.setVelocityX(enemy.speed);
-              enemy.setFlipX(true);
-            } else if (enemy.x >= enemy.rightBound) {
-              enemy.body.setVelocityX(-enemy.speed);
-              enemy.setFlipX(false);
+            if (biome === 'river') {
+              if (enemy.texture.key === 'medusa_enemy') {
+                // Medusa vertical floating pulse
+                const pulse = Math.sin(scene.time.now * 0.0035 + enemy.x * 0.05) * 50;
+                enemy.body.setVelocityY(pulse);
+                enemy.body.setVelocityX(0);
+                // Pulse scaling effect
+                const scaleVal = 1 + Math.sin(scene.time.now * 0.007 + enemy.x) * 0.12;
+                enemy.setScale(scaleVal);
+                // soft rotation wobble
+                enemy.setAngle(Math.sin(scene.time.now * 0.005) * 10);
+              } else if (enemy.texture.key === 'pez_enemy') {
+                // Fish swim back and forth, and dart if aligned with player
+                const dx = scene.player.x - enemy.x;
+                const dy = scene.player.y - enemy.y;
+                const isFacingPlayer = enemy.body.velocity.x > 0 ? dx > 0 : dx < 0;
+                
+                if (Math.abs(dy) < 50 && Math.abs(dx) < 220 && isFacingPlayer) {
+                  // Dart towards player!
+                  const factor = 2.0;
+                  enemy.body.setVelocityX(enemy.body.velocity.x > 0 ? enemy.speed * factor : -enemy.speed * factor);
+                  enemy.setTint(0xff8888); // flash red
+                  enemy.setAngle(0);
+                } else {
+                  enemy.clearTint();
+                  // standard swim wobble and patrol boundaries
+                  const wobble = Math.sin(scene.time.now * 0.02 + enemy.x) * 12;
+                  enemy.setAngle(wobble);
+                  
+                  if (enemy.x <= enemy.leftBound) {
+                    enemy.body.setVelocityX(enemy.speed);
+                    enemy.setFlipX(true);
+                  } else if (enemy.x >= enemy.rightBound) {
+                    enemy.body.setVelocityX(-enemy.speed);
+                    enemy.setFlipX(false);
+                  }
+                }
+              }
+            } else {
+              // Wobble patrol walk!
+              const wobble = Math.sin(scene.time.now * 0.01 + enemy.x) * 6;
+              enemy.setAngle(wobble);
+              
+              if (enemy.x <= enemy.leftBound) {
+                enemy.body.setVelocityX(enemy.speed);
+                enemy.setFlipX(true);
+              } else if (enemy.x >= enemy.rightBound) {
+                enemy.body.setVelocityX(-enemy.speed);
+                enemy.setFlipX(false);
+              }
             }
           });
 
@@ -5609,8 +6387,8 @@ class MarioGame {
             });
           }
 
-          // --- BOSS SYSTEM UPDATE (Alfil Exiliado, level 3) ---
-          if (biome === 'neon' && scene.boss && !scene.bossDefeated) {
+          // --- BOSS SYSTEM UPDATE (Alfil Exiliado / El Elegante Veriss) ---
+          if ((biome === 'neon' || biome === 'river') && scene.boss && !scene.bossDefeated) {
             const bd = levelDef.bossData;
             const playerInRoom = scene.player.x > bd.roomLeft + 30 && scene.player.x < bd.roomRight - 30;
             
@@ -5642,7 +6420,7 @@ class MarioGame {
               scene.player._bossIntroProtect = true;
               
               const rw0 = bd.roomRight - bd.roomLeft;
-              // Draw room overlay — darken outside, clear inside with neon border
+              // Draw room overlay
               scene.bossOverlay.setVisible(true);
               scene.drawBossOverlay();
               
@@ -5660,37 +6438,69 @@ class MarioGame {
                 ease: 'Bounce.easeOut'
               });
               
-              // DRAMATIC BOSS NAME TEXT
-              const bossName = scene.add.text(bd.roomLeft + rw0/2, 130, "ALFIL EXILIADO", {
+              // DRAMATIC BOSS NAME TEXT & HELP INSTRUCTIONS
+              const displayBossName = biome === 'river' ? "EL ELEGANTE VERISS" : "ALFIL EXILIADO";
+              const displayBossColor = biome === 'river' ? "#22d3ee" : "#c084fc";
+              const bossNameText = scene.add.text(bd.roomLeft + rw0/2, 120, displayBossName, {
                 fontFamily: "'Outfit', sans-serif",
                 fontSize: '28px',
                 fontStyle: 'bold',
-                fill: '#c084fc',
+                fill: displayBossColor,
                 stroke: '#1a0030',
                 strokeThickness: 6,
                 align: 'center'
               }).setOrigin(0.5).setDepth(10).setAlpha(0).setScale(2);
               
+              const displayHelpText = biome === 'river'
+                ? "¡ATÁCALO CON UN DASH (TECLA X / C) O CAYENDO DESDE ARRIBA!"
+                : "¡ATÁCALO CON UN DASH (TECLA X / C) O PISANDO SU CABEZA!";
+              const bossHelpText = scene.add.text(bd.roomLeft + rw0/2, 165, displayHelpText, {
+                fontFamily: "'Outfit', sans-serif",
+                fontSize: '12px',
+                fontStyle: 'bold',
+                fill: '#fef08a',
+                stroke: '#000000',
+                strokeThickness: 4,
+                align: 'center'
+              }).setOrigin(0.5).setDepth(10).setAlpha(0);
+              
               scene.tweens.add({
-                targets: bossName,
+                targets: bossNameText,
                 alpha: 1, scaleX: 1, scaleY: 1,
                 duration: 600, ease: 'Back.easeOut',
                 onComplete: () => {
                   scene.tweens.add({
-                    targets: bossName,
-                    alpha: 0, y: 100,
-                    duration: 800, delay: 1200,
-                    onComplete: () => bossName.destroy()
+                    targets: bossNameText,
+                    alpha: 0, y: 90,
+                    duration: 800, delay: 1800,
+                    onComplete: () => bossNameText.destroy()
+                  });
+                }
+              });
+              
+              scene.tweens.add({
+                targets: bossHelpText,
+                alpha: 1,
+                duration: 600,
+                delay: 200,
+                onComplete: () => {
+                  scene.tweens.add({
+                    targets: bossHelpText,
+                    alpha: 0,
+                    duration: 800,
+                    delay: 2200,
+                    onComplete: () => bossHelpText.destroy()
                   });
                 }
               });
               
               // Intro particles burst
+              const introPartColor = biome === 'river' ? 0x22d3ee : 0xa855f7;
               for (let i=0;i<30;i++) {
                 scene.time.delayedCall(800 + i*25, () => {
                   if (!scene.bossRoomActive) return;
                   const a = (i/30)*Math.PI*2;
-                  const sp = scene.add.circle(scene.boss.x, scene.boss.y, Math.random()*3+2, 0xa855f7, 0.8);
+                  const sp = scene.add.circle(scene.boss.x, scene.boss.y, Math.random()*3+2, introPartColor, 0.8);
                   sp.setDepth(6);
                   scene.tweens.add({
                     targets: sp, alpha: 0, scale: 0.05,
@@ -5720,39 +6530,152 @@ class MarioGame {
             }
             
             if (scene.bossActive && !scene.bossIntro) {
-              if (scene.bossOverlay && scene.bossOverlay.visible) {
-                scene.drawBossOverlay();
-              }
+              // OPTIMIZED: drawBossOverlay() is static and only drawn once in createBossWalls/activation
               
               if (scene.bossInvincible > 0) {
                 scene.bossInvincible--;
                 scene.boss.setAlpha(scene.bossInvincible%4<2?0.4:1);
               } else scene.boss.setAlpha(1);
               
-              scene.boss.moveTimer++;
-              if (scene.boss.moveTimer > 80) {
-                scene.boss.moveTimer = 0;
-                scene.boss.moveDirX = Math.random() < 0.5 ? -1 : 1;
-                scene.boss.moveDirY = Math.random() < 0.5 ? -1 : 1;
+              if (biome === 'river') {
+                // --- EL ELEGANTE VERISS AI: Sinusoidal horizontal float + targeted charge ---
+                if (scene.boss.state === 'floating') {
+                  scene.boss.chargeTimer++;
+                  
+                  // Move horizontally back and forth
+                  const bx = scene.boss.x + scene.boss.moveDirX * scene.boss.speed * 0.015;
+                  scene.boss.x = Phaser.Math.Clamp(bx, scene.boss.minX, scene.boss.maxX);
+                  if (scene.boss.x <= scene.boss.minX || scene.boss.x >= scene.boss.maxX) {
+                    scene.boss.moveDirX *= -1; // reverse
+                  }
+                  
+                  // Smooth sinusoidal wave on Y
+                  scene.boss.floatAngle += 0.035;
+                  scene.boss.y = scene.boss.baseY + Math.sin(scene.boss.floatAngle) * 35;
+                  scene.boss.setFlipX(scene.boss.moveDirX < 0);
+                  scene.boss.clearTint();
+                  
+                  // Trigger charge warning after a few seconds
+                  if (scene.boss.chargeTimer >= 180) {
+                    scene.boss.state = 'pre_charge';
+                    scene.boss.chargeTimer = 0;
+                    scene.boss.setTint(0xff8888); // visual alert
+                  }
+                } 
+                else if (scene.boss.state === 'pre_charge') {
+                  scene.boss.chargeTimer++;
+                  // Flash visual warning
+                  if (scene.boss.chargeTimer % 10 < 5) {
+                    scene.boss.setTint(0xff3333);
+                  } else {
+                    scene.boss.setTint(0xffffff);
+                  }
+                  
+                  // Lock facing direction
+                  scene.boss.setFlipX(scene.player.x < scene.boss.x);
+                  
+                  if (scene.boss.chargeTimer > 35) {
+                    scene.boss.state = 'charging';
+                    scene.boss.chargeTimer = 0;
+                    self.synthesizeSound('jump'); // swoosh audio
+                    
+                    const angle = Phaser.Math.Angle.Between(scene.boss.x, scene.boss.y, scene.player.x, scene.player.y);
+                    scene.boss.chargeVx = Math.cos(angle) * scene.boss.speed * 0.06;
+                    scene.boss.chargeVy = Math.sin(angle) * scene.boss.speed * 0.06;
+                  }
+                } 
+                else if (scene.boss.state === 'charging') {
+                  scene.boss.chargeTimer++;
+                  scene.boss.setTint(0x22d3ee); // charging cyan tint
+                  
+                  // Trail bubbles
+                  if (scene.boss.chargeTimer % 3 === 0) {
+                    const trailBub = scene.add.circle(scene.boss.x + (scene.boss.flipX ? 20 : -20), scene.boss.y + Math.random()*30 - 15, Math.random()*3 + 1, 0x22d3ee, 0.8);
+                    scene.tweens.add({
+                      targets: trailBub,
+                      alpha: 0,
+                      scale: 0.1,
+                      duration: 300,
+                      onComplete: () => trailBub.destroy()
+                    });
+                  }
+                  
+                  scene.boss.x += scene.boss.chargeVx;
+                  scene.boss.y += scene.boss.chargeVy;
+                  
+                  // Clamp to room bounds
+                  scene.boss.x = Phaser.Math.Clamp(scene.boss.x, scene.boss.minX, scene.boss.maxX);
+                  scene.boss.y = Phaser.Math.Clamp(scene.boss.y, scene.boss.minY, scene.boss.maxY);
+                  
+                  if (scene.boss.chargeTimer > 35 || scene.boss.x <= scene.boss.minX || scene.boss.x >= scene.boss.maxX || scene.boss.y <= scene.boss.minY || scene.boss.y >= scene.boss.maxY) {
+                    scene.boss.state = 'floating';
+                    scene.boss.chargeTimer = 0;
+                    scene.boss.clearTint();
+                  }
+                }
+              } else {
+                scene.boss.moveTimer++;
+                if (scene.boss.moveTimer > 80) {
+                  scene.boss.moveTimer = 0;
+                  scene.boss.moveDirX = Math.random() < 0.5 ? -1 : 1;
+                  scene.boss.moveDirY = Math.random() < 0.5 ? -1 : 1;
+                }
+                const bx = scene.boss.x + scene.boss.moveDirX * scene.boss.speed * 0.018;
+                const by = scene.boss.y + scene.boss.moveDirY * scene.boss.speed * 0.012;
+                scene.boss.x = Phaser.Math.Clamp(bx, scene.boss.minX, scene.boss.maxX);
+                scene.boss.y = Phaser.Math.Clamp(by, scene.boss.minY, scene.boss.maxY);
+                scene.boss.setFlipX(scene.boss.moveDirX < 0);
               }
-              const bx = scene.boss.x + scene.boss.moveDirX * scene.boss.speed * 0.018;
-              const by = scene.boss.y + scene.boss.moveDirY * scene.boss.speed * 0.012;
-              scene.boss.x = Phaser.Math.Clamp(bx, scene.boss.minX, scene.boss.maxX);
-              scene.boss.y = Phaser.Math.Clamp(by, scene.boss.minY, scene.boss.maxY);
-              scene.boss.setFlipX(scene.boss.moveDirX < 0);
               
               scene.boss.projTimer++;
               if (scene.boss.projTimer >= scene.boss.projInterval) {
                 scene.boss.projTimer = 0;
-                const dirs = [Math.PI/4, -Math.PI/4, Math.PI-Math.PI/4, -(Math.PI-Math.PI/4)];
-                const dir = dirs[Math.floor(Math.random()*dirs.length)];
-                const proj = scene.add.circle(scene.boss.x, scene.boss.y, 5, 0xa855f7, 0.9);
-                scene.physics.add.existing(proj, false);
-                proj.body.allowGravity = false;
-                proj.body.setVelocity(Math.cos(dir)*bd.projectileSpeed, Math.sin(dir)*bd.projectileSpeed);
-                scene.bossProjectiles.add(proj);
-                proj.setBlendMode('ADD');
-                scene.tweens.add({targets:proj, alpha:0.2, scale:0.1, duration:2000, onComplete:()=>proj.destroy()});
+                // Only fire projectiles if boss is in floating state in river biome
+                if (biome !== 'river' || scene.boss.state === 'floating') {
+                  if (biome === 'river') {
+                    const useBubbleRing = Math.random() < 0.6;
+                    if (useBubbleRing) {
+                      const bubbleCount = 6;
+                      for (let i = 0; i < bubbleCount; i++) {
+                        const angle = (i / bubbleCount) * Math.PI * 2;
+                        const proj = scene.add.circle(scene.boss.x, scene.boss.y, 6, 0x22d3ee, 0.95);
+                        scene.physics.add.existing(proj, false);
+                        proj.body.allowGravity = false;
+                        proj.body.setVelocity(Math.cos(angle)*bd.projectileSpeed, Math.sin(angle)*bd.projectileSpeed);
+                        scene.bossProjectiles.add(proj);
+                        proj.setBlendMode('ADD');
+                        scene.tweens.add({targets:proj, alpha:0.1, scale:0.2, duration:2200, onComplete:()=>proj.destroy()});
+                      }
+                      self.synthesizeSound('jump');
+                    } else {
+                      // Trident Lightning Bolts: 3 fast golden energy bolts fired in a fan directed at player
+                      const numBolts = 3;
+                      const angleToPlayer = Phaser.Math.Angle.Between(scene.boss.x, scene.boss.y, scene.player.x, scene.player.y);
+                      const spreads = [-0.22, 0, 0.22];
+                      for (let i = 0; i < numBolts; i++) {
+                        const angle = angleToPlayer + spreads[i];
+                        const proj = scene.add.circle(scene.boss.x, scene.boss.y, 5, 0xfacc15, 1.0);
+                        scene.physics.add.existing(proj, false);
+                        proj.body.allowGravity = false;
+                        proj.body.setVelocity(Math.cos(angle)*bd.projectileSpeed*1.3, Math.sin(angle)*bd.projectileSpeed*1.3);
+                        scene.bossProjectiles.add(proj);
+                        proj.setBlendMode('ADD');
+                        scene.tweens.add({targets:proj, alpha:0.2, scale:0.1, duration:1800, onComplete:()=>proj.destroy()});
+                      }
+                      self.synthesizeSound('damage');
+                    }
+                  } else {
+                    const dirs = [Math.PI/4, -Math.PI/4, Math.PI-Math.PI/4, -(Math.PI-Math.PI/4)];
+                    const dir = dirs[Math.floor(Math.random()*dirs.length)];
+                    const proj = scene.add.circle(scene.boss.x, scene.boss.y, 5, 0xa855f7, 0.9);
+                    scene.physics.add.existing(proj, false);
+                    proj.body.allowGravity = false;
+                    proj.body.setVelocity(Math.cos(dir)*bd.projectileSpeed, Math.sin(dir)*bd.projectileSpeed);
+                    scene.bossProjectiles.add(proj);
+                    proj.setBlendMode('ADD');
+                    scene.tweens.add({targets:proj, alpha:0.2, scale:0.1, duration:2000, onComplete:()=>proj.destroy()});
+                  }
+                }
               }
               
               scene.bossProjectiles.getChildren().forEach(proj => {
@@ -5762,19 +6685,33 @@ class MarioGame {
               if (scene.bossInvincible === 0) {
                 const dx = scene.player.x-scene.boss.x, dy = scene.player.y-scene.boss.y;
                 if (Math.sqrt(dx*dx+dy*dy) < 42) {
-                  if (scene.player.body.velocity.y>0 && scene.player.y<scene.boss.y) {
+                  const isDashingHit = scene.player.isDashing;
+                  const isStompHit = scene.player.body.velocity.y > 0 && scene.player.y < scene.boss.y;
+                  
+                  if (isStompHit || isDashingHit) {
                     scene.bossHP--;
                     scene.bossInvincible = 40;
-                    scene.player.body.setVelocityY(-380);
+                    if (isDashingHit) {
+                      const hitDir = scene.player.x < scene.boss.x ? -1 : 1;
+                      scene.player.body.setVelocityX(hitDir * 200);
+                      scene.player.isDashing = false;
+                      scene.player.body.allowGravity = true;
+                    } else {
+                      scene.player.body.setVelocityY(biome === 'river' ? -180 : -380);
+                    }
                     self.synthesizeSound('stomp');
+                    scene.cameras.main.shake(150, 0.012); // camera feedback juice!
                     const fill = document.getElementById('boss-hp-fill');
                     if (fill) fill.style.width = `${(scene.bossHP/scene.boss.hp)*100}%`;
+                    
+                    const hitPartColor = biome === 'river' ? 0x22d3ee : 0xa855f7;
                     for (let i=0;i<15;i++) {
                       const a=(i/15)*Math.PI*2;
-                      const sp=scene.add.circle(scene.boss.x, scene.boss.y, Math.random()*3+1.5, 0xa855f7, 0.8);
+                      const sp=scene.add.circle(scene.boss.x, scene.boss.y, Math.random()*3+1.5, hitPartColor, 0.8);
                       sp.setDepth(5);
                       scene.tweens.add({targets:sp, alpha:0, scale:0.1, x:sp.x+Math.cos(a)*60, y:sp.y+Math.sin(a)*60, duration:400, onComplete:()=>sp.destroy()});
                     }
+                    
                     if (scene.bossHP <= 0) {
                       scene.bossActive = false; scene.bossDefeated = true;
                       self.synthesizeSound('victory');
@@ -5797,9 +6734,93 @@ class MarioGame {
                         scene.bossWalls = null;
                       }
                       if (scene.bossWallGlow) { scene.bossWallGlow.destroy(); scene.bossWallGlow = null; }
+                      
+                      // Spawn White Queen + Portal + Peoncito on boss defeat!
+                      if (!scene.whiteQueen) {
+                        const gx = (levelDef.goal && levelDef.goal.portalX) || 2150;
+                        const gy = (levelDef.goal && levelDef.goal.portalY) || 245;
+                        scene.whiteQueen = scene.physics.add.staticSprite(gx, gy, 'white_queen');
+                        scene.whiteQueen.setDisplaySize(60, 120);
+                        scene.whiteQueen.body.setSize(44, 120);
+                        scene.whiteQueen.body.setOffset(8, 0);
+                        scene.whiteQueen.setDepth(2);
+                        scene.whiteQueen.setAlpha(0);
+                        scene.tweens.add({
+                          targets: scene.whiteQueen,
+                          alpha: 1,
+                          duration: 1000
+                        });
+                        
+                        scene.physics.add.overlap(scene.player, scene.whiteQueen, () => {
+                          if (self.player.isAscending) return;
+                          self.player.isAscending = true;
+                          self.completeLevel();
+                          scene.particles.stop();
+                          scene.player.body.setVelocityX(0);
+                          scene.player.body.setVelocityY(-60);
+                          scene.player.body.allowGravity = false;
+                          
+                          scene.cameras.main.zoomTo(1.35, 2200);
+                          const victoryText = scene.add.text(scene.player.x, scene.player.y - 130, "¡JAQUE MATE!\nDespertando...", {
+                            fontFamily: "'Outfit', 'Inter', sans-serif",
+                            fontSize: '22px',
+                            fontStyle: 'bold',
+                            fill: '#fbbf24',
+                            stroke: '#1e0b3b',
+                            strokeThickness: 5,
+                            align: 'center'
+                          }).setOrigin(0.5).setDepth(10);
+                          
+                          for (let i=0;i<30;i++) {
+                            scene.time.delayedCall(i*40,()=>{
+                              if(!scene.player.active)return;
+                              const a=i*0.35,r=25-i*0.2;
+                              const startX = scene.player.x+Math.cos(a)*Math.max(3,r);
+                              const startY = scene.player.y+Math.sin(a)*Math.max(3,r);
+                              const sp=scene.add.circle(startX,startY,Math.random()*2+1.5,0xfacc15,0.9);
+                              sp.setDepth(10);
+                              scene.tweens.add({
+                                targets:sp,
+                                y: startY - 70, // equivalent to Y velocity -100 for 700ms
+                                alpha:0,
+                                scale:0.1,
+                                duration:700,
+                                onComplete:()=>sp.destroy()
+                              });
+                            });
+                          }
+                          scene.tweens.add({
+                            targets: scene.player,
+                            angle: 1080, scaleX: 0.05, scaleY: 0.05, alpha: 0,
+                            y: scene.player.y - 120, duration: 2200,
+                            ease: 'Quad.easeOut',
+                            onComplete: () => {
+                              victoryText.destroy();
+                              self.showVictoryScreen(true);
+                            }
+                          });
+                        });
+                      }
+                      if (scene.portal) {
+                        scene.portal.setVisible(true);
+                        scene.portal.setAlpha(0);
+                        scene.tweens.add({ targets: scene.portal, alpha: 1, duration: 1000 });
+                      }
+                      if (scene.portalGlow) {
+                        scene.portalGlow.setVisible(true);
+                        scene.portalGlow.setAlpha(0);
+                        scene.tweens.add({ targets: scene.portalGlow, alpha: 1, duration: 1000 });
+                      }
+                      if (scene.peoncitoGoal) {
+                        scene.peoncitoGoal.setVisible(true);
+                        scene.peoncitoGoal.setAlpha(0);
+                        scene.tweens.add({ targets: scene.peoncitoGoal, alpha: 1, duration: 1000 });
+                      }
+
+                      const deathPartColor = biome === 'river' ? 0x34d399 : 0xc084fc;
                       for (let i=0;i<40;i++) {
                         scene.time.delayedCall(i*20, ()=>{
-                          const cp=scene.add.circle(bd.roomLeft+Math.random()*(bd.roomRight-bd.roomLeft), 150+Math.random()*250, Math.random()*3+1.5, i%2===0?0xc084fc:0xfbbf24, 0.8);
+                          const cp=scene.add.circle(bd.roomLeft+Math.random()*(bd.roomRight-bd.roomLeft), 150+Math.random()*250, Math.random()*3+1.5, i%2===0?deathPartColor:0xfbbf24, 0.8);
                           scene.tweens.add({targets:cp, alpha:0, scale:0.1, y:cp.y-60, duration:800+Math.random()*400, onComplete:()=>cp.destroy()});
                         });
                       }
@@ -6022,7 +7043,8 @@ class MarioGame {
           }
 
           // Out of bounds pit checks — player fell into a gap and hit world bottom
-          if (scene.player.y > 405 && scene.player.invincibility === 0) {
+          const pitLimit = (biome === 'river') ? 442 : 405;
+          if (scene.player.y > pitLimit && scene.player.invincibility === 0) {
             self.lives--;
             self.synthesizeSound('damage');
             scene.doDamageAnim();
@@ -6141,6 +7163,25 @@ class MarioGame {
           
           if (scene.player.isDashing) {
             scene.player.dashTimer--;
+            if (biome === 'river') {
+              for (let i = 0; i < 3; i++) {
+                const startX = scene.player.x + (scene.player.flipX ? 15 : -15);
+                const startY = scene.player.y + Math.random()*20 - 10;
+                const dbub = scene.add.circle(startX, startY, Math.random()*2.5 + 1, 0xffffff, 0.7);
+                dbub.setDepth(3);
+                const vx = scene.player.flipX ? 80 + Math.random()*60 : -80 - Math.random()*60;
+                const vy = Math.random()*20 - 10;
+                scene.tweens.add({
+                  targets: dbub,
+                  x: startX + vx * 0.4, // duration 400ms (0.4s)
+                  y: startY + vy * 0.4,
+                  alpha: 0,
+                  scale: 0.1,
+                  duration: 400,
+                  onComplete: () => dbub.destroy()
+                });
+              }
+            }
             scene.player.body.setVelocityY(0); // lock Y
             
             // Leave semi-transparent blue ghost trails with cycling tints!
@@ -6179,31 +7220,37 @@ class MarioGame {
 
           // Horizontal movement
           if (moveLeft) {
-            scene.player.body.setVelocityX(-175);
+            scene.player.body.setVelocityX(biome === 'river' ? -145 : -175);
             scene.player.setFlipX(true); // flip sprite left
             scene.particles.start();
             
-            if (scene.player.body.touching.down) {
+            if (biome === 'river') {
+              scene.player.play('martina-run', true);
+            } else if (scene.player.body.touching.down) {
               scene.player.play('martina-run', true);
             }
           } else if (moveRight) {
-            scene.player.body.setVelocityX(175);
+            scene.player.body.setVelocityX(biome === 'river' ? 145 : 175);
             scene.player.setFlipX(false); // standard flip right
             scene.particles.start();
             
-            if (scene.player.body.touching.down) {
+            if (biome === 'river') {
+              scene.player.play('martina-run', true);
+            } else if (scene.player.body.touching.down) {
               scene.player.play('martina-run', true);
             }
           } else {
             scene.player.body.setVelocityX(0);
             scene.particles.stop();
             
-            if (scene.player.body.touching.down) {
+            if (biome === 'river') {
+              scene.player.play('martina-idle', true);
+            } else if (scene.player.body.touching.down) {
               scene.player.play('martina-idle', true);
             }
           }
 
-          if (!scene.player.body.touching.down) {
+          if (biome !== 'river' && !scene.player.body.touching.down) {
             scene.player.play('martina-jump', true);
           }
 
@@ -6211,7 +7258,33 @@ class MarioGame {
           if (scene.player.jumpKeyDebounce > 0) scene.player.jumpKeyDebounce--;
 
           if (jumpPressed) {
-            if (scene.player.body.touching.down) {
+            if (biome === 'river') {
+              // Water swim stroke: can swim at any time, but only if debounce is 0
+              if (scene.player.jumpKeyDebounce === 0) {
+                scene.player.body.setVelocityY(-230); // swimming up stroke
+                self.synthesizeSound('jump'); // soft splash sound
+                scene.player.jumpKeyDebounce = 12; // debounce so she doesn't shoot up too fast
+                
+                // Spawn bubble rings or splash particles when swimming! (OPTIMIZED: no physics)
+                for (let i = 0; i < 6; i++) {
+                  const startX = scene.player.x;
+                  const startY = scene.player.y + 10;
+                  const bp = scene.add.circle(startX, startY, Math.random()*2.5 + 1.5, 0xffffff, 0.7);
+                  bp.setDepth(3);
+                  const vx = Math.random()*60 - 30;
+                  const vy = Math.random()*40 + 20;
+                  scene.tweens.add({
+                    targets: bp,
+                    x: startX + vx * 0.6, // duration 600ms (0.6s)
+                    y: startY + vy * 0.6,
+                    alpha: 0,
+                    scale: 0.1,
+                    duration: 600,
+                    onComplete: () => bp.destroy()
+                  });
+                }
+              }
+            } else if (scene.player.body.touching.down) {
               scene.player.body.setVelocityY(-405); // high enough to reach all platforms easily!
               self.synthesizeSound('jump');
               scene.player.doubleJumpAvailable = true;
@@ -6247,20 +7320,24 @@ class MarioGame {
           if (scene.player.body.touching.down && !scene.player.wasOnGround) {
             scene.player.landingSquashTimer = 10; // squash for 10 frames
             
-            // Spawn landing dust particles!
+            // Spawn landing dust particles or water bubbles! (OPTIMIZED: no physics)
             for (let i = 0; i < 6; i++) {
               const dustX = scene.player.x + (Math.random() * 20 - 10);
               const dustY = scene.player.y + 26;
-              const dust = scene.add.circle(dustX, dustY, Math.random() * 2.5 + 1, 0xffffff, 0.7);
-              scene.physics.add.existing(dust, false);
-              dust.body.allowGravity = false;
-              dust.body.setVelocityY(-Math.random() * 30 - 10);
-              dust.body.setVelocityX((Math.random() * 60 - 30));
+              const dustColor = 0xffffff;
+              const dust = scene.add.circle(dustX, dustY, Math.random() * 2.5 + 1, dustColor, 0.7);
+              dust.setDepth(3);
+              const vy = biome === 'river' ? -Math.random() * 60 - 20 : -Math.random() * 30 - 10;
+              const vx = (Math.random() * 60 - 30);
+              const duration = 350 + Math.random() * 150;
+              const durationSeconds = duration / 1000;
               scene.tweens.add({
                 targets: dust,
+                x: dustX + vx * durationSeconds,
+                y: dustY + vy * durationSeconds,
                 alpha: 0,
                 scale: 0.1,
-                duration: 350 + Math.random() * 150,
+                duration: duration,
                 onComplete: () => dust.destroy()
               });
             }
@@ -6268,7 +7345,28 @@ class MarioGame {
           scene.player.wasOnGround = scene.player.body.touching.down;
 
           // Apply deformation math
-          if (scene.player.landingSquashTimer > 0) {
+          if (biome === 'river') {
+            // Squeeze/stretch horizontally based on nado speed
+            const speed = Math.sqrt(scene.player.body.velocity.x * scene.player.body.velocity.x + scene.player.body.velocity.y * scene.player.body.velocity.y);
+            const stretch = 1 + Math.min(0.12, speed / 1500);
+            const invStretch = 2 - stretch;
+            // Since rotated ~90 deg, unrotated width (38) is vertical thickness, unrotated height (56) is horizontal length
+            scene.player.setDisplaySize(38 * invStretch, 56 * stretch);
+            
+            // Calculate swim angle: horizontal rotation + minor tilt up/down depending on Y movement
+            let targetAngle = scene.player.flipX ? -80 : 80;
+            if (scene.player.body.velocity.y < -30) {
+              targetAngle = scene.player.flipX ? -65 : 65; // facing slightly upward
+            } else if (scene.player.body.velocity.y > 30) {
+              targetAngle = scene.player.flipX ? -95 : 95; // facing slightly downward
+            }
+            
+            // Subtle floating wobble when not active
+            if (Math.abs(scene.player.body.velocity.x) < 5 && Math.abs(scene.player.body.velocity.y) < 5) {
+              targetAngle += Math.sin(scene.time.now * 0.003) * 6;
+            }
+            scene.player.setAngle(targetAngle);
+          } else if (scene.player.landingSquashTimer > 0) {
             scene.player.landingSquashTimer--;
             // Squash body on landing (Y goes down, X goes up)
             const squash = 0.8 + (10 - scene.player.landingSquashTimer) * 0.02;
@@ -6286,7 +7384,7 @@ class MarioGame {
             if (scene.player.body.velocity.x < 0) {
               scene.player.setAngle(-6);
             } else if (scene.player.body.velocity.x > 0) {
-              scene.player.setAngle(6);
+               scene.player.setAngle(6);
             } else {
               scene.player.setAngle(0);
             }
@@ -6577,6 +7675,29 @@ class MarioGame {
         65.41, 0, 65.41, 0, 82.41, 82.41, 65.41, 0
       ];
       tempo = 165; // Aggressive Sicilian tempo
+    } else if (this.currentLevelIndex === 6) {
+      // Level 7 — "El Pescador y el Elegante" (F minor, aquatic, flowing, calm but mysterious)
+      melody = [
+        349.23, 0, 415.30, 466.16, 523.25, 0, 466.16, 415.30,
+        349.23, 0, 415.30, 466.16, 523.25, 587.33, 523.25, 0,
+        311.13, 0, 392.00, 415.30, 466.16, 0, 415.30, 392.00,
+        311.13, 0, 392.00, 415.30, 466.16, 523.25, 466.16, 0,
+        293.66, 0, 349.23, 392.00, 415.30, 0, 392.00, 349.23,
+        293.66, 0, 349.23, 392.00, 415.30, 466.16, 415.30, 0,
+        349.23, 415.30, 523.25, 698.46, 659.25, 523.25, 415.30, 0,
+        415.30, 523.25, 659.25, 783.99, 659.25, 523.25, 415.30, 349.23
+      ];
+      bass = [
+        87.31, 0, 87.31, 0, 87.31, 0, 87.31, 0,
+        87.31, 0, 87.31, 0, 87.31, 0, 87.31, 0,
+        77.78, 0, 77.78, 0, 77.78, 0, 77.78, 0,
+        77.78, 0, 77.78, 0, 77.78, 0, 77.78, 0,
+        69.30, 0, 69.30, 0, 69.30, 0, 69.30, 0,
+        69.30, 0, 69.30, 0, 69.30, 0, 69.30, 0,
+        87.31, 0, 87.31, 0, 87.31, 0, 87.31, 0,
+        87.31, 0, 87.31, 0, 87.31, 0, 87.31, 0
+      ];
+      tempo = 160; // Flowing, watery feel
     } else {
       // Level 1 — Dreamy, ethereal, minor-mode fairy tale chords
       melody = [
