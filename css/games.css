@@ -4640,6 +4640,189 @@
   border-radius: 6px;
 }
 
+/* === SUPER MARTINA CUSTOM OVERLAYS (Victory and Game Over) === */
+.mario-gameover-overlay,
+.mario-victory-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(8, 6, 16, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.mario-gameover-panel,
+.mario-victory-panel {
+  background: rgba(20, 12, 36, 0.96);
+  border-radius: 24px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+  box-sizing: border-box;
+  animation: marioPanelZoom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85);
+  font-family: 'Nunito', sans-serif;
+  color: #fff;
+}
+
+.mario-gameover-panel {
+  border: 3px solid #f43f5e;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(244, 63, 94, 0.25);
+}
+
+.mario-victory-panel {
+  border: 3px solid #fbbf24;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(251, 191, 36, 0.25);
+}
+
+@keyframes marioPanelZoom {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1.0); opacity: 1; }
+}
+
+.mario-gameover-skull,
+.mario-victory-crown {
+  font-size: 3.5rem;
+  margin-bottom: 0.8rem;
+  display: inline-block;
+  animation: marioBadgeFloat 2s infinite alternate ease-in-out;
+}
+
+@keyframes marioBadgeFloat {
+  from { transform: translateY(0); }
+  to { transform: translateY(-8px); }
+}
+
+.mario-gameover-panel h2,
+.mario-victory-panel h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.mario-gameover-panel h2 {
+  color: #f43f5e;
+  text-shadow: 0 0 12px rgba(244, 63, 94, 0.3);
+}
+
+.mario-victory-panel h2 {
+  color: #fbbf24;
+  text-shadow: 0 0 12px rgba(251, 191, 36, 0.3);
+}
+
+.mario-gameover-msg,
+.mario-victory-msg {
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  line-height: 1.45;
+  margin: 0 0 1.5rem 0;
+}
+
+.mario-gameover-stats,
+.mario-victory-stats {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.mario-stat-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 0.8rem 1rem;
+  min-width: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.mario-stat-icon {
+  font-size: 1.4rem;
+}
+
+.mario-stat-num {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+.mario-stat-name {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mario-victory-buttons,
+.mario-gameover-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.mario-vic-btn {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mario-vic-btn.btn-replay {
+  background: linear-gradient(135deg, #4f46e5, #4338ca);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(67, 56, 202, 0.3);
+}
+
+.mario-vic-btn.btn-replay:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(67, 56, 202, 0.5);
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+}
+
+.mario-vic-btn.btn-map {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+}
+
+.mario-vic-btn.btn-map:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.mario-vic-btn:active {
+  transform: translateY(0);
+}
+
+/* === Game Sandbox Relative Position Context === */
+#game-sandbox {
+  position: relative;
+}
+
 
 
 

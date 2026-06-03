@@ -4,12 +4,13 @@
 window.MartinaLevels = {
 
   // Max possible score per level index (coins + burst + enemies + crowns)
-  maxScore: {
-    0: 9900,
-    1: 9900,
-    2: 9900,
-    3: 9900
-  },
+      maxScore: {
+        0: 9900,
+        1: 9900,
+        2: 9900,
+        3: 9900,
+        4: 12000
+      },
 
   levels: [
     // ================================================================
@@ -384,6 +385,63 @@ window.MartinaLevels = {
         type: 'chess_victory',
         portalX: 2330, portalY: 245
       }
-    }
+    },
+
+    // ================================================================
+    // LEVEL 5 — "La Coronación de Peoncito" — Castle Runner (visto de atrás)
+    // ================================================================
+    (() => {
+      const obstacles = [];
+      const coinsData = [];
+      const crownsData = [];
+      const maxDistance = 18000;
+      
+      for (let y = 600; y < maxDistance - 1000; y += 600) {
+        const idx = Math.floor(y / 600);
+        const lane = idx % 3;
+        const type = (idx % 2 === 0) ? 'rock' : 'crystal';
+        obstacles.push({ y, lane, type });
+        
+        const safeLane1 = (lane + 1) % 3;
+        const safeLane2 = (lane + 2) % 3;
+        const x1 = safeLane1 === 0 ? 260 : (safeLane1 === 2 ? 540 : 400);
+        const x2 = safeLane2 === 0 ? 260 : (safeLane2 === 2 ? 540 : 400);
+        
+        coinsData.push({ x: x1, y: y - 250 });
+        coinsData.push({ x: x1, y: y - 200 });
+        coinsData.push({ x: x1, y: y - 150 });
+        
+        coinsData.push({ x: x2, y: y + 150 });
+        coinsData.push({ x: x2, y: y + 200 });
+        coinsData.push({ x: x2, y: y + 250 });
+        
+        const crownLane = (lane + 2) % 3;
+        const cx = crownLane === 0 ? 260 : (crownLane === 2 ? 540 : 400);
+        crownsData.push({ x: cx, y: y + 300 });
+      }
+      
+      // Giant clock obstacle near the end
+      obstacles.push({ y: 16800, lane: 1, type: 'giant_clock' });
+      
+      return {
+        biome: 'castle_runner',
+        gameMode: 'runner',
+        worldWidth: 800,
+        worldHeight: 450,
+        backgroundColor: '#0d0620',
+        runDistance: maxDistance,
+        baseScrollSpeed: 1.8,
+        lanes: 3,
+        pathWidth: 440,
+        obstacles,
+        coinsData,
+        crownsData,
+        chasers: [],
+        goal: {
+          type: 'coronation_portal',
+          portalY: maxDistance
+        }
+      };
+    })()
   ]
 };

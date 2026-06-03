@@ -6,6 +6,7 @@
 class MarioGame {
   constructor(container) {
     this.container = container;
+    this.container.style.position = 'relative';
     
     // Core game state
     this.currentLevelIndex = 0;
@@ -280,225 +281,1195 @@ class MarioGame {
       this.showWelcomeScreen();
     });
 
-    const muteBtn = document.getElementById('mario-btn-mute');
-    muteBtn.addEventListener('click', () => {
-      this.musicEnabled = !this.musicEnabled;
-      localStorage.setItem('martina_mario_mute', (!this.musicEnabled).toString());
-      muteBtn.textContent = this.musicEnabled ? '🔊 Sonido' : '🔇 Mute';
-      if (this.musicEnabled) {
-        this.startMusic();
-      } else {
-        this.stopMusic();
-      }
-    });
-
-    // Touch controls binder
-    const bindTouch = (id, field) => {
-      const btn = document.getElementById(id);
-      if (btn) {
-        const setTouch = (e, val) => {
-          e.preventDefault();
-          this.touchInputs[field] = val;
-        };
-        btn.addEventListener('touchstart', (e) => setTouch(e, true));
-        btn.addEventListener('touchend', (e) => setTouch(e, false));
-        btn.addEventListener('mousedown', (e) => setTouch(e, true));
-        btn.addEventListener('mouseup', (e) => setTouch(e, false));
-      }
+    // Bind mobile gamepad touch controls
+    const bindTouch = (id, key) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      
+      const setInput = (val) => {
+        this.touchInputs[key] = val;
+        if (val) el.classList.add('active');
+        else el.classList.remove('active');
+      };
+      
+      el.addEventListener('touchstart', (e) => { e.preventDefault(); setInput(true); }, { passive: false });
+      el.addEventListener('touchend', (e) => { e.preventDefault(); setInput(false); }, { passive: false });
+      el.addEventListener('mousedown', (e) => { e.preventDefault(); setInput(true); });
+      el.addEventListener('mouseup', (e) => { e.preventDefault(); setInput(false); });
+      el.addEventListener('mouseleave', (e) => { e.preventDefault(); setInput(false); });
     };
 
     bindTouch('touch-left', 'left');
     bindTouch('touch-right', 'right');
-    bindTouch('touch-dash', 'dash');
     bindTouch('touch-jump', 'jump');
+    bindTouch('touch-dash', 'dash');
+  }
 
-    // Inject custom premium victory screen overlay styling if not already present
-    if (!document.getElementById('mario-victory-styles')) {
-      const styles = document.createElement('style');
-      styles.id = 'mario-victory-styles';
-      styles.textContent = `
-        .mario-victory-overlay {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(15, 23, 42, 0.75);
-          backdrop-filter: blur(8px);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 9999;
-          animation: fadeIn 0.4s ease-out forwards;
+  // === RUNNER GAME MODE (Level 5 — La Coronación de Peoncito) ===
+
+  setupRunner(scene, levelDef) {
+    const self = this;
+
+    // === SHARED TEXTURES (normally in platformer create, needed here too) ===
+
+    // Sparkle particles
+    if (!scene.textures.exists('sparkle')) {
+      const drawSparkle = (r1, g1, b1, r2, g2, b2) => {
+        const c = document.createElement('canvas');
+        c.width = 16; c.height = 16;
+        const ctx = c.getContext('2d');
+        const g = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
+        g.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+        g.addColorStop(0.3, `rgba(${r1},${g1},${b1},0.9)`);
+        g.addColorStop(1, `rgba(${r2},${g2},${b2},0)`);
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(8, 0); ctx.lineTo(10, 6); ctx.lineTo(16, 8);
+        ctx.lineTo(10, 10); ctx.lineTo(8, 16);
+        ctx.lineTo(6, 10); ctx.lineTo(0, 8);
+        ctx.lineTo(6, 6); ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.beginPath(); ctx.arc(8, 8, 2.2, 0, Math.PI*2); ctx.fill();
+        return c;
+      };
+      scene.textures.addCanvas('sparkle', drawSparkle(255, 223, 0, 255, 180, 0));
+      scene.textures.addCanvas('sparkle_cyan', drawSparkle(34, 211, 238, 56, 189, 248));
+      scene.textures.addCanvas('sparkle_purple', drawSparkle(167, 139, 250, 139, 92, 246));
+    }
+
+    // Coin frames + animation
+    if (!scene.textures.exists('coin_0')) {
+      const drawCoin = (squash) => {
+        const c = document.createElement('canvas');
+        c.width = 24; c.height = 24;
+        const ctx = c.getContext('2d');
+        const cx = 12, cy = 12;
+        const g = ctx.createLinearGradient(cx-8, cy-8, cx+8, cy+8);
+        g.addColorStop(0, '#fef3c7'); g.addColorStop(0.3, '#fbbf24');
+        g.addColorStop(0.6, '#f59e0b'); g.addColorStop(1, '#b45309');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        const or = 9, ir = 3.5;
+        for (let i = 0; i < 5; i++) {
+          const ao = (i*72-90)*Math.PI/180, ai = (i*72-90+36)*Math.PI/180;
+          const ox = cx+Math.cos(ao)*or*(1-squash*.3), oy = cy+Math.sin(ao)*or;
+          const ix = cx+Math.cos(ai)*ir*(1-squash*.3), iy = cy+Math.sin(ai)*ir;
+          if (i===0) ctx.moveTo(ox, oy); else ctx.lineTo(ox, oy);
+          ctx.lineTo(ix, iy);
         }
-        .mario-victory-panel {
-          background: rgba(30, 27, 75, 0.9);
-          border: 2px solid rgba(250, 204, 21, 0.55);
-          border-radius: 20px;
-          padding: 30px;
-          text-align: center;
-          max-width: 420px;
-          width: 90%;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(126, 34, 206, 0.3);
-          color: #ffffff;
-          font-family: 'Outfit', 'Inter', sans-serif;
-        }
-        .mario-victory-crown {
-          font-size: 50px;
-          margin-bottom: 10px;
-          animation: bounce 2s infinite ease-in-out;
-        }
-        .mario-victory-panel h2 {
-          font-size: 26px;
-          color: #fbbf24;
-          margin: 10px 0;
-          font-weight: 800;
-          text-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
-        }
-        .mario-victory-msg {
-          font-size: 13px;
-          color: #cbd5e1;
-          line-height: 1.5;
-          margin-bottom: 20px;
-        }
-        .mario-victory-stats {
-          display: flex;
-          justify-content: space-around;
-          background: rgba(15, 23, 42, 0.5);
-          border-radius: 12px;
-          padding: 15px 10px;
-          margin-bottom: 25px;
-          border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .mario-stat-box {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-        .mario-stat-icon {
-          font-size: 24px;
-          margin-bottom: 5px;
-        }
-        .mario-stat-num {
-          font-size: 22px;
-          font-weight: 800;
-          color: #38bdf8;
-        }
-        .mario-stat-name {
-          font-size: 11px;
-          color: #94a3b8;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-        }
-        .mario-victory-buttons {
-          display: flex;
-          gap: 15px;
-        }
-        .mario-vic-btn {
-          flex: 1;
-          padding: 12px 18px;
-          border-radius: 10px;
-          font-size: 14px;
-          font-weight: 700;
-          cursor: pointer;
-          transition: all 0.2s ease-out;
-          border: none;
-          font-family: inherit;
-        }
-        .mario-vic-btn.btn-replay {
-          background: rgba(255, 255, 255, 0.1);
-          color: #ffffff;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .mario-vic-btn.btn-replay:hover {
-          background: rgba(255, 255, 255, 0.2);
-        }
-        .mario-vic-btn.btn-map {
-          background: linear-gradient(135deg, #e11d48, #be123c);
-          color: #ffffff;
-          box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
-        }
-        .mario-vic-btn.btn-map:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 16px rgba(225, 29, 72, 0.5);
-        }
+        ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = '#92400e'; ctx.lineWidth = 1.2; ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.beginPath(); ctx.arc(cx-2, cy-2, 3, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.beginPath(); ctx.arc(cx, cy, 1.5, 0, Math.PI*2); ctx.fill();
+        return c;
+      };
+      scene.textures.addCanvas('coin_0', drawCoin(0));
+      scene.textures.addCanvas('coin_1', drawCoin(0.4));
+      scene.textures.addCanvas('coin_2', drawCoin(0.8));
+      scene.textures.addCanvas('coin_3', drawCoin(0.5));
+      scene.anims.create({
+        key: 'coin-spin',
+        frames: [{key:'coin_0'},{key:'coin_1'},{key:'coin_2'},{key:'coin_3'},{key:'coin_1'}],
+        frameRate: 10, repeat: -1
+      });
+    }
+
+    // Crown
+    if (!scene.textures.exists('crown_gold')) {
+      const cr = document.createElement('canvas');
+      cr.width = 36; cr.height = 36;
+      const ctx = cr.getContext('2d');
+      const g = ctx.createLinearGradient(6, 6, 30, 30);
+      g.addColorStop(0, '#fef3c7'); g.addColorStop(0.3, '#fbbf24');
+      g.addColorStop(0.7, '#f59e0b'); g.addColorStop(1, '#b45309');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(5, 30); ctx.lineTo(31, 30);
+      ctx.lineTo(29, 14); ctx.lineTo(23, 20);
+      ctx.lineTo(18, 7); ctx.lineTo(13, 20);
+      ctx.lineTo(7, 14); ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#92400e'; ctx.lineWidth = 1; ctx.stroke();
+      ctx.fillStyle = '#78350f'; ctx.fillRect(4, 29, 28, 4);
+      ctx.fillStyle = '#fbbf24'; ctx.fillRect(4, 29, 28, 1.5);
+      const rg = ctx.createRadialGradient(18, 6, 0, 18, 6, 4);
+      rg.addColorStop(0, '#ffffff'); rg.addColorStop(0.3, '#fca5a5'); rg.addColorStop(1, '#ef4444');
+      ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(18, 6, 3, 0, Math.PI*2); ctx.fill();
+      const sg = ctx.createRadialGradient(7, 12, 0, 7, 12, 2.5);
+      sg.addColorStop(0, '#ffffff'); sg.addColorStop(0.3, '#93c5fd'); sg.addColorStop(1, '#3b82f6');
+      ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(7, 12, 2, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(29, 12, 2, 0, Math.PI*2); ctx.fill();
+      scene.textures.addCanvas('crown_gold', cr);
+    }
+
+    // Portal
+    if (!scene.textures.exists('portal_texture')) {
+      const po = document.createElement('canvas');
+      po.width = 160; po.height = 160;
+      const ctx = po.getContext('2d');
+      const pg = ctx.createRadialGradient(80, 80, 5, 80, 80, 80);
+      pg.addColorStop(0, '#090514'); pg.addColorStop(0.6, '#1e1b4b');
+      pg.addColorStop(0.9, '#312e81'); pg.addColorStop(1, '#4338ca');
+      ctx.fillStyle = pg; ctx.beginPath(); ctx.arc(80, 80, 80, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = 'rgba(251,191,36,0.25)'; ctx.lineWidth = 1;
+      for (let i = 0; i < 24; i++) {
+        const a = (i*15)*Math.PI/180;
+        ctx.beginPath(); ctx.moveTo(80, 80);
+        for (let r = 0; r <= 80; r += 4)
+          ctx.lineTo(80+Math.cos(a+r*0.025)*r, 80+Math.sin(a+r*0.025)*r);
+        ctx.stroke();
+      }
+      ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 3.5;
+      ctx.beginPath(); ctx.arc(80, 80, 77, 0, Math.PI*2); ctx.stroke();
+      scene.textures.addCanvas('portal_texture', po);
+    }
+
+    // Enemy (shadow peoncito for chasers)
+    if (!scene.textures.exists('enemy')) {
+      const ec = document.createElement('canvas');
+      ec.width = 32; ec.height = 42;
+      const ctx = ec.getContext('2d');
+      const eg = ctx.createLinearGradient(8, 20, 24, 38);
+      eg.addColorStop(0, '#c084fc'); eg.addColorStop(0.5, '#6b21a8'); eg.addColorStop(1, '#1e1b4b');
+      ctx.fillStyle = eg;
+      ctx.beginPath();
+      ctx.moveTo(12, 19); ctx.lineTo(20, 19);
+      ctx.quadraticCurveTo(23, 29, 24, 38); ctx.lineTo(8, 38);
+      ctx.quadraticCurveTo(9, 29, 12, 19);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#1e1b4b'; ctx.fillRect(6, 38, 20, 3);
+      ctx.fillStyle = '#a855f7'; ctx.fillRect(6, 38, 20, 1);
+      const hg = ctx.createRadialGradient(14, 11, 1, 16, 12, 8);
+      hg.addColorStop(0, '#f3e8ff'); hg.addColorStop(0.3, '#d8b4fe');
+      hg.addColorStop(0.8, '#6b21a8'); hg.addColorStop(1, '#1e1b4b');
+      ctx.fillStyle = hg; ctx.beginPath(); ctx.arc(16, 12, 7.5, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(13, 11, 1.5, 0, Math.PI*2); ctx.arc(19, 11, 1.5, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(13, 11, 0.6, 0, Math.PI*2); ctx.arc(19, 11, 0.6, 0, Math.PI*2); ctx.fill();
+      // Mustache
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.moveTo(16, 15);
+      ctx.bezierCurveTo(12, 14, 7, 16, 5, 19);
+      ctx.bezierCurveTo(6, 22, 11, 19, 16, 16.5);
+      ctx.moveTo(16, 15);
+      ctx.bezierCurveTo(20, 14, 25, 16, 27, 19);
+      ctx.bezierCurveTo(26, 22, 21, 19, 16, 16.5);
+      ctx.closePath(); ctx.fill();
+      scene.textures.addCanvas('enemy', ec);
+    }
+
+    // === MARTINA FROM BEHIND (runner sprite) ===
+    const drawMartinaBehind = (frame) => {
+      const c = document.createElement('canvas');
+      c.width = 48; c.height = 64;
+      const ctx = c.getContext('2d');
+
+      // Hair — larger, flows behind
+      ctx.fillStyle = '#3f1d0b';
+      ctx.beginPath();
+      ctx.arc(24, 18, 14, Math.PI, 0);
+      ctx.fill();
+      ctx.fillRect(11, 18, 26, 26);
+      // Ponytail bouncing
+      ctx.beginPath();
+      ctx.moveTo(24, 30);
+      const bounce = frame % 2 === 0 ? 0 : 3;
+      ctx.bezierCurveTo(30, 24, 36, 30-bounce, 34, 38-bounce);
+      ctx.bezierCurveTo(36, 34-bounce, 40, 42, 36, 48);
+      ctx.bezierCurveTo(34, 50, 30, 44, 28, 40);
+      ctx.fill();
+
+      // Polo shirt back
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(14, 30, 20, 12);
+      ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(24, 30); ctx.lineTo(24, 42); ctx.stroke();
+
+      // Blue shorts
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fillRect(14, 42, 10, 10);
+      ctx.fillRect(24, 42, 10, 10);
+
+      // Legs running
+      ctx.fillStyle = '#fed7aa';
+      const legOff = frame === 0 || frame === 2 ? 0 : 2;
+      ctx.fillRect(16-legOff, 52, 4, 8);
+      ctx.fillRect(28+legOff, 52, 4, 8);
+
+      // Sneakers
+      ctx.fillStyle = '#dc2626';
+      ctx.fillRect(15-legOff, 58, 5, 4);
+      ctx.fillRect(27+legOff, 58, 5, 4);
+
+      // Arms pumping
+      ctx.fillStyle = '#ffffff';
+      if (frame === 0) {
+        ctx.fillRect(11, 32, 3, 6);
+        ctx.fillRect(34, 34, 3, 6);
+      } else if (frame === 1) {
+        ctx.fillRect(10, 30, 3, 6);
+        ctx.fillRect(35, 36, 3, 6);
+      } else if (frame === 2) {
+        ctx.fillRect(13, 34, 3, 6);
+        ctx.fillRect(32, 30, 3, 6);
+      }
+      ctx.fillStyle = '#fed7aa';
+      if (frame === 0) {
+        ctx.fillRect(10, 37, 4, 2); ctx.fillRect(34, 39, 4, 2);
+      } else if (frame === 1) {
+        ctx.fillRect(9, 35, 4, 2); ctx.fillRect(35, 41, 4, 2);
+      } else {
+        ctx.fillRect(12, 39, 4, 2); ctx.fillRect(32, 35, 4, 2);
+      }
+
+      return c;
+    };
+
+    if (!scene.textures.exists('runner-martina-0')) {
+      scene.textures.addCanvas('runner-martina-0', drawMartinaBehind(0));
+      scene.textures.addCanvas('runner-martina-1', drawMartinaBehind(1));
+      scene.textures.addCanvas('runner-martina-2', drawMartinaBehind(2));
+      scene.textures.addCanvas('runner-martina-3', drawMartinaBehind(1));
+      scene.anims.create({
+        key: 'runner-run',
+        frames: [{key:'runner-martina-0'},{key:'runner-martina-1'},{key:'runner-martina-2'},{key:'runner-martina-3'}],
+        frameRate: 10, repeat: -1
+      });
+    }
+
+    // === BACKGROUND — Open-Air Castle Bridge with depth ===
+    if (!scene.textures.exists('runner-bg')) {
+      const bg = document.createElement('canvas');
+      bg.width = 800; bg.height = 450;
+      const ctx = bg.getContext('2d');
+
+      // 1. Sky Gradient (magical starry night with warm fuchsia sunset glow at the horizon)
+      const sky = ctx.createLinearGradient(0, 0, 0, 220);
+      sky.addColorStop(0, '#04020a'); // Space black
+      sky.addColorStop(0.3, '#0f0729'); // Midnight blue
+      sky.addColorStop(0.6, '#280c42'); // Indigo/Purple
+      sky.addColorStop(0.85, '#581c77'); // Magenta glow
+      sky.addColorStop(1, '#86198f'); // Bright fuchsia horizon
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, 800, 450);
+
+      // Radial Nebulae
+      const drawNebula = (x, y, r, color1, color2) => {
+        const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+        g.addColorStop(0, color1);
+        g.addColorStop(1, color2);
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fill();
+      };
+      drawNebula(250, 100, 150, 'rgba(219, 39, 119, 0.15)', 'rgba(0,0,0,0)'); // Pink nebula
+      drawNebula(550, 80, 180, 'rgba(79, 70, 229, 0.12)', 'rgba(0,0,0,0)');  // Blue nebula
+      drawNebula(400, 150, 100, 'rgba(253, 186, 116, 0.1)', 'rgba(0,0,0,0)'); // Golden horizon bloom
+
+      // Starry sky
+      for (let i = 0; i < 60; i++) {
+        const sx = Math.random() * 800;
+        const sy = Math.random() * 220;
+        const radius = Math.random() * 1.5 + 0.5;
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.8 + 0.2})`;
+        ctx.beginPath(); ctx.arc(sx, sy, radius, 0, Math.PI * 2); ctx.fill();
         
-        /* Game Over Premium Styling */
-        .mario-gameover-overlay {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(15, 23, 42, 0.85);
-          backdrop-filter: blur(8px);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 9999;
-          animation: fadeIn 0.4s ease-out forwards;
+        if (i % 12 === 0) {
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(sx - 5, sy); ctx.lineTo(sx + 5, sy);
+          ctx.moveTo(sx, sy - 5); ctx.lineTo(sx, sy + 5);
+          ctx.stroke();
         }
-        .mario-gameover-panel {
-          background: rgba(30, 27, 75, 0.9);
-          border: 2px solid rgba(239, 68, 68, 0.55);
-          border-radius: 20px;
-          padding: 30px;
-          text-align: center;
-          max-width: 420px;
-          width: 90%;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(220, 38, 38, 0.25);
-          color: #ffffff;
-          font-family: 'Outfit', 'Inter', sans-serif;
+      }
+
+      // Large Glowing Moon
+      const mx = 650, my = 60, mr = 32;
+      const mg = ctx.createRadialGradient(mx, my, mr * 0.8, mx, my, mr * 2.5);
+      mg.addColorStop(0, 'rgba(254, 240, 138, 0.2)');
+      mg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = mg;
+      ctx.beginPath(); ctx.arc(mx, my, mr*2.5, 0, Math.PI*2); ctx.fill();
+
+      const mgrad = ctx.createLinearGradient(mx - mr, my - mr, mx + mr, my + mr);
+      mgrad.addColorStop(0, '#fffbeb');
+      mgrad.addColorStop(0.5, '#fef08a');
+      mgrad.addColorStop(1, '#facc15');
+      ctx.fillStyle = mgrad;
+      ctx.beginPath(); ctx.arc(mx, my, mr, 0, Math.PI*2); ctx.fill();
+
+      // Moon textures
+      ctx.fillStyle = 'rgba(234, 179, 8, 0.15)';
+      ctx.beginPath(); ctx.arc(mx - 8, my - 6, 6, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(mx + 10, my + 8, 8, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(mx - 12, my + 10, 4, 0, Math.PI*2); ctx.fill();
+
+      // Distant mountain ranges for deep parallax landscape
+      ctx.fillStyle = '#120724';
+      ctx.beginPath();
+      ctx.moveTo(0, 160);
+      ctx.lineTo(0, 130);
+      ctx.quadraticCurveTo(150, 90, 300, 140);
+      ctx.lineTo(400, 150);
+      ctx.quadraticCurveTo(550, 100, 800, 130);
+      ctx.lineTo(800, 160);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#190a33';
+      ctx.beginPath();
+      ctx.moveTo(0, 160);
+      ctx.lineTo(0, 145);
+      ctx.lineTo(100, 130);
+      ctx.lineTo(250, 155);
+      ctx.lineTo(350, 140);
+      ctx.lineTo(450, 150);
+      ctx.lineTo(600, 125);
+      ctx.lineTo(700, 145);
+      ctx.lineTo(800, 140);
+      ctx.lineTo(800, 160);
+      ctx.closePath();
+      ctx.fill();
+
+      // 3. Majestic Castle Silhouette at the Horizon (large and high quality)
+      ctx.fillStyle = '#0a0514'; // Dark shadow base
+      ctx.fillRect(290, 125, 220, 35);
+
+      const stoneGrad = ctx.createLinearGradient(290, 0, 510, 0);
+      stoneGrad.addColorStop(0, '#1a0d36');
+      stoneGrad.addColorStop(0.5, '#2e195e');
+      stoneGrad.addColorStop(1, '#110926');
+      ctx.fillStyle = stoneGrad;
+      ctx.fillRect(310, 80, 30, 45);  // Left tower
+      ctx.fillRect(460, 80, 30, 45);  // Right tower
+      ctx.fillRect(345, 70, 110, 55); // Center keep
+      ctx.fillRect(385, 45, 30, 25);  // Center spire
+
+      const roofGrad = ctx.createLinearGradient(290, 0, 510, 0);
+      roofGrad.addColorStop(0, '#c026d3');
+      roofGrad.addColorStop(1, '#701a75');
+      ctx.fillStyle = roofGrad;
+      // Left conical roof
+      ctx.beginPath();
+      ctx.moveTo(307, 80); ctx.lineTo(325, 45); ctx.lineTo(343, 80); ctx.closePath(); ctx.fill();
+      // Right conical roof
+      ctx.beginPath();
+      ctx.moveTo(457, 80); ctx.lineTo(475, 45); ctx.lineTo(493, 80); ctx.closePath(); ctx.fill();
+      // Central spire roof
+      ctx.beginPath();
+      ctx.moveTo(380, 45); ctx.lineTo(400, 15); ctx.lineTo(420, 45); ctx.closePath(); ctx.fill();
+
+      // Waving gold flags
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillRect(324, 38, 1, 7);
+      ctx.beginPath(); ctx.moveTo(325, 38); ctx.lineTo(332, 40); ctx.lineTo(325, 42); ctx.closePath(); ctx.fill();
+      ctx.fillRect(474, 38, 1, 7);
+      ctx.beginPath(); ctx.moveTo(475, 38); ctx.lineTo(482, 40); ctx.lineTo(475, 42); ctx.closePath(); ctx.fill();
+      ctx.fillRect(399, 8, 1, 9);
+      ctx.beginPath(); ctx.moveTo(400, 8); ctx.lineTo(409, 11); ctx.lineTo(400, 14); ctx.closePath(); ctx.fill();
+
+      // Glowing castle windows & main gate glow
+      ctx.fillStyle = '#67e8f9'; // Cyan window glows
+      ctx.fillRect(320, 95, 10, 15);
+      ctx.fillRect(470, 95, 10, 15);
+      ctx.fillStyle = '#f472b6'; // Rose window glows
+      ctx.fillRect(370, 85, 12, 18);
+      ctx.fillRect(418, 85, 12, 18);
+
+      const gateGlow = ctx.createRadialGradient(400, 160, 2, 400, 160, 30);
+      gateGlow.addColorStop(0, '#fef08a');
+      gateGlow.addColorStop(0.4, '#facc15');
+      gateGlow.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = gateGlow;
+      ctx.beginPath(); ctx.arc(400, 160, 30, Math.PI, 0); ctx.fill();
+
+      // 4. Ground/Road Polygon (wide perspective chess bridge)
+      ctx.fillStyle = '#160d2e'; // Dark road base
+      ctx.beginPath();
+      ctx.moveTo(350, 160);
+      ctx.lineTo(450, 160);
+      ctx.lineTo(750, 450);
+      ctx.lineTo(50, 450);
+      ctx.closePath();
+      ctx.fill();
+
+      // Road perspective lines (grid)
+      ctx.strokeStyle = 'rgba(168, 85, 247, 0.15)'; // Soft purple grid lines
+      ctx.lineWidth = 2;
+      for (let i = 0; i <= 6; i++) {
+        const ratio = i / 6;
+        const rx_horizon = 350 + (450 - 350) * ratio;
+        const rx_bottom = 50 + (750 - 50) * ratio;
+        ctx.beginPath();
+        ctx.moveTo(rx_horizon, 160);
+        ctx.lineTo(rx_bottom, 450);
+        ctx.stroke();
+      }
+      
+      // Horizontal lines in perspective (exponential spacing)
+      for (let i = 0; i <= 15; i++) {
+        const ratio = Math.pow(i / 15, 2.5); // Spaced closer at horizon
+        const ry = 160 + (450 - 160) * ratio;
+        const w_horizon = 450 - 350;
+        const w_bottom = 750 - 50;
+        const w = w_horizon + (w_bottom - w_horizon) * ratio;
+        const rx_left = 400 - w / 2;
+        ctx.beginPath();
+        ctx.moveTo(rx_left, ry);
+        ctx.lineTo(rx_left + w, ry);
+        ctx.stroke();
+      }
+
+      // 5. Side Parapets (Low 3D stone guardrail walls narrowing in perspective)
+      // Left Parapet Wall
+      const leftWallGrad = ctx.createLinearGradient(0, 360, 350, 150);
+      leftWallGrad.addColorStop(0, '#1c1917');
+      leftWallGrad.addColorStop(1, '#292524');
+      ctx.fillStyle = leftWallGrad;
+      ctx.beginPath();
+      ctx.moveTo(350, 160);
+      ctx.lineTo(50, 450);
+      ctx.lineTo(0, 450);
+      ctx.lineTo(0, 320); // Goes off-screen
+      ctx.lineTo(350, 150);
+      ctx.closePath();
+      ctx.fill();
+
+      // Left wall top surface (cap) to give a 3D bevel/thickness
+      ctx.fillStyle = '#44403c';
+      ctx.beginPath();
+      ctx.moveTo(350, 150);
+      ctx.lineTo(0, 320);
+      ctx.lineTo(0, 310);
+      ctx.lineTo(350, 148);
+      ctx.closePath();
+      ctx.fill();
+
+      // Right Parapet Wall
+      const rightWallGrad = ctx.createLinearGradient(800, 320, 450, 150);
+      rightWallGrad.addColorStop(0, '#1c1917');
+      rightWallGrad.addColorStop(1, '#292524');
+      ctx.fillStyle = rightWallGrad;
+      ctx.beginPath();
+      ctx.moveTo(450, 160);
+      ctx.lineTo(750, 450);
+      ctx.lineTo(800, 450);
+      ctx.lineTo(800, 320);
+      ctx.lineTo(450, 150);
+      ctx.closePath();
+      ctx.fill();
+
+      // Right wall top surface (cap)
+      ctx.fillStyle = '#44403c';
+      ctx.beginPath();
+      ctx.moveTo(450, 150);
+      ctx.lineTo(800, 320);
+      ctx.lineTo(800, 310);
+      ctx.lineTo(450, 148);
+      ctx.closePath();
+      ctx.fill();
+
+      // 6. Glowing Torches in Perspective
+      const drawTorch = (tx, ty, size) => {
+        // Torch bracket
+        ctx.fillStyle = '#451a03'; // Dark iron/wood
+        ctx.fillRect(tx - 2 * size, ty, 4 * size, 14 * size);
+        
+        // Torch flame
+        const flameGlow = ctx.createRadialGradient(tx, ty - 4 * size, 1 * size, tx, ty - 4 * size, 40 * size);
+        flameGlow.addColorStop(0, 'rgba(251, 146, 60, 0.8)'); // Bright orange core
+        flameGlow.addColorStop(0.3, 'rgba(239, 68, 68, 0.4)'); // Red outer flame
+        flameGlow.addColorStop(1, 'rgba(239, 68, 68, 0)');
+        ctx.fillStyle = flameGlow;
+        ctx.beginPath(); ctx.arc(tx, ty - 4 * size, 40 * size, 0, Math.PI * 2); ctx.fill();
+        
+        // Inner hot core
+        ctx.fillStyle = '#fef08a'; // Bright yellow center
+        ctx.beginPath(); ctx.arc(tx, ty - 4 * size, 3 * size, 0, Math.PI * 2); ctx.fill();
+      };
+      
+      // Draw 6 torches scaling with depth
+      drawTorch(120, 370, 1.0);  // Close Left
+      drawTorch(680, 370, 1.0);  // Close Right
+      drawTorch(230, 260, 0.65); // Mid Left
+      drawTorch(570, 260, 0.65); // Mid Right
+      drawTorch(310, 195, 0.4);  // Far Left
+      drawTorch(490, 195, 0.4);  // Far Right
+
+      scene.textures.addCanvas('runner-bg', bg);
+    }
+
+    // === OBSTACLE TEXTURES ===
+    if (!scene.textures.exists('runner-rock')) {
+      // Rock
+      const rc = document.createElement('canvas');
+      rc.width = 44; rc.height = 44;
+      const ctx = rc.getContext('2d');
+      const rg = ctx.createLinearGradient(4, 4, 40, 40);
+      rg.addColorStop(0, '#6b5340'); rg.addColorStop(0.5, '#4a3728'); rg.addColorStop(1, '#2d1f14');
+      ctx.fillStyle = rg;
+      ctx.beginPath();
+      ctx.moveTo(8, 36);
+      ctx.bezierCurveTo(2, 24, 6, 10, 16, 6);
+      ctx.bezierCurveTo(26, 2, 36, 10, 38, 22);
+      ctx.bezierCurveTo(40, 28, 36, 36, 30, 40);
+      ctx.bezierCurveTo(22, 44, 12, 40, 8, 36);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.1)';
+      ctx.beginPath(); ctx.arc(18, 18, 12, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = '#1a0f08'; ctx.lineWidth = 2; ctx.stroke();
+      scene.textures.addCanvas('runner-rock', rc);
+
+      // Crystal
+      const cc = document.createElement('canvas');
+      cc.width = 44; cc.height = 44;
+      const cctx = cc.getContext('2d');
+      const cg = cctx.createLinearGradient(4, 4, 40, 40);
+      cg.addColorStop(0, '#c084fc'); cg.addColorStop(0.5, '#7c3aed'); cg.addColorStop(1, '#3b0764');
+      cctx.fillStyle = cg;
+      cctx.beginPath();
+      cctx.moveTo(22, 2); cctx.lineTo(36, 14);
+      cctx.lineTo(42, 28); cctx.lineTo(34, 42);
+      cctx.lineTo(10, 42); cctx.lineTo(2, 28);
+      cctx.lineTo(8, 14); cctx.closePath();
+      cctx.fill();
+      cctx.strokeStyle = '#1a0030'; cctx.lineWidth = 2; cctx.stroke();
+      cctx.fillStyle = 'rgba(255,255,255,0.25)';
+      cctx.beginPath(); cctx.arc(22, 20, 8, 0, Math.PI*2); cctx.fill();
+      // Inner glow lines
+      cctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      cctx.lineWidth = 0.8;
+      cctx.beginPath(); cctx.moveTo(22, 8); cctx.lineTo(22, 36); cctx.stroke();
+      cctx.beginPath(); cctx.moveTo(10, 22); cctx.lineTo(34, 22); cctx.stroke();
+      scene.textures.addCanvas('runner-crystal', cc);
+
+      // Retro Chess Clock obstacle texture
+      const cl = document.createElement('canvas');
+      cl.width = 64; cl.height = 64;
+      const ctx_cl = cl.getContext('2d');
+      // Body (brown wood)
+      ctx_cl.fillStyle = '#78350f';
+      ctx_cl.fillRect(4, 16, 56, 40);
+      ctx_cl.strokeStyle = '#451a03'; ctx_cl.lineWidth = 2;
+      ctx_cl.strokeRect(4, 16, 56, 40);
+      // Dual white dials
+      ctx_cl.fillStyle = '#ffffff';
+      ctx_cl.beginPath(); ctx_cl.arc(20, 36, 11, 0, Math.PI*2); ctx_cl.arc(44, 36, 11, 0, Math.PI*2); ctx_cl.fill();
+      ctx_cl.strokeStyle = '#000000'; ctx_cl.lineWidth = 1.2;
+      ctx_cl.beginPath(); ctx_cl.arc(20, 36, 11, 0, Math.PI*2); ctx_cl.stroke();
+      ctx_cl.beginPath(); ctx_cl.arc(44, 36, 11, 0, Math.PI*2); ctx_cl.stroke();
+      // Hands
+      ctx_cl.beginPath(); ctx_cl.moveTo(20, 36); ctx_cl.lineTo(20, 28); ctx_cl.moveTo(20, 36); ctx_cl.lineTo(25, 36); ctx_cl.stroke();
+      ctx_cl.beginPath(); ctx_cl.moveTo(44, 36); ctx_cl.lineTo(40, 32); ctx_cl.stroke();
+      // Buttons
+      ctx_cl.fillStyle = '#94a3b8';
+      ctx_cl.fillRect(14, 8, 12, 8); // Up button
+      ctx_cl.fillStyle = '#475569';
+      ctx_cl.fillRect(38, 12, 12, 4); // Down button
+      scene.textures.addCanvas('runner-clock', cl);
+
+      // Majestic Gothic Chess Rook Pillar Column
+      const pc = document.createElement('canvas');
+      pc.width = 48; pc.height = 120;
+      const pctx = pc.getContext('2d');
+      
+      // Column Base/Pedestal
+      const baseGrad = pctx.createLinearGradient(0, 100, 48, 100);
+      baseGrad.addColorStop(0, '#1e1b4b');
+      baseGrad.addColorStop(0.5, '#4c1d95');
+      baseGrad.addColorStop(1, '#090514');
+      pctx.fillStyle = baseGrad;
+      pctx.fillRect(4, 100, 40, 20); // base block
+      pctx.fillRect(8, 90, 32, 10);  // base molding
+      
+      // Column Shaft (tapering slightly towards the top)
+      const shaftGrad = pctx.createLinearGradient(0, 40, 48, 40);
+      shaftGrad.addColorStop(0, '#2e1065');
+      shaftGrad.addColorStop(0.5, '#6d28d9');
+      shaftGrad.addColorStop(1, '#1e1b4b');
+      pctx.fillStyle = shaftGrad;
+      pctx.beginPath();
+      pctx.moveTo(12, 30);
+      pctx.lineTo(36, 30);
+      pctx.lineTo(38, 90);
+      pctx.lineTo(10, 90);
+      pctx.closePath();
+      pctx.fill();
+      
+      // Column Capital & Rook Top (Crenellated Battlements)
+      pctx.fillStyle = baseGrad;
+      pctx.fillRect(8, 15, 32, 15); // Rook platform
+      // Crenellations (3 battlements)
+      pctx.fillRect(8, 5, 8, 10);
+      pctx.fillRect(20, 5, 8, 10);
+      pctx.fillRect(32, 5, 8, 10);
+      
+      // Golden Bands/Details
+      pctx.fillStyle = '#eab308'; // Gold accent
+      pctx.fillRect(10, 30, 28, 3); // top band
+      pctx.fillRect(10, 87, 28, 3); // bottom band
+      
+      // Glowing Fire in the Rook Top center
+      const fireGlow = pctx.createRadialGradient(24, 8, 1, 24, 8, 12);
+      fireGlow.addColorStop(0, '#fef08a');
+      fireGlow.addColorStop(0.4, '#f97316');
+      fireGlow.addColorStop(1, 'rgba(0,0,0,0)');
+      pctx.fillStyle = fireGlow;
+      pctx.beginPath(); pctx.arc(24, 8, 12, 0, Math.PI * 2); pctx.fill();
+      
+      // Highlight/Strokelines for 3D stone look
+      pctx.strokeStyle = '#c084fc';
+      pctx.lineWidth = 1;
+      pctx.strokeRect(4, 100, 40, 20);
+      pctx.strokeRect(8, 15, 32, 15);
+      pctx.beginPath();
+      pctx.moveTo(12, 30); pctx.lineTo(10, 90);
+      pctx.moveTo(36, 30); pctx.lineTo(38, 90);
+      pctx.stroke();
+
+      scene.textures.addCanvas('runner-pillar', pc);
+    }
+
+    // === SETUP SCENE ===
+
+    // Background
+    scene.add.image(400, 225, 'runner-bg').setDepth(-10);
+
+    // Scrolling ground tiles with perspective
+    scene.runnerPathTiles = [];
+    const laneX_player = [240, 400, 560];
+    for (let row = 0; row < 12; row++) {
+      for (let l = 0; l < 3; l++) {
+        // Create a rectangle representing the road tile
+        const tile = scene.add.rectangle(400, 225, 120, 30, 0xfbbf24, 0.08);
+        tile.setStrokeStyle(1.5, 0xfbbf24, 0.25);
+        tile.setDepth(-5);
+        tile.baseY = row * (800 / 12); // space them out along the 800-unit loop
+        tile.lane = l;
+        scene.runnerPathTiles.push(tile);
+      }
+    }
+
+    // Martina — ZOOMED IN, larger, center-bottom (placed at y = 360)
+    scene.runnerPlayer = scene.physics.add.sprite(400, 360, 'runner-martina-0');
+    scene.runnerPlayer.setDisplaySize(64, 84); // bigger!
+    scene.runnerPlayer.body.setSize(36, 68);
+    scene.runnerPlayer.body.setOffset(6, 4);
+    scene.runnerPlayer.body.allowGravity = false;
+    scene.runnerPlayer.play('runner-run');
+    scene.runnerPlayer.invincibility = 0;
+    scene.runnerPlayer.setDepth(10);
+
+    // Dynamic shadow under player's feet
+    scene.runnerPlayerShadow = scene.add.ellipse(400, 360, 48, 12, 0x000000, 0.35);
+    scene.runnerPlayerShadow.setDepth(9);
+
+    // Runner state
+    scene.runnerDistance = 0;
+    scene.runnerSpeed = levelDef.baseScrollSpeed || 1.8;
+    scene.runnerTargetLane = 1.0;
+    scene.runnerCurrentLane = 1.0;
+
+    // Obstacles
+    scene.runnerObstacles = scene.physics.add.group({allowGravity:false,immovable:true});
+    levelDef.obstacles.forEach(o => {
+      const tex = o.type==='crystal'?'runner-crystal':(o.type==='giant_clock'?'runner-clock':'runner-rock');
+      const obs = scene.physics.add.sprite(400, 225, tex);
+      obs.setDisplaySize(40, 40);
+      obs.body.setSize(36, 36);
+      obs.body.allowGravity = false;
+      obs.body.setImmovable(true);
+      obs.runnerY = o.y; obs.lane = o.lane; obs.setDepth(5);
+      obs.used = false;
+      obs.setVisible(false);
+      obs.obstacleType = o.type; // Save type for custom behavior
+      scene.runnerObstacles.add(obs);
+    });
+
+    // Coins (need physics bodies for overlap)
+    scene.runnerCoins = scene.physics.add.group({allowGravity:false,immovable:true});
+    levelDef.coinsData.forEach(c => {
+      const coin = scene.physics.add.sprite(400, 225, 'coin_0');
+      coin.play('coin-spin');
+      coin.setDisplaySize(22, 22);
+      coin.body.setSize(22, 22);
+      coin.body.allowGravity = false;
+      coin.body.setImmovable(true);
+      coin.setDepth(5);
+      coin.runnerY = c.y;
+      coin.runnerX = c.x;
+      coin.lane = (c.x < 300) ? 0 : (c.x > 500) ? 2 : 1;
+      coin.collected = false;
+      coin.setVisible(false);
+      scene.runnerCoins.add(coin);
+    });
+
+    // Crowns (need physics bodies for overlap)
+    scene.runnerCrowns = scene.physics.add.group({allowGravity:false,immovable:true});
+    levelDef.crownsData.forEach(c => {
+      const crown = scene.physics.add.sprite(400, 225, 'crown_gold');
+      crown.setDisplaySize(26, 26);
+      crown.body.setSize(26, 26);
+      crown.body.allowGravity = false;
+      crown.body.setImmovable(true);
+      crown.setDepth(5);
+      crown.runnerY = c.y;
+      crown.runnerX = c.x;
+      crown.lane = (c.x < 300) ? 0 : (c.x > 500) ? 2 : 1;
+      crown.collected = false;
+      crown.setVisible(false);
+      scene.runnerCrowns.add(crown);
+    });
+
+    // Chasers (enemy shadow peoncitos — off-screen until triggered)
+    scene.runnerChasers = [];
+    (levelDef.chasers||[]).forEach(ch => {
+      const chaser = scene.physics.add.sprite(400, 460, 'enemy');
+      chaser.setDisplaySize(48, 63);
+      chaser.setDepth(9);
+      chaser.triggerDistance = ch.y;
+      chaser.chaserSpeed = ch.speed || 2.0;
+      chaser.worldY = ch.y - 300;
+      chaser.active = false;
+      chaser.lane = 1;
+      chaser.currentLane = 1;
+      chaser.body.allowGravity = false;
+      chaser.setVisible(false);
+      scene.runnerChasers.push(chaser);
+    });
+
+    // Bind Keyboard runner inputs (Arrows + WASD + Space/Up/W for jumping)
+    scene.runnerKeys = scene.input.keyboard.addKeys({
+      left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+      right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+      up: Phaser.Input.Keyboard.KeyCodes.UP,
+      space: Phaser.Input.Keyboard.KeyCodes.SPACE,
+      a: Phaser.Input.Keyboard.KeyCodes.A,
+      d: Phaser.Input.Keyboard.KeyCodes.D,
+      w: Phaser.Input.Keyboard.KeyCodes.W
+    });
+    scene.runnerKeys.leftWasDown = false;
+    scene.runnerKeys.rightWasDown = false;
+    scene.runnerJumping = false;
+    scene.runnerJumpTime = 0;
+
+    // Obstacle collision
+    scene.physics.add.overlap(scene.runnerPlayer, scene.runnerObstacles, (pl, obs) => {
+      if (pl.invincibility>0||obs.used) return;
+      
+      // If player is jumping, she leaps over the obstacle safely!
+      if (scene.runnerJumping) {
+        return; // Safe jump!
+      }
+
+      obs.used = true;
+      self.lives--; pl.invincibility = 60;
+      pl.setTint(0xff4444);
+      scene.time.delayedCall(300, () => {if(pl.active)pl.clearTint();});
+      self.synthesizeSound('damage');
+      document.getElementById('hud-lives').textContent=`❤️ x${self.lives}`;
+      scene.tweens.add({targets:obs,alpha:0,scale:0.3,duration:300,onComplete:()=>obs.destroy()});
+      scene.cameras.main.shake(100, 0.005);
+      if (self.lives<=0){self.stopMusic();self.gameOver();}
+    });
+
+    // Coin collection
+    scene.physics.add.overlap(scene.runnerPlayer, scene.runnerCoins, (pl, coin) => {
+      if (coin.collected) return;
+      coin.collected = true;
+      self.coins++; self.score += 100;
+      self.synthesizeSound('coin');
+      document.getElementById('hud-coins').textContent=`🪙 x${self.coins.toString().padStart(2,'0')}`;
+      document.getElementById('hud-score').textContent=self.score.toString().padStart(5,'0');
+      scene.tweens.add({targets:coin,alpha:0,scale:0.1,angle:360,duration:300,onComplete:()=>coin.destroy()});
+    });
+
+    // Crown collection
+    scene.physics.add.overlap(scene.runnerPlayer, scene.runnerCrowns, (pl, crown) => {
+      if (crown.collected) return;
+      crown.collected = true;
+      self.score += 1000;
+      self.synthesizeSound('victory');
+      document.getElementById('hud-score').textContent=self.score.toString().padStart(5,'0');
+      for (let i=0;i<16;i++){
+        const a=(i/16)*Math.PI*2;
+        const sp=scene.add.circle(crown.x,crown.y,2,0xfacc15,0.8);
+        scene.tweens.add({targets:sp,x:crown.x+Math.cos(a)*40,y:crown.y+Math.sin(a)*40,alpha:0,scale:0.1,duration:400,onComplete:()=>sp.destroy()});
+      }
+      scene.tweens.add({targets:crown,alpha:0,scale:2.5,angle:360,duration:400,onComplete:()=>crown.destroy()});
+    });
+
+    // Input
+    scene.keysWASD = {
+      left: scene.input.keyboard.addKey('LEFT'),
+      right: scene.input.keyboard.addKey('RIGHT')
+    };
+
+    // Portal (hidden until close)
+    scene.runnerPortal = scene.add.sprite(400, -60, 'portal_texture');
+    scene.runnerPortal.setDisplaySize(80, 80);
+    scene.runnerPortal.setDepth(4);
+    scene.runnerPortal.visible = false;
+
+    // Side Pillars (Towers on the sides of the road for deep 3D castle hallway effect)
+    scene.runnerPillars = scene.add.group();
+    for (let y = 0; y < 6000; y += 300) {
+      // Left side pillar
+      const lPillar = scene.add.sprite(400, 225, 'runner-pillar');
+      lPillar.worldY = y;
+      lPillar.baseX = 80;
+      lPillar.setDepth(6);
+      scene.runnerPillars.add(lPillar);
+
+      // Right side pillar
+      const rPillar = scene.add.sprite(400, 225, 'runner-pillar');
+      rPillar.worldY = y;
+      rPillar.baseX = 720;
+      rPillar.setDepth(6);
+      scene.runnerPillars.add(rPillar);
+    }
+
+    self.startMusic();
+  }
+
+  updateRunner(scene, levelDef) {
+    const self = this;
+    const laneX_player = [240, 400, 560];
+    const horizonY = 160;
+    const playerY = 360;
+    const roadBottomY = 450;
+    const maxD = 900;
+
+    // Auto-scroll — speed increases slightly as we progress
+    scene.runnerSpeed = levelDef.baseScrollSpeed + (scene.runnerDistance / levelDef.runDistance) * 0.6;
+    scene.runnerDistance += scene.runnerSpeed;
+
+    // HUD progress percentage
+    const pct = Math.min(100, Math.round((scene.runnerDistance / levelDef.runDistance) * 100));
+    document.getElementById('hud-score').textContent = `${pct}%`.padStart(5, ' ');
+
+    // Scroll ground tiles with perspective!
+    scene.runnerPathTiles.forEach(tile => {
+      // The tile's world Y position wraps around in an 800 unit loop
+      const worldY = (tile.baseY - scene.runnerDistance) % 800;
+      const dy = (worldY + 800) % 800; // Map to positive range [0, 800]
+      
+      const z = dy / 800;
+      const p = Math.pow(1 - z, 2); // 1 at player, 0 at horizon
+      
+      tile.y = horizonY + (roadBottomY - horizonY) * p;
+      tile.x = 400 + (laneX_player[tile.lane] - 400) * p;
+      tile.setScale(p * 1.5, p * 0.8);
+      tile.setAlpha(p * 0.5);
+    });
+
+    // Move side pillars with perspective
+    scene.runnerPillars.getChildren().forEach(pillar => {
+      const dy = pillar.worldY - scene.runnerDistance;
+      
+      // Wrap around or hide if out of bounds
+      if (dy < -150) {
+        pillar.worldY += 6000; // loop back to the end of Stage 5 length
+        return;
+      }
+      
+      const onScreen = dy >= 0 && dy <= maxD;
+      pillar.setVisible(onScreen);
+      
+      if (onScreen) {
+        const z = dy / maxD;
+        const p = Math.pow(1 - z, 2.5);
+        pillar.x = 400 + (pillar.baseX - 400) * p;
+        pillar.y = horizonY + (roadBottomY - horizonY) * p;
+        pillar.setScale(p * 2.5); // Starts tiny and gets huge!
+        pillar.setAlpha(p * 0.85);
+        pillar.setDepth(6);
+      }
+    });
+
+    // Player lane switching (discrete lane changes on key press)
+    const leftDown = (scene.runnerKeys.left.isDown || scene.runnerKeys.a.isDown || self.touchInputs.left);
+    const rightDown = (scene.runnerKeys.right.isDown || scene.runnerKeys.d.isDown || self.touchInputs.right);
+
+    if (leftDown && !scene.runnerKeys.leftWasDown) {
+      scene.runnerTargetLane = Math.max(0, scene.runnerTargetLane - 1);
+    }
+    if (rightDown && !scene.runnerKeys.rightWasDown) {
+      scene.runnerTargetLane = Math.min(2, scene.runnerTargetLane + 1);
+    }
+    scene.runnerKeys.leftWasDown = leftDown;
+    scene.runnerKeys.rightWasDown = rightDown;
+
+    scene.runnerCurrentLane += (scene.runnerTargetLane - scene.runnerCurrentLane) * 0.15;
+    
+    // Project Martina's X target (player is at playerY = 360, p = 1)
+    scene.runnerPlayer.x += (laneX_player[Math.round(scene.runnerCurrentLane)] - scene.runnerPlayer.x) * 0.25;
+
+    // Player jump mechanic!
+    const jumpPressed = (scene.runnerKeys.up.isDown || scene.runnerKeys.w.isDown || scene.runnerKeys.space.isDown || self.touchInputs.jump);
+    if (jumpPressed && !scene.runnerJumping) {
+      scene.runnerJumping = true;
+      scene.runnerJumpTime = 70; // 70 frames (~1.16s) for longer/higher float
+      self.synthesizeSound('jump');
+    }
+
+    let jumpYOffset = 0;
+    if (scene.runnerJumping) {
+      scene.runnerJumpTime--;
+      const progress = (70 - scene.runnerJumpTime) / 70;
+      jumpYOffset = Math.sin(progress * Math.PI) * 180; // Peak height of 180px
+      
+      // Stop running animation and freeze frame on jump
+      scene.runnerPlayer.stop();
+      scene.runnerPlayer.setTexture('runner-martina-0');
+      
+      if (scene.runnerJumpTime <= 0) {
+        scene.runnerJumping = false;
+        scene.runnerPlayer.play('runner-run');
+      }
+    }
+    scene.runnerPlayer.y = playerY - jumpYOffset;
+
+    // Update dynamic player shadow
+    if (scene.runnerPlayerShadow) {
+      scene.runnerPlayerShadow.x = scene.runnerPlayer.x;
+      const shadowScale = 1 - (jumpYOffset / 180) * 0.5;
+      scene.runnerPlayerShadow.setScale(shadowScale);
+      scene.runnerPlayerShadow.setAlpha(0.35 * shadowScale);
+    }
+
+    // Invincibility flash timer
+    if (scene.runnerPlayer.invincibility > 0) {
+      scene.runnerPlayer.invincibility--;
+      scene.runnerPlayer.setAlpha(Math.sin(scene.runnerPlayer.invincibility * 0.4) > 0 ? 0.4 : 1.0);
+    } else {
+      scene.runnerPlayer.setAlpha(1.0);
+    }
+
+    // Move obstacles — project and scale them
+    scene.runnerObstacles.getChildren().forEach(obs => {
+      if (obs.used) return;
+      const dy = obs.runnerY - scene.runnerDistance;
+
+      // Crucial fix: as soon as the obstacle passes the player (dy < 0), disable its physics body
+      // to prevent phantom/invisible collisions when landing.
+      if (dy < 0) {
+        obs.used = true;
+        obs.setVisible(false);
+        obs.body.reset(-999, -999);
+        return;
+      }
+
+      const onScreen = dy >= 0 && dy <= maxD;
+      obs.setVisible(onScreen);
+
+      if (onScreen) {
+        const z = dy / maxD;
+        const p = Math.pow(1 - z, 2.5);
+        
+        obs.x = 400 + (laneX_player[obs.lane] - 400) * p;
+        obs.y = horizonY + (playerY - horizonY) * p;
+        obs.setDepth(8 - Math.round(z * 4));
+
+        // Custom behavior for the giant retro chess clock obstacle!
+        if (obs.obstacleType === 'giant_clock') {
+          obs.setScale(p * 3.5); // Much bigger!
+          obs.body.reset(obs.x, obs.y);
+          obs.body.setSize(55, 45); // Larger physics footprint
+
+          // Trigger E = mc2 shout and camera shake when close
+          if (!obs.shouted && dy < 450) {
+            obs.shouted = true;
+            self.synthesizeSound('damage'); // Warning alert sound
+            
+            // Comic/dream shout bubble
+            const shoutText = scene.add.text(obs.x, obs.y - 70, '¡E = mc²!', {
+              fontFamily: "'Outfit',sans-serif", fontSize: '24px', fontStyle: 'bold',
+              fill: '#ef4444', stroke: '#ffffff', strokeThickness: 5
+            }).setOrigin(0.5).setDepth(15);
+            
+            scene.tweens.add({
+              targets: shoutText,
+              y: shoutText.y - 60,
+              alpha: 0,
+              duration: 1500,
+              onComplete: () => shoutText.destroy()
+            });
+
+            // Minor rumble of the screen as the giant clock rolls down
+            scene.cameras.main.shake(200, 0.003);
+          }
+        } else {
+          obs.setScale(p * 1.5);
+          obs.body.reset(obs.x, obs.y);
         }
-        .mario-gameover-skull {
-          font-size: 50px;
-          margin-bottom: 10px;
-          animation: wobble-head 2.5s infinite ease-in-out;
-        }
-        .mario-gameover-panel h2 {
-          font-size: 26px;
-          color: #ef4444;
-          margin: 10px 0;
-          font-weight: 800;
-          text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
-        }
-        .mario-gameover-msg {
-          font-size: 13px;
-          color: #cbd5e1;
-          line-height: 1.5;
-          margin-bottom: 20px;
-        }
-        .mario-gameover-stats {
-          display: flex;
-          justify-content: space-around;
-          background: rgba(15, 23, 42, 0.5);
-          border-radius: 12px;
-          padding: 15px 10px;
-          margin-bottom: 25px;
-          border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .mario-gameover-buttons {
-          display: flex;
-          gap: 15px;
-        }
-        @keyframes wobble-head {
-          0%, 100% { transform: rotate(0) translateY(0); }
-          25% { transform: rotate(-5deg) translateY(-2px); }
-          75% { transform: rotate(5deg) translateY(-2px); }
+      }
+    });
+
+    // Move coins — project and scale them
+    scene.runnerCoins.getChildren().forEach(coin => {
+      if (coin.collected) return;
+      const dy = coin.runnerY - scene.runnerDistance;
+
+      if (dy < 0) {
+        coin.collected = true;
+        coin.setVisible(false);
+        coin.body.reset(-999, -999);
+        return;
+      }
+
+      const onScreen = dy >= 0 && dy <= maxD;
+      coin.setVisible(onScreen);
+
+      if (onScreen) {
+        const z = dy / maxD;
+        const p = Math.pow(1 - z, 2.5);
+        
+        coin.x = 400 + (laneX_player[coin.lane] - 400) * p;
+        coin.y = horizonY + (playerY - horizonY) * p;
+        coin.setScale(p * 1.2);
+        coin.setDepth(8 - Math.round(z * 4));
+        coin.body.reset(coin.x, coin.y);
+      }
+    });
+
+    // Move crowns
+    scene.runnerCrowns.getChildren().forEach(crown => {
+      if (crown.collected) return;
+      const dy = crown.runnerY - scene.runnerDistance;
+
+      if (dy < 0) {
+        crown.collected = true;
+        crown.setVisible(false);
+        crown.body.reset(-999, -999);
+        return;
+      }
+
+      const onScreen = dy >= 0 && dy <= maxD;
+      crown.setVisible(onScreen);
+
+      if (onScreen) {
+        const z = dy / maxD;
+        const p = Math.pow(1 - z, 2.5);
+        
+        crown.x = 400 + (laneX_player[crown.lane] - 400) * p;
+        crown.y = horizonY + (playerY - horizonY) * p;
+        crown.setScale(p * 1.3);
+        crown.setDepth(8 - Math.round(z * 4));
+        crown.body.reset(crown.x, crown.y);
+      }
+    });
+
+    // Update chasers (shadow pawns)
+    scene.runnerChasers.forEach(chaser => {
+      if (!chaser.active && scene.runnerDistance >= chaser.triggerDistance) {
+        chaser.active = true;
+        chaser.worldY = scene.runnerDistance - 300; // Place 300 units behind player
+        chaser.currentLane = scene.runnerCurrentLane;
+      }
+
+      if (chaser.active) {
+        chaser.worldY += scene.runnerSpeed * chaser.chaserSpeed;
+        const dy = chaser.worldY - scene.runnerDistance; // Negative (behind)
+
+        if (dy >= 0) {
+          // Passed player
+          const laneDiff = Math.abs(chaser.currentLane - scene.runnerCurrentLane);
+          if (laneDiff < 0.6 && scene.runnerPlayer.invincibility === 0) {
+            self.lives--;
+            scene.runnerPlayer.invincibility = 90;
+            scene.runnerPlayer.setTint(0xff4444);
+            scene.time.delayedCall(300, () => { if (scene.runnerPlayer.active) scene.runnerPlayer.clearTint(); });
+            self.synthesizeSound('damage');
+            document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
+            if (self.lives <= 0) { self.stopMusic(); self.gameOver(); return; }
+          }
+          if (dy > 100) {
+            chaser.active = false;
+            chaser.setVisible(false);
+          }
         }
 
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
+        if (chaser.active) {
+          chaser.setVisible(true);
+
+          if (dy < 0) {
+            // Behind player
+            const z = -dy / 300; // 1 to 0
+            const p = 1.0 - Math.min(1.0, z); // 0 to 1
+            const screenY = playerY + (roadBottomY - playerY) * (1.0 - p);
+            
+            // Follow player lane
+            chaser.currentLane += (scene.runnerCurrentLane - chaser.currentLane) * 0.05;
+            
+            const scale = 1.0 + (1.0 - p) * 0.8;
+            const screenX = 400 + (laneX_player[Math.round(chaser.currentLane)] - 400) * scale;
+
+            chaser.x = screenX;
+            chaser.y = screenY;
+            chaser.setScale(scale);
+            chaser.setDepth(11);
+          } else {
+            // Ahead of player
+            const z = dy / maxD;
+            const p = Math.pow(1 - z, 2.5);
+            const screenY = horizonY + (playerY - horizonY) * p;
+            const screenX = 400 + (laneX_player[Math.round(chaser.currentLane)] - 400) * p;
+
+            chaser.x = screenX;
+            chaser.y = screenY;
+            chaser.setScale(p);
+            chaser.setDepth(8);
+          }
+
+          chaser.body.reset(chaser.x, chaser.y);
         }
-        @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
+      }
+    });
+
+    // Goal detection and victory screen
+    if (scene.runnerDistance >= levelDef.runDistance) {
+      if (!scene.runnerFinished) {
+        scene.runnerFinished = true;
+        self.completeLevel();
+        const vt = scene.add.text(400, 200, '¡CORONACIÓN!\nPeoncito ha llegado', {
+          fontFamily: "'Outfit',sans-serif", fontSize: '26px', fontStyle: 'bold',
+          fill: '#fbbf24', stroke: '#0d0620', strokeThickness: 6, align: 'center'
+        }).setOrigin(0.5).setDepth(20);
+
+        for (let i = 0; i < 35; i++) {
+          scene.time.delayedCall(i * 40, () => {
+            if (!scene.runnerPlayer.active) return;
+            const a = i * 0.3, r = 25 - i * 0.2;
+            scene.add.circle(scene.runnerPlayer.x + Math.cos(a) * Math.max(3, r),
+              scene.runnerPlayer.y + Math.sin(a) * Math.max(3, r), Math.random() * 2 + 1.5, 0xfbbf24, 0.9)
+              .setDepth(20);
+          });
         }
 
-        /* Progress, trophies & stats styles now in games.css */
-      `;
-      document.head.appendChild(styles);
+        scene.tweens.add({
+          targets: scene.runnerPlayer, angle: 720, scaleX: 0.05, scaleY: 0.05, alpha: 0,
+          duration: 2000, ease: 'Quad.easeOut',
+          onComplete: () => { vt.destroy(); self.showVictoryScreen(true); }
+        });
+      }
+      return;
+    }
+
+    // Portal approaching
+    if (scene.runnerDistance > levelDef.runDistance - 900) {
+      scene.runnerPortal.setVisible(true);
+      const dy = levelDef.runDistance - scene.runnerDistance;
+      const z = Math.max(0, dy) / 900;
+      const p = Math.pow(1 - z, 2.5);
+      
+      scene.runnerPortal.y = horizonY + (playerY - horizonY) * p;
+      scene.runnerPortal.x = 400;
+      scene.runnerPortal.setScale(p * 2.0);
     }
   }
 
@@ -548,6 +1519,12 @@ class MarioGame {
         },
         create: function() {
           const scene = this;
+          
+          // Runner game mode — completely different setup
+          if (levelDef.gameMode === 'runner') {
+            self.setupRunner(scene, levelDef);
+            return;
+          }
           
           // Generate a smooth particle sparkle texture — dual color variant for variety
           const sparkleCanvas = document.createElement('canvas');
@@ -1536,6 +2513,90 @@ class MarioGame {
                 bgCtx.stroke();
               }
               
+            } else if (biome === 'castle') {
+              // --- CASTLE BACKGROUND: Golden coronation realm ---
+              const cstGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
+              cstGrad.addColorStop(0, '#0d0620');
+              cstGrad.addColorStop(0.25, '#1a0a35');
+              cstGrad.addColorStop(0.5, '#2d1050');
+              cstGrad.addColorStop(0.7, '#4a2068');
+              cstGrad.addColorStop(0.85, '#6b3080');
+              cstGrad.addColorStop(1, '#1a0a2e');
+              bgCtx.fillStyle = cstGrad;
+              bgCtx.fillRect(0, 0, 800, 450);
+              // Golden ambient glow from above
+              const cstGlow = bgCtx.createRadialGradient(400, 60, 10, 400, 200, 450);
+              cstGlow.addColorStop(0, 'rgba(251,191,36,0.08)');
+              cstGlow.addColorStop(0.5, 'rgba(217,119,6,0.04)');
+              cstGlow.addColorStop(1, 'transparent');
+              bgCtx.fillStyle = cstGlow;
+              bgCtx.fillRect(0, 0, 800, 450);
+              // Distant castle spires silhouettes
+              const drawSpire = (cx, baseY, h, w, alpha) => {
+                bgCtx.save();
+                bgCtx.globalAlpha = alpha;
+                bgCtx.fillStyle = '#1a0a30';
+                bgCtx.beginPath();
+                bgCtx.moveTo(cx - w/2, baseY);
+                bgCtx.lineTo(cx, baseY - h);
+                bgCtx.lineTo(cx + w/2, baseY);
+                bgCtx.closePath();
+                bgCtx.fill();
+                bgCtx.strokeStyle = 'rgba(180,130,50,0.3)';
+                bgCtx.lineWidth = 0.5;
+                bgCtx.stroke();
+                // Flag on top
+                bgCtx.fillStyle = 'rgba(251,191,36,0.4)';
+                bgCtx.fillRect(cx - 0.5, baseY - h - 4, 1, 4);
+                bgCtx.beginPath();
+                bgCtx.moveTo(cx + 0.5, baseY - h - 3);
+                bgCtx.lineTo(cx + 6, baseY - h);
+                bgCtx.lineTo(cx + 0.5, baseY - h + 2);
+                bgCtx.closePath();
+                bgCtx.fill();
+                bgCtx.restore();
+              };
+              drawSpire(80, 280, 160, 24, 0.5);
+              drawSpire(180, 280, 200, 18, 0.4);
+              drawSpire(260, 280, 140, 22, 0.45);
+              drawSpire(380, 280, 250, 30, 0.35);
+              drawSpire(480, 280, 180, 20, 0.4);
+              drawSpire(580, 280, 220, 26, 0.45);
+              drawSpire(700, 280, 170, 22, 0.38);
+              // Warm golden clouds
+              const drawGoldCloud = (cx, cy, s, alpha) => {
+                bgCtx.save();
+                bgCtx.globalAlpha = alpha;
+                bgCtx.fillStyle = 'rgba(251,191,36,0.12)';
+                bgCtx.beginPath();
+                bgCtx.arc(cx, cy, s*14, 0, Math.PI*2); bgCtx.fill();
+                bgCtx.beginPath();
+                bgCtx.arc(cx+s*16, cy-s*4, s*12, 0, Math.PI*2); bgCtx.fill();
+                bgCtx.beginPath();
+                bgCtx.arc(cx+s*28, cy, s*15, 0, Math.PI*2); bgCtx.fill();
+                bgCtx.restore();
+              };
+              drawGoldCloud(50, 80, 1.0, 0.3);
+              drawGoldCloud(300, 55, 1.2, 0.25);
+              drawGoldCloud(550, 90, 0.9, 0.28);
+              drawGoldCloud(700, 45, 0.8, 0.22);
+              // Stars
+              for (let i = 0; i < 50; i++) {
+                const sx = Math.random() * 800, sy = Math.random() * 250;
+                if (sy > 200 && Math.random() < 0.6) continue;
+                bgCtx.fillStyle = `rgba(255,255,255,${Math.random()*0.4+0.1})`;
+                bgCtx.beginPath();
+                bgCtx.arc(sx, sy, Math.random()*1.2+0.3, 0, Math.PI*2);
+                bgCtx.fill();
+              }
+              // Golden scattered highlights
+              for (let i = 0; i < 15; i++) {
+                const gx = Math.random() * 800, gy = Math.random() * 280;
+                bgCtx.fillStyle = `rgba(251,191,36,${Math.random()*0.15+0.05})`;
+                bgCtx.beginPath();
+                bgCtx.arc(gx, gy, 1.5, 0, Math.PI*2);
+                bgCtx.fill();
+              }
             } else {
               // --- GRASS BACKGROUND: Magical realm dreamscape ---
             const skyGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
@@ -1830,6 +2891,57 @@ class MarioGame {
               midCtx.fillStyle = 'rgba(20,10,5,0.3)';
               midCtx.fillRect(575, 310, 30, 40);
               
+            } else if (biome === 'castle') {
+              // Castle midground — golden columns and archways
+              const drawColumn = (cx, baseY, w, h, alpha) => {
+                midCtx.save();
+                midCtx.globalAlpha = alpha;
+                const colGrad = midCtx.createLinearGradient(cx, baseY-h, cx, baseY);
+                colGrad.addColorStop(0, 'rgba(180, 130, 50, 0.5)');
+                colGrad.addColorStop(0.5, 'rgba(140, 90, 30, 0.4)');
+                colGrad.addColorStop(1, 'rgba(100, 60, 20, 0.25)');
+                midCtx.fillStyle = colGrad;
+                midCtx.fillRect(cx - w/2, baseY - h, w, h);
+                // Capital (top ornament)
+                midCtx.fillStyle = 'rgba(200, 150, 60, 0.5)';
+                midCtx.fillRect(cx - w/2 - 3, baseY - h - 6, w + 6, 6);
+                midCtx.fillRect(cx - w/2 - 1, baseY - h - 8, w + 2, 2);
+                // Base
+                midCtx.fillStyle = 'rgba(160, 110, 40, 0.45)';
+                midCtx.fillRect(cx - w/2 - 4, baseY - 4, w + 8, 4);
+                midCtx.restore();
+              };
+              drawColumn(80, 380, 20, 140, 0.45);
+              drawColumn(200, 380, 16, 160, 0.38);
+              drawColumn(340, 380, 22, 130, 0.42);
+              drawColumn(500, 380, 18, 150, 0.4);
+              drawColumn(640, 380, 20, 135, 0.35);
+              drawColumn(760, 380, 16, 145, 0.38);
+              // Golden archways connecting columns
+              const drawArch = (x1, x2, topY, alpha) => {
+                midCtx.save();
+                midCtx.globalAlpha = alpha;
+                midCtx.strokeStyle = 'rgba(200, 150, 50, 0.3)';
+                midCtx.lineWidth = 2;
+                midCtx.beginPath();
+                const cx = (x1 + x2) / 2;
+                midCtx.moveTo(x1, topY);
+                midCtx.quadraticCurveTo(cx, topY - 40, x2, topY);
+                midCtx.stroke();
+                midCtx.restore();
+              };
+              drawArch(80, 200, 240, 0.25);
+              drawArch(200, 340, 220, 0.2);
+              drawArch(340, 500, 250, 0.22);
+              drawArch(500, 640, 230, 0.18);
+              // Floating golden particles
+              for (let i = 0; i < 20; i++) {
+                const px = Math.random() * 800, py = 100 + Math.random() * 260;
+                midCtx.fillStyle = `rgba(251,191,36,${Math.random()*0.2+0.05})`;
+                midCtx.beginPath();
+                midCtx.arc(px, py, Math.random()*2+0.5, 0, Math.PI*2);
+                midCtx.fill();
+              }
             } else {
             const drawIsland = (x, y, w, h, underH) => {
               // Island top surface with checkered pattern
@@ -2606,6 +3718,24 @@ class MarioGame {
             ambEmitter.setDepth(0);
             ambEmitter.setScrollFactor(0.3);
             scene.ambientParticles.push(ambEmitter);
+          } else if (biome === 'castle') {
+            // Floating golden coronation sparkles
+            const ambEmitter = scene.add.particles(0, 0, 'sparkle', {
+              x: { min: 0, max: levelDef.worldWidth },
+              y: { min: 60, max: 380 },
+              speed: { min: 3, max: 12 },
+              angle: { min: 240, max: 300 },
+              scale: { start: 0.35, end: 0 },
+              alpha: { start: 0.25, end: 0 },
+              lifespan: { min: 3000, max: 6000 },
+              frequency: 350,
+              quantity: 1,
+              tint: [0xfbbf24, 0xfef3c7, 0xf59e0b],
+              blendMode: 'ADD'
+            });
+            ambEmitter.setDepth(0);
+            ambEmitter.setScrollFactor(0.3);
+            scene.ambientParticles.push(ambEmitter);
           }
 
           // 2. Physics Static Platforms Group
@@ -2767,6 +3897,41 @@ class MarioGame {
               block.strokeRect(p.x, p.y, p.w, p.h);
               block.lineStyle(1, 0x8B6914, 0.2);
               block.strokeRect(p.x + 1, p.y + 1, p.w - 2, p.h - 2);
+            } else if (biome === 'castle') {
+              // Castle biome — golden marble platforms fit for a coronation
+              block.fillStyle(0x1a1025, 0.95);
+              block.fillRect(p.x, p.y, p.w, p.h);
+              block.fillStyle(0x2d1050, 0.5);
+              block.fillRect(p.x + 2, p.y + 2, p.w - 4, p.h - 4);
+              // Rich golden top edge
+              block.fillStyle(0xfbbf24, 0.75);
+              block.fillRect(p.x, p.y, p.w, 5);
+              block.fillStyle(0xfef3c7, 0.55);
+              block.fillRect(p.x, p.y, p.w, 2);
+              // Checkered golden marble pattern
+              block.fillStyle(0xfbbf24, 0.2);
+              for (let cx = p.x + 4; cx < p.x + p.w - 4; cx += 24) {
+                block.fillRect(cx, p.y + 6, 12, 10);
+                block.fillRect(cx + 12, p.y + 16, 12, 10);
+              }
+              // Golden sparkle specks
+              block.fillStyle(0xfef3c7, 0.35);
+              for (let i = 0; i < 18; i++) {
+                block.fillRect(p.x + 6 + Math.random() * (p.w - 12), p.y + 8 + Math.random() * (p.h - 16), 1.5, 1.5);
+              }
+              // Purple gem inlays along the body
+              block.fillStyle(0xa855f7, 0.25);
+              for (let gx = p.x + 10; gx < p.x + p.w - 10; gx += 40) {
+                block.fillRect(gx, p.y + p.h / 2 - 3, 4, 6);
+                block.fillStyle(0xc084fc, 0.2);
+                block.fillRect(gx + 1, p.y + p.h / 2 - 2, 2, 4);
+                block.fillStyle(0xa855f7, 0.25);
+              }
+              // Golden bevel highlight
+              block.fillStyle(0xfef3c7, 0.12);
+              block.fillRect(p.x + 2, p.y + 6, p.w - 4, 1);
+              block.lineStyle(1.5, 0x92400e, 0.7);
+              block.strokeRect(p.x, p.y, p.w, p.h);
             } else {
               // Grass biome — rich earth platforms with lush grass top
               block.fillStyle(0x4a3728, 0.95);
@@ -3759,6 +4924,12 @@ class MarioGame {
         update: function() {
           const scene = this;
           if (self.gameState !== 'playing') return;
+
+          // Runner game mode — completely different update
+          if (levelDef.gameMode === 'runner') {
+            self.updateRunner(scene, levelDef);
+            return;
+          }
 
           // Cycle particle textures for rainbow trail effect
           if (scene.particleTextures && scene.particles) {
@@ -4787,6 +5958,29 @@ class MarioGame {
         73.42,  0, 0, 0, 73.42,  0, 0, 0
       ];
       tempo = 200;
+    } else if (this.currentLevelIndex === 4) {
+      // Level 5 — Majestic Coronation Theme (C major, triumphant, heroic, fast)
+      melody = [
+        261.63, 0, 329.63, 0, 392.00, 0, 523.25, 0,
+        392.00, 0, 523.25, 0, 659.25, 0, 523.25, 0,
+        440.00, 0, 523.25, 0, 587.33, 0, 698.46, 0,
+        587.33, 0, 698.46, 0, 783.99, 0, 587.33, 0,
+        523.25, 523.25, 493.88, 493.88, 440.00, 440.00, 392.00, 0,
+        349.23, 349.23, 392.00, 392.00, 440.00, 440.00, 523.25, 0,
+        587.33, 0, 659.25, 0, 698.46, 0, 783.99, 0,
+        880.00, 783.99, 698.46, 587.33, 523.25, 392.00, 261.63, 0
+      ];
+      bass = [
+        130.81, 0, 130.81, 0, 130.81, 0, 130.81, 0,
+        130.81, 0, 130.81, 0, 130.81, 0, 130.81, 0,
+        146.83, 0, 146.83, 0, 146.83, 0, 146.83, 0,
+        146.83, 0, 146.83, 0, 146.83, 0, 146.83, 0,
+        174.61, 0, 174.61, 0, 196.00, 0, 196.00, 0,
+        220.00, 0, 220.00, 0, 130.81, 0, 130.81, 0,
+        146.83, 0, 164.81, 0, 174.61, 0, 196.00, 0,
+        130.81, 0, 130.81, 0, 130.81, 0, 130.81, 0
+      ];
+      tempo = 140; // Fast and energetic!
     } else {
       // Level 1 — Dreamy, ethereal, minor-mode fairy tale chords
       melody = [
@@ -5056,53 +6250,35 @@ class MarioGame {
     this.stopMusic();
     this.synthesizeSound('defeat'); // Play the sad, descending retro game over sound!
     
-    if (this.phaserGame && this.phaserGame.scene && this.phaserGame.scene.scenes[0]) {
-      this.phaserGame.scene.scenes[0].scene.pause();
-    }
+    // Completely destroy Phaser first to clean up the canvas
+    this.destroy();
     
-    // Create premium game over overlay element
-    const gameoverOverlay = document.createElement('div');
-    gameoverOverlay.className = 'mario-gameover-overlay';
-    gameoverOverlay.innerHTML = `
-      <div class="mario-gameover-panel">
-        <div class="mario-gameover-skull">💀</div>
-        <h2>FIN DEL JUEGO</h2>
-        <p class="mario-gameover-msg">Los peones de las sombras te han superado en esta partida. ¡No te rindas! Analiza el tablero y vuelve a intentarlo.</p>
-        
-        <div class="mario-gameover-stats">
-          <div class="mario-stat-box">
-            <span class="mario-stat-icon">🪙</span>
-            <span class="mario-stat-num">${this.coins}</span>
-            <span class="mario-stat-name">Monedas</span>
-          </div>
-          <div class="mario-stat-box">
-            <span class="mario-stat-icon">⭐</span>
-            <span class="mario-stat-num">${this.score}</span>
-            <span class="mario-stat-name">Puntaje</span>
-          </div>
+    // Render standard centered game-screen
+    this.container.innerHTML = `
+      <div class="game-screen animate-pop">
+        <div class="game-screen-img" style="border-color: var(--rose);">
+          <img src="/assets/img/super_martina_juego_1780024581060.png" alt="Fin del Juego" style="filter: grayscale(0.8) brightness(0.5) sepia(0.5) hue-rotate(-50deg);">
         </div>
+        <h2 style="color: var(--rose);">FIN DEL JUEGO 💀</h2>
+        <p style="color: var(--warm-white); opacity: 0.9;">
+          Los peones de las sombras te han superado en esta partida. ¡No te rindas! Analiza el tablero y vuelve a intentarlo.
+        </p>
         
-        <div class="mario-gameover-buttons">
-          <button class="mario-vic-btn btn-map" id="go-btn-replay" style="background: linear-gradient(135deg, #e11d48, #be123c); color: #ffffff; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);">Reintentar 🔄</button>
-          <button class="mario-vic-btn btn-replay" id="go-btn-map">Volver al Mapa ➔</button>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; width: 100%;">
+          <button class="btn btn-game-screen" id="go-btn-map" style="background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: var(--warm-white);">Volver al Mapa ➔</button>
+          <button class="btn btn-game-screen" id="go-btn-replay" style="background: var(--rose); color: white;">Reintentar 🔁</button>
         </div>
       </div>
     `;
     
-    this.container.appendChild(gameoverOverlay);
-    
     // Bind buttons
     document.getElementById('go-btn-replay').addEventListener('click', () => {
       window.GameAudio.playMove();
-      gameoverOverlay.remove();
-      this.destroy();
       this.startLevel();
     });
     
     document.getElementById('go-btn-map').addEventListener('click', () => {
       window.GameAudio.playMove();
-      gameoverOverlay.remove();
-      this.destroy();
       this.showWelcomeScreen();
     });
   }
@@ -5132,67 +6308,45 @@ class MarioGame {
   showVictoryScreen(replayLevel) {
     this.stopMusic();
     
-    const maxScore = this.maxScores[this.currentLevelIndex] || 9900;
-    const pct = Math.min(100, Math.round((this.score / maxScore) * 100));
-    const prev = this.bestScores[this.currentLevelIndex] || 0;
-    const isNewRecord = this.score >= prev && this.score > 0;
-    const trophyEmoji = pct >= 100 ? '🏆' : pct >= 75 ? '🥇' : pct >= 50 ? '🥈' : pct >= 25 ? '🥉' : '👣';
+    // Completely destroy Phaser first to clean up the canvas
+    this.destroy();
     
-    const victoryOverlay = document.createElement('div');
-    victoryOverlay.className = 'mario-victory-overlay';
-    victoryOverlay.innerHTML = `
-      <div class="mario-victory-panel">
-        <div class="mario-victory-crown">${trophyEmoji}</div>
-        <h2>¡Nivel Completado!</h2>
-        <p class="mario-victory-msg">Martina ha despertado con éxito del Reino de las 64 Casillas con su bigote y táctica impecables.</p>
-        
-        <div class="mario-victory-progress">
-          <div class="mario-progress-bar-bg">
-            <div class="mario-progress-bar-fill" style="width:${pct}%"></div>
-          </div>
-          <span class="mario-progress-pct">${pct}% completado</span>
+    // Render standard centered game-screen
+    this.container.innerHTML = `
+      <div class="game-screen animate-pop">
+        <div class="game-screen-img" style="border-color: var(--gold);">
+          <img src="/assets/img/super_martina_juego_1780024581060.png" alt="Nivel Completado">
         </div>
-        
-        <div class="mario-victory-stats">
-          <div class="mario-stat-box">
-            <span class="mario-stat-icon">🪙</span>
-            <span class="mario-stat-num">${this.coins}</span>
-            <span class="mario-stat-name">Monedas</span>
+        <h2>¡Nivel Completado! 🏆</h2>
+        <p style="color: var(--warm-white); opacity: 0.9;">
+          Martina ha despertado con éxito del Reino de las 64 Casillas con su bigote y táctica impecables.
+        </p>
+
+        <div class="game-screen-stats">
+          <div class="stat-item" style="border-color: var(--gold-light); min-width: 100px;">
+            <span style="font-weight: 700; color: #94a3b8; font-size: 0.75rem; text-transform: uppercase;">Puntaje</span>
+            <div class="stat-val" style="color: var(--gold-light); font-size: 1.5rem; font-weight: 800;">+${this.score}</div>
           </div>
-          <div class="mario-stat-box">
-            <span class="mario-stat-icon">⭐</span>
-            <span class="mario-stat-num">${this.score}</span>
-            <span class="mario-stat-name">Puntaje</span>
-          </div>
-          <div class="mario-stat-box">
-            <span class="mario-stat-icon">🎯</span>
-            <span class="mario-stat-num">${maxScore}</span>
-            <span class="mario-stat-name">Máximo</span>
+          <div class="stat-item" style="border-color: var(--sage); min-width: 100px;">
+            <span style="font-weight: 700; color: #94a3b8; font-size: 0.75rem; text-transform: uppercase;">Monedas</span>
+            <div class="stat-val" style="color: var(--sage); font-size: 1.5rem; font-weight: 800;">🪙 x${this.coins}</div>
           </div>
         </div>
-        
-        ${isNewRecord ? '<p class="mario-new-record">✨ ¡Nuevo récord personal! ✨</p>' : ''}
-        
-        <div class="mario-victory-buttons">
-          <button class="mario-vic-btn btn-replay" id="vic-btn-replay">Repetir Nivel 🔄</button>
-          <button class="mario-vic-btn btn-map" id="vic-btn-map">Volver al Mapa ➔</button>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; width: 100%;">
+          <button class="btn btn-game-screen" id="vic-btn-map" style="background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.1); color: var(--warm-white);">Volver al Mapa ➔</button>
+          <button class="btn btn-game-screen" id="vic-btn-replay" style="background: var(--gold); color: var(--magic-dark); border-color: var(--gold);">Repetir Nivel 🔄</button>
         </div>
       </div>
     `;
     
-    this.container.appendChild(victoryOverlay);
-    
     document.getElementById('vic-btn-replay').addEventListener('click', () => {
       window.GameAudio.playMove();
-      victoryOverlay.remove();
-      this.destroy();
       this.startLevel();
     });
     
     document.getElementById('vic-btn-map').addEventListener('click', () => {
       window.GameAudio.playMove();
-      victoryOverlay.remove();
-      this.destroy();
       this.showWelcomeScreen();
     });
   }
