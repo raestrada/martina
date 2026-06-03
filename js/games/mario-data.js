@@ -9,7 +9,8 @@ window.MartinaLevels = {
         1: 9900,
         2: 9900,
         3: 9900,
-        4: 12000
+        4: 12000,
+        5: 9900
       },
 
   levels: [
@@ -442,6 +443,122 @@ window.MartinaLevels = {
           portalY: maxDistance
         }
       };
-    })()
+    })(),
+
+    // ================================================================
+    // LEVEL 6 — "La Jugada Invisible" — Dragon / Sicilian
+    // ================================================================
+    {
+      biome: 'dragon',
+      worldWidth: 3900,
+      backgroundColor: '#0a0a0a',
+
+      // Dragon ground — segments that oscillate up/down like a serpent
+      dragonGround: {
+        segments: 24,          // number of ground segments
+        segmentW: 150,         // width of each segment
+        segmentH: 40,          // height
+        baseY: 410,            // center Y of the oscillation
+        amplitude: 30,         // how high/low it moves
+        frequency: 0.025,      // oscillation speed
+        phaseStep: 0.5         // phase offset between adjacent segments
+      },
+
+      platformsData: [
+        // Floating platforms above the dragon
+        { x: 250, y: 290, w: 110, h: 20 },
+        { x: 480, y: 210, w: 100, h: 20 },
+        { x: 700, y: 300, w: 120, h: 20 },
+        { x: 950, y: 190, w: 90, h: 20 },
+        { x: 1150, y: 280, w: 110, h: 20 },
+        { x: 1400, y: 220, w: 100, h: 20 },
+        { x: 1650, y: 310, w: 120, h: 20 },
+        { x: 1900, y: 180, w: 90, h: 20 },
+        { x: 2100, y: 270, w: 110, h: 20 },
+        { x: 2350, y: 200, w: 100, h: 20 },
+        { x: 2600, y: 300, w: 120, h: 20 },
+        { x: 2850, y: 210, w: 100, h: 20 },
+        { x: 3100, y: 280, w: 110, h: 20 },
+        { x: 3350, y: 190, w: 90, h: 20 },
+        { x: 3600, y: 350, w: 60, h: 60 }
+      ],
+
+      coinsData: [
+        { x: 280, y: 240 }, { x: 310, y: 235 }, { x: 340, y: 240 },
+        { x: 520, y: 160 },
+        { x: 740, y: 250 }, { x: 770, y: 250 },
+        { x: 980, y: 140 },
+        { x: 1180, y: 230 }, { x: 1210, y: 230 },
+        { x: 1440, y: 170 },
+        { x: 1700, y: 260 }, { x: 1730, y: 260 },
+        { x: 1940, y: 130 },
+        { x: 2140, y: 220 }, { x: 2170, y: 220 },
+        { x: 2400, y: 150 },
+        { x: 2650, y: 250 }, { x: 2680, y: 250 },
+        { x: 2900, y: 160 },
+        { x: 3150, y: 230 }, { x: 3180, y: 230 },
+        { x: 3400, y: 140 },
+        // Ground coins along dragon path
+        { x: 200, y: 370 }, { x: 350, y: 360 }, { x: 500, y: 370 },
+        { x: 650, y: 360 }, { x: 800, y: 370 }, { x: 950, y: 360 },
+        { x: 1100, y: 370 }, { x: 1250, y: 360 }, { x: 1400, y: 370 },
+        { x: 1550, y: 360 }, { x: 1700, y: 370 }, { x: 1850, y: 360 },
+        { x: 2000, y: 370 }, { x: 2150, y: 360 }, { x: 2300, y: 370 },
+        { x: 2500, y: 360 }, { x: 2650, y: 370 }, { x: 2800, y: 360 },
+        { x: 2950, y: 370 }, { x: 3100, y: 360 }, { x: 3250, y: 370 },
+        { x: 3400, y: 360 }, { x: 3600, y: 370 },
+        { x: 3700, y: 360 }
+      ],
+
+      enemiesData: [
+        { x: 380, y: 360, left: 180, right: 600, speed: 75 },
+        { x: 650, y: 360, left: 500, right: 780, speed: 65 },
+        { x: 1000, y: 360, left: 850, right: 1200, speed: 80 },
+        { x: 1300, y: 360, left: 1150, right: 1500, speed: 70 },
+        { x: 1700, y: 360, left: 1550, right: 1900, speed: 75 },
+        { x: 2100, y: 360, left: 1950, right: 2250, speed: 80 },
+        { x: 2450, y: 360, left: 2300, right: 2600, speed: 70 },
+        { x: 2800, y: 360, left: 2650, right: 2950, speed: 75 },
+        { x: 3150, y: 360, left: 3000, right: 3400, speed: 80 }
+      ],
+
+      airEnemiesData: [
+        { x: 600, y: 130, pattern: 'horizontal', minX: 450, maxX: 750, speed: 70 },
+        { x: 1100, y: 120, pattern: 'diagonal', minX: 950, maxX: 1300, minY: 70, maxY: 180, speed: 65, speedY: 45 },
+        { x: 1600, y: 140, pattern: 'sinusoidal', minX: 1480, maxX: 1750, baseY: 130, ampY: 40, speed: 70 },
+        { x: 2200, y: 110, pattern: 'horizontal', minX: 2050, maxX: 2400, speed: 75 },
+        { x: 2700, y: 130, pattern: 'diagonal', minX: 2550, maxX: 2900, minY: 80, maxY: 190, speed: 70, speedY: 50 },
+        { x: 3200, y: 120, pattern: 'sinusoidal', minX: 3050, maxX: 3400, baseY: 120, ampY: 50, speed: 80 }
+      ],
+
+      crownsData: [
+        { x: 520, y: 100 },
+        { x: 1180, y: 120 },
+        { x: 1940, y: 80 },
+        { x: 2650, y: 100 },
+        { x: 3400, y: 90 }
+      ],
+
+      // Fire pillars erupting from dragon ground
+      firePillars: [
+        { x: 280, interval: 180, offset: 0 },
+        { x: 560, interval: 200, offset: 60 },
+        { x: 880, interval: 170, offset: 100 },
+        { x: 1200, interval: 190, offset: 30 },
+        { x: 1500, interval: 210, offset: 80 },
+        { x: 1800, interval: 180, offset: 50 },
+        { x: 2100, interval: 200, offset: 120 },
+        { x: 2400, interval: 190, offset: 10 },
+        { x: 2700, interval: 220, offset: 90 },
+        { x: 3000, interval: 180, offset: 40 },
+        { x: 3300, interval: 200, offset: 70 }
+      ],
+
+      // Dragon head goal at the end
+      goal: {
+        type: 'portal_queen',
+        portalX: 3750, portalY: 245
+      }
+    }
   ]
 };

@@ -2513,6 +2513,119 @@ class MarioGame {
                 bgCtx.stroke();
               }
               
+            } else if (biome === 'dragon') {
+              // --- DRAGON BACKGROUND: Vibrant volcanic cavern, Sicilian Dragon ---
+              const dGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
+              dGrad.addColorStop(0, '#020608');
+              dGrad.addColorStop(0.2, '#051010');
+              dGrad.addColorStop(0.5, '#0a2018');
+              dGrad.addColorStop(0.75, '#0d2d18');
+              dGrad.addColorStop(1, '#0a2812');
+              bgCtx.fillStyle = dGrad;
+              bgCtx.fillRect(0, 0, 800, 450);
+              // Bright green magma pool glow
+              const magmaGlow = bgCtx.createRadialGradient(400, 400, 30, 400, 420, 380);
+              magmaGlow.addColorStop(0, 'rgba(74,222,128,0.25)');
+              magmaGlow.addColorStop(0.3, 'rgba(34,197,94,0.15)');
+              magmaGlow.addColorStop(0.6, 'rgba(22,163,74,0.06)');
+              magmaGlow.addColorStop(1, 'transparent');
+              bgCtx.fillStyle = magmaGlow;
+              bgCtx.fillRect(0, 0, 800, 450);
+              // Hot core glow
+              const mgCore = bgCtx.createRadialGradient(400, 430, 5, 400, 420, 150);
+              mgCore.addColorStop(0, 'rgba(134,239,172,0.3)');
+              mgCore.addColorStop(0.4, 'rgba(74,222,128,0.12)');
+              mgCore.addColorStop(1, 'transparent');
+              bgCtx.fillStyle = mgCore;
+              bgCtx.fillRect(0, 0, 800, 450);
+              // Cave stalactites with glow
+              bgCtx.fillStyle = '#060a0a';
+              for (let i=0;i<30;i++){
+                const sx=i*28+Math.random()*15, sh=18+Math.random()*50;
+                bgCtx.beginPath();bgCtx.moveTo(sx-3,0);bgCtx.lineTo(sx+5,sh);bgCtx.lineTo(sx+13,0);bgCtx.closePath();bgCtx.fill();
+              }
+              // Emerald light reflection on ceiling
+              bgCtx.fillStyle = 'rgba(74,222,128,0.04)';
+              bgCtx.fillRect(0, 0, 800, 60);
+              // Distant dragon silhouette — larger, more detailed
+              bgCtx.fillStyle = 'rgba(4,15,10,0.55)';
+              // Body
+              bgCtx.beginPath();
+              bgCtx.moveTo(30, 340);
+              bgCtx.bezierCurveTo(80, 220, 200, 170, 380, 185);
+              bgCtx.bezierCurveTo(500, 195, 650, 160, 720, 190);
+              bgCtx.bezierCurveTo(760, 210, 780, 250, 760, 310);
+              bgCtx.lineTo(30, 340);
+              bgCtx.closePath();
+              bgCtx.fill();
+              // Wings spread
+              bgCtx.fillStyle = 'rgba(4,12,8,0.35)';
+              bgCtx.beginPath();
+              bgCtx.moveTo(300, 195);
+              bgCtx.bezierCurveTo(320, 130, 400, 80, 480, 100);
+              bgCtx.bezierCurveTo(450, 130, 400, 160, 380, 195);
+              bgCtx.closePath();
+              bgCtx.fill();
+              bgCtx.beginPath();
+              bgCtx.moveTo(400, 190);
+              bgCtx.bezierCurveTo(430, 120, 520, 70, 600, 95);
+              bgCtx.bezierCurveTo(560, 130, 500, 165, 470, 190);
+              bgCtx.closePath();
+              bgCtx.fill();
+              // Dragon eye — bright golden
+              const eyeGlow = bgCtx.createRadialGradient(710, 218, 1, 710, 218, 10);
+              eyeGlow.addColorStop(0, 'rgba(251,191,36,0.9)');
+              eyeGlow.addColorStop(0.3, 'rgba(251,191,36,0.5)');
+              eyeGlow.addColorStop(1, 'transparent');
+              bgCtx.fillStyle = eyeGlow;
+              bgCtx.beginPath();bgCtx.arc(710, 218, 10, 0, Math.PI*2);bgCtx.fill();
+              bgCtx.fillStyle = '#fef3c7';
+              bgCtx.beginPath();bgCtx.arc(710, 218, 3, 0, Math.PI*2);bgCtx.fill();
+              // Flying dragon silhouettes in distance
+              const drawFlyingDragon = (x, y, s, alpha) => {
+                bgCtx.save();
+                bgCtx.globalAlpha = alpha;
+                bgCtx.fillStyle = '#041008';
+                // Body
+                bgCtx.beginPath();
+                bgCtx.ellipse(x, y, s*18, s*5, -0.1, 0, Math.PI*2);
+                bgCtx.fill();
+                // Tail
+                bgCtx.beginPath();
+                bgCtx.moveTo(x + s*16, y);
+                bgCtx.bezierCurveTo(x+s*26, y-s*4, x+s*32, y+s*8, x+s*40, y+s*2);
+                bgCtx.bezierCurveTo(x+s*36, y+s*5, x+s*28, y+s*2, x+s*18, y+s*1);
+                bgCtx.closePath();
+                bgCtx.fill();
+                // Wing top
+                bgCtx.beginPath();
+                bgCtx.moveTo(x - s*3, y - s*3);
+                bgCtx.bezierCurveTo(x - s*2, y - s*18, x + s*10, y - s*14, x + s*14, y - s*4);
+                bgCtx.bezierCurveTo(x + s*8, y - s*6, x + s*2, y - s*4, x - s*3, y - s*3);
+                bgCtx.fill();
+                // Eye glow
+                bgCtx.fillStyle = `rgba(251,191,36,${alpha*1.2})`;
+                bgCtx.beginPath();bgCtx.arc(x - s*10, y - s*1, s*2, 0, Math.PI*2);bgCtx.fill();
+                bgCtx.restore();
+              };
+              drawFlyingDragon(120, 80, 0.8, 0.25);
+              drawFlyingDragon(350, 50, 0.6, 0.3);
+              drawFlyingDragon(580, 95, 0.7, 0.2);
+              drawFlyingDragon(700, 40, 0.5, 0.22);
+              // Green smoke wisps — more intense
+              for (let i=0;i<15;i++){
+                const sx=Math.random()*800, sy=80+Math.random()*300;
+                const smoke=bgCtx.createRadialGradient(sx,sy,0,sx,sy,35+Math.random()*50);
+                smoke.addColorStop(0,'rgba(74,222,128,0.06)');
+                smoke.addColorStop(0.5,'rgba(34,197,94,0.03)');
+                smoke.addColorStop(1,'transparent');
+                bgCtx.fillStyle=smoke;bgCtx.beginPath();bgCtx.arc(sx,sy,40,0,Math.PI*2);bgCtx.fill();
+              }
+              // Emerald sparkles
+              for (let i=0;i<40;i++){
+                bgCtx.fillStyle=`rgba(134,239,172,${Math.random()*0.3+0.05})`;
+                bgCtx.beginPath();bgCtx.arc(Math.random()*800,40+Math.random()*380,Math.random()*2.5+0.5,0,Math.PI*2);bgCtx.fill();
+              }
             } else if (biome === 'castle') {
               // --- CASTLE BACKGROUND: Golden coronation realm ---
               const cstGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
@@ -2891,6 +3004,34 @@ class MarioGame {
               midCtx.fillStyle = 'rgba(20,10,5,0.3)';
               midCtx.fillRect(575, 310, 30, 40);
               
+            } else if (biome === 'dragon') {
+              // Dragon midground — green magma pools and smoke
+              for (let i=0;i<8;i++){
+                const mx=80+Math.random()*640,my=340+Math.random()*80;
+                const pool=midCtx.createRadialGradient(mx,my,5,mx,my,35+Math.random()*30);
+                pool.addColorStop(0,'rgba(74,222,128,0.15)');pool.addColorStop(1,'transparent');
+                midCtx.fillStyle=pool;midCtx.beginPath();midCtx.arc(mx,my,40,0,Math.PI*2);midCtx.fill();
+                const core=midCtx.createRadialGradient(mx,my,2,mx,my,12);
+                core.addColorStop(0,'rgba(134,239,172,0.2)');core.addColorStop(1,'transparent');
+                midCtx.fillStyle=core;midCtx.beginPath();midCtx.arc(mx,my,12,0,Math.PI*2);midCtx.fill();
+              }
+              for (let i=0;i<10;i++){
+                const sx=60+Math.random()*680,sy=280+Math.random()*150;
+                const smoke=midCtx.createLinearGradient(sx,sy,sx,sy-80);
+                smoke.addColorStop(0,'rgba(34,197,94,0.06)');smoke.addColorStop(1,'transparent');
+                midCtx.fillStyle=smoke;midCtx.beginPath();midCtx.moveTo(sx-15,sy);
+                midCtx.lineTo(sx+15,sy);midCtx.lineTo(sx+25,sy-80);midCtx.lineTo(sx-25,sy-80);
+                midCtx.closePath();midCtx.fill();
+              }
+              for (let row=0;row<10;row++){
+                for(let col=0;col<15;col++){
+                  const sx=(col*55)+(row%2)*27,sy=60+row*38;
+                  if(sx>750)continue;
+                  midCtx.strokeStyle='rgba(34,197,94,0.06)';midCtx.lineWidth=0.8;
+                  midCtx.beginPath();midCtx.moveTo(sx,sy);
+                  midCtx.bezierCurveTo(sx+14,sy-8,sx+28,sy-8,sx+42,sy);midCtx.stroke();
+                }
+              }
             } else if (biome === 'castle') {
               // Castle midground — golden columns and archways
               const drawColumn = (cx, baseY, w, h, alpha) => {
@@ -3700,6 +3841,24 @@ class MarioGame {
             ambEmitter.setDepth(0);
             ambEmitter.setScrollFactor(0.3);
             scene.ambientParticles.push(ambEmitter);
+          } else if (biome === 'dragon') {
+            // Green smoke and ember particles
+            const ambEmitter = scene.add.particles(0, 0, 'sparkle', {
+              x: { min: 0, max: levelDef.worldWidth },
+              y: { min: 200, max: 400 },
+              speed: { min: 4, max: 18 },
+              angle: { min: 250, max: 290 },
+              scale: { start: 0.4, end: 0 },
+              alpha: { start: 0.2, end: 0 },
+              lifespan: { min: 2000, max: 4500 },
+              frequency: 300,
+              quantity: 1,
+              tint: [0x22c55e, 0x4ade80, 0x166534],
+              blendMode: 'ADD'
+            });
+            ambEmitter.setDepth(0);
+            ambEmitter.setScrollFactor(0.3);
+            scene.ambientParticles.push(ambEmitter);
           } else if (biome === 'clockwork') {
             // Tiny floating gear sparks
             const ambEmitter = scene.add.particles(0, 0, 'sparkle', {
@@ -3897,6 +4056,32 @@ class MarioGame {
               block.strokeRect(p.x, p.y, p.w, p.h);
               block.lineStyle(1, 0x8B6914, 0.2);
               block.strokeRect(p.x + 1, p.y + 1, p.w - 2, p.h - 2);
+            } else if (biome === 'dragon') {
+              // Dragon biome — emerald scale platforms
+              block.fillStyle(0x0a1510, 0.95);
+              block.fillRect(p.x, p.y, p.w, p.h);
+              block.fillStyle(0x0d2018, 0.5);
+              block.fillRect(p.x + 2, p.y + 2, p.w - 4, p.h - 4);
+              // Green glowing top edge
+              block.fillStyle(0x22c55e, 0.55);
+              block.fillRect(p.x, p.y, p.w, 5);
+              block.fillStyle(0x4ade80, 0.4);
+              block.fillRect(p.x, p.y, p.w, 2);
+              // Scale pattern
+              block.fillStyle(0x166534, 0.2);
+              for (let sx = p.x + 4; sx < p.x + p.w - 6; sx += 22) {
+                block.fillCircle(sx + 11, p.y + 10, 8);
+              }
+              // Emerald gem specks
+              block.fillStyle(0x4ade80, 0.2);
+              for (let i=0;i<14;i++){
+                block.fillRect(p.x+6+Math.random()*(p.w-12),p.y+6+Math.random()*(p.h-10),2,2);
+              }
+              // Glow bevel
+              block.fillStyle(0x4ade80, 0.1);
+              block.fillRect(p.x+2,p.y+6,p.w-4,1);
+              block.lineStyle(1.5,0x0d4020,0.6);
+              block.strokeRect(p.x,p.y,p.w,p.h);
             } else if (biome === 'castle') {
               // Castle biome — golden marble platforms fit for a coronation
               block.fillStyle(0x1a1025, 0.95);
@@ -3990,6 +4175,97 @@ class MarioGame {
             scene.platforms.add(block);
           });
 
+          // Dragon ground — oscillating serpent body segments (level 6)
+          scene.dragonSegments = [];
+          if (biome === 'dragon' && levelDef.dragonGround) {
+            const dg = levelDef.dragonGround;
+            // Generate dragon segment texture with scales and spines
+            if (!scene.textures.exists('dragon-seg')) {
+              const dsCanvas = document.createElement('canvas');
+              dsCanvas.width = dg.segmentW; dsCanvas.height = dg.segmentH + dg.amplitude * 2 + 20;
+              const dsc = dsCanvas.getContext('2d');
+              const ch = dsCanvas.height, cw = dsCanvas.width;
+              // Dark dragon body base
+              const bodyGrad = dsc.createLinearGradient(0, 0, 0, ch);
+              bodyGrad.addColorStop(0, '#0a2015');
+              bodyGrad.addColorStop(0.3, '#0d2a1c');
+              bodyGrad.addColorStop(0.7, '#081a10');
+              bodyGrad.addColorStop(1, '#05100a');
+              dsc.fillStyle = bodyGrad;
+              dsc.fillRect(0, 0, cw, ch);
+              // Hexagonal scale pattern
+              dsc.strokeStyle = 'rgba(22,163,74,0.25)';
+              dsc.lineWidth = 0.6;
+              for (let row = 0; row < 8; row++) {
+                const offsetX = (row % 2) * 7;
+                for (let col = -1; col < cw/14 + 1; col++) {
+                  const cx = col * 14 + offsetX + 7;
+                  if (cx < -10 || cx > cw + 10) continue;
+                  const cy = 8 + row * 10;
+                  dsc.beginPath();
+                  for (let p = 0; p < 6; p++) {
+                    const a = p * Math.PI / 3 - Math.PI / 2;
+                    const px = cx + Math.cos(a) * 7;
+                    const py = cy + Math.sin(a) * 5;
+                    if (p === 0) dsc.moveTo(px, py);
+                    else dsc.lineTo(px, py);
+                  }
+                  dsc.closePath();
+                  dsc.stroke();
+                }
+              }
+              // Spine ridges (dorsal spikes on top)
+              dsc.fillStyle = '#166534';
+              for (let sx = 4; sx < cw - 4; sx += 12) {
+                dsc.beginPath();
+                dsc.moveTo(sx - 4, 4);
+                dsc.lineTo(sx + 1, -2);
+                dsc.lineTo(sx + 6, 4);
+                dsc.closePath();
+                dsc.fill();
+              }
+              // Highlight spine tips
+              dsc.fillStyle = 'rgba(74,222,128,0.6)';
+              for (let sx = 4; sx < cw - 4; sx += 12) {
+                dsc.beginPath();
+                dsc.arc(sx + 1, 0, 2, 0, Math.PI * 2);
+                dsc.fill();
+              }
+              // Glowing green edge on top
+              dsc.fillStyle = 'rgba(34,197,94,0.4)';
+              dsc.fillRect(0, 0, cw, 2);
+              dsc.fillStyle = 'rgba(74,222,128,0.2)';
+              dsc.fillRect(0, 2, cw, 2);
+              // Bottom shadow
+              dsc.fillStyle = 'rgba(0,0,0,0.3)';
+              dsc.fillRect(0, ch - 3, cw, 3);
+              // Occasional bright emerald gems embedded in scales
+              dsc.fillStyle = 'rgba(74,222,128,0.45)';
+              for (let i = 0; i < 6; i++) {
+                const gx = 8 + Math.floor(Math.random() * (cw - 16));
+                const gy = 5 + Math.floor(Math.random() * (ch - 10));
+                dsc.beginPath();
+                dsc.arc(gx, gy, 2, 0, Math.PI * 2);
+                dsc.fill();
+                dsc.fillStyle = 'rgba(255,255,255,0.3)';
+                dsc.beginPath();
+                dsc.arc(gx - 0.5, gy - 0.5, 0.8, 0, Math.PI * 2);
+                dsc.fill();
+                dsc.fillStyle = 'rgba(74,222,128,0.45)';
+              }
+              scene.textures.addCanvas('dragon-seg', dsCanvas);
+            }
+            // Create segments as sprites
+            for (let s = 0; s < dg.segments; s++) {
+              const segX = s * dg.segmentW + dg.segmentW/2;
+              const seg = scene.physics.add.staticSprite(segX, dg.baseY, 'dragon-seg');
+              seg.body.setSize(dg.segmentW, dg.segmentH);
+              seg.body.setOffset(0, dg.amplitude + 10);
+              seg.setDepth(3);
+              scene.dragonSegments.push({ sprite: seg, baseY: dg.baseY, index: s });
+            }
+          }
+
           // 3. Create Player (Martina using the actual cuento illustration!)
           scene.player = scene.physics.add.sprite(80, 200, 'player');
           scene.player.setCollideWorldBounds(true);
@@ -4009,6 +4285,86 @@ class MarioGame {
           scene.player.dashCooldown = 0;
           
           self.player = scene.player;
+
+          // Dragon ground colliders — must be after player creation
+          if (scene.dragonSegments && scene.dragonSegments.length > 0) {
+            scene.dragonSegments.forEach(seg => {
+              scene.physics.add.collider(scene.player, seg.sprite);
+            });
+          }
+          // Fire pillars — erupt from dragon ground (level 6)
+          scene.firePillars = [];
+          if (biome === 'dragon' && levelDef.firePillars) {
+            // Create flame texture
+            if (!scene.textures.exists('flame-pillar')) {
+              const fc = document.createElement('canvas');
+              fc.width = 24; fc.height = 80;
+              const fctx = fc.getContext('2d');
+              // Flame shape — tall teardrop with flickering edges
+              const flameGrad = fctx.createLinearGradient(12, 0, 12, 80);
+              flameGrad.addColorStop(0, 'rgba(255,251,100,1)');   // bright yellow top
+              flameGrad.addColorStop(0.15, 'rgba(252,211,40,1)');  // yellow
+              flameGrad.addColorStop(0.4, 'rgba(249,158,26,1)');   // orange
+              flameGrad.addColorStop(0.7, 'rgba(34,197,94,1)');   // green base
+              flameGrad.addColorStop(1, 'rgba(16,80,40,0.8)');    // dark green
+              fctx.fillStyle = flameGrad;
+              fctx.beginPath();
+              fctx.moveTo(12, 0);
+              fctx.bezierCurveTo(4, 18, 2, 40, 3, 58);
+              fctx.bezierCurveTo(2, 68, 5, 74, 8, 80);
+              fctx.lineTo(16, 80);
+              fctx.bezierCurveTo(19, 74, 22, 68, 21, 58);
+              fctx.bezierCurveTo(22, 40, 20, 18, 12, 0);
+              fctx.closePath();
+              fctx.fill();
+              // Inner hotter core
+              const coreGrad = fctx.createLinearGradient(12, 2, 12, 60);
+              coreGrad.addColorStop(0, 'rgba(255,255,255,0.9)');
+              coreGrad.addColorStop(0.2, 'rgba(255,240,150,0.7)');
+              coreGrad.addColorStop(0.5, 'rgba(252,180,60,0.5)');
+              coreGrad.addColorStop(1, 'rgba(34,197,94,0)');
+              fctx.fillStyle = coreGrad;
+              fctx.beginPath();
+              fctx.moveTo(12, 3);
+              fctx.bezierCurveTo(8, 18, 7, 35, 8, 48);
+              fctx.bezierCurveTo(7, 54, 9, 58, 11, 62);
+              fctx.lineTo(13, 62);
+              fctx.bezierCurveTo(15, 58, 17, 54, 16, 48);
+              fctx.bezierCurveTo(17, 35, 16, 18, 12, 3);
+              fctx.closePath();
+              fctx.fill();
+              // White-hot tip
+              fctx.fillStyle = 'rgba(255,255,255,0.6)';
+              fctx.beginPath();
+              fctx.arc(12, 8, 5, 0, Math.PI*2);
+              fctx.fill();
+              scene.textures.addCanvas('flame-pillar', fc);
+            }
+            levelDef.firePillars.forEach(fp => {
+              const pillar = scene.physics.add.sprite(fp.x, 500, 'flame-pillar');
+              pillar.setDisplaySize(22, 60);
+              pillar.setDepth(4);
+              pillar.setAlpha(0);
+              pillar.body.setSize(14, 50);
+              pillar.body.setOffset(5, 15);
+              pillar.body.allowGravity = false;
+              pillar.fireData = fp;
+              pillar.fireTimer = fp.offset || 0;
+              pillar.fireActive = false;
+              pillar.fireHeight = 0;
+              scene.firePillars.push(pillar);
+            });
+            scene.physics.add.overlap(scene.player, scene.firePillars, (player, pillar) => {
+              if (!pillar.fireActive || player.invincibility > 0) return;
+              self.lives--;
+              player.invincibility = 60;
+              player.setTint(0x44ff44);
+              scene.time.delayedCall(200, () => { if (player.active) player.clearTint(); });
+              self.synthesizeSound('damage');
+              document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
+              if (self.lives <= 0) { self.stopMusic(); self.gameOver(); }
+            });
+          }
           scene.lastSafeX = 80; // track last safe position for pit respawn
 
           // Damage animation helper — red flash, star particles, camera shake
@@ -4452,7 +4808,145 @@ class MarioGame {
           }
 
           // 7. Goal — biome-specific (Portal+Queen for grass, Trophy for clockwork)
-          if (biome === 'clockwork') {
+          if (biome === 'dragon') {
+            // Dragon head goal — simple, recognizable profile
+            if (!scene.textures.exists('dragon-head')) {
+              const dhCanvas = document.createElement('canvas');
+              dhCanvas.width = 140; dhCanvas.height = 100;
+              const dhc = dhCanvas.getContext('2d');
+              // Dragon head facing left — metallic emerald
+              const headGrad = dhc.createLinearGradient(0, 0, 140, 0);
+              headGrad.addColorStop(0, '#1a4a30'); headGrad.addColorStop(0.4, '#22c55e'); headGrad.addColorStop(1, '#0d3018');
+              dhc.fillStyle = headGrad;
+              // Main head shape
+              dhc.beginPath();
+              dhc.moveTo(10, 55);   // snout tip
+              dhc.lineTo(8, 40);    // upper snout
+              dhc.lineTo(15, 28);   // forehead
+              dhc.lineTo(32, 18);   // brow ridge
+              dhc.lineTo(55, 14);   // top of head
+              dhc.lineTo(80, 18);   // back of head
+              dhc.lineTo(100, 35);  // neck back
+              dhc.lineTo(105, 65);  // neck bottom
+              dhc.lineTo(80, 70);   // lower jaw back
+              dhc.lineTo(50, 68);   // throat
+              dhc.lineTo(30, 62);   // lower jaw front
+              dhc.lineTo(15, 58);   // chin
+              dhc.closePath();
+              dhc.fill();
+              // Scale ridges on top of head — brighter
+              dhc.fillStyle = '#4ade80';
+              for (let i = 0; i < 6; i++) {
+                const sx = 20 + i * 12;
+                dhc.beginPath();
+                dhc.moveTo(sx, 16 + (i % 2) * 3);
+                dhc.lineTo(sx + 3, 2 + (i % 2) * 2);
+                dhc.lineTo(sx + 8, 16 + (i % 2) * 3);
+                dhc.closePath();
+                dhc.fill();
+              }
+              // Horns — lighter metallic
+              dhc.fillStyle = '#2a5a3a';
+              dhc.beginPath();
+              dhc.moveTo(55, 14);
+              dhc.bezierCurveTo(58, -2, 72, -8, 78, 4);
+              dhc.bezierCurveTo(70, 8, 60, 14, 56, 16);
+              dhc.closePath(); dhc.fill();
+              dhc.beginPath();
+              dhc.moveTo(45, 16);
+              dhc.bezierCurveTo(48, 2, 60, -4, 64, 6);
+              dhc.bezierCurveTo(58, 10, 50, 15, 46, 17);
+              dhc.closePath(); dhc.fill();
+              // Eye — big golden
+              const eyeGlow = dhc.createRadialGradient(30, 25, 2, 30, 25, 14);
+              eyeGlow.addColorStop(0, '#fef3c7');
+              eyeGlow.addColorStop(0.2, '#fbbf24');
+              eyeGlow.addColorStop(0.6, '#d97706');
+              eyeGlow.addColorStop(1, 'transparent');
+              dhc.fillStyle = eyeGlow;
+              dhc.beginPath(); dhc.arc(30, 25, 14, 0, Math.PI * 2); dhc.fill();
+              // Pupil slit
+              dhc.fillStyle = '#000';
+              dhc.beginPath(); dhc.ellipse(32, 25, 2, 6, 0.1, 0, Math.PI * 2); dhc.fill();
+              // Nostril
+              dhc.fillStyle = '#051008';
+              dhc.beginPath(); dhc.arc(15, 35, 3, 0, Math.PI * 2); dhc.fill();
+              // Mouth line — snarling
+              dhc.strokeStyle = '#051008';
+              dhc.lineWidth = 2;
+              dhc.beginPath();
+              dhc.moveTo(10, 48); dhc.lineTo(30, 50);
+              dhc.lineTo(40, 46); dhc.lineTo(50, 50);
+              dhc.stroke();
+              // Teeth
+              dhc.fillStyle = '#fef3c7';
+              for (let i = 0; i < 5; i++) {
+                dhc.beginPath();
+                dhc.moveTo(14 + i * 6, 48);
+                dhc.lineTo(16 + i * 6, 52);
+                dhc.lineTo(18 + i * 6, 48);
+                dhc.closePath(); dhc.fill();
+              }
+              // Green smoke from nostril
+              dhc.fillStyle = 'rgba(74,222,128,0.2)';
+              dhc.beginPath(); dhc.arc(10, 32, 10, 0, Math.PI * 2); dhc.fill();
+              // Body scales on neck — brighter metallic
+              dhc.strokeStyle = 'rgba(74,222,128,0.35)';
+              dhc.lineWidth = 1.2;
+              for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 4; col++) {
+                  const cx = 85 + col * 14 + (row % 2) * 7;
+                  const cy = 30 + row * 14;
+                  dhc.beginPath();
+                  for (let p = 0; p < 6; p++) {
+                    const a = p * Math.PI / 3 - Math.PI / 2;
+                    const px = cx + Math.cos(a) * 7;
+                    const py = cy + Math.sin(a) * 5;
+                    if (p === 0) dhc.moveTo(px, py);
+                    else dhc.lineTo(px, py);
+                  }
+                  dhc.closePath(); dhc.stroke();
+                }
+              }
+
+              scene.textures.addCanvas('dragon-head', dhCanvas);
+            }
+            // Place head — visible, centered at goal
+            const dhx = (levelDef.goal && levelDef.goal.portalX) || 3750;
+            const dhy = 325;
+            // Portal behind head
+            scene.portal = scene.add.sprite(dhx, dhy - 30, 'portal_texture');
+            scene.portal.setDisplaySize(140, 140);
+            scene.portal.setDepth(2);
+            scene.portalGlow = scene.add.graphics();
+            scene.portalGlow.fillStyle(0x22c55e, 0.1);
+            scene.portalGlow.fillCircle(dhx, dhy - 30, 80);
+            scene.portalGlow.setDepth(1);
+            // Dragon head in front of portal
+            scene.dragonHeadGoal = scene.physics.add.staticSprite(dhx, dhy, 'dragon-head');
+            scene.dragonHeadGoal.setDisplaySize(130, 100);
+            scene.dragonHeadGoal.setDepth(5);
+            scene.dragonHeadGoal.body.setSize(80, 60);
+            scene.dragonHeadGoal.body.setOffset(30, 20);
+            // Green glow below head
+            scene.dragonHeadGlow = scene.add.graphics();
+            scene.dragonHeadGlow.fillStyle(0x22c55e, 0.08);
+            scene.dragonHeadGlow.fillCircle(dhx, dhy + 20, 70);
+            scene.dragonHeadGlow.setDepth(4);
+            // Sparkles
+            for (let i=0;i<12;i++){
+              const sa=(i*Math.PI*2)/12;
+              const sr=45+Math.random()*35;
+              const sx=dhx+Math.cos(sa)*sr,sy=dhy-10+Math.sin(sa)*sr;
+              const sc=scene.add.circle(sx,sy,Math.random()*1.5+0.7,0x4ade80,0.35);
+              sc.setDepth(6);
+              scene.tweens.add({
+                targets:sc,y:sy-10,alpha:0.1,scale:0.5,
+                duration:1200+Math.random()*600,yoyo:true,repeat:-1,
+                ease:'Sine.easeInOut',delay:i*100
+              });
+            }
+          } else if (biome === 'clockwork') {
             // Tournament Trophy goal (level 2 — Tic, Tac, Jaque Mate)
             const tX = levelDef.goal.trophyX || 2180;
             const tY = levelDef.goal.trophyY || 270;
@@ -4747,8 +5241,31 @@ class MarioGame {
             }
           });
 
-          // Goal overlap — biome-specific (Queen for grass, Trophy for clockwork)
-          if (biome === 'clockwork' && scene.trophyGoal) {
+          // Goal overlap — biome-specific (Dragon head, Queen, Trophy)
+          if (biome === 'dragon' && scene.dragonHeadGoal) {
+            scene.physics.add.overlap(scene.player, scene.dragonHeadGoal, () => {
+              if (self.player.isAscending) return;
+              self.player.isAscending = true;
+              self.completeLevel();
+              scene.particles.stop();
+              scene.player.body.setVelocity(0, -60);
+              scene.player.body.allowGravity = false;
+              const vt = scene.add.text(400, 200, "¡DRAGÓN DOMADO!\nLa Siciliana ha caído", {
+                fontFamily:"'Outfit',sans-serif",fontSize:'24px',fontStyle:'bold',
+                fill:'#4ade80',stroke:'#0a2015',strokeThickness:5,align:'center'
+              }).setOrigin(0.5).setDepth(10).setScrollFactor(0);
+              for (let i=0;i<30;i++){
+                scene.time.delayedCall(i*40,()=>{
+                  if(!scene.player.active)return;
+                  const a=i*0.35,r=25-i*0.2;
+                  const sp=scene.add.circle(scene.player.x+Math.cos(a)*Math.max(3,r),scene.player.y+Math.sin(a)*Math.max(3,r),Math.random()*2+1.5,0x4ade80,0.9);
+                  scene.physics.add.existing(sp,false);sp.body.allowGravity=false;sp.body.setVelocityY(-100);
+                  scene.tweens.add({targets:sp,alpha:0,scale:0.1,duration:700,onComplete:()=>sp.destroy()});
+                });
+              }
+              scene.tweens.add({targets:scene.player,angle:1080,scaleX:0.05,scaleY:0.05,alpha:0,y:scene.player.y-120,duration:2200,ease:'Quad.easeOut',onComplete:()=>{vt.destroy();self.showVictoryScreen(true);}});
+            });
+          } else if (biome === 'clockwork' && scene.trophyGoal) {
             scene.physics.add.overlap(scene.player, scene.trophyGoal, () => {
               if (self.player.isAscending) return;
               self.player.isAscending = true;
@@ -5534,6 +6051,45 @@ class MarioGame {
 
           if (self.player.isSliding) return;
 
+          // Dragon ground oscillation (level 6 — Sicilian Dragon)
+          if (scene.dragonSegments && scene.dragonSegments.length > 0) {
+            const dg = levelDef.dragonGround;
+            const time = scene.time.now * 0.001 * (dg.frequency * 40);
+            scene.dragonSegments.forEach(seg => {
+              const offsetY = Math.sin(time + seg.index * dg.phaseStep) * dg.amplitude;
+              seg.sprite.y = seg.baseY + offsetY;
+              seg.sprite.refreshBody();
+            });
+          }
+
+          // Fire pillars — erupt from dragon ground (level 6)
+          if (scene.firePillars && scene.firePillars.length > 0) {
+            scene.firePillars.forEach(pillar => {
+              pillar.fireTimer++;
+              if (pillar.fireTimer >= pillar.fireData.interval) {
+                pillar.fireTimer = 0;
+                pillar.fireActive = true;
+                pillar.fireHeight = 0;
+              }
+              if (pillar.fireActive) {
+                pillar.fireHeight += 3;
+                const maxH = 100;
+                if (pillar.fireHeight > maxH) {
+                  pillar.fireActive = false;
+                  pillar.fireHeight = 0;
+                  pillar.setAlpha(0);
+                } else {
+                  const ratio = pillar.fireHeight / maxH;
+                  pillar.setAlpha(0.85);
+                  const groundY = 410 + Math.sin(scene.time.now * 0.001 * (levelDef.dragonGround.frequency * 40) + pillar.fireData.x * 0.003) * levelDef.dragonGround.amplitude;
+                  pillar.y = groundY - pillar.fireHeight / 2;
+                  pillar.setDisplaySize(20, pillar.fireHeight);
+                  pillar.body.reset(pillar.x, pillar.y);
+                }
+              }
+            });
+          }
+
           // Block all input while chess duel is active
           if (scene.chessActive && !scene.chessCompleted) return;
 
@@ -5981,6 +6537,46 @@ class MarioGame {
         130.81, 0, 130.81, 0, 130.81, 0, 130.81, 0
       ];
       tempo = 140; // Fast and energetic!
+    } else if (this.currentLevelIndex === 5) {
+      // Level 6 — Sicilian Dragon theme (E minor, aggressive, chromatic, dark fire)
+      melody = [
+        // Bar 1-2: Dragon's tail coiling down chromatically
+        659.25, 622.25, 587.33, 554.37, 523.25, 493.88, 466.16, 440.00,
+        // Bar 3-4: Rising fire breath
+        440.00, 493.88, 523.25, 587.33, 659.25, 783.99, 880.00, 0,
+        // Bar 5-6: Sharp stabs — Hungarian minor augmented 2nd
+        466.16, 0, 466.16, 0, 622.25, 0, 587.33, 0,
+        369.99, 0, 369.99, 0, 523.25, 0, 493.88, 0,
+        // Bar 7-8: Dragon ascending
+        329.63, 392.00, 466.16, 554.37, 659.25, 0, 783.99, 880.00,
+        // Bar 9-10: Menacing arpeggio — Em, G, Bdim
+        329.63, 0, 392.00, 0, 493.88, 0, 392.00, 0,
+        392.00, 0, 466.16, 0, 587.33, 0, 466.16, 0,
+        // Bar 11-12: Fire pillar eruption
+        622.25, 0, 783.99, 0, 622.25, 587.33, 554.37, 523.25,
+        // Bar 13-14: Grand theme — heroic but dark
+        659.25, 0, 783.99, 0, 880.00, 783.99, 659.25, 587.33,
+        // Bar 15-16: Decay — dragon's roar fading
+        523.25, 466.16, 392.00, 329.63, 293.66, 0, 329.63, 0
+      ];
+      bass = [
+        // Deep rumbling E pedal — dragon's heartbeat
+        82.41, 82.41, 82.41, 82.41, 82.41, 82.41, 82.41, 82.41,
+        // Rising tension
+        82.41, 82.41, 98.00, 98.00, 110.00, 110.00, 123.47, 123.47,
+        // Chromatic descent — tail coiling
+        130.81, 123.47, 116.54, 110.00, 103.83, 98.00, 92.50, 87.31,
+        // Heavy march
+        82.41, 0, 82.41, 0, 82.41, 0, 82.41, 0,
+        // Second pass — more intense
+        98.00, 0, 98.00, 0, 110.00, 0, 110.00, 0,
+        87.31, 0, 87.31, 0, 82.41, 0, 82.41, 0,
+        // Dragon soaring
+        130.81, 0, 110.00, 0, 98.00, 0, 87.31, 0,
+        // Final beat — deep and dark
+        65.41, 0, 65.41, 0, 82.41, 82.41, 65.41, 0
+      ];
+      tempo = 165; // Aggressive Sicilian tempo
     } else {
       // Level 1 — Dreamy, ethereal, minor-mode fairy tale chords
       melody = [
