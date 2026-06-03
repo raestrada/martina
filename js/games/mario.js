@@ -27,7 +27,7 @@ class MarioGame {
       { num: 6, name: "La Jugada Invisible", icon: "🐉", biome: "volcano", unlocked: false, desc: "Siciliana Dragón. Cueva volcánica de plataformas ardientes." },
       { num: 7, name: "El Pescador y el Elegante", icon: "🌉", biome: "river", unlocked: false, desc: "Oposición en el Río. Deslizamientos sobre puentes de agua cristalina." },
       { num: 8, name: "El Relámpago y el Vikingo", icon: "⛵", biome: "ocean", unlocked: false, desc: "Blitz Escandinavo. El mar embravecido y las cubiertas del barco vikingo." },
-      { num: 9, name: "La Sombra que Jugaba", icon: "👥", biome: "mirror", unlocked: false, desc: "El Laberinto de la Sombra. Un mundo en espejo con reflejos oscuros." },
+      { num: 9, name: "La Sombra que Jugaba", icon: "🔦", biome: "shadow_labyrinth", unlocked: false, desc: "El Laberinto de Sombras. Usa tu linterna para disipar la oscuridad y enfrentar a La Sombra." },
       { num: 10, name: "Lo que no se ve en el Tablero", icon: "🌫️", biome: "swamp", unlocked: false, desc: "Niebla de la Frustración. Un pantano cubierto de misteriosa bruma." },
       { num: 11, name: "La Última Grieta", icon: "🏜️", biome: "canyon", unlocked: false, desc: "Columnas Abiertas. Desfiladeros y cañones rocosos agrietados." },
       { num: 12, name: "El Peón que Bailaba", icon: "💃", biome: "temple", unlocked: false, desc: "Fianchetto Rítmico. Un templo de plataformas musicales danzantes." },
@@ -273,6 +273,12 @@ class MarioGame {
               </button>
             </div>
           </div>
+
+          <!-- Flashlight Battery Bar (only visible in shadow_labyrinth) -->
+          <div id="flashlight-bar" style="display:none; width:100%; max-width:400px; margin:0 auto 4px auto; height:8px; background:#1a1028; border:1px solid #3a2060; border-radius:4px; overflow:hidden;">
+            <div id="flashlight-fill" style="width:100%; height:100%; background: linear-gradient(90deg, #fbbf24, #fef08a, #ffffff); border-radius:3px; transition: width 0.15s linear;"></div>
+          </div>
+          <div id="flashlight-label" style="display:none; text-align:center; color:#a78bfa; font-size:10px; font-family:'Outfit',sans-serif; margin-bottom:4px;">🔦 Linterna <span style="color:#fbbf24;">[E]</span></div>
 
           <!-- Active Canvas Container -->
           <div class="mario-canvas-container" id="phaser-game-parent">
@@ -2989,6 +2995,95 @@ class MarioGame {
                 bgCtx.lineTo(rx - 8, ry + 30);
               }
               bgCtx.stroke();
+            } else if (biome === 'shadow_labyrinth') {
+              // --- SHADOW LABYRINTH BACKGROUND: Dark void, chessboard fragments, the crack in the sky ---
+              const slGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
+              slGrad.addColorStop(0, '#020108');
+              slGrad.addColorStop(0.3, '#050312');
+              slGrad.addColorStop(0.6, '#0a0818');
+              slGrad.addColorStop(0.85, '#100d24');
+              slGrad.addColorStop(1, '#08061a');
+              bgCtx.fillStyle = slGrad;
+              bgCtx.fillRect(0, 0, 800, 450);
+
+              // Subtle chessboard grid stretching to horizon
+              const slHorizonY = 280;
+              const slVanishingX = 400;
+              bgCtx.strokeStyle = 'rgba(100, 80, 160, 0.04)';
+              bgCtx.lineWidth = 0.5;
+              for (let angle = -7; angle <= 7; angle++) {
+                bgCtx.beginPath();
+                bgCtx.moveTo(slVanishingX, slHorizonY);
+                bgCtx.lineTo(slVanishingX + angle * 130, 450);
+                bgCtx.stroke();
+              }
+              for (let i = 0; i < 16; i++) {
+                const y = slHorizonY + Math.pow(i / 16, 2.2) * (450 - slHorizonY);
+                bgCtx.strokeStyle = `rgba(100,80,160,${0.03 + (16-i)*0.003})`;
+                bgCtx.beginPath();
+                bgCtx.moveTo(0, y);
+                bgCtx.lineTo(800, y);
+                bgCtx.stroke();
+              }
+
+              // The Crack in the Sky (a1 to h8 diagonal - from cuento 9)
+              bgCtx.save();
+              bgCtx.globalAlpha = 0.25;
+              bgCtx.strokeStyle = '#4a2080';
+              bgCtx.lineWidth = 3;
+              bgCtx.shadowColor = 'rgba(140, 60, 220, 0.5)';
+              bgCtx.shadowBlur = 15;
+              bgCtx.beginPath();
+              bgCtx.moveTo(0, 40);
+              bgCtx.lineTo(800, 280);
+              bgCtx.stroke();
+              bgCtx.shadowBlur = 0;
+              bgCtx.lineWidth = 1;
+              bgCtx.strokeStyle = 'rgba(180, 100, 255, 0.35)';
+              bgCtx.beginPath();
+              bgCtx.moveTo(0, 42);
+              bgCtx.lineTo(800, 282);
+              bgCtx.stroke();
+              bgCtx.restore();
+
+              // Floating ghostly light specks
+              for (let i = 0; i < 50; i++) {
+                const lx = Math.random() * 800;
+                const ly = Math.random() * 350;
+                const lr = Math.random() * 2 + 0.5;
+                const la = Math.random() * 0.3 + 0.05;
+                bgCtx.fillStyle = `rgba(200, 180, 255, ${la})`;
+                bgCtx.beginPath();
+                bgCtx.arc(lx, ly, lr, 0, Math.PI * 2);
+                bgCtx.fill();
+              }
+
+              // Scattered brighter specks (trapped souls of light)
+              bgCtx.fillStyle = 'rgba(220, 210, 255, 0.2)';
+              for (let i = 0; i < 15; i++) {
+                const sx = 100 + Math.random() * 600;
+                const sy = 20 + Math.random() * 200;
+                bgCtx.beginPath();
+                bgCtx.arc(sx, sy, 2 + Math.random(), 0, Math.PI * 2);
+                bgCtx.fill();
+              }
+
+              // Faint broken chess piece silhouettes
+              bgCtx.fillStyle = 'rgba(40, 30, 60, 0.3)';
+              const drawSilhouette = (cx, cy, s) => {
+                bgCtx.beginPath();
+                bgCtx.moveTo(cx - s, cy + s);
+                bgCtx.lineTo(cx, cy - s);
+                bgCtx.lineTo(cx + s, cy + s);
+                bgCtx.closePath();
+                bgCtx.fill();
+              };
+              drawSilhouette(120, 120, 8);
+              drawSilhouette(350, 80, 10);
+              drawSilhouette(600, 140, 7);
+              drawSilhouette(720, 60, 9);
+              drawSilhouette(200, 180, 6);
+
             } else {
               // --- GRASS BACKGROUND: Magical realm dreamscape ---
               const skyGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
@@ -3470,6 +3565,75 @@ class MarioGame {
               midCtx.lineTo(800, 450);
               midCtx.closePath();
               midCtx.fill();
+            } else if (biome === 'shadow_labyrinth') {
+              // --- SHADOW LABYRINTH MIDGROUND: Broken chessboard islands, dark crystals ---
+              midCtx.fillStyle = 'rgba(10, 8, 24, 0.0)';
+              midCtx.fillRect(0, 0, 800, 450);
+
+              // Dark floating crystal platforms
+              const drawShadowCrystal = (x, y, w, h, underH) => {
+                const grad = midCtx.createLinearGradient(x, y, x, y + h);
+                grad.addColorStop(0, 'rgba(30, 20, 50, 0.5)');
+                grad.addColorStop(1, 'rgba(15, 10, 30, 0.2)');
+                midCtx.fillStyle = grad;
+                midCtx.beginPath();
+                midCtx.moveTo(x, y);
+                midCtx.lineTo(x + w, y);
+                midCtx.lineTo(x + w - 12, y + h);
+                midCtx.lineTo(x + 12, y + h);
+                midCtx.closePath();
+                midCtx.fill();
+                midCtx.strokeStyle = 'rgba(100, 70, 160, 0.2)';
+                midCtx.lineWidth = 0.8;
+                midCtx.stroke();
+                // Chessboard fragment on surface
+                midCtx.fillStyle = 'rgba(120, 90, 180, 0.15)';
+                for (let cx = x + 4; cx < x + w - 4; cx += 24) {
+                  midCtx.fillRect(cx, y + 2, 12, 10);
+                }
+                // Underside shadow
+                if (underH > 0) {
+                  const underGrad = midCtx.createLinearGradient(0, y + h, 0, y + h + underH);
+                  underGrad.addColorStop(0, 'rgba(20, 10, 40, 0.4)');
+                  underGrad.addColorStop(1, 'rgba(8, 4, 20, 0.05)');
+                  midCtx.fillStyle = underGrad;
+                  midCtx.beginPath();
+                  midCtx.moveTo(x + 12, y + h);
+                  midCtx.lineTo(x + w - 12, y + h);
+                  midCtx.lineTo(x + w / 2, y + h + underH);
+                  midCtx.closePath();
+                  midCtx.fill();
+                }
+              };
+
+              drawShadowCrystal(80, 330, 180, 16, 40);
+              drawShadowCrystal(420, 270, 200, 16, 45);
+              drawShadowCrystal(260, 190, 140, 14, 30);
+              drawShadowCrystal(620, 240, 150, 16, 35);
+
+              // Floating chessboard fragments
+              midCtx.fillStyle = 'rgba(120, 90, 180, 0.06)';
+              const drawChessboardFrag = (cx, cy, s) => {
+                midCtx.fillRect(cx, cy, s, s);
+                midCtx.fillRect(cx + s, cy + s, s, s);
+                midCtx.strokeStyle = 'rgba(160, 120, 220, 0.1)';
+                midCtx.strokeRect(cx, cy, s * 2, s * 2);
+              };
+              drawChessboardFrag(160, 100, 12);
+              drawChessboardFrag(500, 120, 14);
+              drawChessboardFrag(680, 80, 10);
+              drawChessboardFrag(340, 70, 11);
+              drawChessboardFrag(60, 200, 10);
+
+              // Wispy ghost lights in midground
+              for (let i = 0; i < 25; i++) {
+                const mx = Math.random() * 800;
+                const my = Math.random() * 380;
+                midCtx.fillStyle = `rgba(180, 160, 240, ${Math.random() * 0.1 + 0.03})`;
+                midCtx.beginPath();
+                midCtx.arc(mx, my, Math.random() * 1.5 + 0.3, 0, Math.PI * 2);
+                midCtx.fill();
+              }
             } else {
               const drawIsland = (x, y, w, h, underH) => {
                 // Island top surface with checkered pattern
@@ -4556,6 +4720,24 @@ class MarioGame {
             ambEmitter.setDepth(10); // Draw above platforms & player
             ambEmitter.setScrollFactor(0); // Locked to screen space!
             scene.ambientParticles.push(ambEmitter);
+          } else if (biome === 'shadow_labyrinth') {
+            // Ghostly light specks floating slowly upward
+            const ambEmitter = scene.add.particles(0, 0, 'sparkle', {
+              x: { min: 0, max: levelDef.worldWidth },
+              y: { min: 80, max: 400 },
+              speed: { min: 2, max: 10 },
+              angle: { min: 250, max: 290 },
+              scale: { start: 0.3, end: 0 },
+              alpha: { start: 0.2, end: 0 },
+              lifespan: { min: 4000, max: 8000 },
+              frequency: 500,
+              quantity: 1,
+              tint: [0xb8a0f8, 0xc4b5fd, 0x8b7ce0],
+              blendMode: 'ADD'
+            });
+            ambEmitter.setDepth(0);
+            ambEmitter.setScrollFactor(0.3);
+            scene.ambientParticles.push(ambEmitter);
           }
 
           // 2. Physics Static Platforms Group
@@ -5048,9 +5230,33 @@ class MarioGame {
                   block.fillRect(p.x + 10 + i * 45, p.y + 8, 12, 8);
                 }
 
-                block.lineStyle(1.8, 0x334155, 0.8);
-                block.strokeRect(p.x, p.y, p.w, p.h);
+              block.lineStyle(1.8, 0x334155, 0.8);
+              block.strokeRect(p.x, p.y, p.w, p.h);
               }
+            } else if (biome === 'shadow_labyrinth') {
+              // Shadow stone platforms — obsidian-like with purple edges
+              block.fillStyle(0x1a1028, 0.95);
+              block.fillRect(p.x, p.y, p.w, p.h);
+              block.fillStyle(0x251838, 0.6);
+              block.fillRect(p.x + 2, p.y + 2, p.w - 4, p.h - 4);
+              // Dark purple top edge glow
+              block.fillStyle(0x4a2080, 0.5);
+              block.fillRect(p.x, p.y, p.w, 3);
+              block.fillStyle(0x7c3aed, 0.2);
+              block.fillRect(p.x, p.y, p.w, 1);
+              // Chessboard fragments embedded in the stone
+              block.fillStyle(0x5b3a9e, 0.25);
+              for (let cx = p.x + 6; cx < p.x + p.w - 6; cx += 22) {
+                block.fillRect(cx, p.y + 4, 11, 8);
+                block.fillRect(cx + 11, p.y + 12, 11, 8);
+              }
+              // Mystical specks in the stone
+              block.fillStyle(0xa78bfa, 0.12);
+              for (let i = 0; i < 20; i++) {
+                block.fillRect(p.x + 6 + Math.random() * (p.w - 12), p.y + 6 + Math.random() * (p.h - 12), Math.random() * 2 + 1, Math.random() * 2 + 1);
+              }
+              block.lineStyle(1.5, 0x4a2080, 0.6);
+              block.strokeRect(p.x, p.y, p.w, p.h);
             } else {
               // Grass biome — rich earth platforms with lush grass top
               block.fillStyle(0x4a3728, 0.95);
@@ -5504,6 +5710,237 @@ class MarioGame {
             airEnemy.play('bishop-fly');
           });
 
+          // --- SHADOW LABYRINTH MECHANICS: Shadow enemies, barriers, light orbs, flashlight ---
+          if (biome === 'shadow_labyrinth') {
+            // Shadow enemy texture — dark amorphous silhouette with glowing red eyes
+            if (!scene.textures.exists('sombra_enemy')) {
+              const seCanvas = document.createElement('canvas');
+              seCanvas.width = 32; seCanvas.height = 42;
+              const seCtx = seCanvas.getContext('2d');
+              // Dark amorphous body
+              seCtx.fillStyle = 'rgba(10, 5, 20, 0.85)';
+              seCtx.beginPath();
+              seCtx.ellipse(16, 24, 12, 16, 0, 0, Math.PI * 2);
+              seCtx.fill();
+              // Darker core
+              seCtx.fillStyle = 'rgba(5, 2, 12, 0.7)';
+              seCtx.beginPath();
+              seCtx.ellipse(16, 22, 8, 11, 0, 0, Math.PI * 2);
+              seCtx.fill();
+              // Glowing red eyes
+              seCtx.fillStyle = '#ff2222';
+              seCtx.shadowColor = '#ff0000';
+              seCtx.shadowBlur = 4;
+              seCtx.beginPath();
+              seCtx.arc(12, 18, 2.5, 0, Math.PI * 2);
+              seCtx.fill();
+              seCtx.beginPath();
+              seCtx.arc(20, 18, 2.5, 0, Math.PI * 2);
+              seCtx.fill();
+              seCtx.shadowBlur = 0;
+              // Wispy tendrils at bottom
+              seCtx.strokeStyle = 'rgba(20, 10, 30, 0.4)';
+              seCtx.lineWidth = 1;
+              for (let t = 0; t < 3; t++) {
+                seCtx.beginPath();
+                seCtx.moveTo(12 + t * 5, 36);
+                seCtx.quadraticCurveTo(14 + t * 5, 40, 10 + t * 6, 42);
+                seCtx.stroke();
+              }
+              scene.textures.addCanvas('sombra_enemy', seCanvas);
+            }
+
+            // Shadow air enemy texture
+            if (!scene.textures.exists('sombra_air')) {
+              const saCanvas = document.createElement('canvas');
+              saCanvas.width = 28; saCanvas.height = 42;
+              const saCtx = saCanvas.getContext('2d');
+              saCtx.fillStyle = 'rgba(15, 5, 25, 0.7)';
+              saCtx.beginPath();
+              saCtx.ellipse(14, 24, 10, 14, 0, 0, Math.PI * 2);
+              saCtx.fill();
+              saCtx.fillStyle = '#ff3333';
+              saCtx.shadowColor = '#ff0000';
+              saCtx.shadowBlur = 3;
+              saCtx.beginPath();
+              saCtx.arc(10, 18, 2, 0, Math.PI * 2);
+              saCtx.fill();
+              saCtx.beginPath();
+              saCtx.arc(18, 18, 2, 0, Math.PI * 2);
+              saCtx.fill();
+              saCtx.shadowBlur = 0;
+              // Shadow wings
+              saCtx.fillStyle = 'rgba(10, 3, 20, 0.3)';
+              saCtx.beginPath();
+              saCtx.ellipse(4, 20, 6, 10, -0.3, 0, Math.PI * 2);
+              saCtx.fill();
+              saCtx.beginPath();
+              saCtx.ellipse(24, 20, 6, 10, 0.3, 0, Math.PI * 2);
+              saCtx.fill();
+              scene.textures.addCanvas('sombra_air', saCanvas);
+            }
+
+            // Spawn shadow ground enemies
+            scene.shadowEnemies = scene.physics.add.group();
+            const shadowEnemiesData = levelDef.shadowEnemiesData || [];
+            shadowEnemiesData.forEach(se => {
+              const enemy = scene.physics.add.sprite(se.x, se.y, 'sombra_enemy');
+              enemy.setDisplaySize(32, 42);
+              enemy.setSize(24, 34);
+              enemy.setOffset(4, 4);
+              enemy.setCollideWorldBounds(true);
+              enemy.leftBound = se.left;
+              enemy.rightBound = se.right;
+              enemy.speed = se.speed;
+              enemy.dead = false;
+              enemy.lightExposure = 0;
+              enemy.setAlpha(0); // invisible outside flashlight
+              enemy.body.setVelocityX(-se.speed);
+              scene.shadowEnemies.add(enemy);
+            });
+
+            // Spawn shadow air enemies
+            scene.shadowAirEnemies = scene.physics.add.group({ allowGravity: false });
+            const shadowAirEnemiesData = levelDef.shadowAirEnemiesData || [];
+            shadowAirEnemiesData.forEach(sae => {
+              const ae = scene.physics.add.sprite(sae.x, sae.y, 'sombra_air');
+              ae.setDisplaySize(28, 42);
+              ae.setSize(22, 34);
+              ae.setOffset(3, 4);
+              ae.setAlpha(0); // invisible outside flashlight
+              scene.shadowAirEnemies.add(ae);
+              ae.body.allowGravity = false;
+              ae.body.setImmovable(true);
+              ae.pattern = sae.pattern;
+              ae.speed = sae.speed;
+              if (sae.pattern === 'horizontal') {
+                ae.minX = sae.minX; ae.maxX = sae.maxX;
+                ae.body.setVelocityX(sae.speed);
+              } else if (sae.pattern === 'sinusoidal') {
+                ae.baseY = sae.baseY; ae.ampY = sae.ampY;
+                ae.phase = Math.random() * Math.PI * 2;
+                ae.minX = sae.minX; ae.maxX = sae.maxX;
+                ae.body.setVelocityX(sae.speed);
+              } else if (sae.pattern === 'diagonal') {
+                ae.minX = sae.minX; ae.maxX = sae.maxX;
+                ae.minY = sae.minY; ae.maxY = sae.maxY;
+                ae.speedY = sae.speedY || 40;
+                ae.body.setVelocityX(sae.speed);
+                ae.body.setVelocityY(ae.speedY);
+              }
+              ae.startX = sae.x;
+              ae.startY = sae.y;
+            });
+
+            // Shadow barriers — static walls that dissolve under flashlight
+            scene.shadowBarriers = [];
+            const shadowBarriersData = levelDef.shadowBarriers || [];
+            shadowBarriersData.forEach(sb => {
+              const barrier = scene.add.rectangle(sb.x, sb.y + sb.h / 2, sb.w, sb.h, 0x2a1050, 0.7);
+              barrier.setDepth(3);
+              barrier.isShadowBarrier = true;
+              barrier.maxAlpha = 0.7;
+              scene.physics.add.existing(barrier, true);
+              barrier.body.setSize(sb.w, sb.h);
+              barrier.body.setImmovable(true);
+              scene.physics.add.collider(scene.player, barrier);
+              scene.shadowBarriers.push(barrier);
+            });
+
+            // Light orbs — collectibles that fully recharge the flashlight
+            scene.lightOrbs = scene.physics.add.group({ allowGravity: false, immovable: true });
+            const lightOrbsData = levelDef.lightOrbs || [];
+            lightOrbsData.forEach(lo => {
+              if (!scene.textures.exists('light_orb')) {
+                const loCanvas = document.createElement('canvas');
+                loCanvas.width = 20; loCanvas.height = 20;
+                const loCtx = loCanvas.getContext('2d');
+                const loGrad = loCtx.createRadialGradient(10, 10, 2, 10, 10, 10);
+                loGrad.addColorStop(0, 'rgba(255, 255, 200, 0.95)');
+                loGrad.addColorStop(0.4, 'rgba(251, 191, 36, 0.7)');
+                loGrad.addColorStop(0.8, 'rgba(200, 150, 50, 0.2)');
+                loGrad.addColorStop(1, 'rgba(100, 70, 30, 0)');
+                loCtx.fillStyle = loGrad;
+                loCtx.beginPath();
+                loCtx.arc(10, 10, 10, 0, Math.PI * 2);
+                loCtx.fill();
+                scene.textures.addCanvas('light_orb', loCanvas);
+              }
+              const orb = scene.physics.add.sprite(lo.x, lo.y, 'light_orb');
+              orb.setDisplaySize(20, 20);
+              orb.setAlpha(0.9);
+              scene.lightOrbs.add(orb);
+              orb.body.allowGravity = false;
+              orb.body.setImmovable(true);
+              scene.tweens.add({
+                targets: orb,
+                y: lo.y - 6,
+                alpha: 0.7,
+                duration: 1200,
+                yoyo: true,
+                repeat: -1,
+                ease: 'Sine.easeInOut'
+              });
+            });
+
+            // Flashlight cone sprite (initially hidden)
+            scene.flashlightCone = scene.add.graphics();
+            scene.flashlightCone.setDepth(10);
+
+            // Flashlight collision overlap with light orbs
+            scene.physics.add.overlap(scene.player, scene.lightOrbs, (player, orb) => {
+              if (!orb.active) return;
+              orb.destroy();
+              scene.player.flashlightBattery = 100;
+              self.synthesizeSound('coin');
+              // Light burst effect
+              for (let i = 0; i < 8; i++) {
+                const angle = (i / 8) * Math.PI * 2;
+                const p = scene.add.circle(orb.x, orb.y, 3, 0xfef08a, 0.9);
+                scene.tweens.add({
+                  targets: p,
+                  x: p.x + Math.cos(angle) * 40,
+                  y: p.y + Math.sin(angle) * 40,
+                  alpha: 0,
+                  scale: 0.1,
+                  duration: 400,
+                  onComplete: () => p.destroy()
+                });
+              }
+            });
+
+            // Show flashlight HUD
+            const flBar = document.getElementById('flashlight-bar');
+            const flLabel = document.getElementById('flashlight-label');
+            if (flBar) flBar.style.display = 'block';
+            if (flLabel) flLabel.style.display = 'block';
+
+            // Tutorial — teach the player to use flashlight
+            scene.showFlashlightTutorial = true;
+            scene.flashlightTutorialText = scene.add.text(
+              scene.cameras.main.worldView.x + 400, 180,
+              '🔦 ¡Usa la linterna!\nPresiona [E] para iluminar\nlas sombras y avanzar',
+              {
+                fontFamily: "'Outfit', sans-serif",
+                fontSize: '16px',
+                fontStyle: 'bold',
+                fill: '#fef08a',
+                stroke: '#1a1028',
+                strokeThickness: 4,
+                align: 'center',
+                lineSpacing: 6
+              }
+            ).setOrigin(0.5).setDepth(20).setScrollFactor(0);
+            scene.tweens.add({
+              targets: scene.flashlightTutorialText,
+              alpha: 0.6,
+              duration: 800,
+              yoyo: true,
+              repeat: -1,
+              ease: 'Sine.easeInOut'
+            });
+          }
+
           // 6.5 Secret Gold Crowns group ( Celeste / Hollow Knight style collectibles )
           const crownsData = levelDef.crownsData || [];
 
@@ -5637,7 +6074,7 @@ class MarioGame {
           scene.bossHP = 0;
           scene.bossInvincible = 0;
           
-          if ((biome === 'neon' || biome === 'river') && levelDef.bossData) {
+          if ((biome === 'neon' || biome === 'river' || biome === 'shadow_labyrinth') && levelDef.bossData) {
             const bd = levelDef.bossData;
             
             let bossTex = 'boss_alfil';
@@ -5653,6 +6090,62 @@ class MarioGame {
               barFillGrad = 'linear-gradient(90deg,#ef4444,#34d399)';
               wallGlowColor1 = 0x06b6d4;
               wallGlowColor2 = 0x34d399;
+            } else if (biome === 'shadow_labyrinth') {
+              // La Sombra texture — large dark amorphous entity with red eyes
+              const sbCanvas = document.createElement('canvas');
+              sbCanvas.width = 80; sbCanvas.height = 100;
+              const sbCtx = sbCanvas.getContext('2d');
+              const sbGrad = sbCtx.createRadialGradient(40, 50, 5, 40, 50, 45);
+              sbGrad.addColorStop(0, 'rgba(5, 2, 15, 0.95)');
+              sbGrad.addColorStop(0.6, 'rgba(15, 5, 30, 0.8)');
+              sbGrad.addColorStop(1, 'rgba(20, 10, 40, 0)');
+              sbCtx.fillStyle = sbGrad;
+              sbCtx.beginPath();
+              sbCtx.arc(40, 50, 45, 0, Math.PI * 2);
+              sbCtx.fill();
+              // Giant red eyes
+              sbCtx.fillStyle = '#ff1111';
+              sbCtx.shadowColor = '#ff0000';
+              sbCtx.shadowBlur = 12;
+              sbCtx.beginPath();
+              sbCtx.arc(28, 40, 6, 0, Math.PI * 2);
+              sbCtx.fill();
+              sbCtx.beginPath();
+              sbCtx.arc(52, 40, 6, 0, Math.PI * 2);
+              sbCtx.fill();
+              sbCtx.shadowBlur = 0;
+              // Inner pupils
+              sbCtx.fillStyle = '#440000';
+              sbCtx.beginPath();
+              sbCtx.arc(28, 40, 3, 0, Math.PI * 2);
+              sbCtx.fill();
+              sbCtx.beginPath();
+              sbCtx.arc(52, 40, 3, 0, Math.PI * 2);
+              sbCtx.fill();
+              // Shadow tendrils at bottom
+              sbCtx.strokeStyle = 'rgba(10, 3, 20, 0.5)';
+              sbCtx.lineWidth = 2;
+              for (let t = 0; t < 5; t++) {
+                sbCtx.beginPath();
+                sbCtx.moveTo(25 + t * 8, 78);
+                sbCtx.quadraticCurveTo(28 + t * 8, 88, 20 + t * 10, 95);
+                sbCtx.stroke();
+              }
+              // Crown-shaped top
+              sbCtx.fillStyle = 'rgba(20, 10, 40, 0.6)';
+              sbCtx.beginPath();
+              sbCtx.moveTo(33, 10);
+              sbCtx.lineTo(40, 0);
+              sbCtx.lineTo(47, 10);
+              sbCtx.closePath();
+              sbCtx.fill();
+              scene.textures.addCanvas('boss_sombra', sbCanvas);
+              bossTex = 'boss_sombra';
+              bossName = 'La Sombra';
+              barBorderColor = '#7c3aed';
+              barFillGrad = 'linear-gradient(90deg,#ef4444,#4a2080,#a855f7)';
+              wallGlowColor1 = 0x4a2080;
+              wallGlowColor2 = 0x7c3aed;
             }
             
             // Boss sprite (invisible until room activated)
@@ -6237,6 +6730,85 @@ class MarioGame {
             }
           });
 
+          // Shadow enemy collision — immune to stomp, damaged by light
+          if (biome === 'shadow_labyrinth' && scene.shadowEnemies) {
+            scene.physics.add.overlap(scene.player, scene.shadowEnemies, (player, enemy) => {
+              if (enemy.dead) return;
+              if (player.flashlightActive) {
+                enemy.lightExposure = (enemy.lightExposure || 0) + 1;
+                if (enemy.lightExposure > 35) {
+                  enemy.dead = true;
+                  enemy.body.setVelocityX(0);
+                  enemy.body.allowGravity = false;
+                  self.score += 200;
+                  self.synthesizeSound('stomp');
+                  document.getElementById('hud-score').textContent = self.score.toString().padStart(5, '0');
+                  // Dissolve into light particles
+                  for (let i = 0; i < 8; i++) {
+                    const a = (i / 8) * Math.PI * 2;
+                    const p = scene.add.circle(enemy.x, enemy.y, 2, 0xfef08a, 0.7);
+                    scene.tweens.add({
+                      targets: p,
+                      x: p.x + Math.cos(a) * 30,
+                      y: p.y + Math.sin(a) * 30,
+                      alpha: 0,
+                      scale: 0.1,
+                      duration: 500,
+                      onComplete: () => p.destroy()
+                    });
+                  }
+                  scene.tweens.add({
+                    targets: enemy,
+                    alpha: 0.3,
+                    scaleY: 0.1,
+                    duration: 300,
+                    onComplete: () => enemy.destroy()
+                  });
+                }
+              } else if (player.invincibility === 0) {
+                self.lives--;
+                player.invincibility = 60;
+                player.body.setVelocityX(player.x < enemy.x ? -200 : 200);
+                player.body.setVelocityY(-120);
+                self.synthesizeSound('damage');
+                scene.doDamageAnim();
+                document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
+                if (self.lives <= 0) { self.gameOver(); }
+              }
+            });
+
+            // Shadow air enemy collision
+            if (scene.shadowAirEnemies) {
+              scene.physics.add.overlap(scene.player, scene.shadowAirEnemies, (player, ae) => {
+                if (player.invincibility === 0) {
+                  self.lives--;
+                  player.invincibility = 60;
+                  player.body.setVelocityX(player.x < ae.x ? -220 : 220);
+                  player.body.setVelocityY(-150);
+                  self.synthesizeSound('damage');
+                  scene.doDamageAnim();
+                  document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
+                  if (self.lives <= 0) { self.gameOver(); }
+                }
+              });
+            }
+
+            // Player collision with boss projectiles
+            scene.physics.add.overlap(scene.player, scene.bossProjectiles, (player, proj) => {
+              if (player.invincibility === 0) {
+                proj.destroy();
+                self.lives--;
+                player.invincibility = 60;
+                player.body.setVelocityX(player.x < proj.x ? -180 : 180);
+                player.body.setVelocityY(-120);
+                self.synthesizeSound('damage');
+                scene.doDamageAnim();
+                document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
+                if (self.lives <= 0) { self.gameOver(); }
+              }
+            });
+          }
+
           // Goal overlap — biome-specific (Dragon head, Queen, Trophy)
           if (biome === 'dragon' && scene.dragonHeadGoal) {
             scene.physics.add.overlap(scene.player, scene.dragonHeadGoal, () => {
@@ -6431,12 +7003,20 @@ class MarioGame {
             left: Phaser.Input.Keyboard.KeyCodes.A,
             right: Phaser.Input.Keyboard.KeyCodes.D,
             dash: Phaser.Input.Keyboard.KeyCodes.SHIFT,
-            dash2: Phaser.Input.Keyboard.KeyCodes.C
+            dash2: Phaser.Input.Keyboard.KeyCodes.C,
+            flashlight: Phaser.Input.Keyboard.KeyCodes.E
           });
         },
         update: function() {
           const scene = this;
           if (self.gameState !== 'playing') return;
+
+          // Block all updates if chess duel is active and not completed
+          if (scene.chessActive && !scene.chessCompleted) {
+            // Keep invincibility frozen during chess duel so it doesn't expire!
+            scene.player.invincibility = 999;
+            return;
+          }
 
           // Runner game mode — completely different update
           if (levelDef.gameMode === 'runner') {
@@ -6819,8 +7399,197 @@ class MarioGame {
             });
           }
 
+          // --- SHADOW LABYRINTH UPDATE: Flashlight, shadow enemies, barriers ---
+          if (biome === 'shadow_labyrinth') {
+            // Flashlight activation
+            const flPressed = Phaser.Input.Keyboard.JustDown(scene.keysWASD.flashlight);
+            if (flPressed && scene.player.flashlightBattery > 0 && scene.player.flashlightCooldown <= 0) {
+              scene.player.flashlightActive = true;
+            }
+            if (scene.player.flashlightActive) {
+              scene.player.flashlightBattery = Math.max(0, scene.player.flashlightBattery - 1.2);
+              if (scene.player.flashlightBattery <= 0 || !scene.keysWASD.flashlight.isDown) {
+                scene.player.flashlightActive = false;
+                scene.player.flashlightCooldown = 90; // 5s cooldown at 60fps
+              }
+            } else {
+              // Passive recharge
+              scene.player.flashlightBattery = Math.min(100, scene.player.flashlightBattery + 0.15);
+              if (scene.player.flashlightCooldown > 0) scene.player.flashlightCooldown--;
+            }
+
+            // Track facing direction
+            if (scene.player.body.velocity.x > 10) scene.player.facingRight = true;
+            else if (scene.player.body.velocity.x < -10) scene.player.facingRight = false;
+
+            // Draw flashlight cone
+            scene.flashlightCone.clear();
+            if (scene.player.flashlightActive) {
+              const px = scene.player.x;
+              const py = scene.player.y - 10;
+              const dirX = scene.player.facingRight ? 1 : -1;
+              const coneLen = 120;
+              const coneAngle = Math.PI / 5; // ~36 degrees half-angle
+              scene.flashlightCone.fillStyle(0xfef08a, 0.15);
+              scene.flashlightCone.beginPath();
+              scene.flashlightCone.moveTo(px, py);
+              scene.flashlightCone.lineTo(
+                px + dirX * coneLen * Math.cos(-coneAngle),
+                py + coneLen * Math.sin(-coneAngle)
+              );
+              scene.flashlightCone.lineTo(
+                px + dirX * coneLen * Math.cos(coneAngle),
+                py + coneLen * Math.sin(coneAngle)
+              );
+              scene.flashlightCone.closePath();
+              scene.flashlightCone.fill();
+              // Brighter inner cone
+              scene.flashlightCone.fillStyle(0xfef08a, 0.12);
+              scene.flashlightCone.beginPath();
+              scene.flashlightCone.moveTo(px, py);
+              scene.flashlightCone.lineTo(
+                px + dirX * coneLen * 0.7 * Math.cos(-coneAngle * 0.6),
+                py + coneLen * 0.7 * Math.sin(-coneAngle * 0.6)
+              );
+              scene.flashlightCone.lineTo(
+                px + dirX * coneLen * 0.7 * Math.cos(coneAngle * 0.6),
+                py + coneLen * 0.7 * Math.sin(coneAngle * 0.6)
+              );
+              scene.flashlightCone.closePath();
+              scene.flashlightCone.fill();
+            }
+
+            // Update shadow barriers (dissolve under flashlight)
+            if (scene.shadowBarriers) {
+              scene.shadowBarriers.forEach(barrier => {
+                if (!barrier.active) return;
+                const bx = barrier.x;
+                const by = barrier.y;
+                const px = scene.player.x;
+                const py = scene.player.y - 10;
+                const distToBarrier = Phaser.Math.Distance.Between(px, py, bx, by);
+                const dirX = scene.player.facingRight ? 1 : -1;
+                const dxToBarrier = (bx - px) * dirX;
+                if (scene.player.flashlightActive && distToBarrier < 150 && dxToBarrier > -20) {
+                  barrier.alpha = Math.max(0, barrier.alpha - 0.02);
+                  if (barrier.alpha <= 0.05) {
+                    barrier.active = false;
+                    barrier.setVisible(false);
+                    barrier.body.enable = false;
+                  }
+                } else if (!scene.player.flashlightActive) {
+                  barrier.alpha = Math.min(barrier.maxAlpha, barrier.alpha + 0.005);
+                  if (barrier.alpha > 0.05 && !barrier.active) {
+                    barrier.active = true;
+                    barrier.setVisible(true);
+                    barrier.body.enable = true;
+                  }
+                }
+              });
+            }
+
+            // Update shadow ground enemies (visible in light, invisible in dark)
+            if (scene.shadowEnemies) {
+              scene.shadowEnemies.getChildren().forEach(enemy => {
+                if (enemy.dead) {
+                  enemy.setAlpha(0);
+                  return;
+                }
+                const px = scene.player.x;
+                const py = scene.player.y - 10;
+                const dist = Phaser.Math.Distance.Between(px, py, enemy.x, enemy.y);
+                const dirX = scene.player.facingRight ? 1 : -1;
+                const dx = (enemy.x - px) * dirX;
+                const inLight = scene.player.flashlightActive && dist < 140 && dx > -10;
+                if (inLight) {
+                  if (enemy.alpha < 1) enemy.setAlpha(Math.min(1, enemy.alpha + 0.1));
+                } else {
+                  if (enemy.alpha > 0) enemy.setAlpha(Math.max(0, enemy.alpha - 0.05));
+                  enemy.lightExposure = Math.max(0, (enemy.lightExposure || 0) - 1);
+                }
+                // Patrol movement
+                if (!enemy.dead) {
+                  if (enemy.x <= enemy.leftBound || enemy.x >= enemy.rightBound) {
+                    enemy.body.setVelocityX(-enemy.body.velocity.x);
+                  }
+                  if (enemy.body.velocity.x === 0) {
+                    enemy.body.setVelocityX(-enemy.speed);
+                  }
+                }
+              });
+            }
+
+            // Update shadow air enemies
+            if (scene.shadowAirEnemies) {
+              scene.shadowAirEnemies.getChildren().forEach(ae => {
+                if (!ae.active) return;
+                const px = scene.player.x;
+                const py = scene.player.y - 10;
+                const dist = Phaser.Math.Distance.Between(px, py, ae.x, ae.y);
+                const dirX = scene.player.facingRight ? 1 : -1;
+                const dx = (ae.x - px) * dirX;
+                const inLight = scene.player.flashlightActive && dist < 140 && dx > -10;
+                if (inLight) {
+                  ae.setAlpha(Math.min(1, ae.alpha + 0.15));
+                } else {
+                  ae.setAlpha(Math.max(0, ae.alpha - 0.05));
+                }
+                // Pattern movement
+                if (ae.pattern === 'horizontal') {
+                  ae.body.setVelocityX(ae.speed);
+                  if (ae.x >= ae.maxX) { ae.x = ae.maxX; ae.body.setVelocityX(-ae.speed); }
+                  if (ae.x <= ae.minX) { ae.x = ae.minX; ae.body.setVelocityX(ae.speed); }
+                } else if (ae.pattern === 'sinusoidal') {
+                  ae.phase = (ae.phase || 0) + 0.025;
+                  ae.body.setVelocityX(ae.speed);
+                  ae.y = ae.baseY + Math.sin(ae.phase) * ae.ampY;
+                  if (ae.x >= ae.maxX) { ae.x = ae.maxX; ae.body.setVelocityX(-ae.speed); }
+                  if (ae.x <= ae.minX) { ae.x = ae.minX; ae.body.setVelocityX(ae.speed); }
+                } else if (ae.pattern === 'diagonal') {
+                  if (ae.x >= ae.maxX || ae.x <= ae.minX) ae.body.setVelocityX(-ae.body.velocity.x);
+                  if (ae.y >= ae.maxY || ae.y <= ae.minY) ae.body.setVelocityY(-ae.body.velocity.y);
+                }
+              });
+            }
+
+            // Flashlight HUD update
+            const flFill = document.getElementById('flashlight-fill');
+            if (flFill) {
+              flFill.style.width = `${scene.player.flashlightBattery}%`;
+              flFill.style.background = scene.player.flashlightActive
+                ? 'linear-gradient(90deg, #fbbf24, #fef08a, #ffffff)'
+                : scene.player.flashlightCooldown > 0
+                  ? 'linear-gradient(90deg, #6b7280, #9ca3af)'
+                  : 'linear-gradient(90deg, #fbbf24, #fef08a, #ffffff)';
+            }
+
+            // Tutorial dismiss
+            if (scene.showFlashlightTutorial && scene.player.flashlightActive) {
+              scene.showFlashlightTutorial = false;
+              if (scene.flashlightTutorialText) {
+                scene.tweens.add({
+                  targets: scene.flashlightTutorialText,
+                  alpha: 0,
+                  duration: 500,
+                  onComplete: () => { if (scene.flashlightTutorialText) scene.flashlightTutorialText.destroy(); }
+                });
+              }
+            }
+
+            // Goal overlap for shadow_labyrinth (portal)
+            if (scene.whiteQueen && !self.player.isAscending) {
+              const gDist = Phaser.Math.Distance.Between(
+                scene.player.x, scene.player.y,
+                scene.whiteQueen.x, scene.whiteQueen.y
+              );
+              if (gDist < 50 && !scene.bossDefeated) {
+                // Prevent early exit — boss must be defeated first
+              }
+            }
+          }
+
           // --- BOSS SYSTEM UPDATE (Alfil Exiliado / El Elegante Veriss) ---
-          if ((biome === 'neon' || biome === 'river') && scene.boss && !scene.bossDefeated) {
+          if ((biome === 'neon' || biome === 'river' || biome === 'shadow_labyrinth') && scene.boss && !scene.bossDefeated) {
             const bd = levelDef.bossData;
             const playerInRoom = scene.player.x > bd.roomLeft + 30 && scene.player.x < bd.roomRight - 30;
             
@@ -6871,8 +7640,8 @@ class MarioGame {
               });
               
               // DRAMATIC BOSS NAME TEXT & HELP INSTRUCTIONS
-              const displayBossName = biome === 'river' ? "EL ELEGANTE VERISS" : "ALFIL EXILIADO";
-              const displayBossColor = biome === 'river' ? "#22d3ee" : "#c084fc";
+              const displayBossName = biome === 'river' ? "EL ELEGANTE VERISS" : biome === 'shadow_labyrinth' ? "LA SOMBRA" : "ALFIL EXILIADO";
+              const displayBossColor = biome === 'river' ? "#22d3ee" : biome === 'shadow_labyrinth' ? "#7c3aed" : "#c084fc";
               const bossNameText = scene.add.text(bd.roomLeft + rw0/2, 120, displayBossName, {
                 fontFamily: "'Outfit', sans-serif",
                 fontSize: '28px',
@@ -6885,6 +7654,8 @@ class MarioGame {
               
               const displayHelpText = biome === 'river'
                 ? "¡ATÁCALO CON UN DASH (TECLA X / C) O CAYENDO DESDE ARRIBA!"
+                : biome === 'shadow_labyrinth'
+                ? "¡ILUMÍNALA CON TU LINTERNA (TECLA E) PARA DEBILITARLA!"
                 : "¡ATÁCALO CON UN DASH (TECLA X / C) O PISANDO SU CABEZA!";
               const bossHelpText = scene.add.text(bd.roomLeft + rw0/2, 165, displayHelpText, {
                 fontFamily: "'Outfit', sans-serif",
@@ -7060,7 +7831,7 @@ class MarioGame {
               }
               
               scene.boss.projTimer++;
-              if (scene.boss.projTimer >= scene.boss.projInterval) {
+              if (scene.boss.projTimer >= scene.boss.projInterval && biome !== 'shadow_labyrinth') {
                 scene.boss.projTimer = 0;
                 // Only fire projectiles if boss is in floating state in river biome
                 if (biome !== 'river' || scene.boss.state === 'floating') {
@@ -7095,8 +7866,100 @@ class MarioGame {
                         scene.tweens.add({targets:proj, alpha:0.2, scale:0.1, duration:1800, onComplete:()=>proj.destroy()});
                       }
                       self.synthesizeSound('damage');
+              }
+              } else if (biome === 'shadow_labyrinth') {
+                // --- LA SOMBRA AI: Flees from light, erratic near darkness ---
+                const playerNearBoss = Phaser.Math.Distance.Between(
+                  scene.player.x, scene.player.y, scene.boss.x, scene.boss.y
+                );
+                const lightActive = scene.player.flashlightActive;
+                const bossFacingPlayer = scene.player.x > scene.boss.x ? 1 : -1;
+                scene.boss.setFlipX(bossFacingPlayer < 0);
+
+                // Phase determination based on HP
+                const phase = scene.bossHP <= 1 ? 3 : scene.bossHP <= 2 ? 2 : 1;
+                const phaseSpeed = phase === 1 ? 1 : phase === 2 ? 1.3 : 1.6;
+                const phaseProjFreq = phase === 1 ? 1 : phase === 2 ? 1.4 : 1.8;
+
+                scene.boss.moveTimer++;
+                if (scene.boss.moveTimer > (lightActive ? 30 : 60) / phaseSpeed) {
+                  scene.boss.moveTimer = 0;
+                  if (lightActive && playerNearBoss < 300) {
+                    // Flee from light
+                    scene.boss.moveDirX = bossFacingPlayer * -1;
+                    scene.boss.moveDirY = scene.player.y < scene.boss.y ? 1 : -1;
+                  } else {
+                    // Erratic movement in darkness
+                    scene.boss.moveDirX = Math.random() < 0.5 ? -1 : 1;
+                    scene.boss.moveDirY = Math.random() < 0.5 ? -1 : 1;
+                  }
+                }
+                const spd = scene.boss.speed * 0.018 * phaseSpeed;
+                const bx = scene.boss.x + scene.boss.moveDirX * spd;
+                const by = scene.boss.y + scene.boss.moveDirY * spd * 0.7;
+                scene.boss.x = Phaser.Math.Clamp(bx, scene.boss.minX, scene.boss.maxX);
+                scene.boss.y = Phaser.Math.Clamp(by, scene.boss.minY, scene.boss.maxY);
+
+                // Phase visual: more red tint in later phases
+                if (phase === 2) scene.boss.setTint(0xff4444);
+                else if (phase === 3) scene.boss.setTint(0xff1111);
+                else scene.boss.clearTint();
+
+                // Capture glowing pieces (visual reference to La Inmortal)
+                if (phase >= 2 && !scene.boss._capturedPiece) {
+                  scene.boss._capturedPiece = phase;
+                  for (let i = 0; i < 10; i++) {
+                    const a = (i / 10) * Math.PI * 2;
+                    const sp = scene.add.circle(scene.boss.x + Math.cos(a) * 30, scene.boss.y + Math.sin(a) * 30, 3, 0xfacc15, 0.8);
+                    sp.setDepth(5);
+                    scene.tweens.add({
+                      targets: sp, alpha: 0, scale: 2,
+                      x: sp.x + Math.cos(a) * 40, y: sp.y + Math.sin(a) * 40,
+                      duration: 600, onComplete: () => sp.destroy()
+                    });
+                  }
+                }
+
+                scene.boss.projTimer++;
+                if (scene.boss.projTimer >= Math.max(30, scene.boss.projInterval / phaseProjFreq)) {
+                  scene.boss.projTimer = 0;
+                  if (phase === 1) {
+                    // Single shadow projectile
+                    const angle = Phaser.Math.Angle.Between(scene.boss.x, scene.boss.y, scene.player.x, scene.player.y);
+                    const proj = scene.add.circle(scene.boss.x, scene.boss.y, 5, 0x4a2080, 0.9);
+                    scene.physics.add.existing(proj, false);
+                    proj.body.allowGravity = false;
+                    proj.body.setVelocity(Math.cos(angle) * bd.projectileSpeed, Math.sin(angle) * bd.projectileSpeed);
+                    scene.bossProjectiles.add(proj);
+                    scene.tweens.add({ targets: proj, alpha: 0.2, scale: 0.1, duration: 2000, onComplete: () => proj.destroy() });
+                  } else if (phase === 2) {
+                    // Fan of 3 projectiles
+                    const baseAngle = Phaser.Math.Angle.Between(scene.boss.x, scene.boss.y, scene.player.x, scene.player.y);
+                    for (let i = -1; i <= 1; i++) {
+                      const angle = baseAngle + i * 0.18;
+                      const proj = scene.add.circle(scene.boss.x, scene.boss.y, 5, 0x7c3aed, 0.9);
+                      scene.physics.add.existing(proj, false);
+                      proj.body.allowGravity = false;
+                      proj.body.setVelocity(Math.cos(angle) * bd.projectileSpeed * 1.1, Math.sin(angle) * bd.projectileSpeed * 1.1);
+                      scene.bossProjectiles.add(proj);
+                      proj.setBlendMode('ADD');
+                      scene.tweens.add({ targets: proj, alpha: 0.2, scale: 0.1, duration: 1800, onComplete: () => proj.destroy() });
                     }
                   } else {
+                    // Spiral of 6 projectiles
+                    for (let i = 0; i < 6; i++) {
+                      const angle = (i / 6) * Math.PI * 2 + scene.boss.projTimer * 0.05;
+                      const proj = scene.add.circle(scene.boss.x, scene.boss.y, 5, 0xef4444, 0.95);
+                      scene.physics.add.existing(proj, false);
+                      proj.body.allowGravity = false;
+                      proj.body.setVelocity(Math.cos(angle) * bd.projectileSpeed * 0.8, Math.sin(angle) * bd.projectileSpeed * 0.8);
+                      scene.bossProjectiles.add(proj);
+                      proj.setBlendMode('ADD');
+                      scene.tweens.add({ targets: proj, alpha: 0.2, scale: 0.1, duration: 1800, onComplete: () => proj.destroy() });
+                    }
+                  }
+                  if (phase >= 2) self.synthesizeSound('damage');
+                }
                     const dirs = [Math.PI/4, -Math.PI/4, Math.PI-Math.PI/4, -(Math.PI-Math.PI/4)];
                     const dir = dirs[Math.floor(Math.random()*dirs.length)];
                     const proj = scene.add.circle(scene.boss.x, scene.boss.y, 5, 0xa855f7, 0.9);
@@ -7116,11 +7979,22 @@ class MarioGame {
               
               if (scene.bossInvincible === 0) {
                 const dx = scene.player.x-scene.boss.x, dy = scene.player.y-scene.boss.y;
-                if (Math.sqrt(dx*dx+dy*dy) < 42) {
+                const distToBoss = Math.sqrt(dx*dx+dy*dy);
+                if (distToBoss < 42 || (biome === 'shadow_labyrinth' && distToBoss < 80 && scene.player.flashlightActive)) {
                   const isDashingHit = scene.player.isDashing;
                   const isStompHit = scene.player.body.velocity.y > 0 && scene.player.y < scene.boss.y;
+                  const isFlashlightHit = biome === 'shadow_labyrinth' && scene.player.flashlightActive && distToBoss < 80;
                   
-                  if (isStompHit || isDashingHit) {
+                  if (isStompHit || isDashingHit || isFlashlightHit) {
+                    if (isFlashlightHit && !isStompHit && !isDashingHit) {
+                      if (!scene.boss._lightDamageTimer) scene.boss._lightDamageTimer = 0;
+                      scene.boss._lightDamageTimer++;
+                      if (scene.boss._lightDamageTimer > 40) {
+                        scene.boss._lightDamageTimer = 0;
+                      } else {
+                        return;
+                      }
+                    }
                     scene.bossHP--;
                     scene.bossInvincible = 40;
                     if (isDashingHit) {
@@ -7128,7 +8002,7 @@ class MarioGame {
                       scene.player.body.setVelocityX(hitDir * 200);
                       scene.player.isDashing = false;
                       scene.player.body.allowGravity = true;
-                    } else {
+                    } else if (isStompHit) {
                       scene.player.body.setVelocityY(biome === 'river' ? -180 : -380);
                     }
                     self.synthesizeSound('stomp');
@@ -7136,7 +8010,7 @@ class MarioGame {
                     const fill = document.getElementById('boss-hp-fill');
                     if (fill) fill.style.width = `${(scene.bossHP/scene.boss.hp)*100}%`;
                     
-                    const hitPartColor = biome === 'river' ? 0x22d3ee : 0xa855f7;
+                    const hitPartColor = biome === 'river' ? 0x22d3ee : biome === 'shadow_labyrinth' ? 0xfef08a : 0xa855f7;
                     for (let i=0;i<15;i++) {
                       const a=(i/15)*Math.PI*2;
                       const sp=scene.add.circle(scene.boss.x, scene.boss.y, Math.random()*3+1.5, hitPartColor, 0.8);
@@ -7332,6 +8206,22 @@ class MarioGame {
               scene.player.invincibility = 999;
               scene.player.setAlpha(0.3); // visual feedback: paused
               
+              // Pause Arcade Physics simulation completely during the duel
+              scene.physics.world.pause();
+
+              // Clear any active storm warning/strike graphics to prevent them from staying on screen
+              if (scene._warningGraphics) {
+                scene._warningGraphics.clear();
+                scene._warningGraphics.destroy();
+                scene._warningGraphics = null;
+              }
+              if (scene._strikeGraphics) {
+                scene._strikeGraphics.clear();
+                scene._strikeGraphics.destroy();
+                scene._strikeGraphics = null;
+              }
+              scene._lightningState = 'idle';
+              
               // Create simple walls
               if (!scene.chessWalls) {
                 scene.chessWalls = scene.physics.add.staticGroup();
@@ -7383,6 +8273,10 @@ class MarioGame {
                   () => { // ON WIN — checkmate to opponent
                     scene.chessCompleted = true;
                     scene.chessActive = false;
+                    
+                    // Resume Arcade Physics simulation
+                    scene.physics.world.resume();
+
                     // Remove chess duel DOM overlay
                     document.getElementById('phaser-game-parent').querySelectorAll('.chess-duel-overlay').forEach(e => e.remove());
                     // Place player safely on the chess room ground
@@ -7436,6 +8330,10 @@ class MarioGame {
                   () => { // ON LOSE — instant game over, no second chances
                     self.chessDuel = null;
                     scene.chessActive = false;
+                    
+                    // Resume Arcade Physics simulation
+                    scene.physics.world.resume();
+
                     self.stopMusic();
                     self.gameOver();
                   },
@@ -7443,6 +8341,10 @@ class MarioGame {
                     self.chessDuel = null;
                     scene.chessActive = false;
                     scene.chessCompleted = false;
+                    
+                    // Resume Arcade Physics simulation
+                    scene.physics.world.resume();
+
                     // Remove chess duel DOM overlay
                     document.getElementById('phaser-game-parent').querySelectorAll('.chess-duel-overlay').forEach(e => e.remove());
                     scene.player.body.allowGravity = true;
@@ -7511,7 +8413,12 @@ class MarioGame {
               scene.player.dashAvailable = true;
               scene.player.isDashing = false;
               scene.player.dashTimer = 0;
-              scene.player.dashCooldown = 0;
+          scene.player.dashCooldown = 0;
+          scene.player.flashlightActive = false;
+          scene.player.flashlightBattery = 100;
+          scene.player.flashlightCooldown = 0;
+          scene.player.flashlightCone = null;
+          scene.player.facingRight = true;
               scene.player.setDisplaySize(38, 56);
               scene.player.setAngle(0);
               scene.player.play('martina-idle');
@@ -8197,6 +9104,29 @@ class MarioGame {
         110.00, 0, 110.00, 0, 110.00, 0, 110.00, 0
       ];
       tempo = 180; // Heavy, steady march
+    } else if (this.currentLevelIndex === 8) {
+      // Level 9 — "La Sombra que Jugaba" (D# minor, mystery/spooky, slow)
+      melody = [
+        311.13, 0, 369.99, 0, 311.13, 0, 277.18, 0,
+        311.13, 369.99, 415.30, 369.99, 311.13, 0, 277.18, 0,
+        311.13, 0, 369.99, 0, 415.30, 0, 466.16, 0,
+        369.99, 311.13, 277.18, 311.13, 369.99, 0, 415.30, 0,
+        233.08, 0, 311.13, 0, 277.18, 0, 311.13, 0,
+        233.08, 311.13, 277.18, 311.13, 369.99, 0, 311.13, 0,
+        277.18, 0, 311.13, 0, 233.08, 0, 207.65, 0,
+        233.08, 277.18, 311.13, 369.99, 311.13, 277.18, 233.08, 0
+      ];
+      bass = [
+        77.78, 0, 0, 0, 77.78, 0, 0, 0,
+        77.78, 0, 0, 0, 77.78, 0, 0, 0,
+        103.83, 0, 0, 0, 103.83, 0, 0, 0,
+        103.83, 0, 0, 0, 103.83, 0, 0, 0,
+        69.30, 0, 0, 0, 69.30, 0, 0, 0,
+        69.30, 0, 0, 0, 69.30, 0, 0, 0,
+        87.31, 0, 0, 0, 87.31, 0, 0, 0,
+        77.78, 0, 0, 0, 77.78, 0, 0, 0
+      ];
+      tempo = 145; // Slow, mysterious
     } else {
       // Level 1 — Dreamy, ethereal, minor-mode fairy tale chords
       melody = [
