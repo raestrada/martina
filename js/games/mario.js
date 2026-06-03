@@ -301,6 +301,23 @@ class MarioGame {
       this.showWelcomeScreen();
     });
 
+    const muteBtn = document.getElementById('mario-btn-mute');
+    if (muteBtn) {
+      muteBtn.addEventListener('click', () => {
+        this.musicEnabled = !this.musicEnabled;
+        localStorage.setItem('martina_mario_mute', this.musicEnabled ? 'false' : 'true');
+        muteBtn.textContent = this.musicEnabled ? '🔊 Sonido' : '🔇 Mute';
+        if (this.musicEnabled) {
+          // If in game, start music
+          if (this.gameState === 'playing') {
+            this.startMusic();
+          }
+        } else {
+          this.stopMusic();
+        }
+      });
+    }
+
     // Bind mobile gamepad touch controls
     const bindTouch = (id, key) => {
       const el = document.getElementById(id);
@@ -1613,6 +1630,15 @@ class MarioGame {
           sctx3.arc(8, 8, 2.2, 0, Math.PI*2);
           sctx3.fill();
           scene.textures.addCanvas('sparkle_purple', sparklePurple);
+
+          // Raindrop texture (size 2x16) for high-performance storm rain streaks
+          const raindropCanvas = document.createElement('canvas');
+          raindropCanvas.width = 2;
+          raindropCanvas.height = 16;
+          const rdCtx = raindropCanvas.getContext('2d');
+          rdCtx.fillStyle = 'rgba(165, 243, 252, 0.75)'; // cyan-white line
+          rdCtx.fillRect(0, 0, 2, 16);
+          scene.textures.addCanvas('raindrop', raindropCanvas);
           
           if (!scene.textures.exists('player')) {
             // 1. Martina Canvas (size 32x48)
@@ -4513,21 +4539,22 @@ class MarioGame {
             ambEmitter.setScrollFactor(0.3);
             scene.ambientParticles.push(ambEmitter);
           } else if (biome === 'ocean') {
-            // Heavy diagonal rain particles falling down-left
-            const ambEmitter = scene.add.particles(0, 0, 'sparkle_cyan', {
-              x: { min: -100, max: levelDef.worldWidth + 100 },
-              y: 0,
-              speed: { min: 500, max: 750 },
-              angle: { min: 72, max: 78 }, // falling down-left
-              scale: { start: 0.15, end: 0.45 },
-              alpha: { start: 0.4, end: 0.1 },
-              lifespan: 1200,
+            // Heavy diagonal rain particles falling down-left - OPTIMIZED: Screen-Space locked
+            const ambEmitter = scene.add.particles(0, 0, 'raindrop', {
+              x: { min: -100, max: 950 }, // camera viewport width + diagonal buffer
+              y: -20,
+              speed: { min: 700, max: 950 },
+              angle: { min: 75, max: 80 }, // falling down-left
+              scaleX: 1.0,
+              scaleY: { min: 1.5, max: 2.8 }, // long streaks of rain
+              alpha: { start: 0.55, end: 0.15 },
+              lifespan: 750, // falls past the bottom of the screen quickly
               frequency: 6, // very heavy rain!
               quantity: 2,
               blendMode: 'NORMAL'
             });
             ambEmitter.setDepth(10); // Draw above platforms & player
-            ambEmitter.setScrollFactor(0.85);
+            ambEmitter.setScrollFactor(0); // Locked to screen space!
             scene.ambientParticles.push(ambEmitter);
           }
 
@@ -6500,14 +6527,25 @@ class MarioGame {
               
               if (elapsed < warningDuration) {
                 scene._warningGraphics.clear();
-                const alpha = 0.3 + Math.sin(scene.time.now * 0.02) * 0.25;
-                scene._warningGraphics.lineStyle(3, 0xef4444, alpha);
-                for (let y = 0; y < 450; y += 15) {
-                  scene._warningGraphics.lineBetween(scene._lightningTargetX, y, scene._lightningTargetX, y + 8);
-                }
+                const alpha = 0.35 + Math.sin(scene.time.now * 0.02) * 0.25;
+                scene._warningGraphics.lineStyle(2.5, 0xef4444, alpha);
+                scene._warningGraphics.lineBetween(scene._lightningTargetX, 0, scene._lightningTargetX, 450);
               } else {
                 scene._lightningState = 'strike';
                 scene._lightningStrikeStart = scene.time.now;
+                
+                // Pre-generate lightning path points for performance and stability
+                scene._lightningOffsets = [];
+                for (let i = 0; i < 5; i++) {
+                  scene._lightningOffsets.push(Math.random() * 24 - 12);
+                }
+                scene._hasBranch = Math.random() > 0.5;
+                if (scene._hasBranch) {
+                  scene._branchOffset1 = Math.random() * 20 - 10;
+                  scene._branchOffset2 = Math.random() * 30 - 15;
+                  scene._branchOffset3 = Math.random() * 40 - 20;
+                }
+
                 if (scene._warningGraphics) {
                   scene._warningGraphics.clear();
                   scene._warningGraphics.destroy();
@@ -6538,32 +6576,35 @@ class MarioGame {
               
               if (elapsed < strikeDuration) {
                 scene._strikeGraphics.clear();
-                scene._strikeGraphics.lineStyle(4, 0xffffff, 1);
-                scene._strikeGraphics.fillStyle(0x22d3ee, 0.5);
                 
-                let curX = scene._lightningTargetX;
-                let segments = 6;
-                let stepY = 450 / segments;
-                
-                scene._strikeGraphics.beginPath();
-                scene._strikeGraphics.moveTo(curX, 0);
-                for (let i = 1; i <= segments; i++) {
-                  const nextY = i * stepY;
-                  const offset = (i === segments) ? 0 : (Math.random() * 24 - 12);
-                  const nextX = scene._lightningTargetX + offset;
-                  scene._strikeGraphics.lineTo(nextX, nextY);
-                  curX = nextX;
-                }
-                scene._strikeGraphics.strokePath();
-                
-                scene._strikeGraphics.lineStyle(1.5, 0x22d3ee, 0.8);
-                if (Math.random() > 0.5) {
-                  let branchX = scene._lightningTargetX + (Math.random() * 20 - 10);
+                // Fast flicker: visible for 30ms, hidden for 30ms
+                if (Math.floor(elapsed / 30) % 2 === 0) {
+                  scene._strikeGraphics.lineStyle(4, 0xffffff, 1);
+                  
+                  let curX = scene._lightningTargetX;
+                  let segments = 6;
+                  let stepY = 450 / segments;
+                  
                   scene._strikeGraphics.beginPath();
-                  scene._strikeGraphics.moveTo(branchX, 100);
-                  scene._strikeGraphics.lineTo(branchX + (Math.random() * 30 - 15), 180);
-                  scene._strikeGraphics.lineTo(branchX + (Math.random() * 40 - 20), 250);
+                  scene._strikeGraphics.moveTo(curX, 0);
+                  for (let i = 1; i <= segments; i++) {
+                    const nextY = i * stepY;
+                    const offset = (i === segments) ? 0 : (scene._lightningOffsets[i - 1] || 0);
+                    const nextX = scene._lightningTargetX + offset;
+                    scene._strikeGraphics.lineTo(nextX, nextY);
+                    curX = nextX;
+                  }
                   scene._strikeGraphics.strokePath();
+                  
+                  if (scene._hasBranch) {
+                    scene._strikeGraphics.lineStyle(1.5, 0x22d3ee, 0.8);
+                    let branchX = scene._lightningTargetX + scene._branchOffset1;
+                    scene._strikeGraphics.beginPath();
+                    scene._strikeGraphics.moveTo(branchX, 100);
+                    scene._strikeGraphics.lineTo(branchX + scene._branchOffset2, 180);
+                    scene._strikeGraphics.lineTo(branchX + scene._branchOffset3, 250);
+                    scene._strikeGraphics.strokePath();
+                  }
                 }
               } else {
                 if (scene._strikeGraphics) {
@@ -8234,6 +8275,10 @@ class MarioGame {
       }
 
     }, tempo);
+
+    if (this.currentLevelIndex === 7) {
+      this.startRainSound(audioCtx);
+    }
   }
 
   // --- STOP CHIPTUNE BGM LOOP ---
@@ -8252,6 +8297,76 @@ class MarioGame {
       } catch (e) {}
     });
     this.synthNotes = [];
+
+    // Stop rain sound loop
+    if (this.rainSource) {
+      try {
+        this.rainSource.stop();
+      } catch (e) {}
+      this.rainSource = null;
+    }
+    if (this.rainModulator) {
+      try {
+        this.rainModulator.stop();
+      } catch (e) {}
+      this.rainModulator = null;
+    }
+    if (this.rainGain) {
+      try {
+        this.rainGain.disconnect();
+      } catch (e) {}
+      this.rainGain = null;
+    }
+  }
+
+  // --- START STORM RAIN SOUND SEQUENCER ---
+  startRainSound(audioCtx) {
+    if (this.rainSource) return; // already playing
+    
+    try {
+      const bufferSize = audioCtx.sampleRate * 2;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 450; // low frequency stormy rush
+      filter.Q.value = 0.8;
+      
+      // Wind oscillator to fluctuate the rain intensity
+      const modulator = audioCtx.createOscillator();
+      modulator.type = 'sine';
+      modulator.frequency.value = 0.2; // slow 5-second gust cycle
+      
+      const modGain = audioCtx.createGain();
+      modGain.gain.value = 150; // shift frequency by +/- 150Hz
+      
+      modulator.connect(modGain);
+      modGain.connect(filter.frequency);
+      modulator.start(audioCtx.currentTime);
+      
+      const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(0.25, audioCtx.currentTime); // volume
+      
+      const source = audioCtx.createBufferSource();
+      source.buffer = buffer;
+      source.loop = true;
+      
+      source.connect(filter);
+      filter.connect(gain);
+      gain.connect(window.GameAudio._out());
+      
+      source.start(audioCtx.currentTime);
+      
+      this.rainSource = source;
+      this.rainModulator = modulator;
+      this.rainGain = gain;
+    } catch (e) {
+      console.warn("Failed to play storm rain audio:", e);
+    }
   }
 
   // --- BOSS BATTLE MUSIC (intense, dramatic, fast-paced) ---
@@ -8431,6 +8546,10 @@ class MarioGame {
       step = (step + 1) % melody.length;
       if (this.synthNotes.length > 80) this.synthNotes.splice(0, 40);
     }, tempo);
+
+    if (this.currentLevelIndex === 7) {
+      this.startRainSound(audioCtx);
+    }
   }
 
   // --- DESTROY GAME INSTANCE (CLEANS PHASER) ---
