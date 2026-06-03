@@ -11,7 +11,8 @@ window.MartinaLevels = {
         3: 9900,
         4: 12000,
         5: 9900,
-        6: 9900
+        6: 9900,
+        7: 9900
       },
 
   levels: [
@@ -664,6 +665,81 @@ window.MartinaLevels = {
       goal: {
         type: 'portal_queen',
         portalX: 3380, portalY: 245
+      }
+    },
+
+    // ================================================================
+    // LEVEL 8 — "El Relámpago y el Vikingo" — Ocean / Storm Biome
+    // ================================================================
+    {
+      biome: 'ocean',
+      worldWidth: 3500,
+      backgroundColor: '#0a0f1d',
+
+      platformsData: [
+        // Solid rock islands and balanced drakar longships
+        { x: 0, y: 410, w: 500, h: 40, type: 'island' },
+        { x: 620, y: 340, w: 200, h: 20, type: 'drakar' },
+        { x: 940, y: 280, w: 140, h: 20, type: 'island' },
+        { x: 1180, y: 350, w: 220, h: 20, type: 'drakar' },
+        { x: 1500, y: 220, w: 100, h: 20, type: 'island' },
+        { x: 1720, y: 340, w: 200, h: 20, type: 'drakar' },
+        { x: 2020, y: 270, w: 120, h: 20, type: 'island' },
+        { x: 2240, y: 350, w: 200, h: 20, type: 'drakar' },
+        // Large boss arena island
+        { x: 2540, y: 410, w: 1000, h: 40, type: 'island' }
+      ],
+
+      coinsData: [
+        // Guide paths over waves and ships
+        { x: 180, y: 350 }, { x: 220, y: 350 }, { x: 260, y: 350 },
+        { x: 420, y: 350 },
+        { x: 690, y: 270 }, { x: 730, y: 280 },
+        { x: 960, y: 220 }, { x: 1000, y: 210 }, { x: 1040, y: 220 },
+        { x: 1220, y: 290 }, { x: 1260, y: 280 }, { x: 1300, y: 290 },
+        { x: 1520, y: 160 }, { x: 1550, y: 150 },
+        { x: 1760, y: 280 }, { x: 1800, y: 270 }, { x: 1840, y: 280 },
+        { x: 2040, y: 210 }, { x: 2080, y: 200 },
+        { x: 2280, y: 290 }, { x: 2320, y: 280 }, { x: 2360, y: 290 },
+        // Boss area coins
+        { x: 2620, y: 370 }, { x: 2680, y: 370 }, { x: 2740, y: 370 },
+        { x: 2860, y: 370 }, { x: 2920, y: 370 }, { x: 2980, y: 370 }
+      ],
+
+      enemiesData: [
+        { x: 300, y: 330, left: 240, right: 420, speed: 50, type: 'pez' },
+        { x: 960, y: 200, left: 960, right: 960, speed: 45, type: 'medusa' },
+        { x: 1520, y: 140, left: 1520, right: 1520, speed: 50, type: 'medusa' },
+        { x: 2040, y: 190, left: 2040, right: 2040, speed: 55, type: 'medusa' },
+        { x: 2680, y: 370, left: 2580, right: 2780, speed: 70, type: 'pez' },
+        { x: 2880, y: 370, left: 2780, right: 2980, speed: 75, type: 'pez' }
+      ],
+
+      airEnemiesData: [
+        { x: 700, y: 160, pattern: 'horizontal', minX: 620, maxX: 820, speed: 85 },
+        { x: 1250, y: 140, pattern: 'diagonal', minX: 1150, maxX: 1350, minY: 100, maxY: 180, speed: 75, speedY: 45 },
+        { x: 1800, y: 150, pattern: 'sinusoidal', minX: 1700, maxX: 1900, baseY: 140, ampY: 40, speed: 85 },
+        { x: 2300, y: 160, pattern: 'horizontal', minX: 2200, maxX: 2420, speed: 90 }
+      ],
+
+      crownsData: [
+        { x: 720, y: 220 }, // sitting above the mast of ship 1
+        { x: 1550, y: 110 }, // high above floating island 3
+        { x: 2320, y: 220 }  // above the mast of ship 4
+      ],
+
+      // Chess room setup at the end
+      chessRoom: {
+        triggerX: 3050,
+        roomLeft: 3100,
+        roomRight: 3450,
+        elo: 700
+      },
+
+      goal: {
+        type: 'chess_victory',
+        portalX: 3380,
+        portalY: 245
       }
     }
   ]

@@ -15,6 +15,7 @@ class MarioGame {
     this.lives = 3;
     this.gameState = 'welcome'; // 'welcome', 'playing', 'gameover', 'victory'
     this.musicEnabled = localStorage.getItem('martina_mario_mute') !== 'true';
+    this.selectedDifficulty = localStorage.getItem('martina_mario_difficulty') || 'medium';
     
     // Chapters levels information
     this.levels = [
@@ -140,6 +141,12 @@ class MarioGame {
           <div class="mario-map-header">
             <h2>⭐️ Super Martina: El Salto Mágico ⭐️</h2>
             <p>¡Explora el primer capítulo del reino! Corre, salta sobre plataformas y despierta el tablero mágico.</p>
+            <div class="difficulty-selector" style="margin-bottom: 1.5rem;">
+              <button class="diff-tab easy ${this.selectedDifficulty === 'easy' ? 'active' : ''}" data-diff="easy">🟢 Fácil</button>
+              <button class="diff-tab medium ${this.selectedDifficulty === 'medium' ? 'active' : ''}" data-diff="medium">🟡 Medio</button>
+              <button class="diff-tab hard ${this.selectedDifficulty === 'hard' ? 'active' : ''}" data-diff="hard">🔴 Difícil</button>
+              <button class="diff-tab martina ${this.selectedDifficulty === 'martina' ? 'active' : ''}" data-diff="martina">👑 Martina</button>
+            </div>
             ${completedCount > 0 ? `
             <div class="mario-overall-stats">
               <div class="mario-overall-trophy">${overallTrophy}</div>
@@ -159,6 +166,19 @@ class MarioGame {
         </div>
       </div>
     `;
+
+    // Add event listeners to difficulty tabs
+    const diffButtons = this.container.querySelectorAll('.difficulty-selector .diff-tab');
+    diffButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const diff = btn.getAttribute('data-diff');
+        this.selectedDifficulty = diff;
+        localStorage.setItem('martina_mario_difficulty', diff);
+        window.GameAudio.playMove();
+        this.showWelcomeScreen();
+      });
+    });
 
     // Add event listeners to stages
     const nodes = this.container.querySelectorAll('.mario-stage-node.unlocked');
@@ -2888,6 +2908,61 @@ class MarioGame {
               bgCtx.lineTo(800, 450);
               bgCtx.closePath();
               bgCtx.fill();
+            } else if (biome === 'ocean') {
+              // --- OCEAN STORM BACKGROUND: Stormy sky, thunderclouds, and far ocean islands ---
+              const oGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
+              oGrad.addColorStop(0, '#0a0d17');   // Near black sky
+              oGrad.addColorStop(0.4, '#1a1f33'); // Dark slate indigo
+              oGrad.addColorStop(0.75, '#2c334f'); // Stormy grey blue
+              oGrad.addColorStop(1, '#111625');   // Very dark ocean depths
+              bgCtx.fillStyle = oGrad;
+              bgCtx.fillRect(0, 0, 800, 450);
+
+              // Draw layered storm clouds at the top
+              bgCtx.fillStyle = 'rgba(26, 29, 44, 0.7)'; // dark grey clouds
+              bgCtx.beginPath();
+              bgCtx.arc(100, 40, 70, 0, Math.PI*2);
+              bgCtx.arc(220, 30, 85, 0, Math.PI*2);
+              bgCtx.arc(360, 50, 75, 0, Math.PI*2);
+              bgCtx.arc(500, 35, 90, 0, Math.PI*2);
+              bgCtx.arc(640, 40, 80, 0, Math.PI*2);
+              bgCtx.arc(760, 55, 70, 0, Math.PI*2);
+              bgCtx.fill();
+
+              bgCtx.fillStyle = 'rgba(12, 14, 24, 0.85)'; // even darker overlay clouds
+              bgCtx.beginPath();
+              bgCtx.arc(60, 20, 60, 0, Math.PI*2);
+              bgCtx.arc(180, 15, 75, 0, Math.PI*2);
+              bgCtx.arc(310, 25, 65, 0, Math.PI*2);
+              bgCtx.arc(450, 15, 80, 0, Math.PI*2);
+              bgCtx.arc(580, 20, 70, 0, Math.PI*2);
+              bgCtx.arc(710, 30, 60, 0, Math.PI*2);
+              bgCtx.fill();
+
+              // Draw distant mountains/islands silhouettes
+              bgCtx.fillStyle = '#0f1322'; // deep dark silhouette
+              bgCtx.beginPath();
+              bgCtx.moveTo(0, 450);
+              bgCtx.lineTo(0, 390);
+              bgCtx.quadraticCurveTo(120, 340, 220, 380);
+              bgCtx.quadraticCurveTo(340, 420, 440, 370);
+              bgCtx.quadraticCurveTo(560, 320, 680, 390);
+              bgCtx.quadraticCurveTo(740, 410, 800, 385);
+              bgCtx.lineTo(800, 450);
+              bgCtx.closePath();
+              bgCtx.fill();
+
+              // Overlay light diagonal rain streaks in background
+              bgCtx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+              bgCtx.lineWidth = 0.8;
+              bgCtx.beginPath();
+              for (let i = 0; i < 40; i++) {
+                const rx = Math.random() * 800;
+                const ry = Math.random() * 350;
+                bgCtx.moveTo(rx, ry);
+                bgCtx.lineTo(rx - 8, ry + 30);
+              }
+              bgCtx.stroke();
             } else {
               // --- GRASS BACKGROUND: Magical realm dreamscape ---
               const skyGrad = bgCtx.createLinearGradient(0, 0, 0, 450);
@@ -3326,6 +3401,49 @@ class MarioGame {
                 midCtx.closePath();
                 midCtx.fill();
               }
+            } else if (biome === 'ocean') {
+              // --- OCEAN MIDGROUND: Dark basalt sea pillars and parallax waves ---
+              // Water mist overlay
+              midCtx.fillStyle = 'rgba(15, 23, 42, 0.05)';
+              midCtx.fillRect(0, 0, 800, 450);
+
+              // Draw dark rocky columns rising from the sea
+              const drawSeaPillar = (x, w, h) => {
+                const pGrad = midCtx.createLinearGradient(x, 450 - h, x, 450);
+                pGrad.addColorStop(0, 'rgba(30, 41, 59, 0.5)'); // slate grey
+                pGrad.addColorStop(1, 'rgba(15, 23, 42, 0.3)');
+                midCtx.fillStyle = pGrad;
+                midCtx.beginPath();
+                midCtx.moveTo(x, 450);
+                midCtx.lineTo(x + 10, 450 - h);
+                midCtx.lineTo(x + w - 10, 450 - h);
+                midCtx.lineTo(x + w, 450);
+                midCtx.closePath();
+                midCtx.fill();
+
+                // Draw rock outline
+                midCtx.strokeStyle = 'rgba(51, 65, 85, 0.3)';
+                midCtx.lineWidth = 1;
+                midCtx.stroke();
+              };
+
+              drawSeaPillar(80, 50, 160);
+              drawSeaPillar(280, 70, 210);
+              drawSeaPillar(520, 60, 180);
+              drawSeaPillar(680, 50, 150);
+
+              // Draw waves splashing at the bottom
+              midCtx.fillStyle = 'rgba(71, 85, 105, 0.25)'; // slate wave color
+              const waveTime = scene.time.now * 0.003;
+              midCtx.beginPath();
+              midCtx.moveTo(0, 450);
+              for (let x = 0; x <= 800; x += 40) {
+                const wy = 430 + Math.sin(x * 0.015 + waveTime) * 8;
+                midCtx.lineTo(x, wy);
+              }
+              midCtx.lineTo(800, 450);
+              midCtx.closePath();
+              midCtx.fill();
             } else {
               const drawIsland = (x, y, w, h, underH) => {
                 // Island top surface with checkered pattern
@@ -3474,18 +3592,22 @@ class MarioGame {
 
             // 5.5. Foreground Decorative Canvas — floating magical particles & chess silhouettes
             const fgCanvas = document.createElement('canvas');
-            fgCanvas.width = 2400;
+            const fgWidth = Math.max(2400, levelDef.worldWidth || 2400);
+            fgCanvas.width = fgWidth;
             fgCanvas.height = 450;
             const fgCtx = fgCanvas.getContext('2d');
             
             // Semi-transparent chess piece silhouettes scattered across the level
-            const fgSilhouettes = [
-              {x:180, y:350, type:'pawn'}, {x:420, y:280, type:'knight'},
-              {x:700, y:340, type:'bishop'}, {x:960, y:260, type:'rook'},
-              {x:1200, y:330, type:'pawn'}, {x:1450, y:290, type:'pawn'},
-              {x:1700, y:350, type:'knight'}, {x:1950, y:270, type:'bishop'},
-              {x:2200, y:340, type:'rook'}
-            ];
+            const fgSilhouettes = [];
+            const types = ['pawn', 'knight', 'bishop', 'rook'];
+            for (let sx = 180; sx < fgWidth - 100; sx += 300) {
+              fgSilhouettes.push({
+                x: sx + Math.random() * 80,
+                y: 260 + Math.random() * 90,
+                type: types[Math.floor(Math.random() * types.length)]
+              });
+            }
+            
             fgSilhouettes.forEach(s => {
               fgCtx.fillStyle = 'rgba(109,40,217,0.08)';
               fgCtx.beginPath();
@@ -3519,8 +3641,9 @@ class MarioGame {
             });
             
             // Magical floating spark dots across the level
-            for (let i = 0; i < 80; i++) {
-              const fx = Math.random() * 2400;
+            const numSparks = Math.round(80 * (fgWidth / 2400));
+            for (let i = 0; i < numSparks; i++) {
+              const fx = Math.random() * fgWidth;
               const fy = Math.random() * 400;
               const fs = Math.random() * 1.5 + 0.4;
               fgCtx.fillStyle = `rgba(167,139,250,${Math.random() * 0.2 + 0.05})`;
@@ -4389,6 +4512,23 @@ class MarioGame {
             ambEmitter.setDepth(0);
             ambEmitter.setScrollFactor(0.3);
             scene.ambientParticles.push(ambEmitter);
+          } else if (biome === 'ocean') {
+            // Heavy diagonal rain particles falling down-left
+            const ambEmitter = scene.add.particles(0, 0, 'sparkle_cyan', {
+              x: { min: -100, max: levelDef.worldWidth + 100 },
+              y: 0,
+              speed: { min: 500, max: 750 },
+              angle: { min: 72, max: 78 }, // falling down-left
+              scale: { start: 0.15, end: 0.45 },
+              alpha: { start: 0.4, end: 0.1 },
+              lifespan: 1200,
+              frequency: 6, // very heavy rain!
+              quantity: 2,
+              blendMode: 'NORMAL'
+            });
+            ambEmitter.setDepth(10); // Draw above platforms & player
+            ambEmitter.setScrollFactor(0.85);
+            scene.ambientParticles.push(ambEmitter);
           }
 
           // 2. Physics Static Platforms Group
@@ -4731,6 +4871,159 @@ class MarioGame {
               // Cyan glow frame (soft neon water outline)
               block.lineStyle(1.8, 0x06b6d4, 0.85);
               block.strokeRoundedRect(p.x, p.y, p.w, p.h, 6);
+            } else if (biome === 'ocean') {
+              // Ocean Biome - Viking longships (drakares) or rocky basalt islands
+              if (p.type === 'drakar') {
+                // 1. Draw Viking longship!
+                // Deck body
+                block.fillStyle(0x3e2723); // Dark mahogany wood
+                block.fillRect(p.x, p.y, p.w, p.h);
+                
+                // Deck top trim (wood plank highlight)
+                block.fillStyle(0x5d4037);
+                block.fillRect(p.x, p.y, p.w, 4);
+                block.fillStyle(0x8d6e63);
+                block.fillRect(p.x, p.y, p.w, 1.5);
+                
+                // Curved prow (left end of boat) - curling up
+                block.fillStyle(0x3e2723);
+                block.beginPath();
+                block.moveTo(p.x, p.y + p.h);
+                // Approximate quadraticCurveTo(p.x - 18, p.y + p.h, p.x - 22, p.y - 12)
+                for (let i = 1; i <= 8; i++) {
+                  const t = i / 8;
+                  const mt = 1 - t;
+                  const x = mt * mt * p.x + 2 * mt * t * (p.x - 18) + t * t * (p.x - 22);
+                  const y = mt * mt * (p.y + p.h) + 2 * mt * t * (p.y + p.h) + t * t * (p.y - 12);
+                  block.lineTo(x, y);
+                }
+                block.lineTo(p.x - 14, p.y - 14);
+                // Approximate quadraticCurveTo(p.x - 10, p.y + p.h - 8, p.x, p.y + 4)
+                for (let i = 1; i <= 8; i++) {
+                  const t = i / 8;
+                  const mt = 1 - t;
+                  const x = mt * mt * (p.x - 14) + 2 * mt * t * (p.x - 10) + t * t * p.x;
+                  const y = mt * mt * (p.y - 14) + 2 * mt * t * (p.y + p.h - 8) + t * t * (p.y + 4);
+                  block.lineTo(x, y);
+                }
+                block.closePath();
+                block.fillPath();
+
+                // Dragon head on prow top
+                block.fillStyle(0xd4af37); // Gold/bronze dragon head
+                block.fillCircle(p.x - 18, p.y - 13, 6);
+                block.fillRect(p.x - 22, p.y - 15, 6, 3); // snout
+                
+                // Curved stern (right end of boat)
+                block.fillStyle(0x3e2723);
+                block.beginPath();
+                block.moveTo(p.x + p.w, p.y + p.h);
+                // Approximate quadraticCurveTo(p.x + p.w + 18, p.y + p.h, p.x + p.w + 22, p.y - 8)
+                for (let i = 1; i <= 8; i++) {
+                  const t = i / 8;
+                  const mt = 1 - t;
+                  const x = mt * mt * (p.x + p.w) + 2 * mt * t * (p.x + p.w + 18) + t * t * (p.x + p.w + 22);
+                  const y = mt * mt * (p.y + p.h) + 2 * mt * t * (p.y + p.h) + t * t * (p.y - 8);
+                  block.lineTo(x, y);
+                }
+                block.lineTo(p.x + p.w + 14, p.y - 10);
+                // Approximate quadraticCurveTo(p.x + p.w + 10, p.y + p.h - 8, p.x + p.w, p.y + 4)
+                for (let i = 1; i <= 8; i++) {
+                  const t = i / 8;
+                  const mt = 1 - t;
+                  const x = mt * mt * (p.x + p.w + 14) + 2 * mt * t * (p.x + p.w + 10) + t * t * (p.x + p.w);
+                  const y = mt * mt * (p.y - 10) + 2 * mt * t * (p.y + p.h - 8) + t * t * (p.y + 4);
+                  block.lineTo(x, y);
+                }
+                block.closePath();
+                block.fillPath();
+
+                // Stern decorative tail
+                block.fillStyle(0x8d6e63, 1);
+                block.fillCircle(p.x + p.w + 18, p.y - 9, 4);
+
+                // Alternating red and yellow Viking shields along the side of the hull
+                const numShields = Math.max(3, Math.floor(p.w / 40));
+                for (let i = 0; i < numShields; i++) {
+                  const sx = p.x + (i + 0.5) * (p.w / numShields);
+                  const sy = p.y + p.h / 2 + 2;
+                  block.fillStyle((i % 2 === 0) ? 0xef4444 : 0xfacc15, 1); // Red / Yellow
+                  block.fillCircle(sx, sy, 7);
+                  block.fillStyle(0x757575, 1); // Silver center boss
+                  block.fillCircle(sx, sy, 2);
+                }
+
+                // Central Mast and striped sail (purely decorative, Martina jumps through it)
+                const mx = p.x + p.w / 2;
+                block.fillStyle(0x4e342e, 1); // Mast wood
+                block.fillRect(mx - 3, p.y - 50, 6, 50); // Mast pole
+
+                // Red/White striped sail
+                const sailW = 54;
+                const sailH = 34;
+                const sailX = mx - sailW / 2;
+                const sailY = p.y - 46;
+                // Draw sail stripes
+                const numStripes = 6;
+                const stripeW = sailW / numStripes;
+                for (let i = 0; i < numStripes; i++) {
+                  block.fillStyle((i % 2 === 0) ? 0xef4444 : 0xf9fafb, 1); // Red / White
+                  block.fillRect(sailX + i * stripeW, sailY, stripeW, sailH);
+                }
+                // Black ropes tying the sail to ship body
+                block.lineStyle(1, 0x111111, 0.6);
+                block.beginPath();
+                block.moveTo(sailX, sailY + sailH);
+                block.lineTo(p.x + 10, p.y);
+                block.moveTo(sailX + sailW, sailY + sailH);
+                block.lineTo(p.x + p.w - 10, p.y);
+                block.strokePath();
+
+                // Shield border highlights
+                block.lineStyle(1, 0x271714, 0.7);
+                block.strokeRect(p.x, p.y, p.w, p.h);
+              } else {
+                // 2. Draw rocky basalt island!
+                block.fillStyle(0x1e293b); // Dark slate grey base
+                block.fillRect(p.x, p.y, p.w, p.h);
+                
+                // Wet basalt stone surface
+                block.fillStyle(0x334155, 0.7);
+                block.fillRect(p.x + 2, p.y + 2, p.w - 4, p.h - 4);
+                
+                // Deep green wet moss sitting on top of the island
+                block.fillStyle(0x065f46); // Emerald moss
+                block.fillRect(p.x, p.y, p.w, 5);
+                block.fillStyle(0x059669); // Bright highlights
+                block.fillRect(p.x, p.y, p.w, 2.2);
+
+                // Moss grass bumps
+                const grassSteps = Math.max(5, Math.floor(p.w / 14));
+                block.fillStyle(0x059669);
+                for (let i = 0; i < grassSteps; i++) {
+                  const gx = p.x + (i + 0.5) * (p.w / grassSteps);
+                  const gy = p.y + 2;
+                  block.fillCircle(gx, gy, 4 + (i % 3));
+                }
+
+                // Basalt geometric cracks / textures
+                block.lineStyle(1.2, 0x0f172a, 0.85); // Dark cracks
+                for (let sx = p.x + 15; sx < p.x + p.w - 15; sx += 35) {
+                  block.beginPath();
+                  block.moveTo(sx, p.y + 4);
+                  block.lineTo(sx + (sx % 2 === 0 ? 5 : -5), p.y + p.h - 3);
+                  block.strokePath();
+                }
+
+                // Basalt stone highlights (reflecting storm flash)
+                block.fillStyle(0x64748b, 0.2);
+                for (let i = 0; i < Math.max(1, Math.floor(p.w / 50)); i++) {
+                  block.fillRect(p.x + 10 + i * 45, p.y + 8, 12, 8);
+                }
+
+                block.lineStyle(1.8, 0x334155, 0.8);
+                block.strokeRect(p.x, p.y, p.w, p.h);
+              }
             } else {
               // Grass biome — rich earth platforms with lush grass top
               block.fillStyle(0x4a3728, 0.95);
@@ -6186,6 +6479,104 @@ class MarioGame {
             }
           }
 
+          // --- OCEAN BIOME STORM LIGHTNING MECHANICS ---
+          if (biome === 'ocean') {
+            if (!scene._nextLightningTime) {
+              scene._nextLightningTime = scene.time.now + 3000 + Math.random() * 4000;
+              scene._lightningState = 'idle';
+            }
+
+            if (scene._lightningState === 'idle' && scene.time.now > scene._nextLightningTime) {
+              scene._lightningState = 'warning';
+              scene._lightningWarningStart = scene.time.now;
+              scene._lightningTargetX = scene.player.x + (Math.random() * 40 - 20);
+              scene._warningGraphics = scene.add.graphics();
+              scene._warningGraphics.setDepth(9);
+            }
+
+            if (scene._lightningState === 'warning') {
+              const elapsed = scene.time.now - scene._lightningWarningStart;
+              const warningDuration = 800;
+              
+              if (elapsed < warningDuration) {
+                scene._warningGraphics.clear();
+                const alpha = 0.3 + Math.sin(scene.time.now * 0.02) * 0.25;
+                scene._warningGraphics.lineStyle(3, 0xef4444, alpha);
+                for (let y = 0; y < 450; y += 15) {
+                  scene._warningGraphics.lineBetween(scene._lightningTargetX, y, scene._lightningTargetX, y + 8);
+                }
+              } else {
+                scene._lightningState = 'strike';
+                scene._lightningStrikeStart = scene.time.now;
+                if (scene._warningGraphics) {
+                  scene._warningGraphics.clear();
+                  scene._warningGraphics.destroy();
+                  scene._warningGraphics = null;
+                }
+                scene._strikeGraphics = scene.add.graphics();
+                scene._strikeGraphics.setDepth(11);
+
+                scene.cameras.main.flash(180, 255, 255, 255);
+                scene.cameras.main.shake(250, 0.015);
+                self.synthesizeSound('thunder');
+
+                const dx = Math.abs(scene.player.x - scene._lightningTargetX);
+                if (dx < 26 && scene.player.invincibility === 0) {
+                  self.lives--;
+                  scene.player.invincibility = 60;
+                  self.synthesizeSound('damage');
+                  scene.doDamageAnim();
+                  document.getElementById('hud-lives').textContent = `❤️ x${self.lives}`;
+                  if (self.lives <= 0) self.gameOver();
+                }
+              }
+            }
+
+            if (scene._lightningState === 'strike') {
+              const elapsed = scene.time.now - scene._lightningStrikeStart;
+              const strikeDuration = 150;
+              
+              if (elapsed < strikeDuration) {
+                scene._strikeGraphics.clear();
+                scene._strikeGraphics.lineStyle(4, 0xffffff, 1);
+                scene._strikeGraphics.fillStyle(0x22d3ee, 0.5);
+                
+                let curX = scene._lightningTargetX;
+                let segments = 6;
+                let stepY = 450 / segments;
+                
+                scene._strikeGraphics.beginPath();
+                scene._strikeGraphics.moveTo(curX, 0);
+                for (let i = 1; i <= segments; i++) {
+                  const nextY = i * stepY;
+                  const offset = (i === segments) ? 0 : (Math.random() * 24 - 12);
+                  const nextX = scene._lightningTargetX + offset;
+                  scene._strikeGraphics.lineTo(nextX, nextY);
+                  curX = nextX;
+                }
+                scene._strikeGraphics.strokePath();
+                
+                scene._strikeGraphics.lineStyle(1.5, 0x22d3ee, 0.8);
+                if (Math.random() > 0.5) {
+                  let branchX = scene._lightningTargetX + (Math.random() * 20 - 10);
+                  scene._strikeGraphics.beginPath();
+                  scene._strikeGraphics.moveTo(branchX, 100);
+                  scene._strikeGraphics.lineTo(branchX + (Math.random() * 30 - 15), 180);
+                  scene._strikeGraphics.lineTo(branchX + (Math.random() * 40 - 20), 250);
+                  scene._strikeGraphics.strokePath();
+                }
+              } else {
+                if (scene._strikeGraphics) {
+                  scene._strikeGraphics.clear();
+                  scene._strikeGraphics.destroy();
+                  scene._strikeGraphics = null;
+                }
+                scene._lightningState = 'idle';
+                scene._nextLightningTime = scene.time.now + 4000 + Math.random() * 4000;
+              }
+            }
+          }
+
           // Cycle particle textures for rainbow trail effect
           if (scene.particleTextures && scene.particles) {
             scene.particleFrameCounter++;
@@ -6890,7 +7281,7 @@ class MarioGame {
             });
           }
           
-          if (biome === 'prairie' && levelDef.chessRoom && !scene.chessCompleted) {
+          if ((biome === 'prairie' || biome === 'ocean') && levelDef.chessRoom && !scene.chessCompleted) {
             const cr = levelDef.chessRoom;
             if (scene.player.x > cr.triggerX && !scene.chessActive) {
               scene.chessActive = true;
@@ -6920,7 +7311,8 @@ class MarioGame {
               const statusEl = document.createElement('div');
               statusEl.id = 'chess-prestatus';
               statusEl.style.cssText = 'position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);z-index:60;color:#daa520;font-family:Outfit,sans-serif;font-size:24px;font-weight:800;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,0.8);';
-              statusEl.textContent = '🐴 Equis te desafía...';
+              const preText = biome === 'ocean' ? '⛵ El Vikingo te desafía...' : '🐴 Equis te desafía...';
+              statusEl.textContent = preText;
               document.getElementById('phaser-game-parent').appendChild(statusEl);
               
               self.stopMusic();
@@ -6928,6 +7320,22 @@ class MarioGame {
               setTimeout(() => {
                 const el = document.getElementById('chess-prestatus');
                 if (el) el.remove();
+                
+                const options = biome === 'ocean' ? {
+                  elo: cr.elo || 700,
+                  lightColor: '#94a3b8',
+                  darkColor: '#1e293b',
+                  borderColor: '#475569',
+                  opponentName: 'El Vikingo Escandinavo ⛵',
+                  stormEffect: true
+                } : {
+                  elo: cr.elo || 300,
+                  lightColor: '#e8d5b7',
+                  darkColor: '#7c5c3e',
+                  borderColor: '#8B6914',
+                  opponentName: 'Caballo de Ŋ',
+                  stormEffect: false
+                };
                 
                 self.chessDuel = new window.ChessDuel(
                   document.getElementById('phaser-game-parent'),
@@ -7008,7 +7416,8 @@ class MarioGame {
                       scene.chessWalls = null;
                     }
                     self.startMusic();
-                  }
+                  },
+                  options
                 );
                 self.chessDuel.start();
                 self.startChessMusic();
@@ -7529,6 +7938,32 @@ class MarioGame {
         osc.stop(now + idx * rhythm + 0.5);
       });
     }
+    
+    else if (type === 'thunder') {
+      const crackOsc = audioCtx.createOscillator();
+      const crackGain = audioCtx.createGain();
+      crackOsc.type = 'sawtooth';
+      crackOsc.frequency.setValueAtTime(180, now);
+      crackOsc.frequency.exponentialRampToValueAtTime(30, now + 0.15);
+      crackGain.gain.setValueAtTime(0.18, now);
+      crackGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+      crackOsc.connect(crackGain);
+      crackGain.connect(audioCtx.destination);
+      crackOsc.start(now);
+      crackOsc.stop(now + 0.15);
+
+      const rumbleOsc = audioCtx.createOscillator();
+      const rumbleGain = audioCtx.createGain();
+      rumbleOsc.type = 'triangle';
+      rumbleOsc.frequency.setValueAtTime(60, now);
+      rumbleOsc.frequency.linearRampToValueAtTime(15, now + 0.8);
+      rumbleGain.gain.setValueAtTime(0.22, now);
+      rumbleGain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+      rumbleOsc.connect(rumbleGain);
+      rumbleGain.connect(audioCtx.destination);
+      rumbleOsc.start(now);
+      rumbleOsc.stop(now + 0.8);
+    }
   }
 
   // --- START ORIGINAL DREAMY CHIPTUNE BGM (64 steps) ---
@@ -7698,6 +8133,29 @@ class MarioGame {
         87.31, 0, 87.31, 0, 87.31, 0, 87.31, 0
       ];
       tempo = 160; // Flowing, watery feel
+    } else if (this.currentLevelIndex === 7) {
+      // Level 8 — "El Relámpago y el Vikingo" (A minor, Norse/Scandinavian steady march)
+      melody = [
+        440.00, 0, 440.00, 493.88, 523.25, 0, 440.00, 0,
+        523.25, 0, 587.33, 659.25, 523.25, 0, 440.00, 0,
+        392.00, 0, 392.00, 440.00, 493.88, 0, 392.00, 0,
+        493.88, 0, 523.25, 587.33, 493.88, 0, 392.00, 0,
+        440.00, 440.00, 523.25, 523.25, 587.33, 0, 659.25, 0,
+        783.99, 659.25, 587.33, 523.25, 440.00, 493.88, 440.00, 0,
+        392.00, 392.00, 493.88, 493.88, 523.25, 0, 587.33, 0,
+        659.25, 587.33, 523.25, 493.88, 392.00, 440.00, 440.00, 0
+      ];
+      bass = [
+        110.00, 0, 110.00, 0, 110.00, 0, 110.00, 0,
+        110.00, 0, 110.00, 0, 110.00, 0, 110.00, 0,
+        98.00, 0, 98.00, 0, 98.00, 0, 98.00, 0,
+        98.00, 0, 98.00, 0, 98.00, 0, 98.00, 0,
+        110.00, 0, 110.00, 0, 110.00, 0, 110.00, 0,
+        110.00, 0, 110.00, 0, 110.00, 0, 110.00, 0,
+        98.00, 0, 98.00, 0, 98.00, 0, 98.00, 0,
+        110.00, 0, 110.00, 0, 110.00, 0, 110.00, 0
+      ];
+      tempo = 180; // Heavy, steady march
     } else {
       // Level 1 — Dreamy, ethereal, minor-mode fairy tale chords
       melody = [
@@ -7871,28 +8329,55 @@ class MarioGame {
     const audioCtx = window.GameAudio.ctx;
     if (!audioCtx) return;
     
-    // Tension theme: minor, repetitive, clock-like
-    const melody = [
-      311.13, 0, 311.13, 349.23, 311.13, 293.66, 261.63, 0,
-      311.13, 0, 311.13, 349.23, 369.99, 349.23, 311.13, 0,
-      293.66, 0, 293.66, 311.13, 293.66, 261.63, 246.94, 0,
-      293.66, 0, 293.66, 311.13, 349.23, 311.13, 293.66, 0,
-      233.08, 0, 233.08, 261.63, 233.08, 220.00, 207.65, 0,
-      233.08, 0, 233.08, 261.63, 293.66, 261.63, 233.08, 0,
-      311.13, 349.23, 369.99, 415.30, 369.99, 349.23, 311.13, 0,
-      349.23, 369.99, 415.30, 466.16, 415.30, 369.99, 349.23, 311.13
-    ];
-    const bass = [
-      77.78, 0, 0, 0, 77.78, 0, 0, 0,
-      77.78, 0, 0, 0, 77.78, 0, 0, 0,
-      73.42, 0, 0, 0, 73.42, 0, 0, 0,
-      73.42, 0, 0, 0, 73.42, 0, 0, 0,
-      58.27, 0, 0, 0, 58.27, 0, 0, 0,
-      58.27, 0, 0, 0, 58.27, 0, 0, 0,
-      77.78, 0, 0, 0, 77.78, 0, 0, 0,
-      77.78, 0, 0, 0, 77.78, 0, 0, 0
-    ];
-    const tempo = 180;
+    let melody, bass, tempo;
+
+    if (this.currentLevelIndex === 7) {
+      // Level 8 - Viking chess battle theme (D minor, fast, chromatic and intense)
+      melody = [
+        293.66, 293.66, 349.23, 293.66, 392.00, 293.66, 440.00, 0,
+        440.00, 392.00, 349.23, 329.63, 293.66, 329.63, 349.23, 0,
+        293.66, 293.66, 349.23, 293.66, 392.00, 293.66, 440.00, 0,
+        523.25, 440.00, 392.00, 349.23, 440.00, 349.23, 293.66, 0,
+        349.23, 349.23, 440.00, 349.23, 523.25, 349.23, 587.33, 0,
+        587.33, 523.25, 440.00, 392.00, 349.23, 392.00, 440.00, 0,
+        293.66, 329.63, 349.23, 392.00, 440.00, 523.25, 587.33, 0,
+        698.46, 587.33, 523.25, 440.00, 392.00, 349.23, 293.66, 0
+      ];
+      bass = [
+        73.42, 0, 73.42, 0, 73.42, 0, 73.42, 0,
+        73.42, 0, 73.42, 0, 73.42, 0, 73.42, 0,
+        73.42, 0, 73.42, 0, 73.42, 0, 73.42, 0,
+        65.41, 0, 65.41, 0, 65.41, 0, 65.41, 0,
+        87.31, 0, 87.31, 0, 87.31, 0, 87.31, 0,
+        87.31, 0, 87.31, 0, 87.31, 0, 87.31, 0,
+        73.42, 0, 73.42, 0, 73.42, 0, 73.42, 0,
+        55.00, 0, 55.00, 0, 65.41, 0, 73.42, 0
+      ];
+      tempo = 145; // Rapid, intense tempo!
+    } else {
+      // Tension theme: minor, repetitive, clock-like
+      melody = [
+        311.13, 0, 311.13, 349.23, 311.13, 293.66, 261.63, 0,
+        311.13, 0, 311.13, 349.23, 369.99, 349.23, 311.13, 0,
+        293.66, 0, 293.66, 311.13, 293.66, 261.63, 246.94, 0,
+        293.66, 0, 293.66, 311.13, 349.23, 311.13, 293.66, 0,
+        233.08, 0, 233.08, 261.63, 233.08, 220.00, 207.65, 0,
+        233.08, 0, 233.08, 261.63, 293.66, 261.63, 233.08, 0,
+        311.13, 349.23, 369.99, 415.30, 369.99, 349.23, 311.13, 0,
+        349.23, 369.99, 415.30, 466.16, 415.30, 369.99, 349.23, 311.13
+      ];
+      bass = [
+        77.78, 0, 0, 0, 77.78, 0, 0, 0,
+        77.78, 0, 0, 0, 77.78, 0, 0, 0,
+        73.42, 0, 0, 0, 73.42, 0, 0, 0,
+        73.42, 0, 0, 0, 73.42, 0, 0, 0,
+        58.27, 0, 0, 0, 58.27, 0, 0, 0,
+        58.27, 0, 0, 0, 58.27, 0, 0, 0,
+        77.78, 0, 0, 0, 77.78, 0, 0, 0,
+        77.78, 0, 0, 0, 77.78, 0, 0, 0
+      ];
+      tempo = 180;
+    }
     let step = 0;
     
     // Tick-tock percussion layer
