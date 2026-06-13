@@ -54,7 +54,7 @@ class MarioGame {
     
     // Phaser game instance reference
     this.phaserGame = null;
-    this.touchInputs = { left: false, right: false, jump: false, dash: false };
+    this.touchInputs = { left: false, right: false, jump: false, dash: false, flashlight: false };
   }
 
   // --- WELCOME LEVEL SELECTOR SCREEN ---
@@ -290,6 +290,7 @@ class MarioGame {
                 <div class="touch-btn left" id="touch-left">◀</div>
                 <div class="touch-btn right" id="touch-right">▶</div>
                 <div class="touch-btn dash" id="touch-dash" style="background:rgba(245,158,11,0.2);border-color:rgba(245,158,11,0.4);color:#fef08a;">B</div>
+                <div class="touch-btn flashlight" id="touch-flashlight" style="background:rgba(251,191,36,0.2);border-color:rgba(251,191,36,0.4);color:#fef08a;font-size:10px;">🔦</div>
               </div>
               <div class="touch-group touch-group-right">
                 <div class="touch-btn jump" id="touch-jump">A</div>
@@ -346,6 +347,7 @@ class MarioGame {
     bindTouch('touch-right', 'right');
     bindTouch('touch-jump', 'jump');
     bindTouch('touch-dash', 'dash');
+    bindTouch('touch-flashlight', 'flashlight');
   }
 
   // === RUNNER GAME MODE (Level 5 — La Coronación de Peoncito) ===
@@ -1533,7 +1535,7 @@ class MarioGame {
     const biome = levelDef.biome;
     const platformsData = levelDef.platformsData;
     const coinsData = levelDef.coinsData;
-    const enemiesData = levelDef.enemiesData;
+    const enemiesData = levelDef.enemiesData || [];
 
     const config = {
       type: Phaser.AUTO,
@@ -5789,12 +5791,13 @@ class MarioGame {
               enemy.setSize(24, 34);
               enemy.setOffset(4, 4);
               enemy.setCollideWorldBounds(true);
+              enemy.body.allowGravity = false;
               enemy.leftBound = se.left;
               enemy.rightBound = se.right;
               enemy.speed = se.speed;
               enemy.dead = false;
               enemy.lightExposure = 0;
-              enemy.setAlpha(0); // invisible outside flashlight
+              enemy.setAlpha(0.2); // dim but visible, flashlight reveals fully
               enemy.body.setVelocityX(-se.speed);
               scene.shadowEnemies.add(enemy);
             });
@@ -5807,7 +5810,7 @@ class MarioGame {
               ae.setDisplaySize(28, 42);
               ae.setSize(22, 34);
               ae.setOffset(3, 4);
-              ae.setAlpha(0); // invisible outside flashlight
+              ae.setAlpha(0.15); // dim but visible, flashlight reveals fully
               scene.shadowAirEnemies.add(ae);
               ae.body.allowGravity = false;
               ae.body.setImmovable(true);
@@ -5832,17 +5835,20 @@ class MarioGame {
               ae.startY = sae.y;
             });
 
+            // Collider: shadow enemies vs platforms (keep them on the ground)
+            scene.physics.add.collider(scene.shadowEnemies, scene.platforms);
+
             // Shadow barriers — static walls that dissolve under flashlight
             scene.shadowBarriers = [];
             const shadowBarriersData = levelDef.shadowBarriers || [];
             shadowBarriersData.forEach(sb => {
-              const barrier = scene.add.rectangle(sb.x, sb.y + sb.h / 2, sb.w, sb.h, 0x2a1050, 0.7);
+              const barrier = scene.add.rectangle(sb.x, sb.y + sb.h / 2, sb.w, sb.h, 0x6b21a8, 0.8);
+              barrier.setStrokeStyle(2, 0xa855f7, 0.9);
               barrier.setDepth(3);
               barrier.isShadowBarrier = true;
               barrier.maxAlpha = 0.7;
               scene.physics.add.existing(barrier, true);
               barrier.body.setSize(sb.w, sb.h);
-              barrier.body.setImmovable(true);
               scene.physics.add.collider(scene.player, barrier);
               scene.shadowBarriers.push(barrier);
             });
@@ -5919,16 +5925,16 @@ class MarioGame {
             scene.showFlashlightTutorial = true;
             scene.flashlightTutorialText = scene.add.text(
               scene.cameras.main.worldView.x + 400, 180,
-              '🔦 ¡Usa la linterna!\nPresiona [E] para iluminar\nlas sombras y avanzar',
+              '🔦 Presiona [F] o [E] para linterna\nApunta a las sombras para quemarlas\n💡 Orbes = recarga de batería',
               {
                 fontFamily: "'Outfit', sans-serif",
-                fontSize: '16px',
+                fontSize: '13px',
                 fontStyle: 'bold',
                 fill: '#fef08a',
                 stroke: '#1a1028',
                 strokeThickness: 4,
                 align: 'center',
-                lineSpacing: 6
+                lineSpacing: 5
               }
             ).setOrigin(0.5).setDepth(20).setScrollFactor(0);
             scene.tweens.add({
@@ -6734,38 +6740,7 @@ class MarioGame {
           if (biome === 'shadow_labyrinth' && scene.shadowEnemies) {
             scene.physics.add.overlap(scene.player, scene.shadowEnemies, (player, enemy) => {
               if (enemy.dead) return;
-              if (player.flashlightActive) {
-                enemy.lightExposure = (enemy.lightExposure || 0) + 1;
-                if (enemy.lightExposure > 35) {
-                  enemy.dead = true;
-                  enemy.body.setVelocityX(0);
-                  enemy.body.allowGravity = false;
-                  self.score += 200;
-                  self.synthesizeSound('stomp');
-                  document.getElementById('hud-score').textContent = self.score.toString().padStart(5, '0');
-                  // Dissolve into light particles
-                  for (let i = 0; i < 8; i++) {
-                    const a = (i / 8) * Math.PI * 2;
-                    const p = scene.add.circle(enemy.x, enemy.y, 2, 0xfef08a, 0.7);
-                    scene.tweens.add({
-                      targets: p,
-                      x: p.x + Math.cos(a) * 30,
-                      y: p.y + Math.sin(a) * 30,
-                      alpha: 0,
-                      scale: 0.1,
-                      duration: 500,
-                      onComplete: () => p.destroy()
-                    });
-                  }
-                  scene.tweens.add({
-                    targets: enemy,
-                    alpha: 0.3,
-                    scaleY: 0.1,
-                    duration: 300,
-                    onComplete: () => enemy.destroy()
-                  });
-                }
-              } else if (player.invincibility === 0) {
+              if (!player.flashlightActive && player.invincibility === 0) {
                 self.lives--;
                 player.invincibility = 60;
                 player.body.setVelocityX(player.x < enemy.x ? -200 : 200);
@@ -7004,8 +6979,11 @@ class MarioGame {
             right: Phaser.Input.Keyboard.KeyCodes.D,
             dash: Phaser.Input.Keyboard.KeyCodes.SHIFT,
             dash2: Phaser.Input.Keyboard.KeyCodes.C,
-            flashlight: Phaser.Input.Keyboard.KeyCodes.E
+            flashlight: Phaser.Input.Keyboard.KeyCodes.F
           });
+          // Standalone flashlight key as fallback
+          scene._flKeyE = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+          scene._flKeyF = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         },
         update: function() {
           const scene = this;
@@ -7401,21 +7379,30 @@ class MarioGame {
 
           // --- SHADOW LABYRINTH UPDATE: Flashlight, shadow enemies, barriers ---
           if (biome === 'shadow_labyrinth') {
-            // Flashlight activation
-            const flPressed = Phaser.Input.Keyboard.JustDown(scene.keysWASD.flashlight);
-            if (flPressed && scene.player.flashlightBattery > 0 && scene.player.flashlightCooldown <= 0) {
+            // Flashlight toggle: F key (JustDown), E key (isDown hold), touch button
+            const flToggle1 = scene.keysWASD && scene.keysWASD.flashlight ? Phaser.Input.Keyboard.JustDown(scene.keysWASD.flashlight) : false;
+            const flToggle2 = scene._flKeyF ? Phaser.Input.Keyboard.JustDown(scene._flKeyF) : false;
+            const flHoldE = scene._flKeyE ? scene._flKeyE.isDown : false;
+            const flTouch = self.touchInputs.flashlight && !scene._prevFlTouch;
+            if (flToggle1 || flToggle2 || flTouch) {
+              if (scene.player.flashlightBattery > 0) {
+                scene.player.flashlightActive = !scene.player.flashlightActive;
+              }
+            }
+            if (flHoldE && scene.player.flashlightBattery > 0) {
               scene.player.flashlightActive = true;
             }
+            if (scene.player.flashlightActive && !flHoldE && !self.touchInputs.flashlight && scene.player.flashlightBattery <= 0) {
+              scene.player.flashlightActive = false;
+            }
+            scene._prevFlTouch = self.touchInputs.flashlight;
             if (scene.player.flashlightActive) {
-              scene.player.flashlightBattery = Math.max(0, scene.player.flashlightBattery - 1.2);
-              if (scene.player.flashlightBattery <= 0 || !scene.keysWASD.flashlight.isDown) {
+              scene.player.flashlightBattery = Math.max(0, scene.player.flashlightBattery - 1);
+              if (scene.player.flashlightBattery <= 0) {
                 scene.player.flashlightActive = false;
-                scene.player.flashlightCooldown = 90; // 5s cooldown at 60fps
               }
             } else {
-              // Passive recharge
-              scene.player.flashlightBattery = Math.min(100, scene.player.flashlightBattery + 0.15);
-              if (scene.player.flashlightCooldown > 0) scene.player.flashlightCooldown--;
+              scene.player.flashlightBattery = Math.min(100, scene.player.flashlightBattery + 0.3);
             }
 
             // Track facing direction
@@ -7488,7 +7475,7 @@ class MarioGame {
               });
             }
 
-            // Update shadow ground enemies (visible in light, invisible in dark)
+            // Update shadow ground enemies
             if (scene.shadowEnemies) {
               scene.shadowEnemies.getChildren().forEach(enemy => {
                 if (enemy.dead) {
@@ -7502,10 +7489,49 @@ class MarioGame {
                 const dx = (enemy.x - px) * dirX;
                 const inLight = scene.player.flashlightActive && dist < 140 && dx > -10;
                 if (inLight) {
+                  enemy.lightExposure = (enemy.lightExposure || 0) + 1;
                   if (enemy.alpha < 1) enemy.setAlpha(Math.min(1, enemy.alpha + 0.1));
+                  // Flicker+scale effect when taking damage
+                  if (enemy.lightExposure > 60 && enemy.lightExposure % 8 < 4) {
+                    enemy.setTint(0xffffff);
+                  } else {
+                    enemy.clearTint();
+                  }
+                  if (enemy.lightExposure >= 90) {
+                    // Kill enemy
+                    enemy.dead = true;
+                    enemy.body.setVelocityX(0);
+                    enemy.body.allowGravity = true;
+                    self.score += 200;
+                    self.synthesizeSound('stomp');
+                    document.getElementById('hud-score').textContent = self.score.toString().padStart(5, '0');
+                    // Dissolve into light particles
+                    for (let i = 0; i < 12; i++) {
+                      const a = (i / 12) * Math.PI * 2;
+                      const p = scene.add.circle(enemy.x, enemy.y, Math.random() * 3 + 1.5, 0xfef08a, 0.9);
+                      scene.tweens.add({
+                        targets: p,
+                        x: p.x + Math.cos(a) * 40,
+                        y: p.y + Math.sin(a) * 40,
+                        alpha: 0,
+                        scale: 0.1,
+                        duration: 600,
+                        onComplete: () => p.destroy()
+                      });
+                    }
+                    scene.tweens.add({
+                      targets: enemy,
+                      alpha: 0,
+                      scaleX: 0.1, scaleY: 0.1,
+                      angle: 360,
+                      duration: 500,
+                      onComplete: () => enemy.destroy()
+                    });
+                  }
                 } else {
-                  if (enemy.alpha > 0) enemy.setAlpha(Math.max(0, enemy.alpha - 0.05));
+                  if (enemy.alpha > 0.2) enemy.setAlpha(Math.max(0.2, enemy.alpha - 0.03));
                   enemy.lightExposure = Math.max(0, (enemy.lightExposure || 0) - 1);
+                  enemy.clearTint();
                 }
                 // Patrol movement
                 if (!enemy.dead) {
@@ -7532,7 +7558,7 @@ class MarioGame {
                 if (inLight) {
                   ae.setAlpha(Math.min(1, ae.alpha + 0.15));
                 } else {
-                  ae.setAlpha(Math.max(0, ae.alpha - 0.05));
+                  ae.setAlpha(Math.max(0.15, ae.alpha - 0.03));
                 }
                 // Pattern movement
                 if (ae.pattern === 'horizontal') {

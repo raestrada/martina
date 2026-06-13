@@ -357,6 +357,90 @@
     return null;
   };
 
+  CE.uciToSan = function(fen, uci) {
+    const board = CE.parseFEN(fen);
+    const fenParts = fen.split(' ');
+    const turn = fenParts[1] || 'w';
+    const epSquare = fenParts[3] || '-';
+
+    const fromC = uci.charCodeAt(0) - 97;
+    const fromR = 8 - parseInt(uci[1]);
+    const toC = uci.charCodeAt(2) - 97;
+    const toR = 8 - parseInt(uci[3]);
+    const promo = uci.length > 4 ? uci[4] : null;
+
+    const piece = board[fromR][fromC];
+    if (!piece) return uci;
+
+    const captured = board[toR][toC];
+    const isPawn = piece.toLowerCase() === 'p';
+    const toCoord = uci.substring(2, 4);
+
+    /* Castling */
+    if (piece.toLowerCase() === 'k' && Math.abs(fromC - toC) === 2) {
+      return toC === 6 ? '0-0' : '0-0-0';
+    }
+
+    /* Determine check / checkmate */
+    const nextFEN = CE.executeMoveRaw(fen, uci);
+    const nextTurn = turn === 'w' ? 'b' : 'w';
+    const isCheck = CE.isKingInCheck(nextFEN, nextTurn);
+    const isMate = CE.isCheckmate(nextFEN, nextTurn);
+
+    /* Spanish piece letters: R=Rey, D=Dama, T=Torre, A=Alfil, C=Caballo */
+    const pieceLetters = { 'K': 'R', 'Q': 'D', 'R': 'T', 'B': 'A', 'N': 'C' };
+    const pieceLetter = isPawn ? '' : (pieceLetters[piece.toUpperCase()] || '');
+
+    /* En-passant capture detection */
+    let isCapture = !!captured;
+    if (isPawn && !captured && epSquare !== '-') {
+      const epC = epSquare.charCodeAt(0) - 97;
+      const epR = 8 - parseInt(epSquare[1]);
+      if (toC === epC && toR === epR) isCapture = true;
+    }
+
+    /* Disambiguation for non-pawn pieces */
+    let disambig = '';
+    if (!isPawn) {
+      const legalMoves = CE.getAllLegalMoves(fen, turn);
+      const ambiguous = legalMoves.filter(m => {
+        if (m === uci) return false;
+        if (m.substring(2, 4) !== toCoord) return false;
+        const fC = m.charCodeAt(0) - 97;
+        const fR = 8 - parseInt(m[1]);
+        return board[fR][fC] === piece;
+      });
+      if (ambiguous.length > 0) {
+        const sameFile = ambiguous.some(m => m[0] === uci[0]);
+        const sameRank = ambiguous.some(m => m[1] === uci[1]);
+        if (!sameFile) disambig = uci[0];
+        else if (!sameRank) disambig = uci[1];
+        else disambig = uci.substring(0, 2);
+      }
+    }
+
+    /* Build SAN */
+    let san = '';
+    if (isPawn) {
+      san = isCapture ? (uci[0] + 'x' + toCoord) : toCoord;
+    } else {
+      san = pieceLetter + disambig + (isCapture ? 'x' : '') + toCoord;
+    }
+
+    /* Promotion */
+    if (promo) {
+      const promoMap = { 'q': 'D', 'r': 'T', 'b': 'A', 'n': 'C' };
+      san += '=' + (promoMap[promo] || promo.toUpperCase());
+    } else if (isPawn && (toR === 0 || toR === 7)) {
+      san += '=D';
+    }
+
+    if (isMate) san += '#';
+    else if (isCheck) san += '+';
+
+    return san;
+  };
+
   CE.playPGN = function(pgnString, startFen) {
     const sans = CE.pgnToMoves(pgnString);
     let fen = startFen || 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';

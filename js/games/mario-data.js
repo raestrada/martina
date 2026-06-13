@@ -800,16 +800,27 @@ window.MartinaLevels = {
       ],
 
       shadowEnemiesData: [
-        { x: 280, y: 390, left: 180, right: 400, speed: 40 },
-        { x: 650, y: 390, left: 530, right: 780, speed: 45 },
-        { x: 980, y: 330, left: 890, right: 1060, speed: 50 },
-        { x: 1220, y: 390, left: 1100, right: 1340, speed: 45 },
-        { x: 1500, y: 390, left: 1380, right: 1640, speed: 50 },
-        { x: 1850, y: 350, left: 1800, right: 2000, speed: 55 },
-        { x: 2180, y: 390, left: 2060, right: 2300, speed: 50 },
-        { x: 2520, y: 350, left: 2480, right: 2680, speed: 55 },
-        { x: 2860, y: 320, left: 2740, right: 2960, speed: 60 },
-        { x: 3150, y: 390, left: 3030, right: 3280, speed: 55 }
+        { x: 350, y: 390, left: 250, right: 480, speed: 40 },
+        { x: 580, y: 390, left: 520, right: 780, speed: 45 },
+        { x: 650, y: 280, left: 520, right: 780, speed: 40 },
+        { x: 950, y: 390, left: 880, right: 1080, speed: 48 },
+        { x: 980, y: 340, left: 880, right: 1060, speed: 50 },
+        { x: 1120, y: 390, left: 1080, right: 1320, speed: 45 },
+        { x: 1300, y: 280, left: 1220, right: 1420, speed: 42 },
+        { x: 1480, y: 390, left: 1380, right: 1620, speed: 50 },
+        { x: 1550, y: 390, left: 1400, right: 1660, speed: 48 },
+        { x: 1700, y: 390, left: 1620, right: 1820, speed: 52 },
+        { x: 1850, y: 340, left: 1800, right: 2000, speed: 55 },
+        { x: 2100, y: 390, left: 2060, right: 2260, speed: 50 },
+        { x: 2200, y: 250, left: 2120, right: 2300, speed: 42 },
+        { x: 2320, y: 390, left: 2240, right: 2440, speed: 48 },
+        { x: 2520, y: 340, left: 2480, right: 2680, speed: 55 },
+        { x: 2680, y: 390, left: 2580, right: 2780, speed: 50 },
+        { x: 2820, y: 310, left: 2740, right: 2960, speed: 55 },
+        { x: 3000, y: 390, left: 2900, right: 3100, speed: 52 },
+        { x: 3150, y: 390, left: 3030, right: 3260, speed: 55 },
+        { x: 3300, y: 390, left: 3220, right: 3400, speed: 48 },
+        { x: 3450, y: 390, left: 3360, right: 3560, speed: 55 }
       ],
 
       shadowAirEnemiesData: [
@@ -820,14 +831,16 @@ window.MartinaLevels = {
       ],
 
       shadowBarriers: [
-        { x: 340, y: 240, w: 20, h: 60 },
-        { x: 720, y: 260, w: 20, h: 60 },
-        { x: 1140, y: 220, w: 20, h: 60 },
-        { x: 1600, y: 260, w: 20, h: 60 },
-        { x: 2060, y: 320, w: 20, h: 60 },
-        { x: 2280, y: 230, w: 20, h: 60 },
-        { x: 2740, y: 220, w: 20, h: 60 },
-        { x: 3250, y: 220, w: 20, h: 60 }
+        { x: 500, y: 430, w: 30, h: 80 },
+        { x: 900, y: 430, w: 30, h: 80 },
+        { x: 1350, y: 430, w: 30, h: 80 },
+        { x: 1600, y: 240, w: 30, h: 60 },
+        { x: 2000, y: 430, w: 30, h: 80 },
+        { x: 2280, y: 210, w: 30, h: 60 },
+        { x: 2460, y: 430, w: 30, h: 80 },
+        { x: 2740, y: 200, w: 30, h: 60 },
+        { x: 3000, y: 430, w: 30, h: 80 },
+        { x: 3250, y: 200, w: 30, h: 60 }
       ],
 
       lightOrbs: [

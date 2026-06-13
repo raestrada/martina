@@ -589,6 +589,7 @@ class BotsGame {
     this.selectedBot = null;
     this.chessFEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
     this.chessHistory = [];
+    this.chessHistorySan = [];
     this.lastChessMove = null;
     this.selectedSquare = null;
     this.isThinking = false;
@@ -1275,6 +1276,8 @@ class BotsGame {
     this.playMove();
 
     const moveCategories = ChessEngine.getMoveCategory(this.chessFEN, uciMove);
+    const san = ChessEngine.uciToSan(this.chessFEN, uciMove);
+    this.chessHistorySan.push(san);
 
     // Track captured piece BEFORE executing move
     const fenParts = this.chessFEN.split(' ');
@@ -1317,7 +1320,7 @@ class BotsGame {
       const toSq = document.querySelector(`#bots-board .bots-chess-sq[data-coord="${toCoord}"]`);
       if (fromSq) fromSq.style.boxShadow = `inset 0 0 0 0 transparent`;
       if (toSq) toSq.style.boxShadow = `inset 0 0 0 5px ${this.selectedBot.color}`;
-      this.updateStatus(`${this.selectedBot.name} jugó ${uciMove}`, 'thinking');
+      this.updateStatus(`${this.selectedBot.name} jugó ${san}`, 'thinking');
     }
 
     this.chessFEN = ChessEngine.executeMoveRaw(this.chessFEN, uciMove);
@@ -1601,20 +1604,25 @@ class BotsGame {
   }
 
   updateHistoryDisplay() {
+    const annColors = { '✨': '#60a5fa', '⭐': '#4ade80', '✓': '#86efac', '⁉️': '#fbbf24', '❌': '#fca5a5', '💀': '#f87171' };
     const buildHist = (containerId, moveCountId) => {
       const el = document.getElementById(containerId);
       if (!el) return;
       el.innerHTML = '';
       for (let i = 0; i < this.chessHistory.length; i += 2) {
-        const plMove = this.chessHistory[i] || '';
-        const oppMove = this.chessHistory[i + 1] || '';
-        const plAnn = this.moveAnnotations[plMove] || '';
-        const oppAnn = this.moveAnnotations[oppMove] || '';
+        const plUci = this.chessHistory[i] || '';
+        const oppUci = this.chessHistory[i + 1] || '';
+        const plSan = this.chessHistorySan[i] || plUci;
+        const oppSan = this.chessHistorySan[i + 1] || oppUci;
+        const plAnn = this.moveAnnotations[plUci] || '';
+        const oppAnn = this.moveAnnotations[oppUci] || '';
         const line = document.createElement('div');
-        line.style.display = 'flex';
-        line.style.gap = '3px';
-        line.style.alignItems = 'center';
-        line.innerHTML = `<span style="color:#64748b;min-width:14px">${Math.floor(i/2)+1}.</span><span style="color:#cbd5e1">${plMove}</span><span style="font-size:0.5rem;color:#94a3b8">${plAnn}</span><span style="color:#64748b">${oppMove}</span><span style="font-size:0.5rem;color:#94a3b8">${oppAnn}</span>`;
+        line.className = 'bots-hist-row';
+        line.innerHTML = `<span class="bots-hist-num">${Math.floor(i/2)+1}.</span>`
+          + `<span class="bots-hist-move">${plSan}</span>`
+          + (plAnn ? `<span class="bots-hist-ann" style="color:${annColors[plAnn] || '#94a3b8'}">${plAnn}</span>` : '<span class="bots-hist-ann"></span>')
+          + `<span class="bots-hist-move opp">${oppSan}</span>`
+          + (oppAnn ? `<span class="bots-hist-ann" style="color:${annColors[oppAnn] || '#94a3b8'}">${oppAnn}</span>` : '<span class="bots-hist-ann"></span>');
         el.appendChild(line);
       }
       el.scrollTop = el.scrollHeight;
@@ -2079,9 +2087,17 @@ class BotsGame {
   }
 
   startGame() {
+    // Clean up review board interval if running
+    if (this._reviewData && this._reviewData.interval) {
+      clearInterval(this._reviewData.interval);
+      this._reviewData.interval = null;
+      this._reviewData.playing = false;
+    }
+
     this.gameActive = true;
     this.chessFEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
     this.chessHistory = [];
+    this.chessHistorySan = [];
     this.lastChessMove = null;
     this.selectedSquare = null;
     this.isThinking = false;
@@ -2339,43 +2355,68 @@ class BotsGame {
 
     gameContainer.innerHTML = `
       <div class="bots-result-overlay" style="border-color: ${resultColor}; box-shadow: 0 0 60px ${resultColor}22;">
-        <div class="bots-result-icon">${resultIcon}</div>
-        <h2 class="bots-result-title" style="color: ${resultColor};">${resultTitle}</h2>
-        <p class="bots-result-reason">${reason}</p>
-        <div class="bots-result-vs">
-          <span class="result-player">Jugador</span>
-          <span style="color:#64748b;font-size:0.7rem;">vs</span>
-          <span class="result-bot" style="color: ${bot.color};">${bot.name} (${bot.elo})</span>
-        </div>
-        ${quote ? `<p class="bots-result-quote">«${quote}»</p>` : ''}
-
-        <div class="bots-result-elo" style="margin-bottom:0.8rem;">
-          <span style="font-size:0.6rem;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;">Tu ELO estimado</span>
-          <strong style="font-size:2rem;color:${resultColor};display:block;">${perfElo}</strong>
+        <div class="bots-result-top">
+          <span class="bots-result-icon">${resultIcon}</span>
+          <h2 class="bots-result-title" style="color: ${resultColor};">${resultTitle}</h2>
+          <span class="bots-result-reason">${reason}</span>
         </div>
 
-        <div class="bots-result-stats">
-          <div class="result-stat">
-            <span>Jugadas</span>
-            <strong>${this.chessHistory.length}</strong>
+        <div class="bots-result-body">
+          <div class="bots-result-board-col">
+            <div class="bots-review-board-wrap">
+              <div id="bots-review-board" class="bots-review-board"></div>
+            </div>
+            <div class="bots-review-controls">
+              <button class="bots-review-btn" data-action="first" title="Inicio">⏮</button>
+              <button class="bots-review-btn" data-action="prev" title="Anterior">◀</button>
+              <button class="bots-review-btn" data-action="play" title="Reproducir">▶</button>
+              <button class="bots-review-btn" data-action="next" title="Siguiente">▶</button>
+              <button class="bots-review-btn" data-action="last" title="Final">⏭</button>
+            </div>
           </div>
-          <div class="result-stat">
-            <span>Capturas</span>
-            <strong>${this.capturedBlack.length} - ${this.capturedWhite.length}</strong>
-          </div>
-          <div class="result-stat">
-            <span>Precisión</span>
-            <strong style="color:${accuracy >= 70 ? '#4ade80' : accuracy >= 40 ? '#fbbf24' : '#f87171'}">${accuracy}%</strong>
-          </div>
-        </div>
 
-        <div class="bots-result-summary" style="background:rgba(255,255,255,0.03);border-radius:8px;padding:0.6rem 0.8rem;margin-bottom:1rem;max-width:340px;font-size:0.72rem;color:#cbd5e1;line-height:1.5;">
-          ${summaryHTML}
-        </div>
+          <div class="bots-result-info-col">
+            <div class="bots-result-vs">
+              <span class="result-player">Jugador</span>
+              <span class="result-vs">vs</span>
+              <span class="result-bot" style="color: ${bot.color};">${bot.name} (${bot.elo})</span>
+            </div>
+            ${quote ? `<p class="bots-result-quote">«${quote}»</p>` : ''}
 
-        <div class="bots-result-actions">
-          <button class="bots-result-btn" id="bots-btn-replay" style="background: ${bot.color}; color: ${bot.tier === 'shadow' || bot.tier === 'queen' ? '#0a0a0a' : '#fff'};">Revancha</button>
-          <button class="bots-result-btn secondary" id="bots-btn-choose">Elegir otro bot</button>
+            <div class="bots-result-stats">
+              <div class="result-stat">
+                <span>Jugadas</span>
+                <strong>${this.chessHistory.length}</strong>
+              </div>
+              <div class="result-stat">
+                <span>Capturas</span>
+                <strong>${this.capturedBlack.length}-${this.capturedWhite.length}</strong>
+              </div>
+              <div class="result-stat">
+                <span>Precisión</span>
+                <strong style="color:${accuracy >= 70 ? '#4ade80' : accuracy >= 40 ? '#fbbf24' : '#f87171'}">${accuracy}%</strong>
+              </div>
+            </div>
+
+            <div class="bots-result-elo">
+              <span>ELO estimado</span>
+              <strong style="color:${resultColor};">${perfElo}</strong>
+            </div>
+
+            <div class="bots-result-summary">${summaryHTML}</div>
+
+            <div class="bots-result-move-info">
+              <span class="bots-review-move-num">Jugada 0</span>
+              <span class="bots-review-move-san">Posición Inicial</span>
+            </div>
+
+            <div class="bots-review-moves" id="bots-review-moves"></div>
+
+            <div class="bots-result-actions">
+              <button class="bots-result-btn" id="bots-btn-replay" style="background: ${bot.color}; color: ${bot.tier === 'shadow' || bot.tier === 'queen' ? '#0a0a0a' : '#fff'};">Revancha</button>
+              <button class="bots-result-btn secondary" id="bots-btn-choose">Elegir otro bot</button>
+            </div>
+          </div>
         </div>
       </div>
     `;
@@ -2383,8 +2424,211 @@ class BotsGame {
     document.getElementById('bots-btn-replay').addEventListener('click', () => this.startGame());
     document.getElementById('bots-btn-choose').addEventListener('click', () => this.showBotSelect());
 
+    // Initialize game review board
+    this._initReviewBoard(bot);
+
     // Save game result
     this._saveGameResult(result, bot, accuracy, perfElo);
+  }
+
+  _initReviewBoard(bot) {
+    const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+    // Reconstruct full FEN history from UCI moves
+    const reviewHistory = [{ fen: START_FEN, uci: '', san: 'Posición Inicial' }];
+    let fen = START_FEN;
+    for (const uci of this.chessHistory) {
+      const san = ChessEngine.uciToSan(fen, uci);
+      fen = ChessEngine.executeMoveRaw(fen, uci);
+      reviewHistory.push({ fen, uci, san });
+    }
+
+    this._reviewData = {
+      history: reviewHistory,
+      step: 0,
+      playing: false,
+      interval: null
+    };
+
+    // Create ChessBoard instance
+    const perspective = this.playerColor;
+    this._reviewBoard = new ChessBoard({
+      containerId: 'bots-review-board',
+      squareClass: 'bots-chess-sq',
+      pieceClass: 'bots-chess-pc',
+      lightColor: bot.boardLight || '#dbeafe',
+      darkColor: bot.boardDark || '#1e4d8c',
+      playerColor: perspective
+    });
+
+    // Build moves list with annotations
+    this._buildReviewMoves();
+
+    // Render initial position
+    this._reviewGoToStep(0);
+
+    // Bind controls
+    this._bindReviewControls();
+  }
+
+  _buildReviewMoves() {
+    const movesEl = document.getElementById('bots-review-moves');
+    if (!movesEl) return;
+    movesEl.innerHTML = '';
+
+    const history = this._reviewData.history;
+    for (let i = 1; i < history.length; i += 2) {
+      const moveNum = Math.ceil(i / 2);
+      const row = document.createElement('div');
+      row.className = 'bots-review-move-row';
+      row.innerHTML = `<span class="bots-review-move-number">${moveNum}.</span>`;
+
+      // White move
+      const wMove = history[i];
+      const wAnn = this.moveAnnotations[wMove.uci] || '';
+      const wSpan = document.createElement('span');
+      wSpan.className = 'bots-review-move-item';
+      wSpan.setAttribute('data-step', i);
+      wSpan.innerHTML = `${wMove.san}<span class="bots-review-move-ann" style="color:${this._annColor(wAnn)}">${wAnn}</span>`;
+      wSpan.addEventListener('click', () => {
+        this._reviewPause();
+        this._reviewGoToStep(i);
+      });
+      row.appendChild(wSpan);
+
+      // Black move
+      if (i + 1 < history.length) {
+        const bMove = history[i + 1];
+        const bAnn = this.moveAnnotations[bMove.uci] || '';
+        const bSpan = document.createElement('span');
+        bSpan.className = 'bots-review-move-item';
+        bSpan.setAttribute('data-step', i + 1);
+        bSpan.innerHTML = `${bMove.san}<span class="bots-review-move-ann" style="color:${this._annColor(bAnn)}">${bAnn}</span>`;
+        bSpan.addEventListener('click', () => {
+          this._reviewPause();
+          this._reviewGoToStep(i + 1);
+        });
+        row.appendChild(bSpan);
+      }
+
+      movesEl.appendChild(row);
+    }
+
+    // Scroll to bottom
+    movesEl.scrollTop = movesEl.scrollHeight;
+  }
+
+  _annColor(ann) {
+    const colors = { '✨': '#60a5fa', '⭐': '#4ade80', '✓': '#86efac', '⁉️': '#fbbf24', '❌': '#fca5a5', '💀': '#f87171' };
+    return colors[ann] || '#94a3b8';
+  }
+
+  _reviewGoToStep(idx) {
+    const data = this._reviewData;
+    if (idx < 0 || idx >= data.history.length) return;
+    data.step = idx;
+
+    const step = data.history[idx];
+
+    if (idx > 0 && step.uci) {
+      const from = step.uci.substring(0, 2);
+      const to = step.uci.substring(2, 4);
+      this._reviewBoard.setLastMove(from, to, '#fbbf24');
+    } else {
+      this._reviewBoard._lastMove = null;
+      this._reviewBoard.clearHighlights();
+    }
+    this._reviewBoard.render(step.fen);
+
+    // Update move info
+    const numEl = document.querySelector('.bots-review-move-num');
+    const sanEl = document.querySelector('.bots-review-move-san');
+    if (numEl) {
+      if (idx === 0) numEl.textContent = 'Posición Inicial';
+      else {
+        const moveNum = Math.ceil(idx / 2);
+        const colorName = (idx % 2 === 1) ? 'Blancas' : 'Negras';
+        numEl.textContent = `Jugada ${moveNum} (${colorName})`;
+      }
+    }
+    if (sanEl) sanEl.textContent = step.san;
+
+    // Highlight active move in list
+    const allItems = document.querySelectorAll('.bots-review-move-item');
+    allItems.forEach(el => el.classList.remove('active'));
+    if (idx > 0) {
+      const activeEl = document.querySelector(`.bots-review-move-item[data-step="${idx}"]`);
+      if (activeEl) {
+        activeEl.classList.add('active');
+        activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+  }
+
+  _bindReviewControls() {
+    const btns = document.querySelectorAll('.bots-review-btn');
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const action = btn.getAttribute('data-action');
+        const data = this._reviewData;
+        switch (action) {
+          case 'first':
+            this._reviewPause();
+            this._reviewGoToStep(0);
+            break;
+          case 'prev':
+            this._reviewPause();
+            if (data.step > 0) this._reviewGoToStep(data.step - 1);
+            break;
+          case 'play':
+            this._reviewTogglePlay();
+            break;
+          case 'next':
+            this._reviewPause();
+            if (data.step < data.history.length - 1) this._reviewGoToStep(data.step + 1);
+            break;
+          case 'last':
+            this._reviewPause();
+            this._reviewGoToStep(data.history.length - 1);
+            break;
+        }
+      });
+    });
+
+    // Fix next button icon
+    const nextBtn = document.querySelector('.bots-review-btn[data-action="next"]');
+    if (nextBtn) nextBtn.textContent = '👉';
+  }
+
+  _reviewTogglePlay() {
+    const data = this._reviewData;
+    if (data.playing) {
+      this._reviewPause();
+    } else {
+      if (data.step >= data.history.length - 1) this._reviewGoToStep(0);
+      data.playing = true;
+      const btn = document.querySelector('.bots-review-btn[data-action="play"]');
+      if (btn) { btn.textContent = '⏸'; btn.classList.add('playing'); }
+      data.interval = setInterval(() => {
+        if (data.step < data.history.length - 1) {
+          this._reviewGoToStep(data.step + 1);
+        } else {
+          this._reviewPause();
+        }
+      }, 1200);
+    }
+  }
+
+  _reviewPause() {
+    const data = this._reviewData;
+    if (!data.playing) return;
+    data.playing = false;
+    if (data.interval) {
+      clearInterval(data.interval);
+      data.interval = null;
+    }
+    const btn = document.querySelector('.bots-review-btn[data-action="play"]');
+    if (btn) { btn.textContent = '▶'; btn.classList.remove('playing'); }
   }
 
   _saveGameResult(result, bot, accuracy, perfElo) {
