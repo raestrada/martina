@@ -3879,12 +3879,7 @@
   border: 2px solid;
   border-radius: 16px;
   background: rgba(18, 24, 38, 0.97);
-  animation: botsResultIn 0.4s ease-out;
   overflow: hidden;
-}
-@keyframes botsResultIn {
-  from { opacity: 0; transform: scale(0.92); }
-  to { opacity: 1; transform: scale(1); }
 }
 
 /* --- Top bar: icon + title + reason inline --- */
@@ -4177,7 +4172,133 @@
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--warm-white);
 }
-.bots-result-btn.secondary:hover { background: rgba(255, 255, 255, 0.12); }
+.bots-result-btn.secondary:hover {   background: rgba(255, 255, 255, 0.12);
+}
+
+/* ===================================================================
+   BOTS END TRANSITION — fighting game style
+   =================================================================== */
+.bots-end-transition {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  animation: botsEndFadeIn 0.1s ease-out;
+}
+
+.bots-end-transition.bots-end-fadeout {
+  animation: botsEndFadeOut 0.4s ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes botsEndFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes botsEndFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Flash overlay */
+.bots-end-flash {
+  position: absolute;
+  inset: 0;
+  background: var(--flash-color, #ef4444);
+  opacity: 0;
+  animation: botsEndFlash 0.6s ease-out forwards;
+}
+@keyframes botsEndFlash {
+  0% { opacity: 0; }
+  15% { opacity: 0.35; }
+  40% { opacity: 0.12; }
+  70% { opacity: 0.04; }
+  100% { opacity: 0; }
+}
+
+/* Slam text — "¡JAQUE MATE!" / "DERROTA" / "¡TABLAS!" */
+.bots-end-slam {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  animation: botsEndSlamScale 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes botsEndSlamScale {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.bots-end-slam-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(1.8rem, 8vw, 4.5rem);
+  font-weight: 900;
+  color: var(--slam-color, #ef4444);
+  text-shadow:
+    0 0 15px var(--slam-color, #ef4444),
+    0 0 40px var(--slam-color, #ef4444),
+    0 0 80px var(--slam-color, #ef4444),
+    0 4px 12px rgba(0, 0, 0, 0.9);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-align: center;
+  animation: botsEndSlamPulse 0.7s ease-in-out 0.5s infinite alternate;
+}
+
+@keyframes botsEndSlamPulse {
+  0% {
+    filter: brightness(1);
+    text-shadow: 0 0 15px var(--slam-color), 0 0 40px var(--slam-color), 0 0 80px var(--slam-color), 0 4px 12px rgba(0, 0, 0, 0.9);
+  }
+  100% {
+    filter: brightness(1.3);
+    text-shadow: 0 0 25px var(--slam-color), 0 0 60px var(--slam-color), 0 0 100px var(--slam-color), 0 4px 12px rgba(0, 0, 0, 0.9);
+  }
+}
+
+.bots-end-slam-sub {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 1px;
+  opacity: 0;
+  animation: botsEndSubIn 0.3s ease-out 0.4s forwards;
+}
+@keyframes botsEndSubIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 0.9; transform: translateY(0); }
+}
+
+/* Scanlines overlay for retro feel */
+.bots-end-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+}
+
+/* Result overlay entrance */
+.bots-result-overlay {
+  animation: botsResultIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+@keyframes botsResultIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
 
 /* ===================================================================
    BOTS RESPONSIVE — Mobile & Tablet

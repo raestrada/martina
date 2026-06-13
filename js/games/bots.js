@@ -2309,14 +2309,8 @@ class BotsGame {
     else if (result === 'lose') this.playDefeat();
 
     const bot = this.selectedBot;
-    const quote = result === 'win'
-      ? this.getBotQuote('defeat')
-      : result === 'draw'
-        ? this.getBotQuote('taunt')
-        : this.getBotQuote('victory');
 
     // --- Performance analysis ---
-    const annNames = {'✨':'Brillante','⭐':'Genial','✓':'Buena','⁉️':'Imprecisión','❌':'Error','💀':'Gaffe'};
     const playerAnns = { '✨':0, '⭐':0, '✓':0, '⁉️':0, '❌':0, '💀':0 };
     let totalPlayerMoves = 0;
     for (let i = 0; i < this.chessHistory.length; i += 2) {
@@ -2328,16 +2322,13 @@ class BotsGame {
       }
     }
     const good = playerAnns['✨'] + playerAnns['⭐'] + playerAnns['✓'];
-    const bad = playerAnns['⁉️'] + playerAnns['❌'] + playerAnns['💀'];
     const accuracy = totalPlayerMoves > 0 ? Math.round((good / totalPlayerMoves) * 100) : 100;
 
-    // --- ELO estimation ---
     let perfElo = bot.elo;
     if (result === 'win') perfElo = Math.min(3000, bot.elo + 150 + accuracy * 2);
     else if (result === 'lose') perfElo = Math.max(100, bot.elo - 250 + accuracy * 2);
     else perfElo = bot.elo - 50 + accuracy * 2;
 
-    // --- Build summary lines ---
     let summaryHTML = '';
     if (playerAnns['💀'] > 0) summaryHTML += `<span style="color:#f87171">${playerAnns['💀']} gaffes 💀</span> `;
     if (playerAnns['❌'] > 0) summaryHTML += `<span style="color:#fca5a5">${playerAnns['❌']} errores</span> `;
@@ -2346,10 +2337,72 @@ class BotsGame {
     if (playerAnns['✓'] > 0) summaryHTML += `<span style="color:#86efac">${playerAnns['✓']} buenas</span>`;
     if (!summaryHTML) summaryHTML = 'Juego sólido sin imprecisiones.';
 
+    const resultColor = result === 'win' ? '#4ade80' : result === 'draw' ? '#fbbf24' : '#ef4444';
+    const quote = result === 'win'
+      ? this.getBotQuote('defeat')
+      : result === 'draw'
+        ? this.getBotQuote('taunt')
+        : this.getBotQuote('victory');
+
+    // Dramatic fighting-game transition, then show result
+    this._showEndTransition(result, reason, resultColor, () => {
+      this._renderResultScreen(result, reason, bot, accuracy, perfElo, summaryHTML, quote, resultColor);
+    });
+  }
+
+  _showEndTransition(result, reason, resultColor, callback) {
+    const container = document.getElementById('bots-game-container');
+    if (!container) { callback(); return; }
+
+    const slamText = result === 'win' ? '¡JAQUE MATE!' : result === 'draw' ? '¡TABLAS!' : 'DERROTA';
+
+    const overlay = document.createElement('div');
+    overlay.className = 'bots-end-transition';
+    overlay.innerHTML = `
+      <div class="bots-end-flash" style="--flash-color: ${resultColor};"></div>
+      <div class="bots-end-slam" style="--slam-color: ${resultColor};">
+        <span class="bots-end-slam-text">${slamText}</span>
+        <span class="bots-end-slam-sub">${reason}</span>
+      </div>
+      <div class="bots-end-scanlines"></div>
+    `;
+    container.appendChild(overlay);
+
+    // Play announcer voice
+    this._playEndAnnouncer(result);
+
+    // After animation completes, callback
+    setTimeout(() => {
+      overlay.classList.add('bots-end-fadeout');
+      setTimeout(() => {
+        overlay.remove();
+        callback();
+      }, 400);
+    }, 1500);
+  }
+
+  _playEndAnnouncer(result) {
+    if (!this.soundEnabled || !window.speechSynthesis) return;
+    try {
+      speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance();
+      const voices = speechSynthesis.getVoices();
+      let voice = voices.find(v => v.lang.startsWith('es') && /Jorge|Diego|male/i.test(v.name));
+      if (!voice) voice = voices.find(v => v.lang.startsWith('es'));
+      if (voice) utter.voice = voice;
+      utter.pitch = 0.3;
+      utter.rate = 0.75;
+      utter.volume = 1.0;
+      if (result === 'win') utter.text = '¡Jaque Mate! ¡Victoria!';
+      else if (result === 'lose') utter.text = 'Derrota.';
+      else utter.text = 'Tablas.';
+      speechSynthesis.speak(utter);
+    } catch(e) {}
+  }
+
+  _renderResultScreen(result, reason, bot, accuracy, perfElo, summaryHTML, quote, resultColor) {
     const resultIcon = result === 'win' ? '👑' : result === 'draw' ? '🤝' : '😞';
     const resultTitle = result === 'win' ? '¡VICTORIA!' : result === 'draw' ? 'TABLAS' : 'DERROTA';
-    const resultColor = result === 'win' ? '#4ade80' : result === 'draw' ? '#fbbf24' : '#ef4444';
-
     const gameContainer = document.getElementById('bots-game-container');
     if (!gameContainer) return;
 
