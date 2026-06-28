@@ -52,6 +52,7 @@
     gtag('config', 'G-8VT55Y2PFC');
   </script>
   {% block extraHead %}{% endblock %}
+  <script>if('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
 </head>
 <body>
 
@@ -67,6 +68,7 @@
       <a href="/#cuentos" class="nav-link{% if activeNav == 'cuentos' %} active{% endif %}">Cuentos</a>
       <a href="/juegos.html" class="nav-link{% if activeNav == 'juegos' %} active{% endif %}">Juegos</a>
       <a href="/bots.html" class="nav-link{% if activeNav == 'bots' %} active{% endif %}">Bots</a>
+      <a href="/tutor.html" class="nav-link{% if activeNav == 'tutor' %} active{% endif %}">Tutor IA</a>
       <div class="nav-dropdown">
         <button class="nav-dropdown-trigger{% if activeNav in ['album', 'galeria', 'acerca-de', 'difundir'] %} active{% endif %}" id="nav-more-btn" aria-expanded="false" aria-haspopup="true">Más ▾</button>
         <div class="nav-dropdown-menu" id="nav-more-menu">
@@ -104,6 +106,8 @@
       <a href="/juegos.html">El Tablero de Juegos</a>
       <a href="/album.html">Álbum de Clavadas</a>
       <a href="/difundir.html">Compartir</a>
+      <a href="/tarjeta.html">Tarjetas QR</a>
+      <a href="/colorear.html">Dibujos para Colorear</a>
       <a href="/rss.xml">Feed RSS</a>
     </div>
     <div class="footer-col">

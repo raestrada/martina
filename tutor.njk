@@ -1,0 +1,207 @@
+---
+layout: base.njk
+permalink: /tutor.html
+title: Tutor IA de Ajedrez — Martina · Cuentos de Ajedrez
+description: App-tutor de ajedrez con IA. Sesiones incrementales según tu nivel, partidas reproducibles en el tablero mágico y progreso sin ansiedad.
+keywords: ajedrez, tutor ia, aprender ajedrez, openrouter, martina, tutor chess, lecciones ajedrez
+ogImage: /assets/img/martina_profile_1778904530237.png
+activeNav: tutor
+extraCss:
+  - /css/tutor.css
+extraJs:
+  - /js/chess-engine.js
+  - /js/chess-board.js
+  - /js/chess-replayer.js
+footerText: Tutor IA experimental para Martina, por papá.
+---
+
+<!-- Hero compacto estilo app -->
+<header class="tutor-app-hero">
+  <div class="tutor-app-hero-inner">
+    <div class="tutor-app-brand">
+      <span class="tutor-app-logo">♟️</span>
+      <div>
+        <h1>Tutor IA de Martina</h1>
+        <p id="tutor-tagline">Aprende ajedrez paso a paso, con partidas que cobran vida.</p>
+      </div>
+    </div>
+    <div class="tutor-app-hero-actions">
+      <span class="tutor-status-chip" id="tutor-status-chip" hidden></span>
+      <button class="tutor-icon-btn" id="tutor-help-btn" title="Ayuda: ¿qué es OpenRouter?">❓</button>
+      <button class="tutor-icon-btn" id="tutor-config-btn" title="Configuración">⚙️</button>
+    </div>
+  </div>
+</header>
+
+<!-- CTA inicial cuando falta configurar -->
+<section class="tutor-onboard" id="tutor-onboard" hidden>
+  <div class="tutor-onboard-card">
+    <h2>¡Hola! Soy Martina 🌟</h2>
+    <p>Para que te enseñe ajedrez con IA necesito tu <strong>clave de OpenRouter</strong>. Es gratuita y fácil de crear. Yo guardo la clave solo en tu navegador.</p>
+    <div class="tutor-onboard-actions">
+      <button class="btn btn-primary" id="tutor-onboard-config">⚙️ Configurar ahora</button>
+      <button class="btn btn-ghost" id="tutor-onboard-help">¿Qué es OpenRouter?</button>
+    </div>
+  </div>
+</section>
+
+<!-- APP: tabs + panel de sesion -->
+<main class="tutor-app" id="tutor-app" hidden>
+
+  <!-- Tabs -->
+  <nav class="tutor-tabs" role="tablist" aria-label="Secciones del tutor">
+    <button class="tutor-tab active" role="tab" aria-selected="true" data-tab="sesion">♟️ Sesión</button>
+    <button class="tutor-tab" role="tab" aria-selected="false" data-tab="progreso">🌱 Progreso</button>
+      <button class="tutor-tab" role="tab" aria-selected="false" data-tab="ayuda">❓ Ayuda</button>
+  </nav>
+
+  <!-- Pestaña: Sesión -->
+  <section class="tutor-tab-panel active" id="tab-sesion" role="tabpanel">
+    <div class="tutor-sesion-layout">
+
+      <!-- Columna lección -->
+      <article class="tutor-lesson-col">
+        <div class="tutor-lesson-head">
+          <span class="tutor-session-kicker" id="tutor-kicker">Listo para empezar</span>
+          <h2 id="tutor-session-title">Tu próxima sesión</h2>
+        </div>
+
+        <div class="tutor-lesson-body" id="tutor-lesson-body">
+          <div class="tutor-idle" id="tutor-idle">
+            <p>Pulsa <strong>Generar sesión</strong> y Martina preparará una lección a tu medida, con un tablero para reproducir la partida.</p>
+            <button class="btn btn-primary btn-lg" id="tutor-generate">✨ Generar sesión 0</button>
+          </div>
+
+          <div class="tutor-thinking" id="tutor-thinking" hidden>
+            <div class="tutor-thinking-orb" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <p class="tutor-thinking-title" id="tutor-thinking-title">Martina está pensando…</p>
+            <p class="tutor-thinking-reason" id="tutor-thinking-reason" hidden></p>
+            <details class="tutor-thinking-raw" id="tutor-thinking-raw" hidden>
+              <summary>Ver lo que Martina está pensando</summary>
+              <pre id="tutor-thinking-raw-text"></pre>
+            </details>
+          </div>
+
+          <div class="tutor-error" id="tutor-error" hidden></div>
+
+          <div class="tutor-lesson-html" id="tutor-lesson-html" hidden></div>
+        </div>
+
+        <div class="tutor-lesson-foot" id="tutor-lesson-foot" hidden>
+          <div class="tutor-feedback">
+            <button class="tutor-fb tutor-fb-ok" id="tutor-fb-ok">✅ Lo entendí</button>
+            <button class="tutor-fb tutor-fb-hard" id="tutor-fb-hard">🔥 Más difícil</button>
+            <button class="tutor-fb tutor-fb-repeat" id="tutor-fb-repeat">🔁 Reforzar</button>
+          </div>
+          <div class="tutor-lesson-actions">
+            <button class="btn btn-primary" id="tutor-next">→ Siguiente sesión</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Columna tablero -->
+      <aside class="tutor-board-col">
+        <div class="tutor-board-host" id="tutor-board-host">
+          <div class="tutor-board-empty" id="tutor-board-empty">
+            <span class="tutor-board-empty-icon">♟️</span>
+            <p>Aquí aparecerá el tablero de la sesión, con controles para repasar la partida jugada por jugada.</p>
+          </div>
+        </div>
+        <details class="tutor-pgn-raw"><summary>Ver PGN</summary><pre id="tutor-pgn-raw"></pre></details>
+      </aside>
+
+    </div>
+  </section>
+
+  <!-- Pestaña: Progreso -->
+  <section class="tutor-tab-panel" id="tab-progreso" role="tabpanel" hidden>
+    <div class="tutor-progress-wrap">
+      <div class="tutor-progress-head">
+        <h2>🌱 Tus sesiones</h2>
+        <p class="tutor-progress-soft">Una por una, a tu ritmo. Pulsa cualquiera para abrirla de nuevo.</p>
+        <div class="tutor-progress-actions">
+          <button class="btn btn-ghost" id="tutor-export">⬇️ Exportar</button>
+          <button class="btn btn-warn" id="tutor-clear-all">🗑 Empezar de nuevo</button>
+        </div>
+      </div>
+      <ul class="tutor-progress-list" id="tutor-progress-list"></ul>
+    </div>
+  </section>
+
+  <!-- Pestaña: Ayuda -->
+  <section class="tutor-tab-panel" id="tab-ayuda" role="tabpanel" hidden>
+    <div class="tutor-help-wrap" id="tutor-help-content"></div>
+  </section>
+
+</main>
+
+<!-- MODAL: Configuración -->
+<div class="tutor-modal" id="tutor-config-modal" hidden>
+  <div class="tutor-modal-backdrop" data-close="tutor-config-modal"></div>
+  <div class="tutor-modal-card" role="dialog" aria-modal="true" aria-labelledby="tutor-config-title">
+    <header class="tutor-modal-head">
+      <h2 id="tutor-config-title">⚙️ Configuración</h2>
+      <button class="tutor-icon-btn" data-close="tutor-config-modal" aria-label="Cerrar">✕</button>
+    </header>
+    <div class="tutor-modal-body">
+      <div class="tutor-field">
+        <label for="tutor-api-key">Clave de OpenRouter</label>
+        <div class="tutor-key-row">
+          <input type="password" id="tutor-api-key" placeholder="sk-or-v1-..." autocomplete="off" spellcheck="false">
+          <button class="tutor-icon-btn" id="tutor-key-toggle" title="Mostrar/ocultar" type="button">👁</button>
+        </div>
+        <p class="tutor-security-note">Tu clave se guarda <strong>solo en este navegador</strong> (localStorage). Las peticiones van directas a OpenRouter. <a href="#" data-open-help>¿Necesitas una clave?</a></p>
+        <div class="tutor-key-test">
+          <button class="btn btn-ghost btn-sm" id="tutor-test-key" type="button">Probar clave</button>
+          <span class="tutor-key-test-result" id="tutor-key-test-result" hidden></span>
+        </div>
+      </div>
+      <div class="tutor-field">
+        <label for="tutor-model">Modelo</label>
+        <div class="tutor-model-row">
+          <select id="tutor-model"></select>
+          <button class="tutor-icon-btn" id="tutor-model-refresh" title="Recargar lista" type="button">↻</button>
+        </div>
+      </div>
+      <div class="tutor-row2">
+        <div class="tutor-field">
+          <label for="tutor-elo-chesscom">Elo Chess.com (opcional)</label>
+          <input type="number" id="tutor-elo-chesscom" placeholder="ej: 1200">
+        </div>
+        <div class="tutor-field">
+          <label for="tutor-elo-fide">Elo FIDE (opcional)</label>
+          <input type="number" id="tutor-elo-fide" placeholder="ej: 1400">
+        </div>
+      </div>
+      <div class="tutor-field">
+        <label for="tutor-desc">Cuéntale a Martina cómo juegas</label>
+        <textarea id="tutor-desc" placeholder="ej: Me cuestan los finales, me encanta atacar pero enroco tarde; juego blitz online; aprendí las reglas hace 1 año."></textarea>
+      </div>
+    </div>
+    <footer class="tutor-modal-foot">
+      <button class="btn btn-primary" id="tutor-save">💾 Guardar</button>
+      <button class="btn btn-ghost" data-close="tutor-config-modal">Cancelar</button>
+    </footer>
+  </div>
+</div>
+
+<!-- MODAL: Ayuda OpenRouter -->
+<div class="tutor-modal" id="tutor-help-modal" hidden>
+  <div class="tutor-modal-backdrop" data-close="tutor-help-modal"></div>
+  <div class="tutor-modal-card tutor-modal-card-wide" role="dialog" aria-modal="true" aria-labelledby="tutor-help-title">
+    <header class="tutor-modal-head">
+      <h2 id="tutor-help-title">❓ ¿Qué es OpenRouter?</h2>
+      <button class="tutor-icon-btn" data-close="tutor-help-modal" aria-label="Cerrar">✕</button>
+    </header>
+    <div class="tutor-modal-body tutor-help-body" id="tutor-help-body"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="tutor-toast" id="tutor-toast" hidden></div>
+
+{% block extraBodyEnd %}
+<script src="/js/tutor.js"></script>
+{% endblock %}

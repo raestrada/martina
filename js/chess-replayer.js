@@ -389,6 +389,116 @@
     }
   }
 
+  // --- DYNAMIC REPLAYER (PGN arbitrario para el Tutor IA) ---
+  // Reutiliza toda la lógica de ChessReplayer pero sin STORY_GAMES.
+  // Uso:
+  //   const r = ChessReplayer.fromPGN(containerEl, {
+  //     pgn: '1. e4 e5 2. Nf3 ...',
+  //     startFen: '',           // vacío = posición inicial
+  //     lightColor: '#dfd0b8',
+  //     darkColor: '#3c5c4e',
+  //     accentColor: '#fbbf24'
+  //   });
+  // Devuelve instancia o null si el PGN no es válido.
+  ChessReplayer.fromPGN = function(container, opts) {
+    opts = opts || {};
+    const DEFAULT_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+    const pgn = (opts.pgn || '').trim();
+    const startFen = (opts.startFen || '').trim() || DEFAULT_FEN;
+
+    if (!pgn) return null;
+
+    // Validar el PGN con el motor:parsear SANs y comprobar que todas las jugadas se convierten.
+    let history;
+    try {
+      const sans = ChessEngine.pgnToMoves(pgn);
+      if (sans.length === 0) return null;
+      let fen = startFen;
+      history = [{ fen, uci: '', san: 'Posición Inicial' }];
+      for (const san of sans) {
+        const uci = ChessEngine.sanToUCI(fen, san);
+        if (!uci) return null; // jugada ilegal => PGN inválido
+        fen = ChessEngine.executeMoveRaw(fen, uci);
+        history.push({ fen, uci, san });
+      }
+    } catch (err) {
+      console.warn('DynamicReplayer: PGN inválido', err);
+      return null;
+    }
+
+    // Construir una instancia "ligera" reutilizando el prototipo de ChessReplayer
+    // sin pasar por STORY_GAMES[id].
+    const config = {
+      pgn,
+      startFen,
+      lightColor: opts.lightColor || '#dfd0b8',
+      darkColor: opts.darkColor || '#3c5c4e',
+      accentColor: opts.accentColor || '#fbbf24'
+    };
+
+    const inst = Object.create(ChessReplayer.prototype);
+    inst.container = container;
+    inst.storyId = '__dynamic__';
+    inst.config = config;
+    inst.currentStep = 0;
+    inst.isPlaying = false;
+    inst.playInterval = null;
+    inst.autoPlaySpeed = 1500;
+    // Inyectar la historia validada para que init() no la reparsing
+    inst._validatedHistory = history;
+
+    //_override temporal de init para que use _validatedHistory
+    const origInit = inst.init;
+    inst.init = function() {
+      this.history = this._validatedHistory;
+      this.buildDOM();
+      this.board = new ChessBoard({
+        containerId: `replayer-board-${this._uid}`,
+        squareClass: 'chess-sq',
+        pieceClass: 'chess-pc',
+        lightColor: this.config.lightColor,
+        darkColor: this.config.darkColor,
+        playerColor: 'w'
+      });
+      this.generateMovesList();
+      this.bindEvents();
+      this.goToStep(0);
+    };
+
+    inst._uid = 'dyn_' + Math.random().toString(36).slice(2, 9);
+    // Reescribir buildDOM con id único
+    inst.buildDOM = function() {
+      this.container.innerHTML = `
+        <div class="chess-replayer">
+          <div class="replayer-main">
+            <div class="replayer-board-wrapper" tabindex="0">
+              <div id="replayer-board-${this._uid}" class="replayer-board"></div>
+            </div>
+            <div class="replayer-sidebar">
+              <div class="replayer-game-info">
+                <span class="replayer-move-indicator">Jugada 0</span>
+                <span class="replayer-active-move">Posición Inicial</span>
+              </div>
+              <div class="replayer-moves-list" id="replayer-moves-${this._uid}"></div>
+              <div class="replayer-controls">
+                <button class="replayer-btn btn-first" title="Ir al inicio" aria-label="Inicio">⏮</button>
+                <button class="replayer-btn btn-prev" title="Jugada anterior" aria-label="Anterior">◀</button>
+                <button class="replayer-btn btn-play" title="Auto-reproducir" aria-label="Reproducir">▶</button>
+                <button class="replayer-btn btn-next" title="Siguiente jugada" aria-label="Siguiente">▶</button>
+                <button class="replayer-btn btn-last" title="Ir al final" aria-label="Final">⏭</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      const btnNext = this.container.querySelector('.btn-next');
+      if (btnNext) btnNext.innerHTML = '👉';
+    };
+
+    inst.init();
+    return inst;
+  };
+
   // --- AUTO INITIALIZE ON PAGE LOAD ---
   function initAllReplayers() {
     const containers = document.querySelectorAll('.chess-replayer-container');
