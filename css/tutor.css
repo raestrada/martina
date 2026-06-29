@@ -419,6 +419,7 @@ main {
   aspect-ratio: 1 !important;
   height: auto !important;
   align-self: center !important;
+  flex-shrink: 0 !important;
   margin: 0 auto !important;
   border-width: 2px !important;
 }
@@ -428,9 +429,52 @@ main {
 .tutor-board-col .replayer-move-indicator { font-size: .68rem !important; }
 .tutor-board-col .replayer-active-move { font-size: .82rem !important; }
 .tutor-board-col .replayer-moves-list { max-height: 120px !important; }
-.tutor-board-col .replayer-move-item { font-size: .74rem !important; padding: 0.1rem 0.25rem !important; }
-.tutor-board-col .replayer-controls { gap: 0.2rem !important; }
-.tutor-board-col .replayer-btn { font-size: .8rem !important; padding: 0.2rem 0.45rem !important; }
+
+/* Correcciones de visibilidad y contraste para el replayer en Tutor */
+.tutor-board-col .replayer-move-row {
+  color: var(--text-color) !important;
+}
+.tutor-board-col .replayer-move-num {
+  color: var(--muted-color) !important;
+  opacity: 0.8 !important;
+}
+.tutor-board-col .replayer-move-item {
+  color: var(--text-color) !important;
+  font-size: .74rem !important;
+  padding: 0.1rem 0.25rem !important;
+}
+.tutor-board-col .replayer-move-item:hover {
+  background: rgba(42, 111, 151, 0.1) !important;
+  color: var(--heading-color) !important;
+}
+.tutor-board-col .replayer-move-item.active {
+  background: var(--gold) !important;
+  color: var(--magic-dark) !important;
+  font-weight: 800 !important;
+}
+.tutor-board-col .replayer-controls {
+  gap: 0.2rem !important;
+  background: var(--board-light) !important;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color) !important;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+.tutor-board-col .replayer-btn {
+  font-size: .8rem !important;
+  padding: 0.25rem 0.45rem !important;
+  color: var(--text-color) !important;
+}
+.tutor-board-col .replayer-btn:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: var(--rose) !important;
+}
+.tutor-board-col .replayer-btn.btn-play {
+  color: var(--magic-blue) !important;
+}
+.tutor-board-col .replayer-btn.btn-play.playing {
+  color: var(--rose) !important;
+}
 
 /* ---------- Progreso: lista lineal infinita ---------- */
 .tutor-progress-wrap { max-width: 680px; margin: 0 auto; padding: 0.5rem; }
