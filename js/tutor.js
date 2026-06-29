@@ -87,10 +87,6 @@
     tabProgreso: $('tab-progreso'),
     tabAyuda: $('tab-ayuda'),
 
-    idle: $('tutor-idle'),
-    idleTitle: $('tutor-idle-title'),
-    idleText: $('tutor-idle-text'),
-    generate: $('tutor-generate'),
     thinking: $('tutor-thinking'),
     thinkingTitle: $('tutor-thinking-title'),
     reason: $('tutor-thinking-reason'),
@@ -100,7 +96,6 @@
     lessonHTML: $('tutor-lesson-html'),
     lessonFoot: $('tutor-lesson-foot'),
     next: $('tutor-next'),
-    generate: $('tutor-generate'),
 
     kicker: $('tutor-kicker'),
     sessionTitle: $('tutor-session-title'),
@@ -335,30 +330,37 @@
     localStorage.removeItem(LS_PROGRESS);
     refreshAppMode();
     fillConfigForm();
-    el.lessonHTML.hidden = true;
-    el.lessonFoot.hidden = true;
-    el.idle.hidden = false;
-    el.boardHost.innerHTML = '';
-    el.boardHost.appendChild(el.boardEmpty);
-    el.boardEmpty.hidden = false;
-    el.pgnRaw.textContent = '';
+    initEmptyState();
     renderProgress();
     toast('Listo para empezar de nuevo');
     switchTab('sesion');
   });
 
-  // ---- Idle dinámico según progreso ----
-  function updateIdle() {
-    const n = (loadProgress().sesiones || []).length;
-    if (n === 0) {
-      el.idleTitle.textContent = '¿Empezamos?';
-      el.idleText.textContent = 'Martina preparará una lección a tu medida, con un tablero para reproducir la partida jugada por jugada.';
-      el.generate.textContent = '✨ Empezar mi primera sesión';
-    } else {
-      el.idleTitle.textContent = `Ya llevas ${n} ${n === 1 ? 'sesión' : 'sesiones'}`;
-      el.idleText.textContent = 'Pulsa para generar la siguiente lección. Martina recordará por dónde vas y avanzará sin repetir.';
-      el.generate.textContent = '▶ Generar siguiente sesión';
-    }
+  // ---- Control de botones de feedback ----
+  function setFeedbackButtonsDisabled(disabled) {
+    const okBtn = $('tutor-fb-ok');
+    const hardBtn = $('tutor-fb-hard');
+    const repeatBtn = $('tutor-fb-repeat');
+    if (okBtn) okBtn.disabled = disabled;
+    if (hardBtn) hardBtn.disabled = disabled;
+    if (repeatBtn) repeatBtn.disabled = disabled;
+  }
+
+  // ---- Estado Inicial / Vacío ----
+  function initEmptyState() {
+    currentSession = null;
+    el.kicker.textContent = 'Listo para empezar';
+    el.sessionTitle.textContent = 'Tu primera sesión';
+    el.lessonHTML.innerHTML = '<p class="tutor-empty-state-msg">Presiona el botón <strong>Siguiente lección →</strong> de arriba para generar tu primera lección personalizada de ajedrez con Martina. Martina recordará tu progreso y adaptará las lecciones a tu nivel.</p>';
+    el.lessonHTML.hidden = false;
+    el.lessonFoot.hidden = false;
+    setFeedbackButtonsDisabled(true);
+    
+    // Tablero vacío
+    el.boardHost.innerHTML = '';
+    el.boardHost.appendChild(el.boardEmpty);
+    el.boardEmpty.hidden = false;
+    el.pgnRaw.textContent = '';
   }
 
   // ---- Progreso: lista lineal de sesiones generadas ----
@@ -692,7 +694,6 @@
 
   // Estado de sesión actual (declarado arriba)
   function setThinking() {
-    el.idle.hidden = true;
     el.error.hidden = true;
     el.lessonHTML.hidden = true;
     el.lessonFoot.hidden = true;
@@ -706,7 +707,6 @@
     el.thinkingRawText.textContent = '';
     el.thinkingTitle.textContent = 'Martina está pensando…';
     el.next.disabled = true;
-    el.generate.disabled = true;
     startThinkingPhrases();
   }
 
@@ -779,7 +779,6 @@
     stopThinkingPhrases();
     el.thinking.hidden = true;
     el.reason.hidden = true;
-    el.generate.disabled = false;
     el.next.disabled = false;
 
     if (!session) {
@@ -813,7 +812,7 @@
 
   function renderSession(session, v) {
     // Lección
-    el.idle.hidden = true;
+    setFeedbackButtonsDisabled(false);
     el.kicker.textContent = (session.mundo === 'real' ? '🌍 Mundo Real' : '✨ Reino Mágico') + ' · ' + (session.concepto || '');
     el.sessionTitle.textContent = session.titulo || 'Sesión';
     const recoHTML = (session.recomendaciones || []).length
@@ -859,7 +858,6 @@
   $('tutor-fb-ok').addEventListener('click', () => feedback('Lo entendí'));
   $('tutor-fb-hard').addEventListener('click', () => feedback('Más difícil'));
   $('tutor-fb-repeat').addEventListener('click', () => feedback('Repetir el concepto'));
-  el.generate.addEventListener('click', () => generateSession(null));
   el.next.addEventListener('click', () => generateSession(null));
 
   // ---- Init ----
@@ -872,7 +870,7 @@
   if (profileValid(loadProfile()) && ses.length > 0) {
     revisitSession(ses.length - 1);
   } else {
-    updateIdle();
+    initEmptyState();
   }
   renderProgress();
 })();
