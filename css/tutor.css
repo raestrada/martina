@@ -132,9 +132,8 @@ main {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
   gap: 1rem;
-  align-items: stretch;
-  height: calc(100vh - 140px);
-  min-height: 420px;
+  align-items: start;
+  height: auto;
 }
 @media (max-width: 900px) {
   .tutor-sesion-layout { grid-template-columns: 1fr; height: auto; }
@@ -149,16 +148,23 @@ main {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  overflow: hidden;
 }
+
+@media (min-width: 901px) {
+  .tutor-board-col {
+    position: sticky;
+    top: 110px;
+    align-self: start;
+    z-index: 10;
+  }
+}
+
 .tutor-lesson-head { flex: 0 0 auto; }
 .tutor-lesson-body {
   flex: 1 1 auto;
-  overflow-y: auto;
   padding-right: 0.3rem;
-  min-height: 0;
 }
-/* Barra de acciones siempre visible arriba (no scrollea con la lección) */
+/* Barra de acciones siempre visible arriba */
 .tutor-lesson-foot {
   flex: 0 0 auto;
   display: flex;
@@ -172,9 +178,6 @@ main {
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  position: sticky;
-  top: 0;
-  z-index: 15;
 }
 .tutor-lesson-foot[hidden] { display: none !important; }
 .tutor-next-bar {
