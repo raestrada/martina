@@ -778,8 +778,23 @@ class BotsGame {
     const pm = {high:{p:1.8,r:1.3},fast:{p:1.0,r:1.7},low:{p:0.45,r:0.75},dry:{p:0.7,r:0.95},deep:{p:0.25,r:0.6},slow:{p:0.55,r:0.65},male:{p:0.85,r:0.95},female:{p:1.25,r:1.05}};
     const pp = pm[profile] || pm[gender==='female'?'female':'male'];
     utter.pitch = pp.p; utter.rate = pp.r; utter.volume = 0.8;
-    utter.onend = () => this._dequeueSpeak();
-    utter.onerror = () => { this._speaking = false; this._dequeueSpeak(); };
+
+    // Timer de seguridad para evitar que la cola se quede bloqueada
+    const safetyTimeout = setTimeout(() => {
+      console.warn('SpeechSynthesis stuck, forcing unlock');
+      this._speaking = false;
+      this._dequeueSpeak();
+    }, 8000);
+
+    utter.onend = () => {
+      clearTimeout(safetyTimeout);
+      this._dequeueSpeak();
+    };
+    utter.onerror = () => {
+      clearTimeout(safetyTimeout);
+      this._speaking = false;
+      this._dequeueSpeak();
+    };
     speechSynthesis.speak(utter);
   }
 
@@ -1666,9 +1681,13 @@ class BotsGame {
 
   // ========== UI ==========
   showBotSelect() {
+    window.scrollTo(0, 0);
     this.selectedBot = null;
     this.gameActive = false;
     this.stopMusic();
+
+    const disqus = document.getElementById('disqus_thread');
+    if (disqus) disqus.style.display = 'block';
 
     const stats = this._getStats();
 
@@ -1979,10 +1998,21 @@ class BotsGame {
     } catch(e) {}
   }
 
+  cancelSpeech() {
+    if (window.speechSynthesis) {
+      try {
+        speechSynthesis.cancel();
+      } catch(e) {}
+    }
+    this._speakQueue = [];
+    this._speaking = false;
+    this._lastSpokenText = '';
+  }
+
   playAnnouncerVoice(text) {
     if (!this.soundEnabled || !window.speechSynthesis) return;
     try {
-      speechSynthesis.cancel();
+      this.cancelSpeech();
       const utter = new SpeechSynthesisUtterance(text);
       const voices = speechSynthesis.getVoices();
       let voice = voices.find(v => v.lang.startsWith('es') && /Jorge|Diego|male/i.test(v.name));
@@ -1996,9 +2026,15 @@ class BotsGame {
   }
 
   showVSIntro(botIdx) {
+    if (document.getElementById('bots-vs-overlay')) return;
+    window.scrollTo(0, 0);
+
     const bot = this.bots[botIdx];
     this.selectedBot = bot;
     this.playerColor = Math.random() < 0.5 ? 'w' : 'b';
+
+    const disqus = document.getElementById('disqus_thread');
+    if (disqus) disqus.style.display = 'none';
 
     this._resumeAudio();
     this.playVSIntroMusic();
@@ -2087,6 +2123,7 @@ class BotsGame {
   }
 
   startGame() {
+    window.scrollTo(0, 0);
     // Clean up review board interval if running
     if (this._reviewData && this._reviewData.interval) {
       clearInterval(this._reviewData.interval);
@@ -2228,9 +2265,7 @@ class BotsGame {
       localStorage.setItem('martina_bots_voice', this.voiceEnabled ? 'true' : 'false');
       if (!this.voiceEnabled) {
         if (window.meSpeak) meSpeak.stop();
-        speechSynthesis.cancel();
-        this._speakQueue = [];
-        this._speaking = false;
+        this.cancelSpeech();
       }
       const btn = document.getElementById('bots-btn-voice');
       if (btn) {
@@ -2288,12 +2323,7 @@ class BotsGame {
     this.gameActive = false;
 
     // Detener voces activas y vaciar la cola de reproducción para evitar audios desfasados
-    if (window.speechSynthesis) {
-      speechSynthesis.cancel();
-    }
-    this._speakQueue = [];
-    this._speaking = false;
-    this._lastSpokenText = '';
+    this.cancelSpeech();
     this.stopMusic();
 
     // Cancel any pending opponent move timers
@@ -2384,7 +2414,7 @@ class BotsGame {
   _playEndAnnouncer(result) {
     if (!this.soundEnabled || !window.speechSynthesis) return;
     try {
-      speechSynthesis.cancel();
+      this.cancelSpeech();
       const utter = new SpeechSynthesisUtterance();
       const voices = speechSynthesis.getVoices();
       let voice = voices.find(v => v.lang.startsWith('es') && /Jorge|Diego|male/i.test(v.name));
@@ -2823,12 +2853,14 @@ class BotsGame {
 }
 
 // Initialize
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    const root = document.getElementById('bots-root');
-    if (root) window.botsGame = new BotsGame(root);
-  });
-} else {
+function initBotsGame() {
+  if (window.botsGame) return; // Evitar doble inicialización
   const root = document.getElementById('bots-root');
   if (root) window.botsGame = new BotsGame(root);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initBotsGame);
+} else {
+  initBotsGame();
 }
