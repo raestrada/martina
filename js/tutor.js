@@ -41,6 +41,17 @@
   // Etapas suaves (no numéricas, no competitivas).
   const STAGES = ['Primera vez', 'Explorando', 'Practicando', 'Ganando confianza', 'En ritmo'];
 
+  // Emojis de conceptos
+  function getConceptEmoji(concept) {
+    if (!concept) return '♟️';
+    const norm = concept.toLowerCase().trim();
+    const match = SEED_CONCEPTS.find(c => {
+      const tNorm = c.t.toLowerCase();
+      return norm.includes(tNorm) || tNorm.includes(norm);
+    });
+    return match ? match.e : '♟️';
+  }
+
   // ---- Persistencia ----
   const loadProfile = () => { try { return JSON.parse(localStorage.getItem(LS_PROFILE) || '{}'); } catch { return {}; } };
   const saveProfile = p => localStorage.setItem(LS_PROFILE, JSON.stringify(p));
@@ -77,6 +88,9 @@
     tabAyuda: $('tab-ayuda'),
 
     idle: $('tutor-idle'),
+    idleTitle: $('tutor-idle-title'),
+    idleText: $('tutor-idle-text'),
+    generate: $('tutor-generate'),
     thinking: $('tutor-thinking'),
     thinkingTitle: $('tutor-thinking-title'),
     reason: $('tutor-thinking-reason'),
@@ -333,6 +347,20 @@
     switchTab('sesion');
   });
 
+  // ---- Idle dinámico según progreso ----
+  function updateIdle() {
+    const n = (loadProgress().sesiones || []).length;
+    if (n === 0) {
+      el.idleTitle.textContent = '¿Empezamos?';
+      el.idleText.textContent = 'Martina preparará una lección a tu medida, con un tablero para reproducir la partida jugada por jugada.';
+      el.generate.textContent = '✨ Empezar mi primera sesión';
+    } else {
+      el.idleTitle.textContent = `Ya llevas ${n} ${n === 1 ? 'sesión' : 'sesiones'}`;
+      el.idleText.textContent = 'Pulsa para generar la siguiente lección. Martina recordará por dónde vas y avanzará sin repetir.';
+      el.generate.textContent = '▶ Generar siguiente sesión';
+    }
+  }
+
   // ---- Progreso: lista lineal de sesiones generadas ----
   function renderProgress() {
     const pg = loadProgress();
@@ -344,23 +372,46 @@
     el.historyList.innerHTML = ses.slice().reverse().map((s, idx) => {
       const i = ses.length - idx;
       const realIdx = ses.length - idx - 1;
-      const fb = s.feedback ? ` · <em>${s.feedback}</em>` : '';
+      
+      let fbBadge = '';
+      if (s.feedback === 'Lo entendí') {
+        fbBadge = `<span class="tutor-session-badge ok">✅ Entendido</span>`;
+      } else if (s.feedback === 'Más difícil') {
+        fbBadge = `<span class="tutor-session-badge hard">🔥 Más difícil</span>`;
+      } else if (s.feedback === 'Repetir el concepto') {
+        fbBadge = `<span class="tutor-session-badge repeat">🔁 Reforzar</span>`;
+      }
+
+      const conceptEmoji = getConceptEmoji(s.concepto);
+      const isMagic = s.mundo === 'mágico';
+      const worldClass = isMagic ? 'magic' : 'real';
+      const worldLabel = isMagic ? 'Reino Mágico' : 'Mundo Real';
+
       const hasContent = !!s.leccion_html;
       const fecha = s.fecha ? new Date(s.fecha).toLocaleDateString('es', { day: 'numeric', month: 'short' }) : '';
-      return `<li class="tutor-session-item ${hasContent ? 'clickable' : ''}" data-revisit="${realIdx}">
-        <span class="tutor-session-num">#${i}</span>
-        <span class="tutor-session-info">
-          <span class="tutor-session-concept">${s.concepto || 'Concepto'}</span>
+      return `<li class="tutor-session-item ${worldClass} ${hasContent ? 'clickable' : ''}" data-revisit="${realIdx}">
+        <div class="tutor-session-left">
+          <span class="tutor-session-num">#${i}</span>
+          <span class="tutor-session-emoji" title="${s.concepto || ''}">${conceptEmoji}</span>
+        </div>
+        <div class="tutor-session-info">
+          <div class="tutor-session-row1">
+            <span class="tutor-session-concept">${s.concepto || 'Concepto'}</span>
+            <span class="tutor-session-world-badge ${worldClass}">${worldLabel}</span>
+          </div>
           <span class="tutor-session-title">${(s.titulo || '').slice(0, 64)}</span>
-          <span class="tutor-session-meta">${fb ? fb + ' · ' : ''}${fecha}</span>
-        </span>
-        ${hasContent ? '<span class="tutor-session-open">↺ Abrir</span>' : ''}
+          <div class="tutor-session-row2">
+            <span class="tutor-session-meta">${fecha}</span>
+            ${fbBadge}
+          </div>
+        </div>
+        ${hasContent ? '<span class="tutor-session-open">Reestudiar ↺</span>' : ''}
       </li>`;
     }).join('');
     el.historyList.querySelectorAll('[data-revisit]').forEach(li => {
       li.addEventListener('click', () => {
-        const idx = parseInt(li.dataset.revisit, 10);
-        revisitSession(idx);
+         const idx = parseInt(li.dataset.revisit, 10);
+         revisitSession(idx);
       });
     });
   }
@@ -762,6 +813,7 @@
 
   function renderSession(session, v) {
     // Lección
+    el.idle.hidden = true;
     el.kicker.textContent = (session.mundo === 'real' ? '🌍 Mundo Real' : '✨ Reino Mágico') + ' · ' + (session.concepto || '');
     el.sessionTitle.textContent = session.titulo || 'Sesión';
     const recoHTML = (session.recomendaciones || []).length
@@ -814,5 +866,13 @@
   ensureModels();
   fillConfigForm();
   refreshAppMode();
+  
+  const pg = loadProgress();
+  const ses = pg.sesiones || [];
+  if (profileValid(loadProfile()) && ses.length > 0) {
+    revisitSession(ses.length - 1);
+  } else {
+    updateIdle();
+  }
   renderProgress();
 })();

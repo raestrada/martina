@@ -1,8 +1,21 @@
 // Martina · Cuentos para Dormir
 // Dark mode toggle, hamburger menu, fade animations, reading progress, nav dropdown
 
+// Prevent browser from restoring previous scroll position (avoids jumping to Disqus on load)
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+
 (function () {
+  // Force scroll to top on every page load
+  window.addEventListener('beforeunload', function () {
+    window.scrollTo(0, 0);
+  });
+
   document.addEventListener('DOMContentLoaded', function () {
+    // Ensure page starts at top (browser may restore scroll despite history.scrollRestoration)
+    window.scrollTo(0, 0);
+
     // === DARK MODE TOGGLE ===
     var themeToggle = document.getElementById('theme-toggle');
     var metaTheme = document.getElementById('theme-color-meta');

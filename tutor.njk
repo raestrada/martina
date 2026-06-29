@@ -66,10 +66,24 @@ footerText: Tutor IA experimental para Martina, por papá.
           <h2 id="tutor-session-title">Tu próxima sesión</h2>
         </div>
 
+        <div class="tutor-lesson-foot" id="tutor-lesson-foot" hidden>
+          <button class="btn btn-primary tutor-next-bar" id="tutor-next">Siguiente lección →</button>
+          <div class="tutor-feedback-group">
+            <span class="tutor-feedback-label">Ajustar nivel:</span>
+            <div class="tutor-feedback">
+              <button class="tutor-fb tutor-fb-ok" id="tutor-fb-ok" title="Marcar como entendido y continuar">✅ Entendido</button>
+              <button class="tutor-fb tutor-fb-hard" id="tutor-fb-hard" title="Generar una lección más avanzada">🔥 Más difícil</button>
+              <button class="tutor-fb tutor-fb-repeat" id="tutor-fb-repeat" title="Reforzar el mismo concepto con otro ejemplo">🔁 Reforzar</button>
+            </div>
+          </div>
+        </div>
+
         <div class="tutor-lesson-body" id="tutor-lesson-body">
           <div class="tutor-idle" id="tutor-idle">
-            <p>Pulsa <strong>Generar sesión</strong> y Martina preparará una lección a tu medida, con un tablero para reproducir la partida.</p>
-            <button class="btn btn-primary btn-lg" id="tutor-generate">✨ Generar sesión 0</button>
+            <div class="tutor-idle-icon">♟️</div>
+            <h3 id="tutor-idle-title">¿Empezamos?</h3>
+            <p id="tutor-idle-text">Martina preparará una lección a tu medida, con un tablero para reproducir la partida jugada por jugada.</p>
+            <button class="btn btn-primary btn-lg" id="tutor-generate">✨ Empezar</button>
           </div>
 
           <div class="tutor-thinking" id="tutor-thinking" hidden>
@@ -87,17 +101,6 @@ footerText: Tutor IA experimental para Martina, por papá.
           <div class="tutor-error" id="tutor-error" hidden></div>
 
           <div class="tutor-lesson-html" id="tutor-lesson-html" hidden></div>
-        </div>
-
-        <div class="tutor-lesson-foot" id="tutor-lesson-foot" hidden>
-          <div class="tutor-feedback">
-            <button class="tutor-fb tutor-fb-ok" id="tutor-fb-ok">✅ Lo entendí</button>
-            <button class="tutor-fb tutor-fb-hard" id="tutor-fb-hard">🔥 Más difícil</button>
-            <button class="tutor-fb tutor-fb-repeat" id="tutor-fb-repeat">🔁 Reforzar</button>
-          </div>
-          <div class="tutor-lesson-actions">
-            <button class="btn btn-primary" id="tutor-next">→ Siguiente sesión</button>
-          </div>
         </div>
       </article>
 

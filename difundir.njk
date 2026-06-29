@@ -42,6 +42,71 @@ footerQuote: «Compartir conocimiento es la mejor jugada.»
       </a>
     </div>
   </section>
+  
+  <!-- Tarjetas imprimibles para clubes/torneos -->
+  <style>
+    .tarjetas-promo-card {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 2rem;
+      align-items: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, var(--magic-dark) 0%, var(--magic-blue) 100%);
+      color: var(--paper);
+      border: 3px solid var(--gold);
+      border-radius: var(--radius);
+      margin-bottom: 3rem;
+      box-shadow: var(--shadow-hover);
+    }
+    @media (max-width: 600px) {
+      .tarjetas-promo-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 1.5rem;
+      }
+      .tarjetas-promo-preview-box {
+        margin-top: 1rem;
+        justify-content: center;
+      }
+    }
+  </style>
+
+  <section class="fade-in stagger-2">
+    <div class="tarjetas-promo-card">
+      <div>
+        <h3 style="color: var(--gold-light); margin-bottom: 0.75rem; font-family: 'Nunito', sans-serif;">🎨 Tarjetas Físicas con QR para Clubes y Colegios</h3>
+        <p style="font-size: 0.9rem; opacity: 0.95; line-height: 1.5; margin-bottom: 1rem;">
+          ¿Enseñas ajedrez, tienes un club o participas en torneos escolares? Hemos diseñado hermosas tarjetas recortables con un código QR que apunta directamente a nuestro sitio web, repleto de cuentos, bots interactivos y minijuegos gratis para niños.
+        </p>
+        <p style="font-size: 0.9rem; opacity: 0.95; line-height: 1.5; margin-bottom: 1.25rem;">
+          Elige tu ilustración favorita o utiliza el diseño Premium pregenerado, previsualiza en 3D e imprime grillas de 6 tarjetas listas para recortar y repartir a los pequeños ajedrecistas.
+        </p>
+        <a href="/tarjeta.html" class="btn" style="display: inline-block; background: var(--rose); color: #fff; padding: 0.6rem 1.5rem; border-radius: 20px; font-weight: 800; text-decoration: none;">🖨️ Crear e Imprimir Tarjetas</a>
+      </div>
+      <div class="tarjetas-promo-preview-box" style="display: flex; align-items: center; justify-content: center; height: 160px;">
+        <img src="/assets/img/tarjeta_promocional_premium.png" alt="Tarjeta Promocional Premium" style="width: 120px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.35); transform: rotate(-5deg); transition: transform 0.3s ease;">
+      </div>
+  </section>
+
+  <!-- Dibujos para colorear -->
+  <section class="fade-in stagger-2">
+    <div class="tarjetas-promo-card" style="background: linear-gradient(135deg, var(--magic-purple) 0%, var(--magic-blue) 100%); margin-bottom: 3rem;">
+      <div>
+        <h3 style="color: var(--gold-light); margin-bottom: 0.75rem; font-family: 'Nunito', sans-serif;">🎨 Dibujos para Colorear con QR (Cuadernillo)</h3>
+        <p style="font-size: 0.9rem; opacity: 0.95; line-height: 1.5; margin-bottom: 1rem;">
+          ¡Actividad perfecta para escuelas y torneos escolares! Descarga e imprime gratis láminas para colorear de Martina, Peoncito, Torreta y la Reina Negra.
+        </p>
+        <p style="font-size: 0.9rem; opacity: 0.95; line-height: 1.5; margin-bottom: 1.25rem;">
+          Cada lámina tiene un código QR integrado en el margen. Los niños se divierten coloreando y luego ellos o sus papás pueden escanear el QR para leer los cuentos en el sitio.
+        </p>
+        <a href="/colorear.html" class="btn" style="display: inline-block; background: var(--rose); color: #fff; padding: 0.6rem 1.5rem; border-radius: 20px; font-weight: 800; text-decoration: none;">🎨 Ver y Descargar Dibujos</a>
+      </div>
+      <div class="tarjetas-promo-preview-box" style="display: flex; align-items: center; justify-content: center; height: 160px; position: relative;">
+        <img src="/assets/img/colorear/dibujo_martina_peoncito.png" alt="Lámina para Colorear" style="width: 105px; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); transform: rotate(-8deg); transition: transform 0.3s ease; border: 1px solid #ddd; background: white; padding: 4px; position: absolute; z-index: 1; left: 15%;">
+        <img src="/assets/img/colorear/dibujo_super_martina.png" alt="Lámina para Colorear 2" style="width: 105px; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); transform: rotate(6deg); transition: transform 0.3s ease; border: 1px solid #ddd; background: white; padding: 4px; position: absolute; z-index: 2; right: 15%; top: 15%;">
+      </div>
+    </div>
+  </section>
 
   <!-- Mensajes pre-escritos -->
   <section class="fade-in stagger-2" style="margin-bottom: 3rem;">
