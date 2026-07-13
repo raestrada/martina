@@ -234,7 +234,7 @@ main {
 
 .hero h1 {
   font-size: 2rem;
-  color: var(--magic-dark);
+  color: var(--heading-color);
   margin-bottom: 0.5rem;
 }
 
@@ -350,7 +350,7 @@ main {
 
 .card-title {
   font-size: 1.25rem;
-  color: var(--magic-dark);
+  color: var(--heading-color);
   margin-bottom: 0.5rem;
   line-height: 1.2;
 }
@@ -360,7 +360,7 @@ main {
   font-family: 'Nunito', sans-serif;
   font-weight: 800;
   font-size: 0.85rem;
-  color: var(--warm-white);
+  color: #ffffff;
   background: var(--magic-blue);
   padding: 0.3rem 0.8rem;
   border-radius: 12px;
@@ -448,7 +448,7 @@ main {
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--warm-white);
+  color: #ffffff;
   background: var(--rose);
   padding: 0.4rem 1.2rem;
   border-radius: 20px;
@@ -459,7 +459,7 @@ main {
 .story-header h1 {
   margin-bottom: 1rem;
   font-size: 2.8rem;
-  color: var(--magic-dark);
+  color: var(--heading-color);
 }
 
 .story-subtitle {
@@ -577,7 +577,7 @@ main {
 .about-trait-text h4 {
   font-size: 1.2rem;
   margin-bottom: 0.25rem;
-  color: var(--magic-dark);
+  color: var(--heading-color);
 }
 
 .about-trait-text p {
@@ -632,7 +632,7 @@ main {
 }
 
 .github-link:hover {
-  color: var(--warm-white);
+  color: #ffffff;
   transform: translateY(-2px);
 }
 
@@ -653,7 +653,7 @@ main {
   font-size: 1.1rem;
   text-align: center;
   border: none;
-  color: var(--warm-white);
+  color: #ffffff;
   background: linear-gradient(135deg, var(--rose), var(--gold));
   cursor: pointer;
   box-shadow: 0 4px 15px rgba(231, 111, 81, 0.4);
@@ -663,7 +663,7 @@ main {
 .btn:hover, .btn:focus {
   transform: translateY(-3px) scale(1.05);
   box-shadow: 0 6px 20px rgba(231, 111, 81, 0.6);
-  color: var(--warm-white);
+  color: #ffffff;
 }
 
 .btn-block {
@@ -745,7 +745,7 @@ main {
 }
 
 .historical-epilogue h3 {
-  color: var(--magic-dark);
+  color: var(--heading-color);
   font-size: 1.5rem;
   margin-top: 0;
   margin-bottom: 0.8rem;
@@ -805,7 +805,7 @@ main {
   right: 0;
   padding: 0.6rem 0.8rem;
   background: linear-gradient(transparent, rgba(0,0,0,0.75));
-  color: var(--warm-white);
+  color: #ffffff;
   font-family: 'Nunito', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
@@ -880,7 +880,7 @@ main {
   right: 1rem;
   background: rgba(255,255,255,0.1);
   border: none;
-  color: var(--warm-white);
+  color: #ffffff;
   font-size: 2.2rem;
   width: 50px;
   height: 50px;
@@ -905,7 +905,7 @@ main {
   transform: translateY(-50%);
   background: rgba(255,255,255,0.1);
   border: none;
-  color: var(--warm-white);
+  color: #ffffff;
   font-size: 3rem;
   width: 54px;
   height: 80px;
@@ -987,7 +987,7 @@ main {
   font-weight: 700;
   font-size: 0.9rem;
   text-decoration: none;
-  color: var(--warm-white);
+  color: #ffffff;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: var(--shadow);
 }
@@ -1074,7 +1074,7 @@ main {
   font-weight: 700;
   font-size: 0.75rem;
   text-decoration: none;
-  color: var(--warm-white);
+  color: #ffffff;
   transition: transform 0.2s ease;
 }
 
@@ -1125,7 +1125,7 @@ main {
   border: none;
   font-size: 1.8rem;
   cursor: pointer;
-  color: var(--magic-dark);
+  color: var(--heading-color);
   padding: 0.3rem;
   line-height: 1;
 }
@@ -1411,7 +1411,7 @@ main {
   transition: color 0.3s;
 }
 .footer-col a:hover {
-  color: var(--warm-white);
+  color: #ffffff;
 }
 .footer-quote {
   font-style: italic;
@@ -1719,7 +1719,7 @@ img[loading="lazy"].loaded {
   font-family: 'Nunito', sans-serif;
   font-size: 1.4rem;
   font-weight: 800;
-  color: var(--warm-white);
+  color: #ffffff;
   margin-top: 0.25rem;
 }
 
@@ -1769,7 +1769,7 @@ img[loading="lazy"].loaded {
 
 .replayer-move-item:hover {
   background: rgba(255, 255, 255, 0.08);
-  color: var(--warm-white);
+  color: #ffffff;
 }
 
 .replayer-move-item.active {
@@ -1802,7 +1802,7 @@ img[loading="lazy"].loaded {
 
 .replayer-btn:hover {
   background: rgba(255, 255, 255, 0.06);
-  color: var(--warm-white);
+  color: #ffffff;
   transform: scale(1.08);
 }
 

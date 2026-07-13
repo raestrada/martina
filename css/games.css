@@ -5220,6 +5220,14 @@
   position: relative;
 }
 
-
-
-
+/* Override --warm-white inside all game dashboards, levels, cards, and modals to keep text white on dark backgrounds */
+.dashboard-card,
+.game-modal,
+.game-screen,
+.arcade-screen,
+.level-card,
+.mario-stage-node,
+.mario-hud-bar,
+.bots-dashboard-container {
+  --warm-white: #ffffff;
+}

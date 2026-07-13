@@ -72,7 +72,7 @@ main {
   background: var(--card-bg); border-radius: var(--radius);
   box-shadow: var(--shadow-hover); padding: 2rem 2.2rem; text-align: center;
 }
-.tutor-onboard-card h2 { margin-top: 0; color: var(--magic-dark); }
+.tutor-onboard-card h2 { margin-top: 0; color: var(--heading-color); }
 .tutor-onboard-actions { display: flex; gap: 0.7rem; justify-content: center; margin-top: 1.2rem; flex-wrap: wrap; }
 
 /* ---------- Botones ---------- */
@@ -226,7 +226,7 @@ main {
 .tutor-lesson-body { min-height: 220px; }
 .tutor-idle { text-align: center; padding: 1rem 0.5rem; color: var(--muted-color); display: flex; flex-direction: column; align-items: center; gap: .6rem; justify-content: center; min-height: 180px; }
 .tutor-idle-icon { font-size: 2.8rem; opacity: .7; line-height: 1; }
-.tutor-idle h3 { margin: 0; color: var(--magic-dark); font-size: 1.15rem; }
+.tutor-idle h3 { margin: 0; color: var(--heading-color); font-size: 1.15rem; }
 .tutor-idle p { margin: 0 0 .4rem; max-width: 360px; font-size: .92rem; }
 .tutor-idle .btn { margin-top: .4rem; }
 
@@ -249,7 +249,7 @@ main {
   0%, 80%, 100% { transform: scale(.6); opacity: .5; }
   40% { transform: scale(1); opacity: 1; }
 }
-.tutor-thinking-title { font-weight: 800; color: var(--magic-dark); margin: 0 0 .4rem; }
+.tutor-thinking-title { font-weight: 800; color: var(--heading-color); margin: 0 0 .4rem; }
 .tutor-thinking-reason {
   font-size: .85rem; color: var(--muted-color);
   background: var(--board-light); border-radius: var(--radius-sm);
@@ -278,12 +278,12 @@ main {
   background: linear-gradient(90deg, var(--rose), var(--gold));
   border-radius: 999px; margin-bottom: 1rem;
 }
-.tutor-lesson-html h2 { color: var(--magic-dark); margin: 1.2rem 0 .5rem; font-size: 1.2rem; }
+.tutor-lesson-html h2 { color: var(--heading-color); margin: 1.2rem 0 .5rem; font-size: 1.2rem; }
 .tutor-lesson-html h3 { color: var(--magic-blue); margin: 1rem 0 .35rem; font-size: 1.05rem; }
 .tutor-lesson-html p { margin: .5rem 0; }
 .tutor-lesson-html ul, .tutor-lesson-html ol { margin: .4rem 0 .8rem 1.2rem; }
 .tutor-lesson-html li { margin-bottom: .25rem; }
-.tutor-lesson-html strong { color: var(--magic-dark); }
+.tutor-lesson-html strong { color: var(--heading-color); }
 .tutor-lesson-html em { color: var(--rose); font-style: italic; }
 .tutor-lesson-html blockquote {
   border-left: 4px solid var(--gold);
@@ -314,7 +314,7 @@ main {
 }
 .tutor-lesson-html .martina-idol strong { color: var(--gold-light); }
 .tutor-lesson-html .martina-reco { margin: 1rem 0; }
-.tutor-lesson-html .martina-reco h4 { margin: 0 0 .4rem; color: var(--magic-dark); }
+.tutor-lesson-html .martina-reco h4 { margin: 0 0 .4rem; color: var(--heading-color); }
 .tutor-lesson-html .martina-reco ul { margin: 0 0 0 1.2rem; }
 
 /* ---------- Feedback y Ajuste de Nivel ---------- */
@@ -489,7 +489,7 @@ main {
   gap: 1rem;
   margin-bottom: 1.5rem;
 }
-.tutor-progress-head h2 { color: var(--magic-dark); margin: 0; font-size: 1.6rem; }
+.tutor-progress-head h2 { color: var(--heading-color); margin: 0; font-size: 1.6rem; }
 .tutor-progress-soft { color: var(--muted-color); margin: 0.2rem 0 0; font-size: 0.9rem; }
 .tutor-progress-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin: 0; }
 
@@ -674,7 +674,7 @@ main {
 /* ---------- Ayuda ---------- */
 .tutor-help-wrap { max-width: 760px; margin: 0 auto; }
 .tutor-help-body { line-height: 1.65; }
-.tutor-help-body h3 { color: var(--magic-dark); margin: 1.2rem 0 .4rem; }
+.tutor-help-body h3 { color: var(--heading-color); margin: 1.2rem 0 .4rem; }
 .tutor-help-body p { margin: .5rem 0; }
 .tutor-help-body ol, .tutor-help-body ul { margin: .4rem 0 .8rem 1.2rem; }
 .tutor-help-body li { margin-bottom: .3rem; }
@@ -707,7 +707,7 @@ main {
 .tutor-modal-foot { display: flex; gap: .6rem; justify-content: flex-end; padding: 1rem 1.2rem; border-top: 1px solid var(--border-color); position: sticky; bottom: 0; background: inherit; }
 
 .tutor-field { margin-bottom: 1rem; }
-.tutor-field label { display: block; font-weight: 700; margin-bottom: .3rem; color: var(--magic-dark); font-size: .9rem; }
+.tutor-field label { display: block; font-weight: 700; margin-bottom: .3rem; color: var(--text-color); font-size: .9rem; }
 .tutor-field input, .tutor-field select, .tutor-field textarea {
   width: 100%; padding: .55rem .7rem;
   border: 1px solid var(--border-color); border-radius: var(--radius-sm);
