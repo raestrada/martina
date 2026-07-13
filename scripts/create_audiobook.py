@@ -17,7 +17,7 @@ FPS = 25
 
 STORY_CONFIG = {
     1: {
-        "html_file": "../cuentos/01-el-primer-movimiento.html",
+        "html_file": "../_site/cuentos/01-el-primer-movimiento.html",
         "output_video": "../assets/video/cuento_01_audiolibro.mp4",
         "default_voice": "es-ES-AlvaroNeural",
         "default_image": "mundo_magico_1778904597376.png",
@@ -29,7 +29,7 @@ STORY_CONFIG = {
         }
     },
     2: {
-        "html_file": "../cuentos/02-tic-tac-jaque-mate.html",
+        "html_file": "../_site/cuentos/02-tic-tac-jaque-mate.html",
         "output_video": "../assets/video/cuento_02_audiolibro.mp4",
         "default_voice": "es-ES-ElviraNeural",
         "default_image": "tictac_reloj_1778905871501.png",
@@ -43,14 +43,14 @@ STORY_CONFIG = {
         }
     },
     3: {
-        "html_file": "../cuentos/03-la-clavada-del-alfil-exiliado.html",
+        "html_file": "../_site/cuentos/03-la-clavada-del-alfil-exiliado.html",
         "output_video": "../assets/video/cuento_03_audiolibro.mp4",
         "default_voice": "es-US-AlonsoNeural",
         "default_image": "alfil_exiliado_1778944848314.png",
         "mapping": {}
     },
     4: {
-        "html_file": "../cuentos/04-el-caballo-salvaje.html",
+        "html_file": "../_site/cuentos/04-el-caballo-salvaje.html",
         "output_video": "../assets/video/cuento_04_audiolibro.mp4",
         "default_voice": "es-MX-DaliaNeural",
         "default_image": "martina_vs_equis_1778968666455.png",
@@ -60,87 +60,101 @@ STORY_CONFIG = {
         }
     },
     5: {
-        "html_file": "../cuentos/05-la-coronacion-de-peoncito.html",
+        "html_file": "../_site/cuentos/05-la-coronacion-de-peoncito.html",
         "output_video": "../assets/video/cuento_05_audiolibro.mp4",
         "default_voice": "es-MX-JorgeNeural",
         "default_image": "peoncito_octava_fila_1779034473779.png",
         "mapping": {}
     },
     6: {
-        "html_file": "../cuentos/06-la-jugada-invisible.html",
+        "html_file": "../_site/cuentos/06-la-jugada-invisible.html",
         "output_video": "../assets/video/cuento_06_audiolibro.mp4",
         "default_voice": "es-CO-SalomeNeural",
         "default_image": "martina_full_body_1778904544807.png",
         "mapping": {}
     },
     7: {
-        "html_file": "../cuentos/07-el-pescador-y-el-elegante.html",
+        "html_file": "../_site/cuentos/07-el-pescador-y-el-elegante.html",
         "output_video": "../assets/video/cuento_07_audiolibro.mp4",
         "default_voice": "es-AR-TomasNeural",
         "default_image": "mundo_magico_1778904597376.png",
         "mapping": {}
     },
     8: {
-        "html_file": "../cuentos/08-el-relampago-y-el-vikingo.html",
+        "html_file": "../_site/cuentos/08-el-relampago-y-el-vikingo.html",
         "output_video": "../assets/video/cuento_08_audiolibro.mp4",
         "default_voice": "es-CL-CatalinaNeural",
         "default_image": "martina_full_body_1778904544807.png",
         "mapping": {}
     },
     9: {
-        "html_file": "../cuentos/09-la-sombra-que-jugaba.html",
+        "html_file": "../_site/cuentos/09-la-sombra-que-jugaba.html",
         "output_video": "../assets/video/cuento_09_audiolibro.mp4",
         "default_voice": "es-PE-AlexNeural",
         "default_image": "mundo_magico_1778904597376.png",
         "mapping": {}
     },
     10: {
-        "html_file": "../cuentos/10-lo-que-no-se-ve-en-el-tablero.html",
+        "html_file": "../_site/cuentos/10-lo-que-no-se-ve-en-el-tablero.html",
         "output_video": "../assets/video/cuento_10_audiolibro.mp4",
         "default_voice": "es-VE-PaolaNeural",
         "default_image": "martina_full_body_1778904544807.png",
         "mapping": {}
     },
     11: {
-        "html_file": "../cuentos/11-la-ultima-grieta.html",
+        "html_file": "../_site/cuentos/11-la-ultima-grieta.html",
         "output_video": "../assets/video/cuento_11_audiolibro.mp4",
         "default_voice": "es-CO-GonzaloNeural",
         "default_image": "mundo_magico_1778904597376.png",
         "mapping": {}
     },
     12: {
-        "html_file": "../cuentos/12-el-peon-que-bailaba.html",
+        "html_file": "../_site/cuentos/12-el-peon-que-bailaba.html",
         "output_video": "../assets/video/cuento_12_audiolibro.mp4",
         "default_voice": "es-EC-AndreaNeural",
         "default_image": "martina_full_body_1778904544807.png",
         "mapping": {}
     },
     13: {
-        "html_file": "../cuentos/13-lo-que-estaba-escrito.html",
+        "html_file": "../_site/cuentos/13-lo-que-estaba-escrito.html",
         "output_video": "../assets/video/cuento_13_audiolibro.mp4",
         "default_voice": "es-ES-AlvaroNeural",
         "default_image": "martina_sombra_1779972341205.png",
         "mapping": {}
     },
     14: {
-        "html_file": "../cuentos/14-hielo-que-quema.html",
+        "html_file": "../_site/cuentos/14-hielo-que-quema.html",
         "output_video": "../assets/video/cuento_14_audiolibro.mp4",
         "default_voice": "es-ES-ElviraNeural",
         "default_image": "martina_vs_leon_1780000000000.png",
         "mapping": {}
     },
     15: {
-        "html_file": "../cuentos/15-el-ultimo-capitulo.html",
+        "html_file": "../_site/cuentos/15-el-ultimo-capitulo.html",
         "output_video": "../assets/video/cuento_15_audiolibro.mp4",
         "default_voice": "es-MX-JorgeNeural",
         "default_image": "martina_sombra_split_1780000000000.png",
         "mapping": {}
     },
     16: {
-        "html_file": "../cuentos/16-fuego-contra-todos.html",
+        "html_file": "../_site/cuentos/16-fuego-contra-todos.html",
         "output_video": "../assets/video/cuento_16_audiolibro.mp4",
         "default_voice": "es-CO-SalomeNeural",
         "default_image": "martina_vs_leon_victory_1780000000000.png",
+        "mapping": {}
+    },
+    17: {
+        "html_file": "../_site/cuentos/17-el-pez-del-rio.html",
+        "output_video": "../assets/video/cuento_17_audiolibro.mp4",
+        "default_voice": "es-ES-AlvaroNeural",
+        "default_image": "martina_stokfi_fish_1780000000000.png",
+        "mapping": {}
+    },
+    18: {
+        "html_file": "../_site/cuentos/18-la-jugada-que-no-estaba.html",
+        "output_video": "../assets/video/cuento_18_audiolibro.mp4",
+        "default_voice": "es-ES-ElviraNeural",
+        "default_image": "martina_vs_vera_engine_1780000000000.png",
         "mapping": {}
     }
 }
@@ -151,9 +165,26 @@ os.makedirs(TEMP_DIR, exist_ok=True)
 def create_transparent_text(text, filename):
     img = Image.new('RGBA', RESOLUTION, (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
-    try:
-        font = ImageFont.truetype("arialbd.ttf", 36)
-    except IOError:
+    
+    font_paths = [
+        "arialbd.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/ubuntu/Ubuntu-B.ttf",
+        "/usr/share/fonts/truetype/roboto/Roboto-Bold.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "arial.ttf"
+    ]
+    
+    font = None
+    for path in font_paths:
+        try:
+            font = ImageFont.truetype(path, 36)
+            break
+        except IOError:
+            continue
+            
+    if font is None:
         font = ImageFont.load_default()
         
     lines = textwrap.wrap(text, width=50)
@@ -174,15 +205,36 @@ def create_transparent_text(text, filename):
             width = bbox[2] - bbox[0]
         except:
             width = 600
-        draw.text(((RESOLUTION[0] - width) / 2, y_text), line, font=font, fill=(255, 255, 255, 255))
+        draw.text(
+            ((RESOLUTION[0] - width) / 2, y_text),
+            line,
+            font=font,
+            fill=(255, 255, 255, 255),
+            stroke_width=2,
+            stroke_fill=(0, 0, 0, 255)
+        )
         y_text += line_height
         
     img.save(filename)
 
 async def generate_tts(text, output_file, voice):
     import edge_tts
-    communicate = edge_tts.Communicate(text, voice)
-    await communicate.save(output_file)
+    import asyncio
+    for attempt in range(3):
+        try:
+            communicate = edge_tts.Communicate(text, voice)
+            await asyncio.wait_for(communicate.save(output_file), timeout=30.0)
+            if os.path.exists(output_file) and os.path.getsize(output_file) > 0:
+                return
+        except Exception as e:
+            print(f"Warning: TTS attempt {attempt+1} failed: {e}")
+            if os.path.exists(output_file):
+                try:
+                    os.remove(output_file)
+                except:
+                    pass
+        await asyncio.sleep(2.0)
+    raise RuntimeError(f"Failed to generate TTS after 3 attempts for text: {text[:30]}...")
 
 def render_clip(audio_file, bg_image, text_image, output_clip):
     filter_complex = (
@@ -201,7 +253,7 @@ def render_clip(audio_file, bg_image, text_image, output_clip):
         "-stream_loop", "-1", "-i", PARTICLES_VIDEO,
         "-filter_complex", filter_complex,
         "-map", "[v]", "-map", "2:a",
-        "-c:v", "h264_nvenc", "-preset", "p4", "-cq", "34", "-pix_fmt", "yuv420p",
+        "-c:v", "libx264", "-preset", "medium", "-crf", "23", "-pix_fmt", "yuv420p",
         "-c:a", "aac", "-b:a", "128k",
         "-shortest", output_clip
     ]

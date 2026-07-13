@@ -15,7 +15,8 @@ SLUGS = {
     9: 'la-sombra-que-jugaba', 10: 'lo-que-no-se-ve-en-el-tablero',
     11: 'la-ultima-grieta', 12: 'el-peon-que-bailaba',
     13: 'lo-que-estaba-escrito', 14: 'hielo-que-quema',
-    15: 'el-ultimo-capitulo', 16: 'fuego-contra-todos'
+    15: 'el-ultimo-capitulo', 16: 'fuego-contra-todos',
+    17: 'el-pez-del-rio', 18: 'la-jugada-que-no-estaba'
 }
 TITLES = {
     1: 'El Primer Movimiento', 2: 'Tic, Tac, Jaque Mate',
@@ -25,7 +26,8 @@ TITLES = {
     9: 'La Sombra que Jugaba', 10: 'Lo Que No Se Ve en el Tablero',
     11: 'La Última Grieta', 12: 'El Peón que Bailaba',
     13: 'Lo Que Estaba Escrito', 14: 'Hielo que Quema',
-    15: 'El Último Capítulo', 16: 'Fuego Contra Todos'
+    15: 'El Último Capítulo', 16: 'Fuego Contra Todos',
+    17: 'El Pez del Río', 18: 'La Jugada que No Estaba'
 }
 
 def get_num(filename):
@@ -33,18 +35,32 @@ def get_num(filename):
     return int(m.group(1)) if m else 0
 
 def add_prev_next(front_matter, num):
+    # Remove any existing prevCuento or nextCuento lines
+    lines = []
+    skip_mode = False
+    for line in front_matter.split('\n'):
+        if line.strip().startswith('prevCuento:') or line.strip().startswith('nextCuento:'):
+            skip_mode = True
+            continue
+        if skip_mode and line.startswith('  '):
+            continue
+        skip_mode = False
+        lines.append(line)
+    
+    front_matter_clean = '\n'.join(lines)
+    
     prev_num = num - 1
     next_num = num + 1
     
     lines = []
-    for line in front_matter.split('\n'):
+    for line in front_matter_clean.split('\n'):
         lines.append(line)
         if line.strip().startswith('activeNav:'):
             if prev_num >= 1:
                 lines.append(f'prevCuento:')
                 lines.append(f'  url: /cuentos/{prev_num:02d}-{SLUGS[prev_num]}.html')
                 lines.append(f'  title: "{TITLES[prev_num]}"')
-            if next_num <= 16:
+            if next_num <= 18:
                 lines.append(f'nextCuento:')
                 lines.append(f'  url: /cuentos/{next_num:02d}-{SLUGS[next_num]}.html')
                 lines.append(f'  title: "{TITLES[next_num]}"')
