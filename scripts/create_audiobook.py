@@ -253,7 +253,7 @@ def render_clip(audio_file, bg_image, text_image, output_clip):
         "-stream_loop", "-1", "-i", PARTICLES_VIDEO,
         "-filter_complex", filter_complex,
         "-map", "[v]", "-map", "2:a",
-        "-c:v", "libx264", "-preset", "medium", "-crf", "23", "-pix_fmt", "yuv420p",
+        "-c:v", "libx264", "-preset", "medium", "-crf", "32", "-pix_fmt", "yuv420p",
         "-c:a", "aac", "-b:a", "128k",
         "-shortest", output_clip
     ]
