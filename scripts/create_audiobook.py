@@ -156,6 +156,42 @@ STORY_CONFIG = {
         "default_voice": "es-ES-ElviraNeural",
         "default_image": "martina_vs_vera_engine_1780000000000.png",
         "mapping": {}
+    },
+    19: {
+        "html_file": "../_site/cuentos/19-la-pieza-que-se-fue.html",
+        "output_video": "../assets/video/cuento_19_audiolibro.mp4",
+        "default_voice": "es-ES-AlvaroNeural",
+        "default_image": "cuento19_dama_reclutadora.png",
+        "mapping": {
+            "Martina jugó una partida": "cuento19_partida_honor.png"
+        }
+    },
+    20: {
+        "html_file": "../_site/cuentos/20-los-que-se-fueron.html",
+        "output_video": "../assets/video/cuento_20_audiolibro.mp4",
+        "default_voice": "es-ES-ElviraNeural",
+        "default_image": "cuento20_club_vacio.png",
+        "mapping": {
+            "Esa noche, Martina se sentó": "cuento20_lista_caceria.png"
+        }
+    },
+    21: {
+        "html_file": "../_site/cuentos/21-la-caceria.html",
+        "output_video": "../assets/video/cuento_21_audiolibro.mp4",
+        "default_voice": "es-US-AlonsoNeural",
+        "default_image": "cuento21_peoncito_entrenador.png",
+        "mapping": {
+            "A media mañana, llegó": "cuento21_primo_reconciliacion.png"
+        }
+    },
+    22: {
+        "html_file": "../_site/cuentos/22-cazadora-de-estrellas.html",
+        "output_video": "../assets/video/cuento_22_audiolibro.mp4",
+        "default_voice": "es-MX-DaliaNeural",
+        "default_image": "cuento22_sacrificio_dama.png",
+        "mapping": {
+            "Después de la partida, Álvaro": "cuento22_regreso_alvaro.png"
+        }
     }
 }
 
