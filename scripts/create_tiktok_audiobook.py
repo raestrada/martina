@@ -17,7 +17,7 @@ FPS = 25
 
 STORY_CONFIG = {
     1: {
-        "html_file": "../cuentos/01-el-primer-movimiento.html",
+        "html_file": "../_site/cuentos/01-el-primer-movimiento.html",
         "output_video": "../assets/video/cuento_01_tiktok.mp4",
         "default_voice": "es-ES-AlvaroNeural",
         "default_image": "mundo_magico_1778904597376.png",
@@ -29,7 +29,7 @@ STORY_CONFIG = {
         }
     },
     2: {
-        "html_file": "../cuentos/02-tic-tac-jaque-mate.html",
+        "html_file": "../_site/cuentos/02-tic-tac-jaque-mate.html",
         "output_video": "../assets/video/cuento_02_tiktok.mp4",
         "default_voice": "es-ES-ElviraNeural",
         "default_image": "tictac_reloj_1778905871501.png",
@@ -43,7 +43,7 @@ STORY_CONFIG = {
         }
     },
     3: {
-        "html_file": "../cuentos/03-la-clavada-del-alfil-exiliado.html",
+        "html_file": "../_site/cuentos/03-la-clavada-del-alfil-exiliado.html",
         "output_video": "../assets/video/cuento_03_tiktok.mp4",
         "default_voice": "es-US-AlonsoNeural",
         "default_image": "alfil_exiliado_1778944848314.png",
@@ -54,7 +54,7 @@ STORY_CONFIG = {
         }
     },
     4: {
-        "html_file": "../cuentos/04-el-caballo-salvaje.html",
+        "html_file": "../_site/cuentos/04-el-caballo-salvaje.html",
         "output_video": "../assets/video/cuento_04_tiktok.mp4",
         "default_voice": "es-MX-DaliaNeural",
         "default_image": "martina_vs_equis_1778968666455.png",
@@ -62,6 +62,13 @@ STORY_CONFIG = {
             "Martina jugó Cd5": "caballo_invencible_1778968679199.png",
             "Después de la partida": "martina_vs_equis_1778968666455.png"
         }
+    },
+    5: {
+        "html_file": "../_site/cuentos/05-la-coronacion-de-peoncito.html",
+        "output_video": "../assets/video/cuento_05_tiktok.mp4",
+        "default_voice": "es-MX-JorgeNeural",
+        "default_image": "peoncito_octava_fila_1779034473779.png",
+        "mapping": {}
     }
 }
 
@@ -179,7 +186,7 @@ def render_clip(audio_file, bg_image, text_image, output_clip):
         "-stream_loop", "-1", "-i", PARTICLES_VIDEO,
         "-filter_complex", filter_complex,
         "-map", "[v]", "-map", "2:a",
-        "-c:v", "h264_nvenc", "-preset", "p4", "-cq", "34", "-pix_fmt", "yuv420p",
+        "-c:v", "libx264", "-preset", "medium", "-crf", "32", "-pix_fmt", "yuv420p",
         "-c:a", "aac", "-b:a", "128k",
         "-shortest", output_clip
     ]
@@ -236,6 +243,10 @@ async def main():
     clips_list = []
     print(f"Generando {len(timeline)} mini-clips verticales con voz {voice}...")
     
+    import concurrent.futures
+    tasks_tts = []
+    render_tasks = []
+    
     for i, item in enumerate(timeline):
         text = item["text"]
         bg_name = item["image"]
@@ -245,16 +256,28 @@ async def main():
         bg_file = os.path.join(ASSETS_DIR, bg_name)
         clip_file = os.path.join(TEMP_DIR, f"s{args.story}_tk_clip_{i:03d}.mp4")
         
-        if not os.path.exists(audio_file) or os.path.getsize(audio_file) == 0:
-            await generate_tts(text, audio_file, voice)
-            
         create_tiktok_text_frame(text, text_img_file, args.story, story_title)
-        
-        if not os.path.exists(clip_file) or os.path.getsize(clip_file) == 0:
-            render_clip(audio_file, bg_file, text_img_file, clip_file)
-            print(f"Renderizado clip vertical {i+1}/{len(timeline)}")
-            
         clips_list.append(clip_file)
+        
+        if not os.path.exists(audio_file) or os.path.getsize(audio_file) == 0:
+            tasks_tts.append(generate_tts(text, audio_file, voice))
+            
+        render_tasks.append((audio_file, bg_file, text_img_file, clip_file, i))
+        
+    if tasks_tts:
+        print(f"Descargando {len(tasks_tts)} archivos de voz (TTS) en paralelo...")
+        await asyncio.gather(*tasks_tts)
+        
+    print(f"Renderizando {len(render_tasks)} clips de video en paralelo...")
+    
+    def worker(args_tuple):
+        audio_f, bg_f, text_img_f, clip_f, idx = args_tuple
+        if not os.path.exists(clip_f) or os.path.getsize(clip_f) == 0:
+            render_clip(audio_f, bg_f, text_img_f, clip_f)
+            print(f"Renderizado clip vertical {idx+1}/{len(timeline)}")
+            
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+        list(executor.map(worker, render_tasks))
 
     print("Concatenando todo...")
     concat_txt = os.path.join(TEMP_DIR, f"s{args.story}_tk_concat.txt")
