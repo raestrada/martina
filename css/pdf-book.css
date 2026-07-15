@@ -86,8 +86,8 @@ body {
 }
 
 .pdf-cover-image-wrapper {
-  margin: 2rem 0;
-  max-width: 400px;
+  margin: 1.5rem 0;
+  max-width: 520px;
   border: 6px solid var(--pdf-gold);
   border-radius: var(--pdf-radius);
   box-shadow: 0 12px 36px rgba(0,0,0,0.4);
@@ -399,4 +399,201 @@ body {
   box-sizing: border-box;
   padding: 4rem 0 2rem 0;
   text-align: center;
+}
+
+/* Portadas y Contraportadas de Partes */
+.pdf-part-cover {
+  page: no-margin-page;
+  page-break-before: always;
+  page-break-after: always;
+  height: 11in;
+  width: 8.5in;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 5rem 3rem 4rem 3rem;
+  text-align: center;
+}
+
+.pdf-part-back-cover {
+  page: no-margin-page;
+  page-break-before: always;
+  page-break-after: always;
+  height: 11in;
+  width: 8.5in;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 5rem 4rem;
+  text-align: center;
+}
+
+.pdf-part-cover-meta {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13pt;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.pdf-part-cover-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 28pt;
+  font-weight: 800;
+  margin-top: 1rem;
+  line-height: 1.2;
+}
+
+.pdf-part-cover-desc {
+  font-size: 12pt;
+  max-width: 500px;
+  margin: 0 auto;
+  opacity: 0.9;
+}
+
+.pdf-part-cover-list {
+  list-style: none;
+  padding: 0;
+  margin: 3rem 0;
+  font-size: 11pt;
+  line-height: 2;
+}
+
+.pdf-part-cover-list li {
+  font-weight: 600;
+}
+
+.pdf-part-back-quote {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 14pt;
+  font-style: italic;
+  line-height: 1.8;
+  max-width: 550px;
+  margin-bottom: 2rem;
+}
+
+.pdf-part-back-author {
+  font-family: 'Nunito', sans-serif;
+  font-size: 11pt;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Gradiantes Temáticos de Partes */
+/* Parte 1: Luz y Oro */
+.pdf-part-cover-1 {
+  background-color: #f4f1de;
+  background-image: 
+    repeating-conic-gradient(rgba(244, 162, 97, 0.08) 0% 25%, transparent 0% 50%) 0 0 / 80px 80px,
+    radial-gradient(circle at top right, rgba(233, 196, 106, 0.25), transparent 600px);
+  color: #2b2d42;
+}
+.pdf-part-cover-1 .pdf-part-cover-meta { color: var(--pdf-rose); }
+.pdf-part-cover-1 .pdf-part-cover-title { color: var(--pdf-dark); }
+.pdf-part-back-cover-1 {
+  background-color: #f4f1de;
+  background-image: radial-gradient(circle at center, rgba(233, 196, 106, 0.25), transparent 500px);
+  color: #2b2d42;
+}
+.pdf-part-back-cover-1 .pdf-part-back-author { color: var(--pdf-rose); }
+
+/* Parte 2: Sombras y Violeta */
+.pdf-part-cover-2 {
+  background-color: #0d1b2a;
+  background-image: 
+    repeating-conic-gradient(rgba(27, 38, 59, 0.4) 0% 25%, transparent 0% 50%) 0 0 / 80px 80px,
+    radial-gradient(circle at top right, rgba(94, 84, 142, 0.35), transparent 600px);
+  color: #f8f9fa;
+}
+.pdf-part-cover-2 .pdf-part-cover-meta { color: var(--pdf-gold-light); }
+.pdf-part-cover-2 .pdf-part-cover-title { color: var(--pdf-white); }
+.pdf-part-back-cover-2 {
+  background-color: #0d1b2a;
+  background-image: radial-gradient(circle at center, rgba(94, 84, 142, 0.25), transparent 500px);
+  color: #f8f9fa;
+}
+.pdf-part-back-cover-2 .pdf-part-back-author { color: var(--pdf-gold-light); }
+
+/* Parte 3: Tácticas y Verde */
+.pdf-part-cover-3 {
+  background-color: #113000;
+  background-image: 
+    repeating-conic-gradient(rgba(36, 95, 1, 0.2) 0% 25%, transparent 0% 50%) 0 0 / 80px 80px,
+    radial-gradient(circle at top right, rgba(244, 162, 97, 0.2), transparent 600px);
+  color: #f8f9fa;
+}
+.pdf-part-cover-3 .pdf-part-cover-meta { color: var(--pdf-gold-light); }
+.pdf-part-cover-3 .pdf-part-cover-title { color: var(--pdf-white); }
+.pdf-part-back-cover-3 {
+  background-color: #113000;
+  background-image: radial-gradient(circle at center, rgba(36, 95, 1, 0.15), transparent 500px);
+  color: #f8f9fa;
+}
+.pdf-part-back-cover-3 .pdf-part-back-author { color: var(--pdf-gold-light); }
+
+/* Parte 4: Realidad y Carmesí */
+.pdf-part-cover-4 {
+  background-color: #470c1b;
+  background-image: 
+    repeating-conic-gradient(rgba(128, 15, 47, 0.2) 0% 25%, transparent 0% 50%) 0 0 / 80px 80px,
+    radial-gradient(circle at top right, rgba(255, 186, 8, 0.15), transparent 600px);
+  color: #f8f9fa;
+}
+.pdf-part-cover-4 .pdf-part-cover-meta { color: var(--pdf-gold-light); }
+.pdf-part-cover-4 .pdf-part-cover-title { color: var(--pdf-white); }
+.pdf-part-back-cover-4 {
+  background-color: #470c1b;
+  background-image: radial-gradient(circle at center, rgba(128, 15, 47, 0.15), transparent 500px);
+  color: #f8f9fa;
+}
+.pdf-part-back-cover-4 .pdf-part-back-author { color: var(--pdf-gold-light); }
+
+/* Parte 5: Plata e Inconclusa */
+.pdf-part-cover-5 {
+  background-color: #3d405b;
+  background-image: 
+    repeating-conic-gradient(rgba(154, 140, 152, 0.15) 0% 25%, transparent 0% 50%) 0 0 / 80px 80px,
+    radial-gradient(circle at top right, rgba(224, 122, 95, 0.25), transparent 600px);
+  color: #f8f9fa;
+}
+.pdf-part-cover-5 .pdf-part-cover-meta { color: #f4a261; }
+.pdf-part-cover-5 .pdf-part-cover-title { color: var(--pdf-white); }
+.pdf-part-back-cover-5 {
+  background-color: #3d405b;
+  background-image: radial-gradient(circle at center, rgba(154, 140, 152, 0.15), transparent 500px);
+  color: #f8f9fa;
+}
+.pdf-part-back-cover-5 .pdf-part-back-author { color: #f4a261; }
+
+/* Estilo para Insignia de Parte Inconclusa */
+.pdf-part-incomplete-badge {
+  background-color: rgba(231, 111, 81, 0.15);
+  border: 2px dashed #e76f51;
+  padding: 1.5rem;
+  border-radius: var(--pdf-radius);
+  max-width: 500px;
+  margin: 2rem auto;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.pdf-part-incomplete-badge span {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13pt;
+  font-weight: 800;
+  color: #e76f51;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.pdf-part-incomplete-badge p {
+  font-size: 9.5pt;
+  color: #e0e1dd;
+  margin: 0;
+  line-height: 1.5;
 }

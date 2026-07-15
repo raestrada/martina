@@ -75,7 +75,7 @@
           <a href="/album.html" class="nav-link{% if activeNav == 'album' %} active{% endif %}">Álbum</a>
           <a href="/galeria.html" class="nav-link{% if activeNav == 'galeria' %} active{% endif %}">Galería</a>
           <a href="/acerca-de.html" class="nav-link{% if activeNav == 'acerca-de' %} active{% endif %}">Acerca de</a>
-          <a href="/difundir.html" class="nav-link{% if activeNav == 'difundir' %} active{% endif %}">Libro PDF / EPUB 📖</a>
+          <a href="/difundir.html" onclick="event.preventDefault(); openDownloadModal();" class="nav-link{% if activeNav == 'difundir' %} active{% endif %}">Libro PDF / EPUB 📖</a>
         </div>
       </div>
     </nav>
@@ -133,5 +133,308 @@
   <span class="offline-banner-text"></span>
 </div>
 {% block extraBodyEnd %}{% endblock %}
+
+<!-- Modal de Descarga de Libros -->
+<div id="download-modal" class="modal-overlay" aria-hidden="true" role="dialog" aria-labelledby="modal-title">
+  <div class="modal-card">
+    <button class="modal-close-btn" onclick="closeDownloadModal()" aria-label="Cerrar modal">×</button>
+    <h2 id="modal-title" style="margin-top: 0; color: var(--rose); font-family: 'Nunito', sans-serif; text-align: center; font-size: 1.6rem; border-bottom: 2px solid var(--board-light); padding-bottom: 0.8rem; font-weight: 800;">📖 Descargar Cuentos por Partes</h2>
+    <p style="text-align: center; color: var(--muted-color); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.4;">
+      La colección completa se divide en 5 volúmenes temáticos de 6 cuentos cada uno. Elige la parte que deseas leer:
+    </p>
+    
+    <div class="modal-parts-grid">
+      <!-- Parte 1 -->
+      <div class="modal-part-item part-theme-1">
+        <div class="modal-part-header">
+          <span class="part-badge">Parte 1</span>
+          <h4>La Semilla de la Campeona</h4>
+        </div>
+        <p class="part-desc">Los primeros pasos en el tablero: el centro, desarrollo y tácticas iniciales (Cuentos 1-6).</p>
+        <div class="part-actions">
+          <a href="/assets/books/martina_cuentos_parte_1.pdf" download class="part-btn btn-pdf">⬇️ PDF</a>
+          <a href="/assets/books/martina_cuentos_parte_1.epub" download class="part-btn btn-epub">⬇️ EPUB</a>
+        </div>
+      </div>
+      
+      <!-- Parte 2 -->
+      <div class="modal-part-item part-theme-2">
+        <div class="modal-part-header">
+          <span class="part-badge">Parte 2</span>
+          <h4>En el Bosque Oscuro</h4>
+        </div>
+        <p class="part-desc">El caos táctico, cálculo bajo presión y la iniciativa (Cuentos 7-12).</p>
+        <div class="part-actions">
+          <a href="/assets/books/martina_cuentos_parte_2.pdf" download class="part-btn btn-pdf">⬇️ PDF</a>
+          <a href="/assets/books/martina_cuentos_parte_2.epub" download class="part-btn btn-epub">⬇️ EPUB</a>
+        </div>
+      </div>
+      
+      <!-- Parte 3 -->
+      <div class="modal-part-item part-theme-3">
+        <div class="modal-part-header">
+          <span class="part-badge">Parte 3</span>
+          <h4>Tácticas y Sacrificios</h4>
+        </div>
+        <p class="part-desc">La maestría de las clavadas, puestos avanzados y entregas de material (Cuentos 13-18).</p>
+        <div class="part-actions">
+          <a href="/assets/books/martina_cuentos_parte_3.pdf" download class="part-btn btn-pdf">⬇️ PDF</a>
+          <a href="/assets/books/martina_cuentos_parte_3.epub" download class="part-btn btn-epub">⬇️ EPUB</a>
+        </div>
+      </div>
+      
+      <!-- Parte 4 -->
+      <div class="modal-part-item part-theme-4">
+        <div class="modal-part-header">
+          <span class="part-badge">Parte 4</span>
+          <h4>La Presión del Reloj</h4>
+        </div>
+        <p class="part-desc">Partidas blitz, manejo del tiempo y resiliencia en torneos reales (Cuentos 19-24).</p>
+        <div class="part-actions">
+          <a href="/assets/books/martina_cuentos_parte_4.pdf" download class="part-btn btn-pdf">⬇️ PDF</a>
+          <a href="/assets/books/martina_cuentos_parte_4.epub" download class="part-btn btn-epub">⬇️ EPUB</a>
+        </div>
+      </div>
+      
+      <!-- Parte 5 -->
+      <div class="modal-part-item part-theme-5">
+        <div class="modal-part-header">
+          <span class="part-badge">Parte 5</span>
+          <span class="badge-incomplete">En Desarrollo</span>
+          <h4>La Colección Esquiva</h4>
+        </div>
+        <p class="part-desc">La búsqueda de las medallas y el valor de jugar limpio (Cuentos 25-28, en curso).</p>
+        <div class="part-actions">
+          <a href="/assets/books/martina_cuentos_parte_5.pdf" download class="part-btn btn-pdf">⬇️ PDF</a>
+          <a href="/assets/books/martina_cuentos_parte_5.epub" download class="part-btn btn-epub">⬇️ EPUB</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Estilos para el Modal de Descargas */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(1, 42, 74, 0.6);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-card {
+  background: var(--card-bg, #ffffff);
+  border: 3px solid var(--gold);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 650px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  padding: 2rem 1.5rem;
+  position: relative;
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.open .modal-card {
+  transform: scale(1);
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 0.6rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 2.2rem;
+  color: var(--muted-color);
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.modal-close-btn:hover {
+  color: var(--rose);
+}
+
+.modal-parts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.2rem;
+  margin-top: 1rem;
+}
+
+@media(min-width: 600px) {
+  .modal-parts-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .modal-part-item.part-theme-5 {
+    grid-column: span 2;
+    max-width: 500px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+.modal-part-item {
+  border-radius: 12px;
+  border: 2px solid var(--board-light);
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: var(--bg-color, #f8f9fa);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.modal-part-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.modal-part-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.part-badge {
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+
+.badge-incomplete {
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  background-color: var(--rose);
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.modal-part-header h4 {
+  margin: 0;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.05rem;
+  color: var(--pdf-dark, #012a4a);
+}
+
+.part-desc {
+  font-size: 0.82rem;
+  color: var(--muted-color);
+  margin: 0 0 1rem 0;
+  line-height: 1.4;
+  flex-grow: 1;
+}
+
+.part-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.part-btn {
+  flex: 1;
+  text-align: center;
+  font-weight: bold;
+  padding: 0.5rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  text-decoration: none;
+  color: #fff;
+  transition: opacity 0.2s;
+}
+
+.part-btn:hover {
+  opacity: 0.9;
+}
+
+/* Temas Cromáticos */
+.part-theme-1 { border-color: var(--gold); }
+.part-theme-1 .part-badge { background-color: rgba(233, 196, 106, 0.2); color: #b78a1c; }
+.part-theme-1 .btn-pdf { background-color: var(--rose); }
+.part-theme-1 .btn-epub { background-color: var(--gold); }
+
+.part-theme-2 { border-color: #5e548e; }
+.part-theme-2 .part-badge { background-color: rgba(94, 84, 142, 0.15); color: #5e548e; }
+.part-theme-2 .btn-pdf { background-color: #5e548e; }
+.part-theme-2 .btn-epub { background-color: #9f86c0; }
+
+.part-theme-3 { border-color: var(--sage); }
+.part-theme-3 .part-badge { background-color: rgba(42, 157, 143, 0.15); color: var(--sage); }
+.part-theme-3 .btn-pdf { background-color: var(--sage); }
+.part-theme-3 .btn-epub { background-color: #48cae4; }
+
+.part-theme-4 { border-color: #c9184a; }
+.part-theme-4 .part-badge { background-color: rgba(201, 24, 74, 0.15); color: #c9184a; }
+.part-theme-4 .btn-pdf { background-color: #c9184a; }
+.part-theme-4 .btn-epub { background-color: #ffb5a7; color: #590d22; }
+
+.part-theme-5 { border-color: #707793; background-color: rgba(112, 119, 147, 0.03); }
+.part-theme-5 .part-badge { background-color: rgba(112, 119, 147, 0.2); color: #494e63; }
+.part-theme-5 .btn-pdf { background-color: #707793; }
+.part-theme-5 .btn-epub { background-color: #a4abbd; }
+</style>
+
+<script>
+function openDownloadModal() {
+  const modal = document.getElementById('download-modal');
+  if (modal) {
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    
+    // Auto-focus the close button for accessibility
+    const closeBtn = modal.querySelector('.modal-close-btn');
+    if (closeBtn) closeBtn.focus();
+  }
+}
+
+function closeDownloadModal() {
+  const modal = document.getElementById('download-modal');
+  if (modal) {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') {
+    closeDownloadModal();
+  }
+});
+
+// Close modal on clicking backdrop
+document.addEventListener('click', function(event) {
+  const modal = document.getElementById('download-modal');
+  if (event.target === modal) {
+    closeDownloadModal();
+  }
+});
+</script>
+
 </body>
 </html>

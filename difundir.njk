@@ -109,23 +109,88 @@ footerQuote: «Compartir conocimiento es la mejor jugada.»
   </section>
 
   <!-- Descargar libros PDF y EPUB -->
-  <section class="fade-in stagger-2">
-    <div class="tarjetas-promo-card" style="background: linear-gradient(135deg, var(--magic-dark) 0%, var(--magic-purple) 100%); margin-bottom: 3rem;">
-      <div>
-        <h3 style="color: var(--gold-light); margin-bottom: 0.75rem; font-family: 'Nunito', sans-serif;">📚 Libro Completo (PDF & EPUB)</h3>
-        <p style="font-size: 0.9rem; opacity: 0.95; line-height: 1.5; margin-bottom: 1rem;">
-          ¿Prefieres leer los cuentos en papel, en una tablet o en tu lector electrónico (Kindle, Kobo, etc.)? Hemos compilado los 22 cuentos ilustrados en dos formatos digitales hermosos y listos para descargar gratis.
-        </p>
-        <p style="font-size: 0.9rem; opacity: 0.95; line-height: 1.5; margin-bottom: 1.25rem;">
-          El <strong>PDF</strong> está maquetado a todo color para imprimir o leer en pantallas grandes. El <strong>EPUB</strong> está optimizado y maquetado con texto fluido para e-readers y pantallas de tinta electrónica. Ambos incluyen portada, créditos, prólogo e índice.
-        </p>
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-          <a href="/assets/books/martina_cuentos.pdf" download class="btn" style="display: inline-block; background: var(--rose); color: #fff; padding: 0.6rem 1.5rem; border-radius: 20px; font-weight: 800; text-decoration: none;">⬇️ Descargar PDF (Imprimir / Tablet)</a>
-          <a href="/assets/books/martina_cuentos.epub" download class="btn" style="display: inline-block; background: var(--sage); color: #fff; padding: 0.6rem 1.5rem; border-radius: 20px; font-weight: 800; text-decoration: none;">⬇️ Descargar EPUB (E-Reader)</a>
+  <!-- Descargar libros PDF y EPUB por Partes -->
+  <section class="fade-in stagger-2" style="margin-bottom: 3.5rem;">
+    <h3 style="color: var(--rose); margin-bottom: 0.75rem; font-family: 'Nunito', sans-serif; text-align: center; font-size: 1.6rem; font-weight: 800;">📚 Descargar los Cuentos por Partes</h3>
+    <p style="text-align: center; color: var(--muted-color); font-size: 0.95rem; margin-bottom: 2rem; max-width: 700px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+      Para hacer la lectura más accesible y dinámica, hemos dividido la colección completa de cuentos ilustrados en <strong>5 volúmenes temáticos independientes</strong>. Cada libro incluye su propia portada artística, créditos, prólogo, índice y glosario educativo. ¡Descárgalos gratis en el formato que prefieras!
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 1000px; margin: 0 auto;">
+      <!-- Parte 1 -->
+      <div class="part-download-card" style="border: 2px solid var(--gold); border-radius: 14px; padding: 1.5rem; background-color: var(--card-bg, #ffffff); display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-size: 0.75rem; font-weight: bold; background-color: rgba(233, 196, 106, 0.2); color: #b78a1c; padding: 0.2rem 0.6rem; border-radius: 12px; text-transform: uppercase;">Parte 1</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; font-family: 'Nunito', sans-serif; font-size: 1.2rem; color: var(--pdf-dark, #012a4a); font-weight: 800;">La Semilla de la Campeona</h4>
+          <p style="font-size: 0.85rem; color: var(--muted-color); line-height: 1.4; margin-bottom: 1.25rem;">Los primeros pasos en el tablero: el centro, desarrollo y tácticas iniciales (Cuentos 1-6).</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <a href="/assets/books/martina_cuentos_parte_1.pdf" download style="flex: 1; text-align: center; font-weight: 800; padding: 0.6rem; border-radius: 8px; font-size: 0.85rem; text-decoration: none; color: #fff; background-color: var(--rose);">⬇️ PDF</a>
+          <a href="/assets/books/martina_cuentos_parte_1.epub" download style="flex: 1; text-align: center; font-weight: 800; padding: 0.6rem; border-radius: 8px; font-size: 0.85rem; text-decoration: none; color: #fff; background-color: var(--gold);">⬇️ EPUB</a>
         </div>
       </div>
-      <div class="tarjetas-promo-preview-box" style="display: flex; align-items: center; justify-content: center; height: 160px; position: relative;">
-        <img src="/assets/img/cover_epub.png" alt="Portada de los Cuentos de Martina" style="width: 110px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.35); transform: rotate(-5deg); transition: transform 0.3s ease;">
+
+      <!-- Parte 2 -->
+      <div class="part-download-card" style="border: 2px solid #5e548e; border-radius: 14px; padding: 1.5rem; background-color: var(--card-bg, #ffffff); display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-size: 0.75rem; font-weight: bold; background-color: rgba(94, 84, 142, 0.15); color: #5e548e; padding: 0.2rem 0.6rem; border-radius: 12px; text-transform: uppercase;">Parte 2</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; font-family: 'Nunito', sans-serif; font-size: 1.2rem; color: var(--pdf-dark, #012a4a); font-weight: 800;">En el Bosque Oscuro</h4>
+          <p style="font-size: 0.85rem; color: var(--muted-color); line-height: 1.4; margin-bottom: 1.25rem;">El caos táctico, cálculo bajo presión y la iniciativa (Cuentos 7-12).</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <a href="/assets/books/martina_cuentos_parte_2.pdf" download style="flex: 1; text-align: center; font-weight: 800; padding: 0.6rem; border-radius: 8px; font-size: 0.85rem; text-decoration: none; color: #fff; background-color: #5e548e;">⬇️ PDF</a>
+          <a href="/assets/books/martina_cuentos_parte_2.epub" download style="flex: 1; text-align: center; font-weight: 800; padding: 0.6rem; border-radius: 8px; font-size: 0.85rem; text-decoration: none; color: #fff; background-color: #9f86c0;">⬇️ EPUB</a>
+        </div>
+      </div>
+
+      <!-- Parte 3 -->
+      <div class="part-download-card" style="border: 2px solid var(--sage); border-radius: 14px; padding: 1.5rem; background-color: var(--card-bg, #ffffff); display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-size: 0.75rem; font-weight: bold; background-color: rgba(42, 157, 143, 0.15); color: var(--sage); padding: 0.2rem 0.6rem; border-radius: 12px; text-transform: uppercase;">Parte 3</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; font-family: 'Nunito', sans-serif; font-size: 1.2rem; color: var(--pdf-dark, #012a4a); font-weight: 800;">Tácticas y Sacrificios</h4>
+          <p style="font-size: 0.85rem; color: var(--muted-color); line-height: 1.4; margin-bottom: 1.25rem;">La maestría de las clavadas, puestos avanzados y entregas de material (Cuentos 13-18).</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <a href="/assets/books/martina_cuentos_parte_3.pdf" download style="flex: 1; text-align: center; font-weight: 800; padding: 0.6rem; border-radius: 8px; font-size: 0.85rem; text-decoration: none; color: #fff; background-color: var(--sage);">⬇️ PDF</a>
+          <a href="/assets/books/martina_cuentos_parte_3.epub" download style="flex: 1; text-align: center; font-weight: 800; padding: 0.6rem; border-radius: 8px; font-size: 0.85rem; text-decoration: none; color: #fff; background-color: var(--sage);">⬇️ EPUB</a>
+        </div>
+      </div>
+
+      <!-- Parte 4 -->
+      <div class="part-download-card" style="border: 2px solid #c9184a; border-radius: 14px; padding: 1.5rem; background-color: var(--card-bg, #ffffff); display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-size: 0.75rem; font-weight: bold; background-color: rgba(201, 24, 74, 0.15); color: #c9184a; padding: 0.2rem 0.6rem; border-radius: 12px; text-transform: uppercase;">Parte 4</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; font-family: 'Nunito', sans-serif; font-size: 1.2rem; color: var(--pdf-dark, #012a4a); font-weight: 800;">La Presión del Reloj</h4>
+          <p style="font-size: 0.85rem; color: var(--muted-color); line-height: 1.4; margin-bottom: 1.25rem;">Partidas blitz, manejo del tiempo y resiliencia en torneos reales (Cuentos 19-24).</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <a href="/assets/books/martina_cuentos_parte_4.pdf" download style="flex: 1; text-align: center; font-weight: 800; padding: 0.6rem; border-radius: 8px; font-size: 0.85rem; text-decoration: none; color: #fff; background-color: #c9184a;">⬇️ PDF</a>
+          <a href="/assets/books/martina_cuentos_parte_4.epub" download style="flex: 1; text-align: center; font-weight: 800; padding: 0.6rem; border-radius: 8px; font-size: 0.85rem; text-decoration: none; color: #fff; background-color: #ffb5a7; color: #590d22;">⬇️ EPUB</a>
+        </div>
+      </div>
+
+      <!-- Parte 5 -->
+      <div class="part-download-card" style="border: 2px solid #707793; border-radius: 14px; padding: 1.5rem; background-color: rgba(112, 119, 147, 0.03); display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+            <span style="font-size: 0.75rem; font-weight: bold; background-color: rgba(112, 119, 147, 0.2); color: #494e63; padding: 0.2rem 0.6rem; border-radius: 12px; text-transform: uppercase;">Parte 5</span>
+            <span style="font-size: 0.75rem; font-weight: bold; background-color: var(--rose); color: #fff; padding: 0.2rem 0.6rem; border-radius: 12px; text-transform: uppercase;">En Desarrollo</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; font-family: 'Nunito', sans-serif; font-size: 1.2rem; color: var(--pdf-dark, #012a4a); font-weight: 800;">La Colección Esquiva</h4>
+          <p style="font-size: 0.85rem; color: var(--muted-color); line-height: 1.4; margin-bottom: 1.25rem;">La búsqueda de las medallas y el valor de jugar limpio (Cuentos 25-28, en curso).</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <a href="/assets/books/martina_cuentos_parte_5.pdf" download style="flex: 1; text-align: center; font-weight: 800; padding: 0.6rem; border-radius: 8px; font-size: 0.85rem; text-decoration: none; color: #fff; background-color: #707793;">⬇️ PDF</a>
+          <a href="/assets/books/martina_cuentos_parte_5.epub" download style="flex: 1; text-align: center; font-weight: 800; padding: 0.6rem; border-radius: 8px; font-size: 0.85rem; text-decoration: none; color: #fff; background-color: #a4abbd;">⬇️ EPUB</a>
+        </div>
       </div>
     </div>
   </section>

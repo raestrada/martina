@@ -206,3 +206,63 @@ p {
   margin-top: 1.5em;
   border-radius: 4px;
 }
+
+/* Separadores de Partes en EPUB */
+.epub-part-separator {
+  page-break-before: always;
+  page-break-after: always;
+  text-align: center;
+  padding: 3em 1em;
+  border: 2px solid #f4a261;
+  border-radius: 8px;
+  background-color: rgba(244, 162, 97, 0.05);
+  margin: 2em 0;
+}
+
+.epub-part-separator h1 {
+  font-size: 2em;
+  color: #012a4a;
+  margin-top: 0.5em;
+}
+
+.epub-part-separator h2 {
+  font-size: 1.2em;
+  color: #e76f51;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.epub-part-separator-list {
+  list-style: none;
+  padding: 0;
+  margin: 2em 0;
+  line-height: 1.8;
+}
+
+.epub-part-separator-list li {
+  font-weight: bold;
+}
+
+.epub-part-back-quote-box {
+  margin: 3em 0;
+  padding: 1.5em;
+  border-left: 4px solid #5e548e;
+  background-color: rgba(94, 84, 142, 0.03);
+  font-style: italic;
+}
+
+.epub-part-incomplete-badge {
+  border: 2px dashed #e76f51;
+  background-color: rgba(231, 111, 81, 0.05);
+  padding: 1em;
+  margin: 1.5em 0;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.epub-part-incomplete-badge span {
+  font-weight: bold;
+  color: #e76f51;
+  display: block;
+  margin-bottom: 0.5em;
+}
