@@ -206,6 +206,34 @@ STORY_CONFIG = {
         "default_voice": "es-ES-ElviraNeural",
         "default_image": "cuento24_torneo_caos.png",
         "mapping": {}
+    },
+    25: {
+        "html_file": "../_site/cuentos/25-la-coleccionista.html",
+        "output_video": "../assets/video/cuento_25_audiolibro.mp4",
+        "default_voice": "es-ES-AlvaroNeural",
+        "default_image": "cuento25_peoncito_olimpico.png",
+        "mapping": {}
+    },
+    26: {
+        "html_file": "../_site/cuentos/26-el-botin.html",
+        "output_video": "../assets/video/cuento_26_audiolibro.mp4",
+        "default_voice": "es-ES-ElviraNeural",
+        "default_image": "cuento26_camas_medallas.png",
+        "mapping": {}
+    },
+    27: {
+        "html_file": "../_site/cuentos/27-la-medalla-esquiva.html",
+        "output_video": "../assets/video/cuento_27_audiolibro.mp4",
+        "default_voice": "es-ES-AlvaroNeural",
+        "default_image": "cuento27_sombra_atajo.png",
+        "mapping": {}
+    },
+    28: {
+        "html_file": "../_site/cuentos/28-el-segundo-lugar.html",
+        "output_video": "../assets/video/cuento_28_audiolibro.mp4",
+        "default_voice": "es-ES-ElviraNeural",
+        "default_image": "cuento28_partida_final.png",
+        "mapping": {}
     }
 }
 
