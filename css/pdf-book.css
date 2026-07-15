@@ -1,0 +1,402 @@
+/* === MARTINA: ESTILOS PARA EDICIÓN IMPRESA Y PDF === */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&family=Quicksand:wght@400;500;600&display=swap');
+
+:root {
+  --pdf-ink: #2b2d42;
+  --pdf-paper: #f4f1de;
+  --pdf-white: #ffffff;
+  --pdf-gold: #f4a261;
+  --pdf-gold-light: #e9c46a;
+  --pdf-rose: #e76f51;
+  --pdf-blue: #2a6f97;
+  --pdf-dark: #012a4a;
+  --pdf-purple: #5e548e;
+  --pdf-sage: #2a9d8f;
+  --pdf-board-light: #e0e1dd;
+  --pdf-board-dark: #8d99ae;
+  --pdf-radius: 12px;
+  --pdf-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Configuración de Página */
+@page {
+  size: letter;
+  margin: 25mm 20mm 25mm 20mm;
+}
+
+@page :first {
+  margin: 0;
+}
+
+/* Estilos Globales de Impresión */
+body {
+  font-family: 'Quicksand', sans-serif;
+  color: var(--pdf-ink);
+  background-color: var(--pdf-white);
+  line-height: 1.6;
+  font-size: 11.5pt;
+  margin: 0;
+  padding: 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* Portada del Libro */
+.pdf-cover {
+  page-break-after: always;
+  height: 11in;
+  width: 8.5in;
+  background-color: var(--pdf-dark);
+  background-image: 
+    repeating-conic-gradient(rgba(27, 45, 69, 0.4) 0% 25%, transparent 0% 50%) 0 0 / 80px 80px,
+    radial-gradient(circle at top right, rgba(244, 162, 97, 0.15), transparent 600px),
+    radial-gradient(circle at bottom left, rgba(42, 111, 151, 0.2), transparent 600px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.pdf-cover-header {
+  margin-top: 2rem;
+}
+
+.pdf-cover-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 32pt;
+  font-weight: 800;
+  color: var(--pdf-gold-light);
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.pdf-cover-subtitle {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 14pt;
+  font-weight: 500;
+  color: var(--pdf-board-light);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.pdf-cover-image-wrapper {
+  margin: 2rem 0;
+  max-width: 400px;
+  border: 6px solid var(--pdf-gold);
+  border-radius: var(--pdf-radius);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+  overflow: hidden;
+}
+
+.pdf-cover-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.pdf-cover-footer {
+  margin-bottom: 2rem;
+}
+
+.pdf-cover-author {
+  font-family: 'Nunito', sans-serif;
+  font-size: 16pt;
+  font-weight: 700;
+  color: var(--pdf-white);
+  margin-bottom: 0.5rem;
+}
+
+.pdf-cover-tagline {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 11pt;
+  color: var(--pdf-board-dark);
+}
+
+/* Página de Licencia y Créditos */
+.pdf-license-page {
+  page-break-after: always;
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 9in;
+  max-width: 175mm;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pdf-license-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 18pt;
+  color: var(--pdf-dark);
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--pdf-gold);
+  padding-bottom: 0.5rem;
+}
+
+.pdf-license-content {
+  font-size: 10.5pt;
+  color: #4a5568;
+}
+
+.pdf-license-content p {
+  margin-bottom: 1.5rem;
+  text-align: justify;
+}
+
+.pdf-license-cc-box {
+  border: 1px dashed var(--pdf-board-dark);
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  margin-top: 2rem;
+}
+
+/* Prólogo / Introducción */
+.pdf-intro-page {
+  page-break-after: always;
+  padding: 2rem 1rem;
+  min-height: 9in;
+  max-width: 175mm;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pdf-intro-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 24pt;
+  color: var(--pdf-dark);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* Tabla de Contenidos */
+.pdf-toc-page {
+  page-break-after: always;
+  padding: 2rem 1rem;
+  min-height: 9in;
+  max-width: 175mm;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pdf-toc-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 24pt;
+  color: var(--pdf-dark);
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.pdf-toc-list {
+  list-style: none;
+  padding: 0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.pdf-toc-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.8rem;
+  font-size: 11pt;
+}
+
+.pdf-toc-item-title {
+  font-weight: 600;
+  color: var(--pdf-ink);
+}
+
+.pdf-toc-item-dots {
+  flex-grow: 1;
+  border-bottom: 1px dotted var(--pdf-board-dark);
+  margin: 0 0.5rem;
+}
+
+.pdf-toc-item-page {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  color: var(--pdf-blue);
+}
+
+/* Estilos de Capítulo (Historias) */
+.pdf-chapter {
+  page-break-before: always;
+  padding: 1rem 0;
+  min-height: 9in;
+  max-width: 175mm;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pdf-story-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.pdf-story-number {
+  font-family: 'Nunito', sans-serif;
+  font-size: 11pt;
+  font-weight: 800;
+  color: var(--pdf-rose);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.pdf-story-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 22pt;
+  color: var(--pdf-dark);
+  margin-bottom: 0.8rem;
+  line-height: 1.2;
+}
+
+.pdf-story-subtitle {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 11pt;
+  color: var(--pdf-blue);
+  font-weight: 600;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Contenido del Cuento */
+.pdf-story-content p {
+  margin-bottom: 1.2rem;
+  text-align: justify;
+}
+
+.pdf-story-content .dropcap::first-letter {
+  font-family: 'Nunito', sans-serif;
+  font-size: 42pt;
+  float: left;
+  line-height: 0.8;
+  padding-right: 6px;
+  color: var(--pdf-blue);
+  font-weight: 800;
+  text-shadow: 2px 2px 0px var(--pdf-gold-light);
+}
+
+/* Divisor de Historias */
+.pdf-story-divider {
+  text-align: center;
+  font-size: 14pt;
+  margin: 2.5rem 0;
+  color: var(--pdf-rose);
+  letter-spacing: 0.5rem;
+}
+
+/* Contenedor de Imágenes */
+.pdf-image-wrapper {
+  margin: 2rem 0;
+  text-align: center;
+  page-break-inside: avoid;
+}
+
+.pdf-image {
+  max-width: 85%;
+  max-height: 350px;
+  height: auto;
+  border-radius: var(--pdf-radius);
+  border: 4px solid #f8f9fa;
+  box-shadow: var(--pdf-shadow);
+}
+
+/* Epílogo de Partida Real */
+.historical-epilogue {
+  page-break-inside: avoid;
+  background-color: #f8f9fa;
+  border-left: 5px solid var(--pdf-gold);
+  padding: 1.5rem;
+  margin-top: 3rem;
+  border-radius: 4px var(--pdf-radius) var(--pdf-radius) 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.historical-epilogue h3 {
+  font-family: 'Nunito', sans-serif;
+  font-size: 12pt;
+  color: var(--pdf-dark);
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+}
+
+.historical-epilogue p {
+  font-size: 10pt;
+  line-height: 1.5;
+  color: #4a5568;
+  margin-bottom: 1.2rem;
+}
+
+.pdf-game-interactive-box {
+  display: flex;
+  align-items: center;
+  background-color: var(--pdf-white);
+  border: 1px solid var(--pdf-board-light);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.pdf-qr-code {
+  width: 90px;
+  height: 90px;
+  margin-right: 1.2rem;
+  border: 1px solid var(--pdf-board-light);
+  border-radius: 4px;
+}
+
+.pdf-interactive-text {
+  flex: 1;
+}
+
+.pdf-interactive-instruction {
+  font-size: 9pt;
+  font-weight: 700;
+  color: var(--pdf-ink);
+  margin: 0 0 0.3rem 0;
+}
+
+.pdf-interactive-desc {
+  font-size: 8.5pt;
+  color: #718096;
+  margin: 0 0 0.5rem 0;
+}
+
+.pdf-interactive-link {
+  font-family: monospace;
+  font-size: 8pt;
+  color: var(--pdf-blue);
+  word-break: break-all;
+  white-space: normal;
+  display: block;
+}
+
+/* Contraportada del Libro */
+.pdf-back-cover {
+  page-break-before: always;
+  min-height: 9in;
+  max-width: 175mm;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 4rem 0 2rem 0;
+  text-align: center;
+}

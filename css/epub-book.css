@@ -1,0 +1,208 @@
+/* === MARTINA: ESTILOS PARA EDICIÓN DIGITAL EPUB === */
+
+/* Nota: Los e-readers manejan el fondo y el color de texto base. 
+   Por ello, evitamos forzar colores de fondo globales para no romper el Modo Noche/Sepia. */
+
+body {
+  font-family: "Georgia", "Times New Roman", serif;
+  line-height: 1.6;
+  font-size: 1em;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #012a4a; /* Azul oscuro mágico */
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 2em;
+  text-align: center;
+  border-bottom: 1px solid #e0e1dd;
+  padding-bottom: 0.5em;
+}
+
+h2 {
+  font-size: 1.5em;
+  text-align: center;
+}
+
+h3 {
+  font-size: 1.2em;
+}
+
+p {
+  margin-bottom: 1.2em;
+  text-align: justify;
+  text-indent: 0;
+}
+
+/* El primer párrafo de un capítulo puede llevar un estilo de inicio limpio */
+.dropcap::first-letter {
+  font-size: 3em;
+  float: left;
+  line-height: 0.85em;
+  padding-right: 0.1em;
+  font-weight: bold;
+  color: #2a6f97; /* Azul mágico */
+}
+
+/* Encabezado del Cuento */
+.epub-story-header {
+  text-align: center;
+  margin-bottom: 2em;
+  padding-top: 1em;
+}
+
+.epub-story-number {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.85em;
+  font-weight: bold;
+  color: #e76f51; /* Color rosa */
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 0.5em;
+}
+
+.epub-story-title {
+  font-size: 1.8em;
+  margin-bottom: 0.5em;
+}
+
+.epub-story-subtitle {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.95em;
+  color: #2a6f97;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Divisor de Historias */
+.epub-story-divider {
+  text-align: center;
+  font-size: 1.5em;
+  margin: 2em 0;
+  color: #e76f51;
+  letter-spacing: 0.3em;
+}
+
+/* Contenedor de Imágenes */
+.epub-image-wrapper {
+  margin: 1.5em 0;
+  text-align: center;
+}
+
+.epub-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* Epílogo de Partida Real */
+.historical-epilogue {
+  background-color: rgba(0, 0, 0, 0.03);
+  border-left: 4px solid #f4a261; /* Borde dorado */
+  padding: 1em;
+  margin-top: 2em;
+  margin-bottom: 1.5em;
+  border-radius: 0 8px 8px 0;
+}
+
+.historical-epilogue h3 {
+  font-size: 1.1em;
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  color: #012a4a;
+}
+
+.historical-epilogue p {
+  font-size: 0.9em;
+  color: #333333;
+  margin-bottom: 1em;
+}
+
+/* Enlaces y QR */
+.epub-game-interactive-box {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  padding-top: 0.8em;
+  display: block;
+}
+
+.epub-qr-code {
+  display: block;
+  margin: 0.5em auto;
+  max-width: 120px;
+  height: auto;
+  border: 1px solid #e0e1dd;
+}
+
+.epub-interactive-instruction {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.85em;
+  font-weight: bold;
+  margin-bottom: 0.2em;
+}
+
+.epub-interactive-desc {
+  font-size: 0.8em;
+  color: #666666;
+  margin-bottom: 0.4em;
+}
+
+.epub-interactive-link {
+  font-size: 0.85em;
+  font-weight: bold;
+  color: #2a6f97;
+  word-break: break-all;
+  text-decoration: underline;
+}
+
+/* Portada digital del EPUB (si se incluye como XHTML) */
+.epub-cover-page {
+  text-align: center;
+  padding: 3em 1em;
+}
+
+.epub-cover-title {
+  font-size: 2.2em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+.epub-cover-subtitle {
+  font-size: 1.2em;
+  color: #555555;
+  margin-bottom: 2em;
+}
+
+.epub-cover-author {
+  font-size: 1.3em;
+  font-weight: bold;
+  margin-top: 2em;
+}
+
+/* Página de Créditos del EPUB */
+.epub-credits-page {
+  padding: 1.5em 1em;
+  font-size: 0.9em;
+}
+
+.epub-credits-title {
+  font-size: 1.5em;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.3em;
+  margin-bottom: 1.5em;
+}
+
+.epub-credits-cc-box {
+  border: 1px dashed #999;
+  padding: 1em;
+  background-color: rgba(0, 0, 0, 0.02);
+  margin-top: 1.5em;
+  border-radius: 4px;
+}

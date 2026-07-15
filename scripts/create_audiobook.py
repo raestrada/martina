@@ -192,6 +192,20 @@ STORY_CONFIG = {
         "mapping": {
             "Después de la partida, Álvaro": "cuento22_regreso_alvaro.png"
         }
+    },
+    23: {
+        "html_file": "../_site/cuentos/23-el-torneo-del-reino.html",
+        "output_video": "../assets/video/cuento_23_audiolibro.mp4",
+        "default_voice": "es-ES-AlvaroNeural",
+        "default_image": "cuento23_torneo_anuncio.png",
+        "mapping": {}
+    },
+    24: {
+        "html_file": "../_site/cuentos/24-cinco-minutos.html",
+        "output_video": "../assets/video/cuento_24_audiolibro.mp4",
+        "default_voice": "es-ES-ElviraNeural",
+        "default_image": "cuento24_torneo_caos.png",
+        "mapping": {}
     }
 }
 

@@ -16,7 +16,10 @@ SLUGS = {
     11: 'la-ultima-grieta', 12: 'el-peon-que-bailaba',
     13: 'lo-que-estaba-escrito', 14: 'hielo-que-quema',
     15: 'el-ultimo-capitulo', 16: 'fuego-contra-todos',
-    17: 'el-pez-del-rio', 18: 'la-jugada-que-no-estaba'
+    17: 'el-pez-del-rio', 18: 'la-jugada-que-no-estaba',
+    19: 'la-pieza-que-se-fue', 20: 'los-que-se-fueron',
+    21: 'la-caceria', 22: 'cazadora-de-estrellas',
+    23: 'el-torneo-del-reino', 24: 'cinco-minutos'
 }
 TITLES = {
     1: 'El Primer Movimiento', 2: 'Tic, Tac, Jaque Mate',
@@ -27,7 +30,10 @@ TITLES = {
     11: 'La Última Grieta', 12: 'El Peón que Bailaba',
     13: 'Lo Que Estaba Escrito', 14: 'Hielo que Quema',
     15: 'El Último Capítulo', 16: 'Fuego Contra Todos',
-    17: 'El Pez del Río', 18: 'La Jugada que No Estaba'
+    17: 'El Pez del Río', 18: 'La Jugada que No Estaba',
+    19: 'La Pieza que se Fue', 20: 'Los Que se Fueron',
+    21: 'La Cacería', 22: 'Cazadora de Estrellas',
+    23: 'El Torneo del Reino', 24: 'Tres Minutos'
 }
 
 def get_num(filename):
@@ -60,7 +66,7 @@ def add_prev_next(front_matter, num):
                 lines.append(f'prevCuento:')
                 lines.append(f'  url: /cuentos/{prev_num:02d}-{SLUGS[prev_num]}.html')
                 lines.append(f'  title: "{TITLES[prev_num]}"')
-            if next_num <= 18:
+            if next_num <= 24:
                 lines.append(f'nextCuento:')
                 lines.append(f'  url: /cuentos/{next_num:02d}-{SLUGS[next_num]}.html')
                 lines.append(f'  title: "{TITLES[next_num]}"')
