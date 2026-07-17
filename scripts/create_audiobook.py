@@ -234,6 +234,20 @@ STORY_CONFIG = {
         "default_voice": "es-ES-ElviraNeural",
         "default_image": "cuento28_partida_final.png",
         "mapping": {}
+    },
+    29: {
+        "html_file": "../_site/cuentos/29-demasiados-trofeos.html",
+        "output_video": "../assets/video/cuento_29_audiolibro.mp4",
+        "default_voice": "es-ES-AlvaroNeural",
+        "default_image": "cuento29_rey_bañera.png",
+        "mapping": {}
+    },
+    30: {
+        "html_file": "../_site/cuentos/30-el-problema-de-ganar.html",
+        "output_video": "../assets/video/cuento_30_audiolibro.mp4",
+        "default_voice": "es-ES-ElviraNeural",
+        "default_image": "cuento30_podio_sobrecargado.png",
+        "mapping": {}
     }
 }
 
