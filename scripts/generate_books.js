@@ -200,7 +200,13 @@ const storiesData = [];
   };
 
   const server = http.createServer((req, res) => {
-    const safeUrl = path.normalize(req.url).replace(/^(\.\.[\/\\])+/, '');
+    let decodedUrl = req.url;
+    try {
+      decodedUrl = decodeURIComponent(req.url);
+    } catch (e) {
+      console.error('Error decoding URL:', e);
+    }
+    const safeUrl = path.normalize(decodedUrl).replace(/^(\.\.[\/\\])+/, '');
     let filePath = path.join(ROOT_DIR, '_site', safeUrl);
     
     if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
