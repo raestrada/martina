@@ -215,6 +215,48 @@
       lightColor: '#dfd0b8',
       darkColor: '#3c5c4e',
       accentColor: '#fbbf24'
+    },
+    31: {
+      pgn: `1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Qd3 e5 6. dxe5 Qa5+ 7. Bd2 Qxe5 8. O-O-O Nxe4 9. Qd8+ Kxd8 10. Bg5+ Kc7 11. Bd8# 1-0`,
+      startFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+      lightColor: '#eae9e4',
+      darkColor: '#4b5563',
+      accentColor: '#fbbf24'
+    },
+    32: {
+      pgn: `1. e4 e5 2. Nf3 Nc6 3. Bb5 f5 4. d3 fxe4 5. dxe4 Nf6 6. O-O Bc5 7. Bxc6 bxc6 8. Nxe5 O-O 9. Nd3 Bb6 10. Nc3 d6 11. Bg5 Qe8 12. Bxf6 Rxf6 13. Kh1 Ba6 14. f4 Bd4 15. Qe1 Re6 16. f5 Bxc3 17. Qxc3 Rxe4 18. f6 gxf6 19. Rxf6 Bxd3 20. cxd3 Re5 21. Raf1 Qe7 22. d4 Re3 23. Qxc6 Re8 24. Qd5+ Kh8 25. h3 Re1 26. Qf3 Rxf1+ 27. Qxf1 Qe1 28. Rf8+ Kg7 29. Rf7+ Kg8 30. Rf8+ Kg7 31. Rf7+ Kg8 32. Rf8+ 1-0`,
+      startFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+      lightColor: '#dfd0b8',
+      darkColor: '#3c5c4e',
+      accentColor: '#fbbf24'
+    },
+    33: {
+      pgn: `1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Bg5 e6 7. f4 Qb6 8. Qd2 Qxb2 9. Rb1 Qa3 10. f5 Nc6 11. fxe6 fxe6 12. Nxc6 bxc6 13. e5 dxe5 14. Bxf6 gxf6 15. Ne4 Be7 16. Be2 h5 17. Rb3 Qa4 18. Nxf6+ Bxf6 19. c4 Bh4+ 20. g3 Be7 21. O-O 1-0`,
+      startFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+      lightColor: '#eae9e4',
+      darkColor: '#4b5563',
+      accentColor: '#fbbf24'
+    },
+    34: {
+      pgn: `1. e4 e5 2. f4 exf4 3. Nf3 d6 4. Bc4 h6 5. d4 g5 6. O-O Bg7 7. c3 Nc6 8. g3 g4 9. Nh4 f3 10. Nd2 Bf6 11. Ndxf3 gxf3 12. Qxf3 Bh3 13. Bxf7+ Kxf7 14. Qh5+ Kf8 15. Ng6+ Kg7 16. Nxh8 Bxf1 17. Qf7+ Kxh8 18. Bxh6 Nxh6 19. Qg6 Bg7 20. Rxf1 Qe8 21. Rf7 Qxf7 22. Qxf7 Nxf7 23. Kf2 0-1`,
+      startFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+      lightColor: '#dfd0b8',
+      darkColor: '#3c5c4e',
+      accentColor: '#fbbf24'
+    },
+    35: {
+      pgn: `1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 Bb7 5. Bg2 Be7 6. O-O O-O 7. d5 exd5 8. Nh4 c6 9. cxd5 Nxd5 10. Nf5 Nc7 11. e4 d5 12. exd5 Nxd5 13. Nc3 Nxc3 14. Qg4 Bf6 15. bxc3 Bc8 16. Nh6+ Kh8 17. Qh5 g6 18. Qf3 Kg7 19. Rd1 Qe7 20. Bf4 Be6 21. Bd6 Qd8 22. Bxf8+ Qxf8 23. Ng4 Be7 24. Qf4 Kg8 25. Re1 Nd7 26. Rad1 Nc5 27. Nh6+ Kh8 28. Bxc6 Rc8 29. Bd5 Bxd5 30. Rxd5 f6 31. Ng4 Qf7 32. Qd4 h5 33. Ne3 Kg7 34. Rd1 Re8 35. h4 Ne6 36. Qc4 Nc5 37. Ng2 Bf8 38. Nf4 Re4 39. Qf1 Be7 40. Rd7 Nxd7 41. Rxd7 Re5 42. Qd3 g5 43. hxg5 fxg5 44. Qd4 Qf5 45. Nd3 Kf6 46. Qxe5+ Qxe5 1-0`,
+      startFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+      lightColor: '#eae9e4',
+      darkColor: '#4b5563',
+      accentColor: '#fbbf24'
+    },
+    36: {
+      pgn: `1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Be3 e5 7. Bc4 exd4 8. Qxd4 Nc6 9. Qb3 Na5 10. Bxf7+ Ke7 11. Nd5+ Kxf7 12. Qb6 Qe8 13. Nc7 Qxe4 14. O-O-O Nc4 15. Qb3 Be6 16. Nxe6 Kxe6 17. Rfe1 Kf7 18. Bg5 Qd5 19. Bxf6 gxf6 20. Rad1 Qc6 21. Rd4 b5 22. Qh3 Ne5 23. Qh5+ Ng6 24. Rde4 d5 25. Re6 Qxe6 26. Rxe6 Kxe6 27. Qh3+ f5 28. Qe3+ Kf7 29. Qb6 Be7 30. g3 Rhc8 31. c3 Ne5 32. Qh6 Bf6 33. Qxh7+ Ke6 34. Qb7 Rcb8 35. Qc7 Rc8 36. Qb6+ Rc6 37. Qb7 Rd8 38. f4 Rd7 39. Qb8 Nf3+ 40. Kf2 Nxh2 41. Qe8+ Be7 42. Qg6+ Bf6 1-0`,
+      startFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+      lightColor: '#dfd0b8',
+      darkColor: '#3c5c4e',
+      accentColor: '#fbbf24'
     }
   };
 

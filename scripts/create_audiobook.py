@@ -248,6 +248,48 @@ STORY_CONFIG = {
         "default_voice": "es-ES-ElviraNeural",
         "default_image": "cuento30_podio_sobrecargado.png",
         "mapping": {}
+    },
+    31: {
+        "html_file": "../_site/cuentos/31-el-gimnasio-del-tablero.html",
+        "output_video": "../assets/video/cuento_31_audiolibro.mp4",
+        "default_voice": "es-ES-AlvaroNeural",
+        "default_image": "cuento31_peoncito_box.png",
+        "mapping": {}
+    },
+    32: {
+        "html_file": "../_site/cuentos/32-el-puno-y-la-pieza.html",
+        "output_video": "../assets/video/cuento_32_audiolibro.mp4",
+        "default_voice": "es-ES-ElviraNeural",
+        "default_image": "cuento32_gimnasio_hierro.png",
+        "mapping": {}
+    },
+    33: {
+        "html_file": "../_site/cuentos/33-entrenando-a-lo-loco.html",
+        "output_video": "../assets/video/cuento_33_audiolibro.mp4",
+        "default_voice": "es-ES-AlvaroNeural",
+        "default_image": "cuento33_entrenamiento_pies.png",
+        "mapping": {}
+    },
+    34: {
+        "html_file": "../_site/cuentos/34-la-escopeta-humana.html",
+        "output_video": "../assets/video/cuento_34_audiolibro.mp4",
+        "default_voice": "es-ES-ElviraNeural",
+        "default_image": "cuento34_pelea_sendoro.png",
+        "mapping": {}
+    },
+    35: {
+        "html_file": "../_site/cuentos/35-el-puno-sucio.html",
+        "output_video": "../assets/video/cuento_35_audiolibro.mp4",
+        "default_voice": "es-ES-AlvaroNeural",
+        "default_image": "cuento35_reina_negra_consejo.png",
+        "mapping": {}
+    },
+    36: {
+        "html_file": "../_site/cuentos/36-la-pelea-final.html",
+        "output_video": "../assets/video/cuento_36_audiolibro.mp4",
+        "default_voice": "es-ES-ElviraNeural",
+        "default_image": "cuento36_cara_a_cara.png",
+        "mapping": {}
     }
 }
 
