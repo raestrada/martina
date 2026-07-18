@@ -66,6 +66,13 @@ const PARTS_METADATA = [
     desc: 'La búsqueda de las medallas perdidas. Una aventura sobre la honestidad, el juego limpio y el valor de jugar con pasión.',
     quote: '"No importa si ganas o pierdes. Lo importante es jugar con pasión y dar el cien por cien en cada partida."',
     author: 'Judit Polgar'
+  },
+  {
+    num: 6,
+    title: 'Mentes y Puños',
+    desc: 'El cruce definitivo entre ajedrez y boxeo. Martina entra al ring del Tablero de Hierro para enfrentar tácticas poco limpias y aprender el verdadero significado del combate.',
+    quote: '"El ajedrez es la guerra sobre un tablero. El objetivo es aplastar la mente del oponente."',
+    author: 'Bobby Fischer'
   }
 ];
 
