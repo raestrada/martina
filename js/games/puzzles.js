@@ -4,7 +4,7 @@
 (function() {
   class PuzzlesGame {
     constructor() {
-      // 1. Puzzle Database (8 Puzzles: 2x M1, 2x M2, 2x M3, 2x M4)
+      // 1. Puzzle Database
       this.puzzles = [
         {
           id: 'p1',
@@ -16,7 +16,7 @@
           character: 'peoncito',
           quotes: {
             greeting: '¡Mira esto! El rey oponente no se abrochó bien el cinturón. ¡Mate en uno!',
-            success: '¡Eso es! ¡El pasillo quedó completamente sellado!', // M1 solved is immediate success
+            success: '¡Eso es! ¡El pasillo quedó completamente sellado!',
             fail: '¡No! Mi bigote falso se despegó del susto con esa jugada. ¡Prueba otra vez!',
             solved: '¡Excelente! Has encontrado el mate escolar perfecto.'
           }
@@ -34,6 +34,66 @@
             success: '¡Eso es! ¡El pasillo quedó completamente sellado!',
             fail: '¡No! Le diste aire para escapar. ¡Prueba otra vez!',
             solved: '¡Gran trabajo! Los peones del oponente lo atraparon.'
+          }
+        },
+        {
+          id: 'p9',
+          difficulty: 1,
+          title: 'El Pasillo Lateral',
+          desc: 'El rey oponente está atrapado en la banda por tu peón de a7. ¡Remata la partida con tu torre!',
+          fen: 'k7/P1R5/1K6/8/8/8/8/8 w - - 0 1',
+          solution: ['c7c8'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Cuidado con la retaguardia! El rey negro está atrapado contra la banda. ¡Atrápalo!',
+            success: '¡Sí! ¡Directo al calabozo de la octava fila!',
+            fail: '¡Ups! Eso le dio una casilla de escape. ¡Intenta de nuevo!',
+            solved: '¡Mate del pasillo lateral! Simple y demoledor.'
+          }
+        },
+        {
+          id: 'p10',
+          difficulty: 1,
+          title: 'Dama al Acecho',
+          desc: 'El rey negro está arrinconado. Tu rey le quita las casillas de escape. ¡La dama da el golpe final!',
+          fen: '7k/8/5K2/8/8/8/8/7Q w - - 0 1',
+          solution: ['h1g7'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Qué rey tan solitario! Terminemos con su miseria en una sola jugada.',
+            success: '¡Eso es! El rey negro ya no puede correr.',
+            fail: '¡Ay! Le diste espacio para respirar. ¡Prueba otra vez!',
+            solved: '¡Excelente! El beso de la dama apoyado por nuestro rey.'
+          }
+        },
+        {
+          id: 'p11',
+          difficulty: 1,
+          title: 'El Beso del Peón',
+          desc: 'La torre blanca aprovecha la última fila descubierta mientras el rey oponente está bloqueado.',
+          fen: 'k7/P7/1K6/6P1/8/8/8/7R w - - 0 1',
+          solution: ['h1h8'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Hola! Mi primo me dijo que las torres en columnas abiertas son devastadoras. ¡Pruébalo!',
+            success: '¡Pum! La torre entra con todo.',
+            fail: 'Eso no fue mate. ¡Vuelve a apuntar!',
+            solved: '¡Genial! La torre en la octava fila no perdona.'
+          }
+        },
+        {
+          id: 'p12',
+          difficulty: 1,
+          title: 'El Alfil Silencioso',
+          desc: 'El rey oponente está encerrado por tu rey y tu peón. ¡Despliega el alfil para dar el golpe final!',
+          fen: 'k7/P7/2K5/8/8/8/8/2B5 w - - 0 1',
+          solution: ['c1b2'],
+          character: 'alfil',
+          quotes: {
+            greeting: 'Una diagonal, un objetivo. Encuentra el ángulo perfecto.',
+            success: '¡Geometría pura! El rey no tiene a dónde ir.',
+            fail: 'Ese ángulo no apunta al rey. ¡Prueba otra vez!',
+            solved: '¡Precioso mate! El alfil exiliado demuestra que una diagonal basta.'
           }
         },
         {
@@ -67,6 +127,66 @@
           }
         },
         {
+          id: 'p13',
+          difficulty: 2,
+          title: 'La Doble Torre en Fila',
+          desc: 'Dos torres coordinadas presionando la columna abierta. Penetra en la octava fila.',
+          fen: 'r5k1/pp3ppp/2n5/3q2N1/8/2B5/PP3PPP/R3R1K1 w - - 0 1',
+          solution: ['e1e8', 'r8e8', 'a1e8'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¿Dos torres son mejor que una? Demuéstramelo entrando en la octava fila.',
+            success: '¡Bien! El rival tuvo que capturar, ahora entra con la segunda.',
+            fail: 'No, no. Así perderás la iniciativa. ¡Prueba otra vez!',
+            solved: '¡Jaque mate! Las torres dobladas en la octava fila son letales.'
+          }
+        },
+        {
+          id: 'p14',
+          difficulty: 2,
+          title: 'El Sacrificio de Morphy',
+          desc: 'Inspirado en la famosa partida de Paul Morphy en la Ópera de París. Sacrifica tu dama para desviar al caballo.',
+          fen: '4kb1r/p2n1ppp/4q3/4p1B1/4P3/1Q6/PPP2PPP/2KR4 w k - 0 1',
+          solution: ['b3b8', 'd7b8', 'd1d8'],
+          character: 'martina',
+          quotes: {
+            greeting: '¡Esta posición es clásica! Paul Morphy la jugó en la Ópera de París. ¿Puedes ver el sacrificio?',
+            success: '¡Increíble! Sacrificaste la dama para desviar al caballo protector.',
+            fail: 'Morphy nunca habría jugado eso. ¡Busca una jugada más enérgica!',
+            solved: '¡Sí! Un mate de ópera legendario. ¡Gran visión!'
+          }
+        },
+        {
+          id: 'p15',
+          difficulty: 2,
+          title: 'La Infiltración de la Octava',
+          desc: 'El oponente protege la octava fila con su torre. Sacrifica tu primera torre para sobrecargar su defensa.',
+          fen: 'r2r2k1/ppp2ppp/8/8/8/8/PP3PPP/3RR1K1 w - - 0 1',
+          solution: ['d1d8', 'd8d8', 'e1e8'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Fuerza doblada! Entra en d8 y prepárate para el golpe final.',
+            success: '¡Exacto! El oponente mordió el anzuelo. ¡Ahora remata!',
+            fail: 'No, no. Mantén las torres en la columna. ¡Intenta otra vez!',
+            solved: '¡Espectacular! La sobrecarga de la octava fila funcionó a la perfección.'
+          }
+        },
+        {
+          id: 'p16',
+          difficulty: 2,
+          title: 'El Bloqueo de la Dama',
+          desc: 'La dama oponente intenta defender a su rey desde el centro. Fuérzala a bloquear a su propio rey.',
+          fen: '6k1/5ppp/8/4q3/8/8/5PPP/3R2K1 w - - 0 1',
+          solution: ['d1d8', 'e5e8', 'd8e8'],
+          character: 'caballo',
+          quotes: {
+            greeting: '¡Un salto directo a la yugular! Presiona el pasillo.',
+            success: '¡Eso es! La dama tuvo que interponerse. ¡Acaba con ella!',
+            fail: 'Ese movimiento no obliga a la dama a retroceder. ¡Prueba otra vez!',
+            solved: '¡Excelente! La dama enemiga se convirtió en el escudo de su propia perdición.'
+          }
+        },
+        {
           id: 'p5',
           difficulty: 3,
           title: 'La Coz Completa',
@@ -97,6 +217,51 @@
           }
         },
         {
+          id: 'p17',
+          difficulty: 3,
+          title: 'La Sobrecarga de la Columna',
+          desc: 'El rey oponente está encerrado. Usa tu dama y torre coordinadas para presionar d8 y romper la defensa.',
+          fen: '2r1r1k1/5ppp/8/8/8/8/PP3PPP/Q2R2K1 w - - 0 1',
+          solution: ['q1d4', 'e8d8', 'd1d8', 'c8d8', 'd4d8'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡La coordinación de piezas pesadas es un arte! Ataca d8.',
+            success: '¡Excelente! El oponente bloqueó con su torre. Ahora inicia el cambio.',
+            fail: 'Ese movimiento no crea la presión necesaria en d8. ¡Prueba otra vez!',
+            solved: '¡Extraordinario! Has penetrado la línea defensiva con elegancia.'
+          }
+        },
+        {
+          id: 'p18',
+          difficulty: 3,
+          title: 'El Gancho del Caballo',
+          desc: 'Usa tu caballo para dar un doble, desviar las defensas y despejar el pasillo.',
+          fen: '6k1/5ppp/6q1/3N4/8/8/PP3PPP/4R1K1 w - - 0 1',
+          solution: ['d5e7', 'g8h8', 'e7g6', 'h7g6', 'e1e8'],
+          character: 'caballo',
+          quotes: {
+            greeting: '¡Un salto al corazón de su defensa! Busca el doble de caballo.',
+            success: '¡Perfecto! El rey tuvo que moverse. Ahora captura la dama con jaque.',
+            fail: 'Ese salto no crea el peligro inmediato necesario. ¡Prueba otra vez!',
+            solved: '¡Sublime! Eliminaste a la dama defensora y diste mate en el pasillo.'
+          }
+        },
+        {
+          id: 'p20',
+          difficulty: 3,
+          title: 'La Batería de la Fila F',
+          desc: 'Tu dama y tu torre están alineadas en la columna F. Sacrifica tu dama para abrir la columna.',
+          fen: '6k1/5ppp/8/8/8/8/PP3QPP/5R1K w - - 0 1',
+          solution: ['f2f7', 'f8f7', 'f1f7', 'g8h8', 'f7f8'],
+          character: 'alfil',
+          quotes: {
+            greeting: '¡La columna F es tu autopista! Lanza el ataque con la dama.',
+            success: '¡Muy bien! Capturó con su torre. Ahora entra con la tuya con jaque.',
+            fail: 'No, no. Tienes que forzar la columna. ¡Intenta de nuevo!',
+            solved: '¡Extraordinario! Has completado la batería F con total precisión.'
+          }
+        },
+        {
           id: 'p7',
           difficulty: 4,
           title: 'El Dilema del Rey',
@@ -124,6 +289,36 @@
             success: '¡Eso es! El sacrificio celestial abrió la columna. Entra con la torre.',
             fail: 'Esa jugada no tiene la fuerza celestial necesaria. ¡Vuelve a intentarlo!',
             solved: '¡Increíble! Has resuelto el mate en cuatro celestial con total maestría.'
+          }
+        },
+        {
+          id: 'p21',
+          difficulty: 4,
+          title: 'El Sacrificio de la Octava Fila',
+          desc: 'Una combinación táctica de nivel maestro. Sacrifica tu caballo y dama para desviar a los defensores.',
+          fen: 'r1b2r1k/pp4pp/2n5/2p1Np2/2B5/8/PP3PPP/3RR1K1 w - - 0 1',
+          solution: ['e5f7', 'f8f7', 'd1d8', 'c6d8', 'e1e8', 'f7f8', 'e1f8'],
+          character: 'martina',
+          quotes: {
+            greeting: '¡Esta combinación es de nivel de Gran Maestro! Empieza con el salto de caballo.',
+            success: '¡Perfecto! Capturó con la torre. Ahora desvía al caballo con la dama.',
+            fail: 'Esa jugada no fuerza el desvío. ¡Busca el jaque continuo!',
+            solved: '¡Sublime! Un mate de desviación magistral en cuatro jugadas.'
+          }
+        },
+        {
+          id: 'p22',
+          difficulty: 4,
+          title: 'El Torbellino del Caballo',
+          desc: 'Tu caballo y tu alfil dominan el flanco de rey. Lanza una ofensiva coordinada para desmantelar la defensa oponente.',
+          fen: 'r1bq1r1k/pp4pp/2n5/2p1N3/2B5/8/PP3PPP/3RR1K1 w - - 0 1',
+          solution: ['e5f7', 'f8f7', 'd1d8', 'c6d8', 'e1e8', 'f7f8', 'e1f8'],
+          character: 'sombra',
+          quotes: {
+            greeting: 'El caballo inicia el torbellino. Ataca f7.',
+            success: '¡Excelente! Capturó con torre. Ahora desvía a sus piezas con la dama.',
+            fail: 'Ese no es el camino del torbellino. ¡Intenta de nuevo!',
+            solved: '¡Asombroso! Has completado el torbellino en cuatro movimientos magistrales.'
           }
         }
       ];
