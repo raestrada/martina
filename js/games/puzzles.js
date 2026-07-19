@@ -56,8 +56,8 @@
           difficulty: 1,
           title: 'Dama al Acecho',
           desc: 'El rey negro está arrinconado. Tu rey le quita las casillas de escape. ¡La dama da el golpe final!',
-          fen: '7k/8/5K2/8/8/8/8/7Q w - - 0 1',
-          solution: ['h1g7'],
+          fen: '7k/8/5K2/8/8/8/8/6Q1 w - - 0 1',
+          solution: ['g1g7'],
           character: 'reinangra',
           quotes: {
             greeting: '¡Qué rey tan solitario! Terminemos con su miseria en una sola jugada.',
