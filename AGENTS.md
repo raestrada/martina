@@ -195,7 +195,43 @@ cuentos/
 css/                    # CSS estático (copiado a _site/ tal cual)
 js/                     # JS estático (copiado a _site/ tal cual)
 assets/                 # Imágenes, video, audio (copiado a _site/ tal cual)
+scripts/puzzles_db/     # BD de puzzles de mate verificados (ver sección "Puzzles de táctica")
+  mates_verificados.json  # 730 puzzles de partidas reales verificados con Stockfish
+  README.md               # Flujo para agregar más puzzles
+test_puzzle.js          # Verificador de puzzles (OBLIGATORIO correrlo al tocar puzzles)
 ```
+
+## Puzzles de táctica (sección "Desafíos de Táctica")
+
+La página `problemas.njk` carga `js/games/puzzles.js`, que contiene la base de datos
+de puzzles (`this.puzzles`, con `id`, `difficulty`, `title`, `desc`, `fen`,
+`solution` en UCI, `character` y `quotes`).
+
+### Regla de oro: ningún puzzle se publica sin pasar el verificador
+
+Más de la mitad de los puzzles escritos "a mano" resultaron irresolubles
+(rey en jaque inicial oculto, defensas negras no consideradas, torres moviendo
+en diagonal, mates más rápidos que el anunciado, etc.). Por eso existe
+`test_puzzle.js`:
+
+```bash
+node test_puzzle.js            # verifica TODOS los puzzles (FEN legal, solución legal
+                               # y termina en mate, mate forzado exacto en N según Stockfish)
+node test_puzzle.js --id p14   # verifica uno solo, con la variante principal
+node test_puzzle.js --pv       # imprime la variante principal de cada uno
+```
+
+El test usa `js/chess-engine.js` (reglas) + `js/stockfish.js`/`.wasm` (oráculo de
+mate forzado, ejecutado en Node con un shim de `postMessage`).
+
+### Agregar más puzzles desde la BD verificada
+
+Hay **730 puzzles de partidas reales ya verificados** en
+`scripts/puzzles_db/mates_verificados.json` (fuente: wtharvey.com), con campo
+`used` para saber cuáles ya están publicados. El flujo completo (elegir, crear la
+entrada curada en español, verificar, marcar como usado) está documentado en
+`scripts/puzzles_db/README.md`. Seguirlo siempre; nunca inventar FENs a mano sin
+pasar el test después.
 
 ### Cómo crear un cuento nuevo
 

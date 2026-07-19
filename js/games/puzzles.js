@@ -4,13 +4,15 @@
 (function() {
   class PuzzlesGame {
     constructor() {
-      // 1. Puzzle Database (34 Puzzles: 6x M1, 12x M2, 9x M3, 7x M4)
+      // 1. Puzzle Database (44 Puzzles: 6x M1, 12x M2, 14x M3, 12x M4)
+      // Fuentes de partidas reales: ver scripts/puzzles_db/mates_verificados.json
+      // REGLA: ningún puzzle se publica sin pasar `node test_puzzle.js`
       this.puzzles = [
         {
           id: 'p1',
           difficulty: 1,
           title: 'El Mate Escolar',
-          desc: 'Martina y Peoncito están estudiando la apertura. El oponente se descuidó... ¡gana de inmediato!',
+          desc: 'Martina y Peoncito están estudiando la apertura. ¡El oponente se descuidó y puedes ganar al instante!',
           fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4',
           solution: ['h5f7'],
           character: 'peoncito',
@@ -86,8 +88,8 @@
           difficulty: 1,
           title: 'El Alfil Silencioso',
           desc: 'El rey oponente está encerrado por tu rey y tu peón. ¡Despliega el alfil para dar el golpe final!',
-          fen: 'k7/P7/2K5/8/8/8/8/2B5 w - - 0 1',
-          solution: ['c1b2'],
+          fen: 'k7/P1P5/1K6/8/8/3B4/8/8 w - - 0 1',
+          solution: ['d3e4'],
           character: 'alfil',
           quotes: {
             greeting: 'Una diagonal, un objetivo. Encuentra el ángulo perfecto.',
@@ -101,8 +103,8 @@
           difficulty: 2,
           title: 'Atracción al Pasillo',
           desc: 'El oponente piensa que su dama defiende la última fila, pero puedes forzarla a deambular.',
-          fen: '6k1/5ppp/q7/8/8/8/3R4/3Q2K1 w - - 0 1',
-          solution: ['d2d8', 'a6d8', 'd1d8'],
+          fen: '6k1/5ppp/1q6/8/8/8/3R1PPP/3Q2K1 w - - 0 1',
+          solution: ['d2d8', 'b6d8', 'd1d8'],
           character: 'reinangra',
           quotes: {
             greeting: '¡Alergia al mate! Pero hoy te perdonaré si resuelves este mate en dos pasos.',
@@ -116,8 +118,8 @@
           difficulty: 2,
           title: 'El Mate de la Coz',
           desc: 'Un mate espectacular donde el rey enemigo es asfixiado por sus propias piezas defensoras.',
-          fen: '5r1k/5ppp/7N/8/8/2Q5/8/6K1 w - - 0 1',
-          solution: ['c3g8', 'f8g8', 'h6f7'],
+          fen: '5r1k/6pp/7N/8/2Q5/8/8/6K1 w - - 0 1',
+          solution: ['c4g8', 'f8g8', 'h6f7'],
           character: 'caballo',
           quotes: {
             greeting: '¡Caballo de Ŋ listo! Aquí hay un salto en L genial para asfixiar al rey.',
@@ -131,8 +133,8 @@
           difficulty: 2,
           title: 'La Doble Torre en Fila',
           desc: 'Dos torres coordinadas presionando la columna abierta. Penetra en la octava fila.',
-          fen: 'r5k1/pp3ppp/2n5/3q2N1/8/2B5/PP3PPP/R3R1K1 w - - 0 1',
-          solution: ['e1e8', 'r8e8', 'a1e8'],
+          fen: 'r5k1/5ppp/8/8/8/8/PP2RPPP/4R1K1 w - - 0 1',
+          solution: ['e2e8', 'a8e8', 'e1e8'],
           character: 'reinangra',
           quotes: {
             greeting: '¿Dos torres son mejor que una? Demuéstramelo entrando en la octava fila.',
@@ -161,8 +163,8 @@
           difficulty: 2,
           title: 'La Infiltración de la Octava',
           desc: 'El oponente protege la octava fila con su torre. Sacrifica tu primera torre para sobrecargar su defensa.',
-          fen: 'r2r2k1/ppp2ppp/8/8/8/8/PP3PPP/3RR1K1 w - - 0 1',
-          solution: ['d1d8', 'd8d8', 'e1e8'],
+          fen: 'r2r2k1/ppp2ppp/8/8/8/8/PP1R1PPP/3R2K1 w - - 0 1',
+          solution: ['d2d8', 'a8d8', 'd1d8'],
           character: 'peoncito',
           quotes: {
             greeting: '¡Fuerza doblada! Entra en d8 y prepárate para el golpe final.',
@@ -191,8 +193,8 @@
           difficulty: 2,
           title: 'La Cortina del Alfil',
           desc: 'El rey contrario está expuesto. Penetra su línea defensiva forzando el bloqueo de su dama.',
-          fen: '6k1/5ppp/8/8/8/8/1q3PPP/3R1BK1 w - - 0 1',
-          solution: ['d1d8', 'b2e8', 'd8e8'],
+          fen: '6k1/5ppp/8/1q6/8/8/5PPP/3R1BK1 w - - 0 1',
+          solution: ['d1d8', 'b5e8', 'd8e8'],
           character: 'alfil',
           quotes: {
             greeting: '¡Atrás del muro! El rey contrario está expuesto. Penetra su línea defensiva.',
@@ -206,8 +208,8 @@
           difficulty: 2,
           title: 'El Relevo de Torres',
           desc: 'El oponente defiende la octava fila con su torre. Sacrifica la tuya para desviar su defensa y rematar.',
-          fen: '4r1k1/5ppp/8/8/8/8/1Q3PPP/4R1K1 w - - 0 1',
-          solution: ['e1xe8', 'e8xe8', 'b2e8'],
+          fen: 'r3r1k1/5ppp/8/8/Q7/8/PP3PPP/4R1K1 w - - 0 1',
+          solution: ['e1e8', 'a8e8', 'a4e8'],
           character: 'reinangra',
           quotes: {
             greeting: '¡Hora de la táctica del relevo! Ataca en e8.',
@@ -236,8 +238,8 @@
           difficulty: 2,
           title: 'El Escudo de la Dama',
           desc: 'La dama oponente está lejos, pero puede volar a e8 para defender. Fuérzala a bloquear.',
-          fen: '6k1/5ppp/q7/8/8/8/PP3PPP/3R2K1 w - - 0 1',
-          solution: ['d1d8', 'q6e8', 'd8e8'],
+          fen: '6k1/5ppp/4q3/8/8/8/PP3PPP/3R2K1 w - - 0 1',
+          solution: ['d1d8', 'e6e8', 'd8e8'],
           character: 'martina',
           quotes: {
             greeting: '¡La octava fila está débil! Ataca con tu torre.',
@@ -251,7 +253,7 @@
           difficulty: 2,
           title: 'El Bloqueo del Caballo',
           desc: 'El caballo negro intenta defender desde g6. Oblígalo a bloquear su propio rey.',
-          fen: 'r5k1/pp3ppp/6n1/3N4/8/8/PP3PPP/4R1K1 w - - 0 1',
+          fen: '6k1/pp1N1ppp/6n1/8/8/8/PP3PPP/4R1K1 w - - 0 1',
           solution: ['e1e8', 'g6f8', 'e8f8'],
           character: 'caballo',
           quotes: {
@@ -267,7 +269,7 @@
           title: 'El Doblado en la Columna D',
           desc: 'Tus dos torres dominan la columna D. Sacrifica la primera para abrir paso a la segunda.',
           fen: 'r5k1/5ppp/8/8/8/8/PP1R1PPP/3R2K1 w - - 0 1',
-          solution: ['d1d8', 'a8d8', 'd2d8'],
+          solution: ['d2d8', 'a8d8', 'd1d8'],
           character: 'peoncito',
           quotes: {
             greeting: '¡Torres alineadas y listas! Lanza el primer golpe en d8.',
@@ -281,8 +283,8 @@
           difficulty: 3,
           title: 'La Coz Completa',
           desc: 'El mate de la coz completo. Atraes al rey al rincón, sacrificas la dama y dejas al rey sin aire.',
-          fen: 'r4r1k/1p3Npp/8/8/8/8/1Q3PPP/R5RK w - - 0 1',
-          solution: ['f7h6', 'g8h8', 'b2g8', 'f8g8', 'h6f7'],
+          fen: 'r4rk1/1p3Npp/8/8/2Q5/8/5PPP/R5RK w - - 0 1',
+          solution: ['f7h6', 'g8h8', 'c4g8', 'f8g8', 'h6f7'],
           character: 'alfil',
           quotes: {
             greeting: 'Alfil Exiliado reportándose. Este es un mate en tres muy geométrico. Piensa bien.',
@@ -294,226 +296,376 @@
         {
           id: 'p6',
           difficulty: 3,
-          title: 'La Desviación de la Torre',
-          desc: 'Desvía la pieza defensora de la octava fila sacrificando tu dama para penetrar con las torres.',
-          fen: '5r1k/5ppp/8/8/8/8/4R3/Q3R2K w - - 0 1',
-          solution: ['a1a8', 'f8a8', 'e1e8', 'a8e8', 'e2e8'],
+          title: 'El Mate de Anastasia',
+          desc: 'El caballo encierra al rey en la esquina, la dama se sacrifica en h7 y la torre remata por la columna h. ¡Un clásico!',
+          fen: '5rk1/5ppp/8/5N2/8/8/2Q5/1K1R4 w - - 0 1',
+          solution: ['f5e7', 'g8h8', 'c2h7', 'h8h7', 'd1h1'],
           character: 'martina',
           quotes: {
-            greeting: '¡Hola, soy Martina! Este es un problema muy bonito. A Judith Polgar le encantaba desviar las piezas defensoras.',
-            success: '¡Buen camino! La torre enemiga fue desviada, entra con tu primera torre.',
-            fail: 'Esa jugada no desvía a la torre protectora. ¡Busca una jugada que la obligue a moverse!',
-            solved: '¡Mate del pasillo ejecutado con éxito! Judith estaría orgullosa de tu visión táctica.'
+            greeting: '¡Hola, soy Martina! Este es el famoso Mate de Anastasia. A Judith Polgar le encantaba: caballo, sacrificio de dama y torre final.',
+            success: '¡Buen camino! El rey quedó encerrado. Ahora el sacrificio de dama en h7.',
+            fail: 'Esa jugada no encierra al rey. ¡Busca el salto de caballo que le quita el aire!',
+            solved: '¡Mate de Anastasia completado! Caballo, dama y torre en perfecta armonía. Judith estaría orgullosa.'
           }
         },
         {
           id: 'p17',
           difficulty: 3,
-          title: 'La Sobrecarga de la Columna',
-          desc: 'El rey oponente está encerrado. Usa tu dama y torre coordinadas para presionar d8 y romper la defensa.',
-          fen: '2r1r1k1/5ppp/8/8/8/8/PP3PPP/Q2R2K1 w - - 0 1',
-          solution: ['q1d4', 'e8d8', 'd1d8', 'c8d8', 'd4d8'],
+          title: 'La Escalera de Torres',
+          desc: 'Las dos torres bajan al rey enemigo escalón por escalón hasta el borde del tablero. ¡El mate de la escalera!',
+          fen: '8/8/8/8/R7/6k1/1R6/K7 w - - 0 1',
+          solution: ['b2b3', 'g3f2', 'a4a2', 'f2f1', 'b3b1'],
           character: 'reinangra',
           quotes: {
-            greeting: '¡La coordinación de piezas pesadas es un arte! Ataca d8.',
-            success: '¡Excelente! El oponente bloqueó con su torre. Ahora inicia el cambio.',
-            fail: 'Ese movimiento no crea la presión necesaria en d8. ¡Prueba otra vez!',
-            solved: '¡Extraordinario! Has penetrado la línea defensiva con elegancia.'
+            greeting: '¡El mate de la escalera! Dos torres, un rey, y un viaje sin retorno hasta el borde.',
+            success: '¡Excelente! El rey bajó un escalón. Ahora la otra torre sigue la cadena.',
+            fail: 'Las torres deben alternarse cubriendo la fila anterior. ¡Prueba otra vez!',
+            solved: '¡Extraordinario! Escalón por escalón, el rey llegó al final de la escalera.'
           }
         },
         {
           id: 'p18',
           difficulty: 3,
-          title: 'El Gancho del Caballo',
-          desc: 'Usa tu caballo para dar un doble, desviar las defensas y despejar el pasillo.',
-          fen: '6k1/5ppp/6q1/3N4/8/8/PP3PPP/4R1K1 w - - 0 1',
-          solution: ['d5e7', 'g8h8', 'e7g6', 'h7g6', 'e1e8'],
-          character: 'caballo',
+          title: 'La Sobrecarga de la Columna',
+          desc: 'Tres piezas pesadas contra dos: sacrifica tus dos torres para desviar a los defensores y que tu dama remate en d8.',
+          fen: '2r3k1/5ppp/1q6/Q7/8/8/PP1R1PPP/3R2K1 w - - 0 1',
+          solution: ['d2d8', 'b6d8', 'd1d8', 'c8d8', 'a5d8'],
+          character: 'reinangra',
           quotes: {
-            greeting: '¡Un salto al corazón de su defensa! Busca el doble de caballo.',
-            success: '¡Perfecto! El rey tuvo que moverse. Ahora captura la dama con jaque.',
-            fail: 'Ese salto no crea el peligro inmediato necesario. ¡Prueba otra vez!',
-            solved: '¡Sublime! Eliminaste a la dama defensora y diste mate en el pasillo.'
+            greeting: '¡La columna d es un campo de batalla! Ellos son tres contra dos... pero el que ataca último, gana.',
+            success: '¡Bien! Su dama mordió el anzuelo. Ahora la segunda torre.',
+            fail: 'Debes lanzar las torres a d8 en orden, desviando a sus defensores. ¡Prueba otra vez!',
+            solved: '¡Sobrecarga perfecta! La dama entró en d8 como una reina... mejor que yo, solo por hoy.'
           }
         },
         {
           id: 'p20',
           difficulty: 3,
-          title: 'La Batería de la Fila F',
-          desc: 'Tu dama y tu torre están alineadas en la columna F. Sacrifica tu dama para abrir la columna.',
-          fen: '6k1/5ppp/8/8/8/8/PP3QPP/5R1K w - - 0 1',
-          solution: ['f2f7', 'f8f7', 'f1f7', 'g8h8', 'f7f8'],
+          title: 'La Inmortal de Anderssen',
+          desc: 'El final de la Partida Inmortal (Londres, 1851): jaque de caballo, sacrificio de dama y mate de alfil. Adolf Anderssen lo hizo legendario.',
+          fen: 'r1b1k1nr/p2p1ppp/n2B4/1p1NPN1P/6P1/3P1Q2/P1P1K3/q5b1 w kq - 1 21',
+          solution: ['f5g7', 'e8d8', 'f3f6', 'g8f6', 'd6e7'],
           character: 'alfil',
           quotes: {
-            greeting: '¡La columna F es tu autopista! Lanza el ataque con la dama.',
-            success: '¡Muy bien! Capturó con su torre. Ahora entra con la tuya con jaque.',
-            fail: 'No, no. Tienes que forzar la columna. ¡Intenta de nuevo!',
-            solved: '¡Extraordinario! Has completado la batería F con total precisión.'
+            greeting: 'La Partida Inmortal. El caballo entra en g7 arrastrando al rey a su destino. Observa y aprende.',
+            success: '¡Bien! El rey cayó en la red. Ahora el sacrificio de dama que cerró la historia.',
+            fail: 'El primer paso de la Inmortal es un jaque de caballo en g7. ¡Recalcula tu geometría!',
+            solved: '¡Mate de alfil en e7! La Inmortal termina como debe terminar: con geometría pura.'
           }
         },
         {
           id: 'p29',
           difficulty: 3,
-          title: 'La Infiltración de la Torre F',
-          desc: 'Sacrifica tu dama en f7 para forzar a la torre contraria a colocarse en una posición vulnerable.',
-          fen: '5r1k/5ppp/8/8/8/8/PP3QPP/4R2K w - - 0 1',
-          solution: ['f2xf7', 'f8xf7', 'e1e8', 'f7f8', 'e8xf8'],
+          title: 'La Trampa de la Dama Valiente',
+          desc: 'De la partida Evans vs MacDonnell (Londres, 1826): el alfil abre el camino y la dama se sacrifica en e6 para el mate final.',
+          fen: 'r3k2r/ppp2Npp/1b5n/4p2b/2B1P2q/BQP2P2/P5PP/RN5K w kq - 1 0',
+          solution: ['c4b5', 'c7c6', 'b3e6', 'h4e7', 'e6e7'],
           character: 'reinangra',
           quotes: {
-            greeting: '¡La columna F es la clave! Sacrifica tu dama sin piedad.',
-            success: '¡Perfecto! Capturó con la torre. Ahora entra con jaque en e8.',
-            fail: 'Ese movimiento no abre la octava fila. ¡Prueba otra vez!',
-            solved: '¡Sublime! Has despejado el camino para el mate de torre perfecto.'
+            greeting: '¡El rey negro pasea por el centro! Primero el alfil a b5, luego la dama vuela a e6.',
+            success: '¡Bien! El peón bloqueó. Ahora el jaque de dama en e6 que no se puede capturar.',
+            fail: 'Empieza con el jaque del alfil en b5. ¡La dama vendrá después!',
+            solved: '¡Mate de dama en e7! La valentía de la dama fue recompensada.'
           }
         },
         {
           id: 'p30',
           difficulty: 3,
-          title: 'La Maniobra de la Torre Ascendente',
-          desc: 'Eleva tu torre por la tercera fila para dar un hermoso mate coordinado con tu caballo en f6.',
-          fen: 'r4r1k/1p3p1p/2n2N2/8/8/8/PP4PP/4R1K1 w - - 0 1',
-          solution: ['e1e3', 'f8d8', 'e3h3', 'h8g7', 'h3h7'],
+          title: 'El Sacrificio de la Torre en h7',
+          desc: 'De la partida Harrwitz vs Horwitz (Londres, 1846): sacrifica la torre en h7, trae la segunda y remata con la dama.',
+          fen: '3q1r1k/2p4p/1p1pBrp1/p2Pp3/2PnP3/5PP1/PP1Q2K1/5R1R w - - 1 0',
+          solution: ['h1h7', 'h8h7', 'f1h1', 'h7g7', 'd2h6'],
           character: 'caballo',
           quotes: {
-            greeting: '¡Eleva el juego! Sube la torre a la tercera fila.',
-            success: '¡Perfecto! El rival intentó abrir escape con su torre. Ahora amenaza h7.',
-            fail: 'Ese movimiento no eleva la torre para el ataque lateral. ¡Intenta de nuevo!',
-            solved: '¡Jaque mate lateral! La torre y el caballo en f6 coordinaron a la perfección.'
+            greeting: '¡La torre se lanza a h7! Si el rey la acepta, la columna h será su tumba.',
+            success: '¡Perfecto! El rey aceptó el regalo envenenado. Entra la segunda torre con jaque.',
+            fail: 'El primer paso es el sacrificio de torre en h7. ¡Valentía!',
+            solved: '¡Mate de dama en h6! Las torres gemelas abrieron la autopista del mate.'
           }
         },
         {
           id: 'p31',
           difficulty: 3,
-          title: 'El Sacrificio de la Dama y Torre en C8',
-          desc: 'Usa tus torres dobladas y dama para desviar todas las defensas del rival de la octava fila.',
-          fen: 'r1b1r1k1/pp3ppp/8/8/8/8/PP3PPP/Q1RR2K1 w - - 0 1',
-          solution: ['c1c8', 'e8xc8', 'a1xc8', 'a8xc8', 'd1d8'],
+          title: 'La Caza del Rey de Morphy',
+          desc: 'De la partida Morphy vs NN (Nueva Orleans, 1858): la torre y la dama persiguen al rey por el borde del tablero hasta el mate.',
+          fen: '3r4/pp5Q/B7/k7/3q4/2b5/P4PPP/1R4K1 w - - 1 0',
+          solution: ['b1b5', 'a5a4', 'h7c2', 'a4a3', 'c2b3'],
           character: 'reinangra',
           quotes: {
-            greeting: '¡Un asalto masivo en c8! Sacrifica la torre primero.',
-            success: '¡Excelente! Capturó con su primera torre. Ahora sacrifica tu dama en c8.',
-            fail: 'Eso no vacía la octava fila. ¡Prueba otra vez!',
-            solved: '¡Sublime! La octava fila quedó completamente desprotegida para el mate final.'
+            greeting: '¡El rey negro pasea por la banda! La torre lo empuja y la dama lo acorrala.',
+            success: '¡Bien! El rey retrocedió. Ahora la dama entra en c2 con jaque.',
+            fail: 'Empieza con el jaque de torre en b5. ¡El rey no debe escapar!',
+            solved: '¡Mate de dama en b3! Morphy cazó al rey como en un safari.'
           }
         },
         {
           id: 'p32',
           difficulty: 3,
-          title: 'La Deflexión del Alfil',
-          desc: 'El rival defiende d8 con su torre y alfil. Sacrifica ambas torres para desviar a sus defensores.',
-          fen: 'r1b1r1k1/pp3ppp/8/8/8/8/PP1R1PPP/Q2R2K1 w - - 0 1',
-          solution: ['d1d8', 'e8xd8', 'd2xd8', 'c8xd8', 'a1xd8'],
+          title: 'El Rey Atrapado en la Esquina',
+          desc: 'De la partida Anderssen vs Falkbeer (Berlín, 1851): el rey enemigo corre hacia la esquina, pero la torre y el alfil le cierran la salida.',
+          fen: '8/2p3N1/6p1/5PB1/pp2Rn2/7k/P1p2K1P/3r4 w - - 1 0',
+          solution: ['e4e3', 'h3h2', 'g5f4', 'h2h1', 'e3h3'],
           character: 'martina',
           quotes: {
-            greeting: '¡A Judith Polgar le encantaba desviar defensores! Ataca d8.',
-            success: '¡Muy bien! Desviaste la torre. Ahora desvía al alfil.',
-            fail: 'Ese movimiento no mantiene la red de jaques. ¡Prueba otra vez!',
-            solved: '¡Impresionante! Has limpiado la octava fila para el jaque mate de la dama.'
+            greeting: '¡El rey rival intenta esconderse en la esquina! Empuja con el jaque de torre en e3.',
+            success: '¡Bien! El rey tomó el peón. Ahora el alfil entra en f4 con jaque.',
+            fail: 'Empieza con el jaque de torre en e3. ¡No dejes escapar al rey!',
+            solved: '¡Mate de torre en h3! Anderssen era un cazador de reyes implacable.'
           }
         },
         {
           id: 'p7',
           difficulty: 4,
-          title: 'El Dilema del Rey',
-          desc: 'Un ataque feroz de caballo y dama. El oponente debe elegir su destino... pero ambos caminos llevan al mate.',
-          fen: 'r1bq1r1k/pp4pp/2n5/2p1Np2/2B5/8/PP3PPP/R2QR1K1 w - - 0 1',
-          solution: ['e5f7', 'f8f7', 'd1d8', 'c6d8', 'e1e8', 'f7f8', 'e1f8'],
+          title: 'La Tormenta de la Columna H',
+          desc: 'De la partida Pitschel vs Anderssen (Leipzig, 1851): el peón abre la columna h, las torres se sacrifican y la dama remata. Mate en cuatro.',
+          fen: 'r5rk/2p1Nppp/3p3P/pp2p1P1/4P3/2qnPQK1/8/R6R w - - 1 0',
+          solution: ['h6g7', 'g8g7', 'h1h7', 'g7h7', 'f3f6', 'h7g7', 'a1h1'],
           character: 'sombra',
           quotes: {
-            greeting: 'Sombra del Ring aquí. La oscuridad cubre el tablero. Encuentra el mate en cuatro... si te atreves.',
-            success: 'Vas por el camino correcto de la sombra. Mantén la presión.',
-            fail: 'Te perdiste en la oscuridad. Vuelve a encender la luz y piensa de nuevo.',
-            solved: 'Impresionante. Viste todas las variantes de la sombra. Has ganado mis respetos.'
+            greeting: 'Sombra del Ring aquí. La tormenta empieza con el peón tomando g7. Cuatro golpes hasta el mate.',
+            success: 'La columna h se abrió. Las torres caen una tras otra. Sigue así.',
+            fail: 'Te perdiste en la tormenta. El peón toma g7 con jaque: ese es el primer paso.',
+            solved: 'La tormenta pasó y el rey cayó. Anderssen habría aplaudido esta red de mate.'
           }
         },
         {
           id: 'p8',
           difficulty: 4,
-          title: 'El Sacrificio Celestial',
-          desc: 'Usa la fuerza de tu dama y torre para acorralar al rey enemigo en el borde del tablero mediante un hermoso desvío.',
-          fen: 'r1b2r1k/pp3ppp/8/3N1b2/8/3B1R2/PPQ3PP/7K w - - 0 1',
-          solution: ['c2h7', 'h8h7', 'f3h3', 'f5h3', 'd3h3', 'h7g8', 'd5e7'],
+          title: 'La Red de la Dama y los Peones',
+          desc: 'De la partida Morphy vs Forde (Nueva Orleans, 1858): la dama empuja al rey hacia la red, los peones avanzan y el alfil cierra la trampa.',
+          fen: 'r1bqr3/ppp1B1kp/1b4p1/n2B4/3PQ1P1/2P5/P4P2/RN4K1 w - - 1 0',
+          solution: ['e4e5', 'g7h6', 'g4g5', 'h6h5', 'd5f3', 'c8g4', 'e5h2'],
           character: 'reinangra',
           quotes: {
-            greeting: 'La Reina Negra te desafía a un mate en cuatro. Sacrifica con elegancia celestial.',
-            success: '¡Eso es! El sacrificio celestial abrió la columna. Entra con la torre.',
-            fail: 'Esa jugada no tiene la fuerza celestial necesaria. ¡Vuelve a intentarlo!',
-            solved: '¡Increíble! Has resuelto el mate en cuatro celestial con total maestría.'
+            greeting: 'La Reina Negra te desafía: la dama empieza la caza en e5 y el rey no escapará de la red.',
+            success: '¡Eso es! El rey corre hacia la esquina. Los peones y el alfil completan la red.',
+            fail: 'La caza empieza con la dama en e5 dando jaque. ¡Inténtalo de nuevo!',
+            solved: '¡Red perfecta! Dama, peones y alfil tejieron juntos el mate en cuatro.'
           }
         },
         {
           id: 'p21',
           difficulty: 4,
-          title: 'El Sacrificio de la Octava Fila',
-          desc: 'Una combinación táctica de nivel maestro. Sacrifica tu caballo y dama para desviar a los defensores.',
-          fen: 'r1b2r1k/pp4pp/2n5/2p1Np2/2B5/8/PP3PPP/3RR1K1 w - - 0 1',
-          solution: ['e5f7', 'f8f7', 'd1d8', 'c6d8', 'e1e8', 'f7f8', 'e1f8'],
+          title: 'El Sempreverde de Anderssen',
+          desc: 'El final de la partida Sempreverde (Berlín, 1852): Anderssen sacrificó su dama y ganó con los dos alfiles. ¡Mate en cuatro legendario!',
+          fen: '1r2k1r1/pbppnp1p/1b3P2/8/Q7/B1PB1q2/P4PPP/3R2K1 w - - 0 21',
+          solution: ['a4d7', 'e8d7', 'd3f5', 'd7e8', 'f5d7', 'e8f8', 'a3e7'],
           character: 'martina',
           quotes: {
-            greeting: '¡Esta combinación es de nivel de Gran Maestro! Empieza con el salto de caballo.',
-            success: '¡Perfecto! Capturó con la torre. Ahora desvía al caballo con la dama.',
-            fail: 'Esa jugada no fuerza el desvío. ¡Busca el jaque continuo!',
-            solved: '¡Sublime! Un mate de desviación magistral en cuatro jugadas.'
+            greeting: '¡La partida Sempreverde de Anderssen! La dama se sacrifica en d7 y los alfiles hacen el resto.',
+            success: '¡Increíble! El rey capturó la dama. Ahora los alfiles empiezan su danza mortal.',
+            fail: 'Anderssen sacrificó la dama primero. ¡Busca ese jaque valiente en d7!',
+            solved: '¡El Sempreverde completo! Dama sacrificada y mate de alfiles. Así se escribe la historia.'
           }
         },
         {
           id: 'p22',
           difficulty: 4,
-          title: 'El Torbellino del Caballo',
-          desc: 'Tu caballo y tu alfil dominan el flanco de rey. Lanza una ofensiva coordinada para desmantelar la defensa oponente.',
-          fen: 'r1bq1r1k/pp4pp/2n5/2p1N3/2B5/8/PP3PPP/3RR1K1 w - - 0 1',
-          solution: ['e5f7', 'f8f7', 'd1d8', 'c6d8', 'e1e8', 'f7f8', 'e1f8'],
-          character: 'sombra',
+          title: 'El Legado de Philidor',
+          desc: 'El mate de la coz completo, igual que lo enseñó Philidor hace 250 años: caballo al ataque, rey a la esquina, sacrificio de dama y coz final.',
+          fen: '5r1k/5ppp/8/6N1/2Q5/8/8/6K1 w - - 0 1',
+          solution: ['g5f7', 'h8g8', 'f7h6', 'g8h8', 'c4g8', 'f8g8', 'h6f7'],
+          character: 'caballo',
           quotes: {
-            greeting: 'El caballo inicia el torbellino. Ataca f7.',
-            success: '¡Excelente! Capturó con torre. Ahora desvía a sus piezas con la dama.',
-            fail: 'Ese no es el camino del torbellino. ¡Intenta de nuevo!',
-            solved: '¡Asombroso! Has completado el torbellino en cuatro movimientos magistrales.'
+            greeting: '¡El legado de Philidor! Primero el jaque del caballo comiendo f7. ¡Que empiece el torbellino!',
+            success: '¡Perfecto! El rey salió y volvió a la esquina. Ahora la dama se sacrifica en g8.',
+            fail: 'El camino de Philidor empieza con el caballo tomando f7 con jaque. ¡Intenta de nuevo!',
+            solved: '¡El legado completo! El rey quedó asfixiado por sus propias piezas. ¡Coz perfecta!'
           }
         },
         {
           id: 'p33',
           difficulty: 4,
-          title: 'El Sacrificio de Desviación Triple',
-          desc: 'Una combinación de campeonato. Sacrifica tu dama y desvía al defensor de c8 con tus torres dobles.',
-          fen: '2r2rk1/pp3ppp/8/8/8/8/PP1R1QPP/3R2K1 w - - 0 1',
-          solution: ['f2xf7', 'f8xf7', 'd1d8', 'c8d8', 'd2d8', 'f7f8', 'd8xf8'],
+          title: 'La Escalera Larga',
+          desc: 'Dos torres persiguen al rey enemigo por todo el tablero, escalón por escalón, hasta el último rincón.',
+          fen: '8/8/8/8/R7/4k3/1R6/6K1 w - - 0 1',
+          solution: ['b2b3', 'e3d2', 'a4a2', 'd2c1', 'b3b5', 'c1d1', 'b5b1'],
           character: 'martina',
           quotes: {
-            greeting: '¡Esta es una combinación de nivel de campeonato! Sacrifica tu dama en f7 primero.',
-            success: '¡Sí! Ahora desvía a la torre de c8 con tu torre de d1.',
-            fail: 'Eso no mantiene la red de jaques. ¡Prueba otra vez!',
-            solved: '¡Soberbio! Has calculado todas las defensas del oponente y has dado mate en cuatro.'
+            greeting: '¡La escalera más larga! El rey intentará escabullirse, pero las torres no le darán ni un respiro.',
+            success: '¡Bien! El rey corre hacia la esquina. Las torres se turnan: una jaquea, la otra corta.',
+            fail: 'Las torres deben alternarse: una da jaque y la otra cubre la fila anterior. ¡Prueba otra vez!',
+            solved: '¡La escalera completa! El rey llegó al final del pasillo sin escapatoria.'
           }
         },
         {
           id: 'p34',
           difficulty: 4,
-          title: 'El Sacrificio de la Ópera en Cuatro',
-          desc: 'La Reina Negra te desafía a un mate en cuatro. Sacrifica la dama y abre la columna H con el alfil.',
-          fen: 'r1b2r1k/pp3ppp/8/3N1b2/8/3B1R2/PPQ3PP/6K1 w - - 0 1',
-          solution: ['c2h7', 'h8h7', 'f3h3', 'f5h3', 'd3h3', 'h7g8', 'd5e7'],
+          title: 'La Persecución del Rey Descubierto',
+          desc: 'De la partida Chigorin vs Shumov (San Petersburgo, 1876): las torres y el peón persiguen al rey por todo el centro hasta el mate.',
+          fen: 'r2r4/p1p2p1p/n5k1/1p5N/2p2R2/5N2/P1K3PP/5R2 w - - 1 0',
+          solution: ['f4f6', 'g6h5', 'g2g4', 'h5g4', 'f1g1', 'g4h5', 'g1g5'],
           character: 'reinangra',
           quotes: {
-            greeting: 'La Reina Negra te desafía a un mate en cuatro. Sacrifica con elegancia celestial.',
-            success: '¡Eso es! El sacrificio abrió la columna H. Eleva la torre.',
-            fail: 'Esa jugada no mantiene la red de jaques. ¡Vuelve a intentarlo!',
-            solved: '¡Increíble! Has resuelto el mate celestial en cuatro con total maestría.'
+            greeting: 'El rey negro pasea desnudo por el centro. La torre en f6 empieza la persecución.',
+            success: '¡Bien! El rey comió el caballo. Ahora el peón en g4 lo sigue empujando.',
+            fail: 'La persecución empieza con la torre a f6 con jaque. ¡No lo dejes respirar!',
+            solved: '¡Mate de torre en g5! Chigorin cazó al rey por todo el tablero.'
           }
         },
         {
           id: 'p35',
           difficulty: 4,
-          title: 'La Invasión de la Octava Fila',
-          desc: 'Tres piezas mayores apuntan a la octava fila. Sacrifica tu dama y torre para desmantelar la defensa triple.',
-          fen: '2r2rk1/pp3ppp/8/8/8/8/PP3QPP/Q2RR1K1 w - - 0 1',
-          solution: ['f2xf7', 'f8xf7', 'd1d8', 'c8d8', 'e1e8', 'd8xe8', 'a1e8'],
+          title: 'La Jaula de la Torre y el Alfil',
+          desc: 'De la partida Grundy vs Delmar (Nueva York, 1880): torre y alfil encierran al rey solitario en la banda. Mate en cuatro.',
+          fen: 'k1K5/7r/8/4B3/1RP5/8/8/8 w - - 1 0',
+          solution: ['b4b8', 'a8a7', 'e5d4', 'a7a6', 'b8a8', 'h7a7', 'a8a7'],
           character: 'martina',
           quotes: {
-            greeting: '¡Alineación pesada! Comienza sacrificando tu dama en f7.',
-            success: '¡Bien! Ahora desvía a la primera torre con tu torre de d1.',
-            fail: 'Eso no mantiene la red de jaques. ¡Intenta de nuevo!',
-            solved: '¡Sublime! Tres sacrificios coordinados para un jaque mate impecable.'
+            greeting: '¡El rey rival está casi solo! La torre y el alfil construyen la jaula, barrote por barrote.',
+            success: '¡Bien! El rey retrocedió. Ahora el alfil en d4 pone otro barrote.',
+            fail: 'Empieza con el jaque de torre en b8. ¡La jaula se construye con jaques!',
+            solved: '¡Jaula completada! Torre y alfil encerraron al rey. ¡Mate en cuatro perfecto!'
+          }
+        },
+        {
+          id: 'p36',
+          difficulty: 3,
+          title: 'El Caballo Fantasma de Paulsen',
+          desc: 'De la partida Paulsen vs NN (1857): la dama entra en f7, el alfil la reemplaza y el caballo cierra el mate.',
+          fen: 'r1bqr1k1/ppp2pp1/3p4/4n1NQ/2B1PN2/8/P4PPP/b4RK1 w - - 1 0',
+          solution: ['h5f7', 'e5f7', 'c4f7', 'g8f8', 'f4g6'],
+          character: 'caballo',
+          quotes: {
+            greeting: '¡La dama entra en f7 con jaque! El caballo espera su turno para el golpe final.',
+            success: '¡Bien! El caballo enemigo comió la dama. Ahora el alfil entra en f7.',
+            fail: 'Empieza con la dama en f7. ¡El caballo saltará al final!',
+            solved: '¡Mate con caballo en g6! El fantasma de Paulsen galopa de nuevo.'
+          }
+        },
+        {
+          id: 'p37',
+          difficulty: 3,
+          title: 'El Sacrificio de la Dama en e8',
+          desc: 'De la partida Saalbach vs Pollmaecher (Leipzig, 1861): sacrificio de dama y los caballos rematan al rey.',
+          fen: 'rnbk1b1r/ppqpnQ1p/4p1p1/2p1N1B1/4N3/8/PPP2PPP/R3KB1R w - - 1 0',
+          solution: ['f7e8', 'd8e8', 'e4f6', 'e8d8', 'e5f7'],
+          character: 'caballo',
+          quotes: {
+            greeting: '¡La dama se sacrifica en e8! Los caballos preparan la emboscada.',
+            success: '¡Bien! El rey aceptó la dama. Ahora el doble de caballo en f6.',
+            fail: 'El primer paso es la dama en e8. ¡Los caballos harán el resto!',
+            solved: '¡Mate de caballo en f7! Los dos caballos cazaron al rey juntos.'
+          }
+        },
+        {
+          id: 'p38',
+          difficulty: 3,
+          title: 'La Columna H de Chigorin',
+          desc: 'De la partida Chigorin vs Yakubovich (por correspondencia, 1879): sacrificio de dama en h7 y mate de torre por la columna h.',
+          fen: '5qrk/p3b1rp/4P2Q/5P2/1pp5/5PR1/P6P/B6K w - - 1 0',
+          solution: ['h6h7', 'h8h7', 'g3h3', 'e7h4', 'h3h4'],
+          character: 'martina',
+          quotes: {
+            greeting: '¡Chigorin sacrificó la dama en h7! Si el rey la toma, la torre baja con todo.',
+            success: '¡Bien! El rey aceptó. Ahora la torre en h3 con jaque.',
+            fail: 'La dama en h7 es la llave. ¡El rey no podrá resistirse!',
+            solved: '¡Mate de torre en h4! Chigorin era un volcán: siempre en erupción.'
+          }
+        },
+        {
+          id: 'p39',
+          difficulty: 3,
+          title: 'El Mate del Peoncito',
+          desc: 'De la partida Zukertort vs Potter (Londres, 1875): alfil, torre y... ¡un peón humilde da el jaque mate final!',
+          fen: '3r4/pR2N3/2pkb3/5p2/8/2B5/qP3PPP/4R1K1 w - - 1 0',
+          solution: ['c3e5', 'd6c5', 'e1c1', 'e6c4', 'b2b4'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Este es mi favorito! El alfil y la torre acorralan al rey, y un peoncito como yo da el mate.',
+            success: '¡Bien! El rey corrió a c5. Ahora la torre en c1 con jaque.',
+            fail: 'Empieza con el alfil en e5. ¡El peoncito espera su gran momento!',
+            solved: '¡MATE CON PEÓN EN b4! ¡Los peones también damos mate! ¡Mi bigote está de fiesta!'
+          }
+        },
+        {
+          id: 'p40',
+          difficulty: 3,
+          title: 'La Trampa de Henry Bird',
+          desc: 'De la partida Bird vs NN (Londres, 1886): el caballo empuja al rey, la dama se sacrifica y el caballo da la coz final.',
+          fen: 'rnb1k2r/ppppbN1p/5n2/7Q/4P3/2N5/PPPP3P/R1B1KB1q w - - 1 0',
+          solution: ['f7d6', 'e8d8', 'h5e8', 'f6e8', 'd6f7'],
+          character: 'caballo',
+          quotes: {
+            greeting: '¡El caballo en d6 empieza la danza! La dama se sacrificará en e8 para la coz final.',
+            success: '¡Bien! El rey se movió a d8. Ahora la dama entra en e8 con todo.',
+            fail: 'Empieza con el caballo en d6. ¡La trampa de Bird es famosa!',
+            solved: '¡Coz final en f7! El rey quedó asfixiado entre sus propios guardias.'
+          }
+        },
+        {
+          id: 'p41',
+          difficulty: 4,
+          title: 'La Simultánea Ciega de Morphy',
+          desc: 'De una simultánea a ciegas de Morphy (Nueva Orleans, 1858): la torre entra en g7 y la dama persigue al rey. Mate en cuatro.',
+          fen: 'r1b3kr/3pR1p1/ppq4p/5P2/4Q3/B7/P5PP/5RK1 w - - 1 0',
+          solution: ['e7g7', 'g8g7', 'e4e7', 'g7g8', 'e7f8', 'g8h7', 'f8f7'],
+          character: 'martina',
+          quotes: {
+            greeting: '¡Morphy jugó esto SIN VER EL TABLERO! La torre toma g7 y la dama empieza la cacería.',
+            success: '¡Bien! El rey aceptó la torre. Ahora la dama en e7 con jaque.',
+            fail: 'La torre toma g7 con jaque. ¡Como Morphy en su simultánea ciega!',
+            solved: '¡Mate de dama en f7! Morphy lo vio todo sin mirar. Increíble.'
+          }
+        },
+        {
+          id: 'p42',
+          difficulty: 4,
+          title: 'Los Dos Caballos de Riviere',
+          desc: 'De la partida De Riviere vs Journoud (París, 1860): dos caballos saltan a f7, el alfil en b5 y la torre cierra el mate.',
+          fen: 'r1bk3r/pppq1ppp/5n2/4N1N1/2Bp4/Bn6/P4PPP/4R1K1 w - - 1 0',
+          solution: ['e5f7', 'd7f7', 'g5f7', 'd8d7', 'c4b5', 'c7c6', 'e1e7'],
+          character: 'caballo',
+          quotes: {
+            greeting: '¡Dos caballos se turnan en f7! El rey negro no sabrá cuál lo golpeó primero.',
+            success: '¡Bien! La dama comió el primer caballo. Ahora el segundo salta a f7.',
+            fail: 'El primer caballo salta a f7 con jaque. ¡El segundo viene detrás!',
+            solved: '¡Mate de torre en e7! Los dos caballos hicieron el trabajo en equipo.'
+          }
+        },
+        {
+          id: 'p43',
+          difficulty: 4,
+          title: 'El Despeje de Steinitz',
+          desc: 'De la partida Steinitz vs Mongredien (Londres, 1862): el alfil despeja g6, la dama entra y la torre corta la retirada.',
+          fen: 'r3k3/pbpqb1r1/1p2Q1p1/3pP1B1/3P4/3B4/PPP4P/5RK1 w - - 1 0',
+          solution: ['d3g6', 'g7g6', 'e6g6', 'e8d8', 'f1f8', 'd7e8', 'g6e8'],
+          character: 'alfil',
+          quotes: {
+            greeting: 'El alfil toma g6 y abre la autopista de la dama. Geometría de precisión quirúrgica.',
+            success: '¡Bien! La torre comió el alfil. Ahora la dama entra en g6.',
+            fail: 'El alfil en g6 es la llave. ¡La dama seguirá su camino!',
+            solved: '¡Mate de dama en e8! Steinitz calculó cada diagonal como un reloj.'
+          }
+        },
+        {
+          id: 'p44',
+          difficulty: 4,
+          title: 'El Peón Ahorcador de Anderssen',
+          desc: 'De la partida Anderssen vs NN (Berlín, 1866): la dama se sacrifica en h7, el peón avanza y la torre remata por la columna h.',
+          fen: '2r2b2/p2q1P1p/3p2k1/4pNP1/4P1RQ/7K/2pr4/5R2 w - - 1 0',
+          solution: ['h4h7', 'g6h7', 'g5g6', 'h7h8', 'g4h4', 'f8h6', 'h4h6'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡La dama se sacrifica en h7 y luego un peón como yo avanza para la victoria!',
+            success: '¡Bien! El rey aceptó la dama. Ahora el peón en g6 con jaque.',
+            fail: 'Primero la dama en h7. ¡Luego el peoncito tendrá su momento de gloria!',
+            solved: '¡Mate de torre en h6! Dama sacrificada, peón victorioso. ¡Qué día!'
+          }
+        },
+        {
+          id: 'p45',
+          difficulty: 4,
+          title: 'La Coz Doble de Paulsen',
+          desc: 'De la partida Paulsen vs Hammacher (Fráncfort, 1878): caballo a f7, dama sacrificada en g8 y la coz más famosa del siglo XIX.',
+          fen: 'r1qbr2k/1p2n1pp/3B1n2/2P1Np2/p4N2/PQ4P1/1P3P1P/3RR1K1 w - - 1 0',
+          solution: ['e5f7', 'h8g8', 'f7h6', 'g8h8', 'b3g8', 'e7g8', 'h6f7'],
+          character: 'caballo',
+          quotes: {
+            greeting: '¡El caballo entra en f7 con jaque! La dama se sacrificará en g8 para la gran coz final.',
+            success: '¡Bien! El rey salió y volvió. Ahora la dama en g8 con todo.',
+            fail: 'El caballo en f7 es el primer paso. ¡La coz de Paulsen es legendaria!',
+            solved: '¡Mate de caballo en f7! ¡La coz doble! ¡Relincho histórico!'
           }
         }
       ];
