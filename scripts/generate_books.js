@@ -839,6 +839,41 @@ async function runColoringBookPDF(port) {
       img: '/assets/img/colorear/dibujo_living_copa.png',
       qr: '/assets/img/qr/30-el-problema-de-ganar.png',
       qrText: 'Cuento 30: El Problema de Ganar (Finales y Logros)'
+    },
+    {
+      title: 'La Dama Reclutadora',
+      desc: 'La Reina Negra del Reino de las Sombras desplegando su red de reclutamiento de piezas para la gran batalla.',
+      img: '/assets/img/colorear/dibujo_dama_reclutadora.png',
+      qr: '/assets/img/qr/19-la-pieza-que-se-fue.png',
+      qrText: 'Cuento 19: La Pieza que se Fue (Sacrificios)'
+    },
+    {
+      title: 'Peoncito Entrenador',
+      desc: 'Peoncito asume su rol más serio con silbato y cronómetro, guiando el entrenamiento posicional de Martina.',
+      img: '/assets/img/colorear/dibujo_peoncito_entrenador.png',
+      qr: '/assets/img/qr/21-la-caceria.png',
+      qrText: 'Cuento 21: La Cacería (Tácticas y Columnas)'
+    },
+    {
+      title: 'El Caballo Coach',
+      desc: 'El divertido caballo entrenador mostrando las duras reglas de ejercicio físico y cálculo táctico combinados.',
+      img: '/assets/img/colorear/dibujo_caballo_coach.png',
+      qr: '/assets/img/qr/31-el-gimnasio-del-tablero.png',
+      qrText: 'Cuento 31: El Gimnasio del Tablero (Chessboxing)'
+    },
+    {
+      title: 'Consejo de la Reina Negra',
+      desc: 'La Reina Negra da sabias y divertidas sugerencias estratégicas a Martina al borde del ring de boxeo.',
+      img: '/assets/img/colorear/dibujo_reina_negra_consejo.png',
+      qr: '/assets/img/qr/35-el-puno-sucio.png',
+      qrText: 'Cuento 35: El Puño Sucio (Tácticas y Defensa)'
+    },
+    {
+      title: 'El Gancho Final',
+      desc: 'Martina conecta el golpe decisivo en el ring, resolviendo el combate final con estilo y determinación.',
+      img: '/assets/img/colorear/dibujo_gancho_final.png',
+      qr: '/assets/img/qr/36-la-pelea-final.png',
+      qrText: 'Cuento 36: La Pelea Final (Mate del Pasillo)'
     }
   ];
 
