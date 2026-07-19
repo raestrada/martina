@@ -186,9 +186,14 @@ activeNav: inicio
     <p>
       ¿Organizas torneos infantiles, clases de ajedrez o exhibiciones de Chessboxing? Imprime estas láminas en tamaño Carta y repártelas a los niños. ¡Es una forma lúdica de conectar el tablero físico con el mundo digital de Martina!
     </p>
-    <button class="btn" onclick="printAllSheets()" style="background: var(--gold); color: var(--magic-dark); font-weight:800; padding: 0.7rem 2rem; border-radius: 30px; border:none; cursor:pointer; box-shadow: 0 4px 15px rgba(244, 162, 97, 0.4);">
-      🖨️ Imprimir Cuadernillo Completo (12 Láminas)
-    </button>
+    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+      <a href="/assets/books/martina_libro_colorear.pdf" download class="btn" style="background: var(--magic-blue); color: #fff; font-weight:800; padding: 0.7rem 2rem; border-radius: 30px; text-decoration: none; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: inline-flex; align-items: center; justify-content: center;">
+        📥 Descargar Libro de Dibujos (PDF)
+      </a>
+      <button class="btn" onclick="printAllSheets()" style="background: var(--gold); color: var(--magic-dark); font-weight:800; padding: 0.7rem 2rem; border-radius: 30px; border:none; cursor:pointer; box-shadow: 0 4px 15px rgba(244, 162, 97, 0.4);">
+        🖨️ Imprimir Cuadernillo (12 Láminas)
+      </button>
+    </div>
   </section>
 
   <!-- CATEGORÍA 1: EL REINO MÁGICO -->
@@ -204,7 +209,7 @@ activeNav: inicio
         <div class="coloring-card-content">
           <div class="coloring-card-info">
             <h3>Martina y Peoncito</h3>
-            <p>Martina al tablero junto a Peoncito, el peón de cristal con bigote falso que busca estilo y respeto.</p>
+            <p>Martina al tablero junto a Peoncito, el peón de cristal con bigote falso que busca estilo y respeto. <strong>(Asociado al <a href="/cuentos/01-el-primer-movimiento.html">Cuento 1</a> y <a href="/cuentos/05-la-coronacion-de-peoncito.html">Cuento 5</a>)</strong></p>
           </div>
           <div class="coloring-actions">
             <a href="/assets/img/colorear/dibujo_martina_peoncito.png" download="dibujo_martina_peoncito.png" class="coloring-btn btn-download">📥 Descargar</a>
@@ -221,7 +226,7 @@ activeNav: inicio
         <div class="coloring-card-content">
           <div class="coloring-card-info">
             <h3>Super Martina</h3>
-            <p>Martina vuela como superheroína sobre el tablero mágico de las sesenta y cuatro casillas.</p>
+            <p>Martina vuela como superheroína sobre el tablero mágico de las sesenta y cuatro casillas. <strong>(Asociado al <a href="/cuentos/01-el-primer-movimiento.html">Cuento 1</a>)</strong></p>
           </div>
           <div class="coloring-actions">
             <a href="/assets/img/colorear/dibujo_super_martina.png" download="dibujo_super_martina.png" class="coloring-btn btn-download">📥 Descargar</a>
@@ -238,7 +243,7 @@ activeNav: inicio
         <div class="coloring-card-content">
           <div class="coloring-card-info">
             <h3>Torreta en su Kiosco</h3>
-            <p>Torreta, la torre de piedra con delantal a cuadros, vendiendo empanadas temáticas en la casilla c3.</p>
+            <p>Torreta, la torre de piedra con delantal a cuadros, vendiendo empanadas temáticas en la casilla c3. <strong>(Asociado al <a href="/cuentos/03-la-clavada-del-alfil-exiliado.html">Cuento 3</a>)</strong></p>
           </div>
           <div class="coloring-actions">
             <a href="/assets/img/colorear/dibujo_torreta_kiosco.png" download="dibujo_torreta_kiosco.png" class="coloring-btn btn-download">📥 Descargar</a>
@@ -255,7 +260,7 @@ activeNav: inicio
         <div class="coloring-card-content">
           <div class="coloring-card-info">
             <h3>La Reina Negra</h3>
-            <p>La Reina de las Sombras, alérgica a los jaques mate, con su corona hecha de cajas de pañuelos.</p>
+            <p>La Reina de las Sombras, alérgica a los jaques mate, con su corona hecha de cajas de pañuelos. <strong>(Asociado al <a href="/cuentos/01-el-primer-movimiento.html">Cuento 1</a> y <a href="/cuentos/35-el-puno-sucio.html">Cuento 35</a>)</strong></p>
           </div>
           <div class="coloring-actions">
             <a href="/assets/img/colorear/dibujo_reina_negra.png" download="dibujo_reina_negra.png" class="coloring-btn btn-download">📥 Descargar</a>
@@ -272,7 +277,7 @@ activeNav: inicio
         <div class="coloring-card-content">
           <div class="coloring-card-info">
             <h3>El Caballo de Ŋ</h3>
-            <p>El divertido caballo que practica saltos en L, pero a veces se confunde y salta dibujando una Ŋ.</p>
+            <p>El divertido caballo que practica saltos en L, pero a veces se confunde y salta dibujando una Ŋ. <strong>(Asociado al <a href="/cuentos/04-el-caballo-salvaje.html">Cuento 4</a>)</strong></p>
           </div>
           <div class="coloring-actions">
             <a href="/assets/img/colorear/dibujo_caballo_n.png" download="dibujo_caballo_n.png" class="coloring-btn btn-download">📥 Descargar</a>
@@ -289,7 +294,7 @@ activeNav: inicio
         <div class="coloring-card-content">
           <div class="coloring-card-info">
             <h3>El Alfil Exiliado</h3>
-            <p>El alfil exiliado a una sola diagonal, que investiga círculos concéntricos y reinventa la geometría.</p>
+            <p>El alfil exiliado a una sola diagonal, que investiga círculos concéntricos y reinventa la geometría. <strong>(Asociado al <a href="/cuentos/03-la-clavada-del-alfil-exiliado.html">Cuento 3</a> y <a href="/cuentos/27-la-medalla-esquiva.html">Cuento 27</a>)</strong></p>
           </div>
           <div class="coloring-actions">
             <a href="/assets/img/colorear/dibujo_alfil_exiliado.png" download="dibujo_alfil_exiliado.png" class="coloring-btn btn-download">📥 Descargar</a>
@@ -314,7 +319,7 @@ activeNav: inicio
         <div class="coloring-card-content">
           <div class="coloring-card-info">
             <h3>El Reloj Parlante</h3>
-            <p>El reloj de ajedrez que explica la relatividad y el paso del tiempo cuando los jugadores se quedan en apuros.</p>
+            <p>El reloj de ajedrez que explica la relatividad y el paso del tiempo cuando los jugadores se quedan en apuros. <strong>(Asociado al <a href="/cuentos/08-el-relampago-y-el-vikingo.html">Cuento 8</a> y <a href="/cuentos/24-cinco-minutos.html">Cuento 24</a>)</strong></p>
           </div>
           <div class="coloring-actions">
             <a href="/assets/img/colorear/dibujo_reloj_parlante.png" download="dibujo_reloj_parlante.png" class="coloring-btn btn-download">📥 Descargar</a>
@@ -331,7 +336,7 @@ activeNav: inicio
         <div class="coloring-card-content">
           <div class="coloring-card-info">
             <h3>Tomás el Erizo</h3>
-            <p>Tomás, el rival escolar de Martina, jugando al ajedrez a toda velocidad y moviendo las piezas como un rayo.</p>
+            <p>Tomás, el rival escolar de Martina, jugando al ajedrez a toda velocidad y moviendo las piezas como un rayo. <strong>(Asociado al <a href="/cuentos/02-tic-tac-jaque-mate.html">Cuento 2</a> y <a href="/cuentos/08-el-relampago-y-el-vikingo.html">Cuento 8</a>)</strong></p>
           </div>
           <div class="coloring-actions">
             <a href="/assets/img/colorear/dibujo_tomas_erizo.png" download="dibujo_tomas_erizo.png" class="coloring-btn btn-download">📥 Descargar</a>
@@ -356,7 +361,7 @@ activeNav: inicio
         <div class="coloring-card-content">
           <div class="coloring-card-info">
             <h3>Martina Boxeadora</h3>
-            <p>Martina posa con guantes de boxeo dentro del ring, lista para alternar el ajedrez y los ganchos tácticos.</p>
+            <p>Martina posa con guantes de boxeo dentro del ring, lista para alternar el ajedrez y los ganchos tácticos. <strong>(Asociado al <a href="/cuentos/31-el-gimnasio-del-tablero.html">Cuento 31</a> y <a href="/cuentos/36-la-pelea-final.html">Cuento 36</a>)</strong></p>
           </div>
           <div class="coloring-actions">
             <a href="/assets/img/colorear/dibujo_chessboxing_martina.png" download="dibujo_chessboxing_martina.png" class="coloring-btn btn-download">📥 Descargar</a>
@@ -373,7 +378,7 @@ activeNav: inicio
         <div class="coloring-card-content">
           <div class="coloring-card-info">
             <h3>General Torreón</h3>
-            <p>El campeón de ajedrez y boxeo intenta mover una diminuta pieza con sus guantes gigantes de combate.</p>
+            <p>El campeón de ajedrez y boxeo intenta mover una diminuta pieza con sus guantes gigantes de combate. <strong>(Asociado al <a href="/cuentos/31-el-gimnasio-del-tablero.html">Cuento 31</a> y <a href="/cuentos/32-el-puno-y-la-pieza.html">Cuento 32</a>)</strong></p>
           </div>
           <div class="coloring-actions">
             <a href="/assets/img/colorear/dibujo_chessboxing_torreon.png" download="dibujo_chessboxing_torreon.png" class="coloring-btn btn-download">📥 Descargar</a>
@@ -390,7 +395,7 @@ activeNav: inicio
         <div class="coloring-card-content">
           <div class="coloring-card-info">
             <h3>Batalla contra el Bot</h3>
-            <p>Martina analiza ajedrez en su laptop y Peoncito Bot saluda entusiasmado desde adentro de la pantalla.</p>
+            <p>Martina analiza ajedrez en su laptop y Peoncito Bot saluda entusiasmado desde adentro de la pantalla. <strong>(Asociado al <a href="/cuentos/14-hielo-que-quema.html">Cuento 14</a>)</strong></p>
           </div>
           <div class="coloring-actions">
             <a href="/assets/img/colorear/dibujo_bots_martina_peoncito.png" download="dibujo_bots_martina_peoncito.png" class="coloring-btn btn-download">📥 Descargar</a>
@@ -407,7 +412,7 @@ activeNav: inicio
         <div class="coloring-card-content">
           <div class="coloring-card-info">
             <h3>La Sombra del Ring</h3>
-            <p>Duelo mental en el cuadrilátero contra el bot de la sombra del ring, con guantes y ojos brillantes.</p>
+            <p>Duelo mental en el cuadrilátero contra el bot de la sombra del ring, con guantes y ojos brillantes. <strong>(Asociado al <a href="/cuentos/33-entrenando-a-lo-loco.html">Cuento 33</a> y <a href="/cuentos/34-la-escopeta-humana.html">Cuento 34</a>)</strong></p>
           </div>
           <div class="coloring-actions">
             <a href="/assets/img/colorear/dibujo_bots_sombra_ring.png" download="dibujo_bots_sombra_ring.png" class="coloring-btn btn-download">📥 Descargar</a>

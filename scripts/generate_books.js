@@ -280,6 +280,10 @@ const storiesData = [];
       await runPDFAndCover(port, pIdx);
       await runEPUB(pIdx);
     }
+
+    console.log('\n=================== COMPILING COLORING BOOK ===================');
+    await runColoringBookPDF(port);
+    
     console.log('\n--- All Books Generated Successfully! ---');
   } catch (error) {
     console.error('Error during book generation:', error);
@@ -704,4 +708,336 @@ async function runEPUB(partIdx) {
   fs.copyFileSync(epubPath, path.join(SITE_OUTPUT_DIR, `martina_cuentos_parte_${partMeta.num}.epub`));
 
   console.log(`EPUB successfully generated at ${epubPath}`);
+}
+
+async function runColoringBookPDF(port) {
+  console.log('--- Generating Coloring Book PDF ---');
+  
+  const coloringSheets = [
+    {
+      title: 'Martina y Peoncito',
+      desc: 'Martina junto a Peoncito, el peón de cristal con bigote falso que busca estilo y respeto.',
+      img: '/assets/img/colorear/dibujo_martina_peoncito.png',
+      qr: '/assets/img/qr/01-el-primer-movimiento.png',
+      qrText: 'Cuento 1: El Primer Movimiento (Centro y Desarrollo)'
+    },
+    {
+      title: 'Super Martina',
+      desc: 'Martina vuela como superheroína sobre el tablero de las sesenta y cuatro casillas.',
+      img: '/assets/img/colorear/dibujo_super_martina.png',
+      qr: '/assets/img/qr/01-el-primer-movimiento.png',
+      qrText: 'Cuento 1: El Primer Movimiento (Centro y Desarrollo)'
+    },
+    {
+      title: 'Torreta en su Kiosco',
+      desc: 'Torreta, la torre de piedra con delantal a cuadros, vendiendo empanadas temáticas en la casilla c3.',
+      img: '/assets/img/colorear/dibujo_torreta_kiosco.png',
+      qr: '/assets/img/qr/03-la-clavada-del-alfil-exiliado.png',
+      qrText: 'Cuento 3: La Clavada del Alfil Exiliado'
+    },
+    {
+      title: 'La Reina Negra',
+      desc: 'La Reina de las Sombras, alérgica a los jaques mate, con su corona hecha de cajas de pañuelos.',
+      img: '/assets/img/colorear/dibujo_reina_negra.png',
+      qr: '/assets/img/qr/01-el-primer-movimiento.png',
+      qrText: 'Cuento 1: El Primer Movimiento (Centro y Desarrollo)'
+    },
+    {
+      title: 'El Caballo de Ŋ',
+      desc: 'El divertido caballo que practica saltos en L, pero a veces se confunde y salta dibujando una Ŋ.',
+      img: '/assets/img/colorear/dibujo_caballo_n.png',
+      qr: '/assets/img/qr/04-el-caballo-salvaje.png',
+      qrText: 'Cuento 4: El Caballo Salvaje (Puestos Avanzados)'
+    },
+    {
+      title: 'El Alfil Exiliado',
+      desc: 'El alfil exiliado a una sola diagonal, que investiga círculos concéntricos y reinventa la geometría.',
+      img: '/assets/img/colorear/dibujo_alfil_exiliado.png',
+      qr: '/assets/img/qr/03-la-clavada-del-alfil-exiliado.png',
+      qrText: 'Cuento 3: La Clavada del Alfil Exiliado'
+    },
+    {
+      title: 'El Reloj Parlante',
+      desc: 'El reloj de ajedrez que explica la relatividad y el paso del tiempo cuando los jugadores se quedan en apuros.',
+      img: '/assets/img/colorear/dibujo_reloj_parlante.png',
+      qr: '/assets/img/qr/08-el-relampago-y-el-vikingo.png',
+      qrText: 'Cuento 8: El Relámpago y el Vikingo (Blitz y Tiempo)'
+    },
+    {
+      title: 'Tomás el Erizo',
+      desc: 'Tomás, el rival escolar de Martina, jugando al ajedrez a toda velocidad y moviendo las piezas como un rayo.',
+      img: '/assets/img/colorear/dibujo_tomas_erizo.png',
+      qr: '/assets/img/qr/02-tic-tac-jaque-mate.png',
+      qrText: 'Cuento 2: Tic, Tac, Jaque Mate (Manejo del Tiempo)'
+    },
+    {
+      title: 'Martina Boxeadora',
+      desc: 'Martina posa con guantes de boxeo dentro del ring, lista para alternar el ajedrez y los ganchos tácticos.',
+      img: '/assets/img/colorear/dibujo_chessboxing_martina.png',
+      qr: '/assets/img/qr/31-el-gimnasio-del-tablero.png',
+      qrText: 'Cuento 31: El Gimnasio del Tablero (Chessboxing)'
+    },
+    {
+      title: 'General Torreón',
+      desc: 'El campeón de ajedrez y boxeo intenta mover una diminuta pieza con sus guantes gigantes de combate.',
+      img: '/assets/img/colorear/dibujo_chessboxing_torreon.png',
+      qr: '/assets/img/qr/31-el-gimnasio-del-tablero.png',
+      qrText: 'Cuento 31: El Gimnasio del Tablero (Chessboxing)'
+    },
+    {
+      title: 'Batalla contra el Bot',
+      desc: 'Martina analiza ajedrez en su laptop y Peoncito Bot saluda entusiasmado desde adentro de la pantalla.',
+      img: '/assets/img/colorear/dibujo_bots_martina_peoncito.png',
+      qr: '/assets/img/qr/14-hielo-que-quema.png',
+      qrText: 'Cuento 14: Hielo que Quema (Computadora y Análisis)'
+    },
+    {
+      title: 'La Sombra del Ring',
+      desc: 'Duelo mental en el cuadrilátero contra el bot de la sombra del ring, con guantes y ojos brillantes.',
+      img: '/assets/img/colorear/dibujo_bots_sombra_ring.png',
+      qr: '/assets/img/qr/33-entrenando-a-lo-loco.png',
+      qrText: 'Cuento 33: Entrenando a lo Loco (Combates de Bots)'
+    }
+  ];
+
+  let sheetsHtml = '';
+  coloringSheets.forEach((s) => {
+    sheetsHtml += `
+    <div class="sheet-page">
+      <div class="sheet-header">
+        <h2 class="sheet-title">${s.title}</h2>
+        <p class="sheet-desc">${s.desc}</p>
+      </div>
+      <div class="sheet-main">
+        <img class="sheet-img" src="${s.img}" alt="${s.title}">
+      </div>
+      <div class="sheet-footer">
+        <div class="sheet-qr-container">
+          <img class="sheet-qr-img" src="${s.qr}" alt="Código QR">
+          <div class="sheet-qr-text">
+            <strong>¡Colorea y Lee la Historia!</strong><br>
+            Escanea para leer el ${s.qrText}
+          </div>
+        </div>
+        <div class="sheet-brand">martinachess.com</div>
+      </div>
+    </div>
+    `;
+  });
+
+  const fullHtml = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Martina: Libro para Colorear</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Quicksand:wght@500;700&display=swap');
+    
+    @page {
+      size: letter;
+      margin: 15mm;
+    }
+    
+    body {
+      font-family: 'Nunito', sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #012a4a;
+      background-color: #ffffff;
+    }
+    
+    .cover-page {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+      page-break-after: always;
+      box-sizing: border-box;
+      padding: 15mm 0;
+      border: 4px solid #f4a261;
+      border-radius: 12px;
+    }
+    
+    .cover-title {
+      font-size: 28pt;
+      font-weight: 800;
+      color: #e76f51;
+      margin: 0 0 10px 0;
+      font-family: 'Quicksand', sans-serif;
+    }
+    
+    .cover-subtitle {
+      font-size: 14pt;
+      color: #2a9d8f;
+      margin: 0;
+    }
+    
+    .cover-image {
+      max-width: 80%;
+      max-height: 40%;
+      object-fit: contain;
+      margin: 20px 0;
+      border-radius: 8px;
+      border: 2px dashed #e9c46a;
+      padding: 10px;
+    }
+    
+    .cover-footer {
+      font-size: 10.5pt;
+      color: #4a5568;
+      line-height: 1.5;
+      max-width: 500px;
+    }
+    
+    .sheet-page {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      page-break-after: always;
+      box-sizing: border-box;
+      padding-bottom: 5mm;
+    }
+    
+    .sheet-page:last-child {
+      page-break-after: avoid;
+    }
+    
+    .sheet-header {
+      border-bottom: 2px dashed #e9c46a;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+    
+    .sheet-title {
+      font-size: 18pt;
+      font-weight: 800;
+      color: #e76f51;
+      margin: 0 0 5px 0;
+      font-family: 'Quicksand', sans-serif;
+    }
+    
+    .sheet-desc {
+      font-size: 10pt;
+      color: #4a5568;
+      margin: 0;
+    }
+    
+    .sheet-main {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px dashed #cbd5e1;
+      background: #fafafa;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    
+    .sheet-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    
+    .sheet-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 2px dashed #e9c46a;
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+    
+    .sheet-qr-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .sheet-qr-img {
+      width: 55px;
+      height: 55px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 2px;
+    }
+    
+    .sheet-qr-text {
+      font-size: 8.5pt;
+      color: #4a5568;
+      line-height: 1.4;
+      text-align: left;
+    }
+    
+    .sheet-brand {
+      font-size: 9pt;
+      font-weight: bold;
+      color: #a0aec0;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- COVER PAGE -->
+  <div class="cover-page">
+    <div>
+      <h1 class="cover-title">Martina: Libro para Colorear</h1>
+      <p class="cover-subtitle">Cuentos de Ajedrez & Aventuras Mágicas</p>
+    </div>
+    
+    <img class="cover-image" src="/assets/img/colorear/dibujo_martina_peoncito.png" alt="Portada de colorear">
+    
+    <div class="cover-footer">
+      <p style="margin-bottom: 0.8rem; font-weight: bold;">¡Colección completa de 12 láminas listas para imprimir y pintar!</p>
+      <p style="margin-bottom: 1rem; font-size: 9.5pt; color: #718096;">Cada dibujo incluye un código QR que vincula directamente a las historias interactivas en la web para complementar el juego con la lectura.</p>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
+        <img src="/assets/img/qr/homepage.png" style="width: 55px; height: 55px; border: 1px solid #cbd5e1; border-radius: 6px;" alt="QR Sitio Web">
+        <span style="font-family: monospace; font-size: 8pt; font-weight: bold; color: #718096;">https://martinachess.com</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHEETS -->
+  ${sheetsHtml}
+
+</body>
+</html>
+  `;
+
+  const htmlPath = path.join(ROOT_DIR, '_site', 'book_pdf_colorear.html');
+  fs.writeFileSync(htmlPath, fullHtml, 'utf8');
+
+  // Launch Playwright Chromium
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext();
+  const page = await context.newPage();
+
+  await page.setViewportSize({ width: 816, height: 1056 });
+  await page.emulateMedia({ media: 'print' });
+
+  console.log(`Loading http://localhost:${port}/book_pdf_colorear.html...`);
+  await page.goto(`http://localhost:${port}/book_pdf_colorear.html`, { waitUntil: 'networkidle' });
+
+  console.log('Printing Coloring Book to PDF...');
+  const pdfPath = path.join(OUTPUT_DIR, 'martina_libro_colorear.pdf');
+  await page.pdf({
+    path: pdfPath,
+    format: 'Letter',
+    preferCSSPageSize: true,
+    printBackground: true,
+    margin: { top: '0', right: '0', bottom: '0', left: '0' }
+  });
+
+  // Copy PDF to public build dir
+  fs.copyFileSync(pdfPath, path.join(SITE_OUTPUT_DIR, 'martina_libro_colorear.pdf'));
+
+  console.log(`Coloring Book PDF successfully generated at ${pdfPath}`);
+  await browser.close();
 }
