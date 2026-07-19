@@ -797,6 +797,48 @@ async function runColoringBookPDF(port) {
       img: '/assets/img/colorear/dibujo_bots_sombra_ring.png',
       qr: '/assets/img/qr/33-entrenando-a-lo-loco.png',
       qrText: 'Cuento 33: Entrenando a lo Loco (Combates de Bots)'
+    },
+    {
+      title: 'El Alfil de Sabiduría',
+      desc: 'El Alfil Exiliado meditando en su templo geométrico, guiando a Martina en su búsqueda.',
+      img: '/assets/img/colorear/dibujo_alfil_sabiduria.png',
+      qr: '/assets/img/qr/27-la-medalla-esquiva.png',
+      qrText: 'Cuento 27: La Medalla Esquiva (Alfil Exiliado)'
+    },
+    {
+      title: 'El Rey en la Bañera',
+      desc: 'Una escena surrealista del Rey disfrutando de un baño de espuma mientras repasa tácticas de mate.',
+      img: '/assets/img/colorear/dibujo_rey_banera.png',
+      qr: '/assets/img/qr/29-demasiados-trofeos.png',
+      qrText: 'Cuento 29: Demasiados Trofeos (Finales)'
+    },
+    {
+      title: 'Peoncito Olímpico',
+      desc: 'Peoncito posa orgulloso con su bigote falso y sus medallas olímpicas sobre el podio de cristal.',
+      img: '/assets/img/colorear/dibujo_peoncito_olimpico.png',
+      qr: '/assets/img/qr/25-la-coleccionista.png',
+      qrText: 'Cuento 25: La Coleccionista (Olimpiadas y Torneo)'
+    },
+    {
+      title: 'Torneo en la Playa',
+      desc: 'Un divertido torneo veraniego de ajedrez sobre la arena, con olas y palmeras de fondo.',
+      img: '/assets/img/colorear/dibujo_torneo_playa.png',
+      qr: '/assets/img/qr/26-el-botin.png',
+      qrText: 'Cuento 26: El Botín (Tácticas y Apertura)'
+    },
+    {
+      title: 'El Podio de Plata',
+      desc: 'Martina celebra su merecido trofeo de plata tras un reñido y emocionante torneo nacional.',
+      img: '/assets/img/colorear/dibujo_podio_plata.png',
+      qr: '/assets/img/qr/28-el-segundo-lugar.png',
+      qrText: 'Cuento 28: El Segundo Lugar (Rating y Tácticas)'
+    },
+    {
+      title: 'La Copa en el Living',
+      desc: 'El living familiar decorado con orgullo por la gigantesca copa de ajedrez obtenida por Martina.',
+      img: '/assets/img/colorear/dibujo_living_copa.png',
+      qr: '/assets/img/qr/30-el-problema-de-ganar.png',
+      qrText: 'Cuento 30: El Problema de Ganar (Finales y Logros)'
     }
   ];
 
