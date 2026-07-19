@@ -470,10 +470,12 @@
       // Reset UI elements
       document.getElementById('btn-next').disabled = true;
       document.getElementById('puzzles-board').classList.remove('success-glow');
-      document.getElementById('turn-indicator').textContent = 'Blancas Juegan y Dan Mate';
-      document.getElementById('turn-indicator').style.borderColor = 'rgba(74, 222, 128, 0.3)';
-      document.getElementById('turn-indicator').style.color = '#4ade80';
-      document.getElementById('turn-indicator').style.backgroundColor = 'rgba(22, 163, 74, 0.15)';
+      const indicator = document.getElementById('turn-indicator');
+      indicator.textContent = 'Blancas Juegan y Dan Mate';
+      indicator.className = 'turn-indicator';
+      indicator.style.borderColor = '';
+      indicator.style.color = '';
+      indicator.style.backgroundColor = '';
     }
 
     resetPuzzle() {
@@ -562,10 +564,12 @@
         // Check if there are opponent responses
         if (this.currentMoveIndex < this.currentPuzzle.solution.length) {
           // Play opponent response with a small delay
-          document.getElementById('turn-indicator').textContent = 'Oponente responde...';
-          document.getElementById('turn-indicator').style.borderColor = 'rgba(239, 68, 68, 0.3)';
-          document.getElementById('turn-indicator').style.color = '#ef4444';
-          document.getElementById('turn-indicator').style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
+          const indicator = document.getElementById('turn-indicator');
+          indicator.textContent = 'Oponente responde...';
+          indicator.className = 'turn-indicator opponent';
+          indicator.style.borderColor = '';
+          indicator.style.color = '';
+          indicator.style.backgroundColor = '';
 
           setTimeout(() => {
             const oppMove = this.currentPuzzle.solution[this.currentMoveIndex];
@@ -586,10 +590,12 @@
             else this.playMoveSound();
 
             this.currentMoveIndex++;
-            document.getElementById('turn-indicator').textContent = 'Blancas Juegan y Dan Mate';
-            document.getElementById('turn-indicator').style.borderColor = 'rgba(74, 222, 128, 0.3)';
-            document.getElementById('turn-indicator').style.color = '#4ade80';
-            document.getElementById('turn-indicator').style.backgroundColor = 'rgba(22, 163, 74, 0.15)';
+            const indicator = document.getElementById('turn-indicator');
+            indicator.textContent = 'Blancas Juegan y Dan Mate';
+            indicator.className = 'turn-indicator';
+            indicator.style.borderColor = '';
+            indicator.style.color = '';
+            indicator.style.backgroundColor = '';
 
             // Speak progress comment
             const successQuote = this.currentPuzzle.quotes.success;
@@ -618,10 +624,12 @@
       document.getElementById('char-bubble').textContent = puzzle.quotes.solved;
       this.speak(puzzle.quotes.solved, char.gender, char.pitch);
 
-      document.getElementById('turn-indicator').textContent = '🏆 ¡¡JAQUE MATE!! 🏆';
-      document.getElementById('turn-indicator').style.borderColor = 'var(--gold)';
-      document.getElementById('turn-indicator').style.color = 'var(--gold)';
-      document.getElementById('turn-indicator').style.backgroundColor = 'rgba(234, 179, 8, 0.2)';
+      const indicator = document.getElementById('turn-indicator');
+      indicator.textContent = '🏆 ¡¡JAQUE MATE!! 🏆';
+      indicator.className = 'turn-indicator success';
+      indicator.style.borderColor = '';
+      indicator.style.color = '';
+      indicator.style.backgroundColor = '';
 
       // Calculate score points (10 per difficulty level)
       let earnedPoints = 0;
