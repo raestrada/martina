@@ -1615,7 +1615,7 @@
       // Reset UI elements
       document.getElementById('puzzles-board').classList.remove('success-glow');
       const indicator = document.getElementById('turn-indicator');
-      indicator.textContent = 'Blancas Juegan y Dan Mate';
+      indicator.textContent = `Blancas Juegan y Dan Mate en ${puzzle.difficulty}`;
       indicator.className = 'turn-indicator';
       indicator.style.borderColor = '';
       indicator.style.color = '';
@@ -1735,7 +1735,7 @@
 
             this.currentMoveIndex++;
             const indicator = document.getElementById('turn-indicator');
-            indicator.textContent = 'Blancas Juegan y Dan Mate';
+            indicator.textContent = `Blancas Juegan y Dan Mate en ${this.currentPuzzle.difficulty}`;
             indicator.className = 'turn-indicator';
             indicator.style.borderColor = '';
             indicator.style.color = '';

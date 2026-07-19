@@ -1,7 +1,7 @@
-// Martina PWA — Service Worker v9
+// Martina PWA — Service Worker v10
 // Network-first strategy. Cache is offline fallback only.
 // 3-tier caching: shell (auto) + images (auto) + videos (on-demand)
-const VERSION = '9';
+const VERSION = '10';
 const CACHE_SHELL = `martina-shell-v${VERSION}`;
 const CACHE_IMAGES = `martina-images-v${VERSION}`;
 const CACHE_VIDEOS = `martina-videos-v${VERSION}`;
