@@ -4,7 +4,7 @@
 (function() {
   class PuzzlesGame {
     constructor() {
-      // 1. Puzzle Database (44 Puzzles: 6x M1, 12x M2, 14x M3, 12x M4)
+      // 1. Puzzle Database (84 Puzzles: 6x M1, 12x M2, 34x M3, 32x M4 — partidas reales, ver scripts/puzzles_db/)
       // Fuentes de partidas reales: ver scripts/puzzles_db/mates_verificados.json
       // REGLA: ningún puzzle se publica sin pasar `node test_puzzle.js`
       this.puzzles = [
@@ -667,6 +667,606 @@
             fail: 'El caballo en f7 es el primer paso. ¡La coz de Paulsen es legendaria!',
             solved: '¡Mate de caballo en f7! ¡La coz doble! ¡Relincho histórico!'
           }
+        },
+        {
+          id: 'p46',
+          difficulty: 3,
+          title: 'Finegold vs Balashov (1992)',
+          desc: 'Partida real: Benjamin Finegold vs Y Balashov, Cappelle, 1992. Mate en 3.',
+          fen: '2q1rnk1/p4r2/1p3pp1/3P3Q/2bPp2B/2P4R/P1B3PP/4R1K1 w - - 1 0',
+          solution: ['h5h8', 'g8h8', 'h4f6', 'h8g8', 'h3h8'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Partida real: Finegold vs Balashov (1992)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Finegold vs Balashov.'
+          }
+        },
+        {
+          id: 'p47',
+          difficulty: 3,
+          title: 'Portela vs Acuna (1927)',
+          desc: 'Partida real: C Portela vs A Nogues Acuna, Buenos Aires, 1927. Mate en 3.',
+          fen: 'r2q4/p2nR1bk/1p1Pb2p/4p2p/3nN3/B2B3P/PP1Q2P1/6K1 w - - 1 0',
+          solution: ['e4f6', 'h7h8', 'd2h6', 'g7h6', 'e7h7'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Partida real: Portela vs Acuna (1927)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Portela vs Acuna.'
+          }
+        },
+        {
+          id: 'p48',
+          difficulty: 3,
+          title: 'Bernhoeft vs Svedenloef (1964)',
+          desc: 'Partida real: Erhard Bernhoeft vs E Svedenloef, corr., 1964. Mate en 3.',
+          fen: 'r3kb1r/1b1n2pp/pq1pN3/1p1Q2B1/4P3/8/PPP2PPP/R4RK1 w kq - 1 0',
+          solution: ['e6c7', 'b6c7', 'd5e6', 'f8e7', 'e6e7'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Bernhoeft vs Svedenloef (1964)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Bernhoeft vs Svedenloef.'
+          }
+        },
+        {
+          id: 'p49',
+          difficulty: 3,
+          title: 'Nepomniachtchi vs Sismanis (2000)',
+          desc: 'Partida real: Ian Nepomniachtchi vs Aggelos Sismanis, Chalkidiki, 2000. Mate en 3.',
+          fen: '2r2b1k/p2Q3p/b1n2PpP/2p5/3r1BN1/3q2P1/P4PB1/R3R1K1 w - - 1 0',
+          solution: ['d7g7', 'f8g7', 'h6g7', 'h8g8', 'g4h6'],
+          character: 'caballo',
+          quotes: {
+            greeting: '¡Partida real: Nepomniachtchi vs Sismanis (2000)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Nepomniachtchi vs Sismanis.'
+          }
+        },
+        {
+          id: 'p50',
+          difficulty: 3,
+          title: 'Rogers vs Bergsson (2005)',
+          desc: 'Partida real: Ian Rogers vs St Bergsson, Gibraltar, 2005. Mate en 3.',
+          fen: 'b5r1/2r5/2pk4/2N1R1p1/1P4P1/4K2p/4P2P/R7 w - - 1 0',
+          solution: ['e5e6', 'd6d5', 'e3d3', 'g8d8', 'e2e4'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Partida real: Rogers vs Bergsson (2005)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Rogers vs Bergsson.'
+          }
+        },
+        {
+          id: 'p51',
+          difficulty: 3,
+          title: 'Balzano vs Reynoso (2006)',
+          desc: 'Partida real: Ivan Balzano vs Carlos Reynoso, Buenos Aires, 2006. Mate en 3.',
+          fen: 'r1bq1r1k/pp4pp/2pp4/2b2p2/4PN2/1BPP1Q2/PP3PPP/R4RK1 w - - 1 0',
+          solution: ['f4g6', 'h7g6', 'f3h3', 'd8h4', 'h3h4'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Balzano vs Reynoso (2006)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Balzano vs Reynoso.'
+          }
+        },
+        {
+          id: 'p52',
+          difficulty: 3,
+          title: 'Blackburne vs Forsyth (1894)',
+          desc: 'Partida real: Joseph Blackburne vs Forsyth, Edinburgh, 1894. Mate en 3.',
+          fen: 'rk1q3r/pp1Qbp1p/4pp2/8/4N3/6P1/PP3PBP/2R3K1 w - - 1 0',
+          solution: ['e4f6', 'd8b6', 'd7e8', 'h8e8', 'f6d7'],
+          character: 'caballo',
+          quotes: {
+            greeting: '¡Partida real: Blackburne vs Forsyth (1894)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Blackburne vs Forsyth.'
+          }
+        },
+        {
+          id: 'p53',
+          difficulty: 3,
+          title: 'Treybal vs Henneberger (1928)',
+          desc: 'Partida real: Karel Treybal vs Walter Henneberger, Hague, 1928. Mate en 3.',
+          fen: '5b2/pp2r1pk/2pp1R1p/4rP1N/2P1P3/1P4Q1/P3q1PP/5R1K w - - 1 0',
+          solution: ['f6h6', 'g7h6', 'h5f6', 'h7h8', 'g3g8'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Treybal vs Henneberger (1928)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Treybal vs Henneberger.'
+          }
+        },
+        {
+          id: 'p54',
+          difficulty: 3,
+          title: 'Chao vs Sengupta (2006)',
+          desc: 'Partida real: Li Chao vs Deep Sengupta, Yerevan, 2006. Mate en 3.',
+          fen: '2q4r/R7/5p1k/2BpPn2/6Qp/6PN/5P1K/8 w - - 1 0',
+          solution: ['c5e3', 'f5e3', 'g4g7', 'h6h5', 'h3f4'],
+          character: 'caballo',
+          quotes: {
+            greeting: '¡Partida real: Chao vs Sengupta (2006)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Chao vs Sengupta.'
+          }
+        },
+        {
+          id: 'p55',
+          difficulty: 3,
+          title: 'Winants vs Stull (1990)',
+          desc: 'Partida real: Luc Winants vs Norbert Stull, Lyons, 1990. Mate en 3.',
+          fen: '1r3k2/3Rnp2/6p1/6q1/p1BQ1p2/P1P5/1P3PP1/6K1 w - - 1 0',
+          solution: ['d4h8', 'e7g8', 'd7f7', 'f8e8', 'h8g8'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Winants vs Stull (1990)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Winants vs Stull.'
+          }
+        },
+        {
+          id: 'p56',
+          difficulty: 3,
+          title: 'Adams vs Sherhard (1993)',
+          desc: 'Partida real: Michael Adams vs Sherhard, London, 1993. Mate en 3.',
+          fen: '2bq1k1r/r5pp/p2b1Pn1/1p1Q4/3P4/1B6/PP3PPP/2R1R1K1 w - - 1 0',
+          solution: ['d5d6', 'd8d6', 'c1c8', 'd6d8', 'c8d8'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Partida real: Adams vs Sherhard (1993)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Adams vs Sherhard.'
+          }
+        },
+        {
+          id: 'p57',
+          difficulty: 3,
+          title: 'Haygarth vs Bennett (1974)',
+          desc: 'Partida real: Michael Haygarth vs Gerald Bennett, England, 1974. Mate en 3.',
+          fen: '4nrk1/rR5p/4pnpQ/4p1N1/2p1N3/6P1/q4P1P/4R1K1 w - - 1 0',
+          solution: ['e4f6', 'f8f6', 'h6h7', 'g8f8', 'h7h8'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Haygarth vs Bennett (1974)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Haygarth vs Bennett.'
+          }
+        },
+        {
+          id: 'p58',
+          difficulty: 3,
+          title: 'Short vs Fleck (1986)',
+          desc: 'Partida real: Nigel Short vs Juergen Fleck, Germany, 1986. Mate en 3.',
+          fen: 'kr6/pR5R/1q1pp3/8/1Q6/2P5/PKP5/5r2 w - - 1 0',
+          solution: ['b4b6', 'f1b1', 'b2b1', 'a7b6', 'b7a7'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Partida real: Short vs Fleck (1986)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Short vs Fleck.'
+          }
+        },
+        {
+          id: 'p59',
+          difficulty: 3,
+          title: 'Motwani vs Wicker (1986)',
+          desc: 'Partida real: Paul Motwani vs Kevin Wicker, Southampton, 1986. Mate en 3.',
+          fen: '2k5/p1p4R/P3r1p1/2r2p2/8/1R6/8/5K2 w - - 1 0',
+          solution: ['b3b8', 'c8b8', 'h7h8', 'e6e8', 'h8e8'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Partida real: Motwani vs Wicker (1986)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Motwani vs Wicker.'
+          }
+        },
+        {
+          id: 'p60',
+          difficulty: 3,
+          title: 'Leko vs Turta (1993)',
+          desc: 'Partida real: Peter Leko vs Vladimir Turta, Bratislava, 1993. Mate en 3.',
+          fen: 'nr2kb1r/1p3p1p/p2p1q2/P2Pp3/2N2p2/2P3PB/1P3P1P/R2QK2R w - - 1 0',
+          solution: ['d1a4', 'b7b5', 'a5b6', 'e8e7', 'a4d7'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Leko vs Turta (1993)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Leko vs Turta.'
+          }
+        },
+        {
+          id: 'p61',
+          difficulty: 3,
+          title: 'Marjanovic vs Abramovic (1986)',
+          desc: 'Partida real: Slavoljub Marjanovic vs Bosko Abramovic, Zenica, 1986. Mate en 3.',
+          fen: '3r1q1k/6bp/p1p5/1p2B1Q1/P1B5/3P4/5PPP/4R1K1 w - - 1 0',
+          solution: ['e5g7', 'f8g7', 'g5d8', 'g7g8', 'd8g8'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Marjanovic vs Abramovic (1986)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Marjanovic vs Abramovic.'
+          }
+        },
+        {
+          id: 'p62',
+          difficulty: 3,
+          title: 'Dietzinger vs Vogel (1989)',
+          desc: 'Partida real: Uwe Dietzinger vs Heike Vogel, Germany 1989. Mate en 3.',
+          fen: 'r1bqn1rk/1p1np1bp/p1pp2p1/6P1/2PPP3/2N1BPN1/PP1Q4/2KR1B1R w - - 1 0',
+          solution: ['h1h7', 'h8h7', 'd2h2', 'g7h6', 'h2h6'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Dietzinger vs Vogel (1989)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Dietzinger vs Vogel.'
+          }
+        },
+        {
+          id: 'p63',
+          difficulty: 3,
+          title: 'Ivanchuk vs Kamsky (2008)',
+          desc: 'Partida real: Vassily Ivanchuk vs Gata Kamsky, Moscow, 2008. Mate en 3.',
+          fen: '1n1N2rk/2Q2pb1/p3p2p/Pq2P3/3R4/6B1/1P3P1P/6K1 w - - 1 0',
+          solution: ['d8f7', 'h8h7', 'c7c2', 'b5d3', 'c2d3'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Ivanchuk vs Kamsky (2008)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Ivanchuk vs Kamsky.'
+          }
+        },
+        {
+          id: 'p64',
+          difficulty: 3,
+          title: 'Browne vs Neto (1994)',
+          desc: 'Partida real: Walter Browne vs Jaime Sunye Neto, Linares, 1994. Mate en 3.',
+          fen: '6k1/5p2/4nQ1P/p4N2/1p1b4/7K/PP3r2/8 w - - 1 0',
+          solution: ['h6h7', 'g8h7', 'f6h6', 'h7g8', 'f5e7'],
+          character: 'caballo',
+          quotes: {
+            greeting: '¡Partida real: Browne vs Neto (1994)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Browne vs Neto.'
+          }
+        },
+        {
+          id: 'p65',
+          difficulty: 3,
+          title: 'Ocampos vs Kovacevic (1993)',
+          desc: 'Partida real: Zenon Franco Ocampos vs Slobodan Kovacevic, Mislata, 1993. Mate en 3.',
+          fen: 'r2r4/1b3k2/3Pq3/pBp1p2p/Pp6/6R1/1P3P2/R2Q2K1 w - - 1 0',
+          solution: ['d1h5', 'f7f8', 'h5h8', 'f8f7', 'h8g7'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Ocampos vs Kovacevic (1993)! Encuentra el mate en 3.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Ocampos vs Kovacevic.'
+          }
+        },
+        {
+          id: 'p66',
+          difficulty: 4,
+          title: 'Guru" vs "Pawnder" (1994)',
+          desc: 'Partida real: "Chess Guru" vs "Pawnder", London, 1994. Mate en 4.',
+          fen: '4r3/2B4B/2p1b3/ppk5/5R2/P2P3p/1PP5/1K5R w - - 1 0',
+          solution: ['b2b4', 'a5b4', 'a3b4', 'c5d5', 'c2c4', 'b5c4', 'd3c4'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Partida real: Guru" vs "Pawnder" (1994)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Guru" vs "Pawnder".'
+          }
+        },
+        {
+          id: 'p67',
+          difficulty: 4,
+          title: 'Lesiege vs Goldenberg (1997)',
+          desc: 'Partida real: Alexandre Lesiege vs Danny Goldenberg, Defi, 1997. Mate en 4.',
+          fen: '5r1k/1p4pp/p2N4/3Qp3/P2n1bP1/5P1q/1PP2R1P/4R2K w - - 1 0',
+          solution: ['d6f7', 'h8g8', 'f7h6', 'g8h8', 'd5g8', 'f8g8', 'h6f7'],
+          character: 'caballo',
+          quotes: {
+            greeting: '¡Partida real: Lesiege vs Goldenberg (1997)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Lesiege vs Goldenberg.'
+          }
+        },
+        {
+          id: 'p68',
+          difficulty: 4,
+          title: 'Naiditsch vs Schnur (2002)',
+          desc: 'Partida real: Arkadij Naiditsch vs Gerhard Schnur, Bad Woerishofen, 2002. Mate en 4.',
+          fen: 'r4r1k/pp1b2pn/8/3pR3/5N2/3Q4/Pq3PPP/5RK1 w - - 1 0',
+          solution: ['f4g6', 'h8g8', 'g6e7', 'g8h8', 'd3h7', 'h8h7', 'e5h5'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Partida real: Naiditsch vs Schnur (2002)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Naiditsch vs Schnur.'
+          }
+        },
+        {
+          id: 'p69',
+          difficulty: 4,
+          title: 'Tairova vs Winkelmann (2005)',
+          desc: 'Partida real: Elena Tairova vs Elena Winkelmann, Belfort, 2005. Mate en 4.',
+          fen: '8/5r2/3R4/3Pp1p1/p2pPk1p/P2PbP2/1P2K2P/4B3 w - - 1 0',
+          solution: ['d6g6', 'e3g1', 'e1h4', 'g1h2', 'g6g5', 'h2g1', 'g5g4'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Partida real: Tairova vs Winkelmann (2005)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Tairova vs Winkelmann.'
+          }
+        },
+        {
+          id: 'p70',
+          difficulty: 4,
+          title: 'Kasparov vs Zakharov (1981)',
+          desc: 'Partida real: Garry Kasparov vs Zakharov, Moscow, 1981. Mate en 4.',
+          fen: '5r1k/2q1r1p1/1npbBpQB/1p1p3P/p2P2R1/P4PP1/1PR2PK1/8 w - - 1 0',
+          solution: ['h6g7', 'e7g7', 'g6h6', 'g7h7', 'h6f8', 'd6f8', 'g4g8'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Partida real: Kasparov vs Zakharov (1981)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Kasparov vs Zakharov.'
+          }
+        },
+        {
+          id: 'p71',
+          difficulty: 4,
+          title: 'Shahade vs Nagle (1998)',
+          desc: 'Partida real: Jennifer Shahade vs Sean Nagle, Kona, 1998. Mate en 4.',
+          fen: 'R7/5pkp/3N2p1/2r3Pn/5r2/1P6/P1P5/2KR4 w - - 1 0',
+          solution: ['d6e8', 'g7f8', 'e8f6', 'c5c8', 'a8c8', 'f8e7', 'c8e8'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Partida real: Shahade vs Nagle (1998)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Shahade vs Nagle.'
+          }
+        },
+        {
+          id: 'p72',
+          difficulty: 4,
+          title: 'Kiik vs Salmela (1997)',
+          desc: 'Partida real: Kalle Kiik vs Hannu Salmela, Seinajoki, 1997. Mate en 4.',
+          fen: 'r1kq1b1r/5ppp/p4n2/2pPR1B1/Q7/2P5/P4PPP/1R4K1 w - - 1 0',
+          solution: ['a4c6', 'd8c7', 'e5e8', 'f6e8', 'c6e8', 'c7d8', 'e8d8'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Kiik vs Salmela (1997)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Kiik vs Salmela.'
+          }
+        },
+        {
+          id: 'p73',
+          difficulty: 4,
+          title: 'Bhatia vs Wakabayashi (2010)',
+          desc: 'Partida real: Kanwal Bhatia vs Hisako Wakabayashi, Khanty Mansyisk, 2010. Mate en 4.',
+          fen: '2q3k1/1b1Q2bp/p1n2pp1/1p6/4B3/5N2/1PP2PPP/4R1K1 w - - 1 0',
+          solution: ['e4d5', 'g8h8', 'e1e8', 'g7f8', 'd7f7', 'c8e8', 'f7g8'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Bhatia vs Wakabayashi (2010)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Bhatia vs Wakabayashi.'
+          }
+        },
+        {
+          id: 'p74',
+          difficulty: 4,
+          title: 'Checiak vs Wengierow (2008)',
+          desc: 'Partida real: Krzysztof Checiak vs Michal Wengierow, Poland, 2008. Mate en 4.',
+          fen: 'r1bq1rk1/pp1nb1pp/5p2/6B1/3pQ3/3BPN2/PP3PPP/R4RK1 w - - 1 0',
+          solution: ['e4h7', 'g8f7', 'd3c4', 'f7e8', 'h7g6', 'f8f7', 'g6f7'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Checiak vs Wengierow (2008)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Checiak vs Wengierow.'
+          }
+        },
+        {
+          id: 'p75',
+          difficulty: 4,
+          title: 'Aronian vs Kindermann (2004)',
+          desc: 'Partida real: Levon Aronian vs Stefan Kindermann, Germany, 2004. Mate en 4.',
+          fen: '3r2r1/4q1Bp/4k3/nBP2p1Q/P3p2P/4P1R1/8/4K3 w - - 1 0',
+          solution: ['g3g6', 'h7g6', 'h5g6', 'e7f6', 'g6f6', 'e6d5', 'f6f5'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Aronian vs Kindermann (2004)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Aronian vs Kindermann.'
+          }
+        },
+        {
+          id: 'p76',
+          difficulty: 4,
+          title: 'Marin vs Cuadras (1993)',
+          desc: 'Partida real: Mihail Marin vs A Cuadras, L\'Hospitalet, 1993. Mate en 4.',
+          fen: 'r2qr1k1/1p1n2pp/2b1p3/p2pP1b1/P2P1Np1/3BPR2/1PQB3P/5RK1 w - - 1 0',
+          solution: ['d3h7', 'g8h8', 'f4g6', 'h8h7', 'g6f8', 'h7g8', 'c2h7'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Marin vs Cuadras (1993)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Marin vs Cuadras.'
+          }
+        },
+        {
+          id: 'p77',
+          difficulty: 4,
+          title: 'Gaprindashvili vs Nikolac (1979)',
+          desc: 'Partida real: Nona Gaprindashvili vs Juraj Nikolac, Wijk aan Zee, 1979. Mate en 4.',
+          fen: '2r1r3/pp1nbN2/4p3/q7/P1pP2nk/2P2P2/1PQ5/R3R1K1 w - - 1 0',
+          solution: ['e1e4', 'h4h5', 'e4g4', 'a5f5', 'c2h2', 'e7h4', 'h2h4'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Gaprindashvili vs Nikolac (1979)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Gaprindashvili vs Nikolac.'
+          }
+        },
+        {
+          id: 'p78',
+          difficulty: 4,
+          title: 'Thipsay vs Alarcon (1994)',
+          desc: 'Partida real: Praveen Thipsay vs Rodrigo Alarcon, Moscow, 1994. Mate en 4.',
+          fen: '1b4rk/4R1pp/p1b4r/2PB4/Pp1Q4/6Pq/1P3P1P/4RNK1 w - - 1 0',
+          solution: ['d4g7', 'g8g7', 'e7e8', 'c6e8', 'e1e8', 'g7g8', 'e8g8'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Partida real: Thipsay vs Alarcon (1994)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Thipsay vs Alarcon.'
+          }
+        },
+        {
+          id: 'p79',
+          difficulty: 4,
+          title: 'Kholmov vs Turner (2001)',
+          desc: 'Partida real: Ratmir Kholmov vs Jan Turner, Pardubice, 2001. Mate en 4.',
+          fen: '3r2k1/3N3p/4p1pQ/3p1p2/3P4/6BP/q4PPK/8 w - - 1 0',
+          solution: ['d7f6', 'g8f7', 'h6h7', 'f7f6', 'g3e5', 'f6g5', 'f2f4'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Partida real: Kholmov vs Turner (2001)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Kholmov vs Turner.'
+          }
+        },
+        {
+          id: 'p80',
+          difficulty: 4,
+          title: 'Mamedov vs Alvarez (2010)',
+          desc: 'Partida real: Rauf Mamedov vs Johan Alvarez, Khanty Mansyisk, 2010. Mate en 4.',
+          fen: '5rk1/pp1qpR2/6Pp/3ppNbQ/2nP4/B1P5/P5PP/6K1 w - - 1 0',
+          solution: ['f7g7', 'g8h8', 'h5h6', 'g5h6', 'g7h7', 'h8g8', 'f5h6'],
+          character: 'caballo',
+          quotes: {
+            greeting: '¡Partida real: Mamedov vs Alvarez (2010)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Mamedov vs Alvarez.'
+          }
+        },
+        {
+          id: 'p81',
+          difficulty: 4,
+          title: 'Robson vs Shankland (2007)',
+          desc: 'Partida real: Roy Robson vs S Shankland, Peabody, 2007. Mate en 4.',
+          fen: '5k1r/6p1/1Qq2p1p/2r1p3/2B3P1/1P6/1PP5/2K2R2 w - - 1 0',
+          solution: ['b6d8', 'c6e8', 'f1f6', 'g7f6', 'd8f6', 'e8f7', 'f6f7'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Robson vs Shankland (2007)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Robson vs Shankland.'
+          }
+        },
+        {
+          id: 'p82',
+          difficulty: 4,
+          title: 'Sjugirov vs Lanin (2008)',
+          desc: 'Partida real: Sanan Sjugirov vs Alexsej Lanin, St. Petersburg, 2008. Mate en 4.',
+          fen: '4kb1r/1R6/p2rp3/2Q1p1q1/4p3/3B4/P6P/4KR2 w - - 1 0',
+          solution: ['d3b5', 'a6b5', 'c5b5', 'e8d8', 'b7b8', 'd8c7', 'b5b7'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Sjugirov vs Lanin (2008)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Sjugirov vs Lanin.'
+          }
+        },
+        {
+          id: 'p83',
+          difficulty: 4,
+          title: 'Young vs Marshall (1913)',
+          desc: 'Partida real: W Young vs Frank J Marshall, Pardentown, 1913. Mate en 4.',
+          fen: 'rnb2b1r/ppp1n1kp/3p1q2/7Q/4PB2/2N5/PPP3PP/R4RK1 w - - 1 0',
+          solution: ['f4h6', 'g7g8', 'f1f6', 'e7g6', 'h5d5', 'c8e6', 'd5e6'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Partida real: Young vs Marshall (1913)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Young vs Marshall.'
+          }
+        },
+        {
+          id: 'p84',
+          difficulty: 4,
+          title: 'Browne vs Kovacs (1970)',
+          desc: 'Partida real: Walter Browne vs Marta Kovacs, Sarajevo, 1970. Mate en 4.',
+          fen: '6rk/5p1p/5p2/1p2bP2/1P2R2Q/2q1BBPP/5PK1/r7 w - - 1 0',
+          solution: ['h4h7', 'h8h7', 'e4h4', 'h7g7', 'e3h6', 'g7h7', 'h6f8'],
+          character: 'alfil',
+          quotes: {
+            greeting: '¡Partida real: Browne vs Kovacs (1970)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Browne vs Kovacs.'
+          }
+        },
+        {
+          id: 'p85',
+          difficulty: 4,
+          title: 'Xue vs Houska (2006)',
+          desc: 'Partida real: Zhao Xue vs Jovanka Houska, Turin, 2006. Mate en 4.',
+          fen: '3r1nQ1/1b4p1/1p3k1p/p1q5/P2N4/5P2/6PP/1B2R2K w - - 1 0',
+          solution: ['e1e6', 'f8e6', 'g8e6', 'f6g5', 'h2h4', 'g5f4', 'd4e2'],
+          character: 'caballo',
+          quotes: {
+            greeting: '¡Partida real: Xue vs Houska (2006)! Encuentra el mate en 4.',
+            success: '¡Bien! Sigue la línea de jaques.',
+            fail: 'Esa jugada no lleva al mate. ¡Piensa otra vez!',
+            solved: '¡Mate completado! Como en la partida real de Xue vs Houska.'
+          }
         }
       ];
 
@@ -900,7 +1500,10 @@
       // Bind controls
       document.getElementById('btn-reset').addEventListener('click', () => this.resetPuzzle());
       document.getElementById('btn-hint').addEventListener('click', () => this.showHint());
-      document.getElementById('btn-next').addEventListener('click', () => this.loadNextPuzzle());
+      document.getElementById('btn-next').addEventListener('click', () => {
+        this.stopSpeaking();
+        this.loadNextPuzzle();
+      });
       document.getElementById('btn-play-voice').addEventListener('click', () => {
         this.stopSpeaking();
         if (this.currentPuzzle) {
@@ -1010,7 +1613,6 @@
       this.board.clearHighlights();
 
       // Reset UI elements
-      document.getElementById('btn-next').disabled = true;
       document.getElementById('puzzles-board').classList.remove('success-glow');
       const indicator = document.getElementById('turn-indicator');
       indicator.textContent = 'Blancas Juegan y Dan Mate';
@@ -1183,8 +1785,6 @@
       this.streak++;
       this.saveProgress(earnedPoints);
       this.renderPuzzlesList();
-
-      document.getElementById('btn-next').disabled = false;
     }
 
     handleFailure() {
@@ -1214,9 +1814,14 @@
     }
 
     loadNextPuzzle() {
+      // Buscar el siguiente puzzle NO resuelto, envolviendo al principio
       const currentIdx = this.puzzles.findIndex(p => p.id === this.currentPuzzle.id);
-      const nextIdx = (currentIdx + 1) % this.puzzles.length;
-      this.loadPuzzle(this.puzzles[nextIdx]);
+      let count = this.puzzles.length;
+      let idx = (currentIdx + 1) % this.puzzles.length;
+      while (count-- > 0 && this.solvedList.includes(this.puzzles[idx].id)) {
+        idx = (idx + 1) % this.puzzles.length;
+      }
+      this.loadPuzzle(this.puzzles[idx]);
     }
   }
 

@@ -2,7 +2,7 @@
   "fuente": "wtharvey.com (colecciones Bill Harvey, partidas reales)",
   "verificacion": "Cada puzzle fue verificado con Stockfish WASM (mate forzado exacto en N) y con js/chess-engine.js (solución legal y mate final). Ver test_puzzle.js.",
   "total": 730,
-  "usados": 20,
+  "usados": 100,
   "puzzles": [
     {
       "id": "m3-001",
@@ -97,8 +97,8 @@
         "c4c5"
       ],
       "san": "1. Rxa6+ Rxa6 2. Qd7+ Kb6 3. c5#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p62"
     },
     {
       "id": "m3-007",
@@ -417,8 +417,8 @@
         "f6d7"
       ],
       "san": "1. Nxf6 Qb6 2. Qe8+ Rxe8 3. Nd7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p52"
     },
     {
       "id": "m3-027",
@@ -497,8 +497,8 @@
         "e1e8"
       ],
       "san": "1. Qe8+ Kxe8 2. Bb5+ Kd8 3. Re8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p57"
     },
     {
       "id": "m3-032",
@@ -689,8 +689,8 @@
         "f8h6"
       ],
       "san": "1. Qf8+ Kh5 2. g4+ Kh4 3. Qh6#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p46"
     },
     {
       "id": "m3-044",
@@ -721,8 +721,8 @@
         "a8a6"
       ],
       "san": "1. Qa7+ Kc8 2. Qa8+ Bb8 3. Qa6#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p56"
     },
     {
       "id": "m3-046",
@@ -1009,8 +1009,8 @@
         "e7h7"
       ],
       "san": "1. Nf6+ Kh8 2. Qxh6+ Bxh6 3. Rh7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p47"
     },
     {
       "id": "m3-064",
@@ -1057,8 +1057,8 @@
         "g3g8"
       ],
       "san": "1. Rxh6+ gxh6 2. Nf6+ Kh8 3. Qg8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p53"
     },
     {
       "id": "m3-067",
@@ -1089,8 +1089,8 @@
         "b4b5"
       ],
       "san": "1. Na6+ Kxb7 2. Bd7+ Kxa6 3. Qb5#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p65"
     },
     {
       "id": "m3-069",
@@ -1617,8 +1617,8 @@
         "e6e7"
       ],
       "san": "1. Nc7+ Qxc7 2. Qe6+ Be7 3. Qxe7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p48"
     },
     {
       "id": "m3-102",
@@ -2001,8 +2001,8 @@
         "h7h8"
       ],
       "san": "1. Nxf6+ Rxf6 2. Qxh7+ Kf8 3. Qh8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p57"
     },
     {
       "id": "m3-126",
@@ -2081,8 +2081,8 @@
         "d4f6"
       ],
       "san": "1. Qf6+ Bxf6 2. exf6+ Nxf6 3. Bxf6#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p49"
     },
     {
       "id": "m3-131",
@@ -2177,8 +2177,8 @@
         "h6h8"
       ],
       "san": "1. Rg6 Rgf8 2. Rh6+ Kg8 3. Rxh8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p52"
     },
     {
       "id": "m3-137",
@@ -2337,8 +2337,8 @@
         "c6c8"
       ],
       "san": "1. Qa6+ Rxa6 2. bxa6+ Kb8 3. Rc8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p61"
     },
     {
       "id": "m3-147",
@@ -2385,8 +2385,8 @@
         "h4h6"
       ],
       "san": "1. Qxh7+ Kxh7 2. Rh4+ Kg6 3. Rh6#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p63"
     },
     {
       "id": "m3-150",
@@ -2417,8 +2417,8 @@
         "e3h3"
       ],
       "san": "1. Bxf7+ Kh8 2. Qxh7+ Kxh7 3. Rh3#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p59"
     },
     {
       "id": "m3-152",
@@ -2529,8 +2529,8 @@
         "d8g8"
       ],
       "san": "1. Bxg7+ Qxg7 2. Qxd8+ Qg8 3. Qxg8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p61"
     },
     {
       "id": "m3-159",
@@ -2545,8 +2545,8 @@
         "h8e8"
       ],
       "san": "1. Rb8+ Kxb8 2. Rh8+ Re8 3. Rxe8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p59"
     },
     {
       "id": "m3-160",
@@ -2561,8 +2561,8 @@
         "b7a7"
       ],
       "san": "1. Qxb6 Rb1+ 2. Kxb1 axb6 3. Ra7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p58"
     },
     {
       "id": "m3-161",
@@ -2625,8 +2625,8 @@
         "h3h8"
       ],
       "san": "1. Qxf7+ Rxf7 2. Ng6+ Kg8 3. Rh8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p50"
     },
     {
       "id": "m3-165",
@@ -2753,8 +2753,8 @@
         "h5h8"
       ],
       "san": "1. Bg7+ Kxg7 2. Rxg6+ Kf8 3. Qh8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p58"
     },
     {
       "id": "m3-173",
@@ -2769,8 +2769,8 @@
         "f6h8"
       ],
       "san": "1. Rxg6 Qxf2+ 2. Kxf2 Rxg6 3. Qh8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p54"
     },
     {
       "id": "m3-174",
@@ -2785,8 +2785,8 @@
         "h2h6"
       ],
       "san": "1. Rxh7+ Kxh7 2. Qh2+ Bh6 3. Qxh6#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p62"
     },
     {
       "id": "m3-175",
@@ -2913,8 +2913,8 @@
         "h8g8"
       ],
       "san": "1. Qh8+ Ng8 2. Rxf7+ Ke8 3. Qxg8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p55"
     },
     {
       "id": "m3-183",
@@ -3041,8 +3041,8 @@
         "h3h8"
       ],
       "san": "1. Qh8+ Kxh8 2. Bxf6+ Kg8 3. Rh8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p46"
     },
     {
       "id": "m3-191",
@@ -3137,8 +3137,8 @@
         "c8d8"
       ],
       "san": "1.Qxd6+ Qxd6 2.Rxc8+ Qd8 3.Rxd8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p56"
     },
     {
       "id": "m3-197",
@@ -3233,8 +3233,8 @@
         "a4d7"
       ],
       "san": "1. Qa4+ b5 2. axb6+ Ke7 3. Qd7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p60"
     },
     {
       "id": "m3-203",
@@ -3249,8 +3249,8 @@
         "h8g7"
       ],
       "san": "1. Qxh5+ Kf8 2. Qh8+ Kf7 3. Qg7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p65"
     },
     {
       "id": "m3-204",
@@ -3297,8 +3297,8 @@
         "f5e7"
       ],
       "san": "1. h7+ Kxh7 2. Qh6+ Kg8 3. Ne7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p64"
     },
     {
       "id": "m3-207",
@@ -3313,8 +3313,8 @@
         "h8g7"
       ],
       "san": "1. Qh8+ Kf7 2. Bg6+ Ke7 3. Qxg7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p51"
     },
     {
       "id": "m3-208",
@@ -3409,8 +3409,8 @@
         "h6g7"
       ],
       "san": "1. Rg7 Nf8 2. Rxg8+ Kxg8 3. Qg7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p55"
     },
     {
       "id": "m3-214",
@@ -3809,8 +3809,8 @@
         "d1d8"
       ],
       "san": "1. Rh8+ Kxh8 2. Qh6+ Kg8 3. Rd8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p60"
     },
     {
       "id": "m3-239",
@@ -3841,8 +3841,8 @@
         "f8h8"
       ],
       "san": "1. Rxf6 hxg6 2. Rfxf8+ Kh7 3. Rxh8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p64"
     },
     {
       "id": "m3-241",
@@ -3937,8 +3937,8 @@
         "g6h7"
       ],
       "san": "1. Nf7+ Qxf7 2. Bf6+ Qxf6 3. Qh7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p48"
     },
     {
       "id": "m3-247",
@@ -4241,8 +4241,8 @@
         "g4h6"
       ],
       "san": "1. Qg7+ Bxg7 2. hxg7+ Kg8 3. Nh6#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p49"
     },
     {
       "id": "m3-266",
@@ -4897,8 +4897,8 @@
         "e2e4"
       ],
       "san": "1. Re6+ Kd5 2. Kd3 Rd8 3. e4#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p50"
     },
     {
       "id": "m3-307",
@@ -4961,8 +4961,8 @@
         "h3h4"
       ],
       "san": "1. Ng6+ hxg6 2. Qh3+ Qh4 3. Qxh4#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p51"
     },
     {
       "id": "m3-311",
@@ -5057,8 +5057,8 @@
         "h3f4"
       ],
       "san": "1. Be3+ Nxe3 2. Qg7+ Kh5 3. Nf4#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p54"
     },
     {
       "id": "m3-317",
@@ -5521,8 +5521,8 @@
         "c2d3"
       ],
       "san": "1. Nxf7+ Kh7 2. Qc2+ Qd3 3. Qxd3#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p63"
     },
     {
       "id": "m3-346",
@@ -5553,8 +5553,8 @@
         "g6d6"
       ],
       "san": "1. Rxf7+ Kxf7 2. Qxg6+ Ke7 3. Qd6#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p53"
     },
     {
       "id": "m3-348",
@@ -5793,8 +5793,8 @@
         "g6h6"
       ],
       "san": "1. Rxh6+ gxh6 2. Qg6+ Kh8 3. Qxh6#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p47"
     },
     {
       "id": "m3-363",
@@ -6037,8 +6037,8 @@
         "d5e6"
       ],
       "san": "1. Rf8+ Bxf8 2. d6+ Qd5 3. Bxd5+ Be6 4. Bxe6#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p72"
     },
     {
       "id": "m4-011",
@@ -6361,8 +6361,8 @@
         "e5e6"
       ],
       "san": "1. Nb7+ Ke7 2. Qg7+ Ke8 3. Qe5+ Be6 4. Qxe6#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p74"
     },
     {
       "id": "m4-029",
@@ -6397,8 +6397,8 @@
         "h1h8"
       ],
       "san": "1. Qxh5 Bxg5 2. Qxh7+ Kxh7 3. hxg5+ Kg8 4. Rh8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p73"
     },
     {
       "id": "m4-031",
@@ -6487,8 +6487,8 @@
         "h3h7"
       ],
       "san": "1. Qxh6+ Kxh6 2. Rh3+ Kg6 3. Bd3+ Kg7 4. Rh7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p78"
     },
     {
       "id": "m4-036",
@@ -6505,8 +6505,8 @@
         "d5e6"
       ],
       "san": "1. Bh6+ Kg8 2. Rxf6 Ng6 3. Qd5+ Be6 4. Qxe6#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p83"
     },
     {
       "id": "m4-037",
@@ -6757,8 +6757,8 @@
         "g3g7"
       ],
       "san": "1. Rg8+ Kxg8 2. Qxg2+ Qg3 3. Qxg3+ Kf8 4. Qg7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p80"
     },
     {
       "id": "m4-051",
@@ -7261,8 +7261,8 @@
         "h5g6"
       ],
       "san": "1. Bh5+ Ng6 2. Rxh7 Rg1+ 3. Kxg1 Bxe2 4. Bxg6#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p81"
     },
     {
       "id": "m4-079",
@@ -7729,8 +7729,8 @@
         "h6f8"
       ],
       "san": "1. Qxh7+ Kxh7 2. Rh4+ Kg7 3. Bh6+ Kh7 4. Bf8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p84"
     },
     {
       "id": "m4-105",
@@ -7963,8 +7963,8 @@
         "h5h6"
       ],
       "san": "1. Ng5+ hxg5 2. Qxg6+ Kh8 3. Qh5+ Bh6 4. Qxh6#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p77"
     },
     {
       "id": "m4-118",
@@ -7999,8 +7999,8 @@
         "g4g8"
       ],
       "san": "1. Qg4+ Kf8 2. Bh7 Ne3 3. Rxe3 Qxd4 4. Qg8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p75"
     },
     {
       "id": "m4-120",
@@ -8053,8 +8053,8 @@
         "h2h4"
       ],
       "san": "1. Re4 Kh5 2. Rxg4 Qf5 3. Qh2+ Bh4 4. Qxh4#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p77"
     },
     {
       "id": "m4-123",
@@ -8125,8 +8125,8 @@
         "g4g8"
       ],
       "san": "1. Bxg7+ Rxg7 2. Qh6+ Rh7 3. Qxf8+ Bxf8 4. Rg8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p70"
     },
     {
       "id": "m4-127",
@@ -8737,8 +8737,8 @@
         "h2f4"
       ],
       "san": "1. Re8+ Nxe8 2. Rxe8+ Kh7 3. Qf5+ Kh6 4. Bf4#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p83"
     },
     {
       "id": "m4-161",
@@ -9205,8 +9205,8 @@
         "e4e1"
       ],
       "san": "1. Qf1+ Rg1 2. Qf3+ Rg2 3. Qe4 Kg1 4. Qe1#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p84"
     },
     {
       "id": "m4-187",
@@ -9403,8 +9403,8 @@
         "c2h7"
       ],
       "san": "1. Bxh7+ Kh8 2. Ng6+ Kxh7 3. Nf8+ Kg8 4. Qh7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p76"
     },
     {
       "id": "m4-198",
@@ -9493,8 +9493,8 @@
         "d3c4"
       ],
       "san": "1. b4+ axb4 2. axb4+ Kd5 3. c4+ bxc4 4. dxc4#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p66"
     },
     {
       "id": "m4-203",
@@ -9637,8 +9637,8 @@
         "e8g8"
       ],
       "san": "1. Qxg7+ Rxg7 2. Re8+ Bxe8 3. Rxe8+ Rg8 4. Rxg8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p78"
     },
     {
       "id": "m4-211",
@@ -9907,8 +9907,8 @@
         "d8h8"
       ],
       "san": "1. Qb8+ Qd8 2. Qxd8+ Kg7 3. Bh6+ Kf6 4. Qh8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p71"
     },
     {
       "id": "m4-226",
@@ -10033,8 +10033,8 @@
         "e8d8"
       ],
       "san": "1. Qc6+ Qc7 2. Re8+ Nxe8 3. Qxe8+ Qd8 4. Qxd8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p72"
     },
     {
       "id": "m4-233",
@@ -10069,8 +10069,8 @@
         "h6f7"
       ],
       "san": "1. Nf7+ Kg8 2. Nh6+ Kh8 3. Qg8+ Rxg8 4. Nf7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p67"
     },
     {
       "id": "m4-235",
@@ -10213,8 +10213,8 @@
         "h6h8"
       ],
       "san": "1. Bc4+ d5 2. Bxd5+ Re6 3. Bxe6+ Nf7 4. Qh8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p82"
     },
     {
       "id": "m4-243",
@@ -10321,8 +10321,8 @@
         "c8e8"
       ],
       "san": "1. Ne8+ Kf8 2. Nf6+ Rc8 3. Rxc8+ Ke7 4. Re8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p71"
     },
     {
       "id": "m4-249",
@@ -10393,8 +10393,8 @@
         "d7d4"
       ],
       "san": "1. Qf8+ Kd5 2. Qd8+ Rd7 3. Qxd7+ Ke4 4. Qxd4#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p68"
     },
     {
       "id": "m4-253",
@@ -10447,8 +10447,8 @@
         "f5d4"
       ],
       "san": "1. Ra7+ Kc6 2. Rc8+ Rc7 3. Rcxc7+ Kb5 4. Nd4#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p79"
     },
     {
       "id": "m4-256",
@@ -10699,8 +10699,8 @@
         "h6h7"
       ],
       "san": "1. Rg6 Nf6 2. Ng5+ Kh8 3. Rh6+ Nh7 4. Rxh7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p70"
     },
     {
       "id": "m4-270",
@@ -10717,8 +10717,8 @@
         "f2f4"
       ],
       "san": "1. Nf6+ Kf7 2. Qxh7+ Kxf6 3. Be5+ Kg5 4. f4#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p79"
     },
     {
       "id": "m4-271",
@@ -10987,8 +10987,8 @@
         "h6g7"
       ],
       "san": "1. Nh5+ Kg8 2. Rh8+ Kxh8 3. Qh6+ Kg8 4. Qg7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p69"
     },
     {
       "id": "m4-286",
@@ -11023,8 +11023,8 @@
         "e5h5"
       ],
       "san": "1. Ng6+ Kg8 2. Ne7+ Kh8 3. Qxh7+ Kxh7 4. Rh5#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p68"
     },
     {
       "id": "m4-288",
@@ -11167,8 +11167,8 @@
         "f6f5"
       ],
       "san": "1. Rg6+ hxg6 2. Qxg6+ Qf6 3. Qxf6+ Kd5 4. Qxf5#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p75"
     },
     {
       "id": "m4-296",
@@ -11275,8 +11275,8 @@
         "g4g7"
       ],
       "san": "1. Rg8+ Kxg8 2. Qg3+ Qg4 3. Qxg4+ Kh7 4. Qg7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p67"
     },
     {
       "id": "m4-302",
@@ -11527,8 +11527,8 @@
         "g5g4"
       ],
       "san": "1. Rg6 Bg1 2. Bxh4 Bxh2 3. Rxg5 Bg1 4. Rg4#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p69"
     },
     {
       "id": "m4-316",
@@ -11671,8 +11671,8 @@
         "h1h5"
       ],
       "san": "1. Rh1+ Bh7 2. Rxh7+ Kxh7 3. Rh1+ Rh5 4. Rxh5#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p76"
     },
     {
       "id": "m4-324",
@@ -11743,8 +11743,8 @@
         "d4e2"
       ],
       "san": "1. Re6+ Nxe6 2. Qxe6+ Kg5 3. h4+ Kf4 4. Ne2#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p85"
     },
     {
       "id": "m4-328",
@@ -11761,8 +11761,8 @@
         "d5b7"
       ],
       "san": "1. Be8+ Nxe8 2. Qxd5+ Kc7 3. Re7+ Kb8 4. Qxb7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p66"
     },
     {
       "id": "m4-329",
@@ -11833,8 +11833,8 @@
         "f6f7"
       ],
       "san": "1. Qd8+ Qe8 2. Rxf6+ gxf6 3. Qxf6+ Qf7 4. Qxf7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p81"
     },
     {
       "id": "m4-333",
@@ -11887,8 +11887,8 @@
         "g6f7"
       ],
       "san": "1. Qxh7+ Kf7 2. Bc4+ Ke8 3. Qg6+ Rf7 4. Qxf7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p74"
     },
     {
       "id": "m4-336",
@@ -11959,8 +11959,8 @@
         "b5b7"
       ],
       "san": "1. Bb5+ axb5 2. Qxb5+ Kd8 3. Rb8+ Kc7 4. Qb7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p82"
     },
     {
       "id": "m4-340",
@@ -12121,8 +12121,8 @@
         "f7g8"
       ],
       "san": "1. Bd5+ Kh8 2. Re8+ Bf8 3. Qf7 Qxe8 4. Qg8#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p73"
     },
     {
       "id": "m4-349",
@@ -12247,8 +12247,8 @@
         "f5h6"
       ],
       "san": "1. Rg7+ Kh8 2. Qxh6+ Bxh6 3. Rh7+ Kg8 4. Nxh6#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p80"
     },
     {
       "id": "m4-356",
@@ -12355,8 +12355,8 @@
         "h6h7"
       ],
       "san": "1. Qh6 Qd1+ 2. Rxd1 Rg8 3. Rh5 gxh5 4. Qxh7#",
-      "used": false,
-      "puzzleId": null
+      "used": true,
+      "puzzleId": "p85"
     },
     {
       "id": "m4-362",
