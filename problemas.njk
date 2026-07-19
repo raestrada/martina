@@ -18,7 +18,7 @@ footerText: Desafíos de táctica originales para Martina, por papá.
 <div class="puzzles-container fade-in">
   <header class="puzzles-header">
     <h1 style="color: var(--rose); margin-bottom: 0.5rem;">Desafíos de Táctica</h1>
-    <p style="color: var(--magic-dark); opacity: 0.8; max-width: 600px; margin: 0 auto 1.5rem auto;">
+    <p style="color: var(--text-color); opacity: 0.8; max-width: 600px; margin: 0 auto 1.5rem auto;">
       Resuelve problemas de jaque mate de distintas dificultades y gana puntos mágicos mientras escuchas los consejos de Martina y sus amigos.
     </p>
   </header>
@@ -96,7 +96,7 @@ footerText: Desafíos de táctica originales para Martina, por papá.
 
     <!-- PANEL DERECHO: SELECTOR DE PROBLEMAS -->
     <div class="puzzles-sidebar-right">
-      <h3 style="color: var(--rose); margin-bottom: 1rem; border-bottom: 2px dashed rgba(255,255,255,0.1); padding-bottom: 0.5rem; text-align: center;">🎯 Elige tu Nivel</h3>
+      <h3 style="color: var(--rose); margin-bottom: 1rem; border-bottom: 2px dashed rgba(120,120,120,0.25); padding-bottom: 0.5rem; text-align: center;">🎯 Elige tu Nivel</h3>
       
       <div class="difficulty-group">
         <h4>Mate en 1 (Muy Fácil)</h4>
@@ -142,14 +142,19 @@ footerText: Desafíos de táctica originales para Martina, por papá.
 }
 
 .puzzles-stat {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  background: var(--card-bg);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: var(--game-radius);
   padding: 1rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  box-shadow: var(--glass-shadow);
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .puzzles-stat {
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .stat-icon {
@@ -163,7 +168,7 @@ footerText: Desafíos de táctica originales para Martina, por papá.
 
 .stat-label {
   font-size: 0.8rem;
-  color: var(--game-text-muted);
+  color: var(--muted-color);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -171,7 +176,7 @@ footerText: Desafíos de táctica originales para Martina, por papá.
 .stat-value {
   font-size: 1.4rem;
   font-weight: 800;
-  color: #fff;
+  color: var(--text-color);
 }
 
 /* Grilla principal */
@@ -193,22 +198,32 @@ footerText: Desafíos de táctica originales para Martina, por papá.
 
 /* Panel Izquierdo: Diálogo */
 .puzzles-sidebar-left {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  background: var(--card-bg);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: var(--game-radius);
   padding: 1.25rem;
-  box-shadow: var(--glass-shadow);
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .puzzles-sidebar-left {
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .character-card {
   display: flex;
   align-items: center;
   gap: 1rem;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   padding-bottom: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .character-card {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .character-avatar-wrapper {
@@ -231,13 +246,13 @@ footerText: Desafíos de táctica originales para Martina, por papá.
   font-family: var(--game-font);
   font-weight: 800;
   font-size: 1.15rem;
-  color: #fff;
+  color: var(--heading-color);
   margin: 0;
 }
 
 .character-role {
   font-size: 0.75rem;
-  color: var(--game-text-muted);
+  color: var(--muted-color);
 }
 
 .speech-bubble-container {
@@ -245,14 +260,21 @@ footerText: Desafíos de táctica originales para Martina, por papá.
 }
 
 .speech-bubble {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.03);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
   border-radius: var(--game-radius);
   padding: 1rem;
-  color: #fff;
+  color: var(--text-color);
   font-size: 0.95rem;
   line-height: 1.45;
   position: relative;
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .speech-bubble {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
 }
 
 .speech-bubble::before {
@@ -262,9 +284,14 @@ footerText: Desafíos de táctica originales para Martina, por papá.
   left: 20px;
   border-width: 0 10px 10px;
   border-style: solid;
-  border-color: rgba(255, 255, 255, 0.08) transparent;
+  border-color: rgba(0, 0, 0, 0.03) transparent;
   display: block;
   width: 0;
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .speech-bubble::before {
+  border-color: rgba(255, 255, 255, 0.08) transparent;
 }
 
 .voice-controls {
@@ -274,9 +301,9 @@ footerText: Desafíos de táctica originales para Martina, por papá.
 
 .voice-btn {
   flex: 1;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: var(--text-color);
   padding: 0.5rem;
   border-radius: 8px;
   cursor: pointer;
@@ -286,14 +313,30 @@ footerText: Desafíos de táctica originales para Martina, por papá.
 }
 
 .voice-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .voice-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+[data-theme="dark"] .voice-btn:hover {
   background: rgba(255, 255, 255, 0.25);
 }
 
 .puzzle-instructions {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.03);
   padding: 0.85rem;
   border-radius: 8px;
   border-left: 4px solid var(--rose);
+  color: var(--text-color);
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .puzzle-instructions {
+  background: rgba(0, 0, 0, 0.25);
 }
 
 .action-buttons {
@@ -366,13 +409,18 @@ footerText: Desafíos de táctica originales para Martina, por papá.
 
 /* Panel Derecho: Selección de problemas */
 .puzzles-sidebar-right {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  background: var(--card-bg);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: var(--game-radius);
   padding: 1.25rem;
-  box-shadow: var(--glass-shadow);
+  box-shadow: var(--shadow);
   max-height: 520px;
   overflow-y: auto;
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .puzzles-sidebar-right {
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .difficulty-group {
@@ -381,7 +429,7 @@ footerText: Desafíos de táctica originales para Martina, por papá.
 
 .difficulty-group h4 {
   font-size: 0.85rem;
-  color: var(--game-text-muted);
+  color: var(--muted-color);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 0.5rem;
@@ -396,8 +444,8 @@ footerText: Desafíos de táctica originales para Martina, por papá.
 }
 
 .puzzle-select-item {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 6px;
   padding: 0.55rem;
   display: flex;
@@ -405,19 +453,35 @@ footerText: Desafíos de táctica originales para Martina, por papá.
   align-items: center;
   cursor: pointer;
   transition: all 0.2s;
-  color: #fff;
+  color: var(--text-color);
   font-size: 0.85rem;
   font-weight: 600;
 }
 
 .puzzle-select-item:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.07);
   transform: translateX(3px);
 }
 
 .puzzle-select-item.active {
   border-color: var(--rose);
+  background: rgba(231, 111, 81, 0.08);
+  color: var(--rose);
+}
+
+[data-theme="dark"] .puzzle-select-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+[data-theme="dark"] .puzzle-select-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .puzzle-select-item.active {
   background: rgba(231, 111, 81, 0.15);
+  color: #fff;
 }
 
 .puzzle-status-icon {
