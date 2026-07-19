@@ -4,7 +4,7 @@
 (function() {
   class PuzzlesGame {
     constructor() {
-      // 1. Puzzle Database
+      // 1. Puzzle Database (34 Puzzles: 6x M1, 12x M2, 9x M3, 7x M4)
       this.puzzles = [
         {
           id: 'p1',
@@ -187,6 +187,96 @@
           }
         },
         {
+          id: 'p23',
+          difficulty: 2,
+          title: 'La Cortina del Alfil',
+          desc: 'El rey contrario está expuesto. Penetra su línea defensiva forzando el bloqueo de su dama.',
+          fen: '6k1/5ppp/8/8/8/8/1q3PPP/3R1BK1 w - - 0 1',
+          solution: ['d1d8', 'b2e8', 'd8e8'],
+          character: 'alfil',
+          quotes: {
+            greeting: '¡Atrás del muro! El rey contrario está expuesto. Penetra su línea defensiva.',
+            success: '¡Bien! El escudo de su dama se interpone. Captúrala para dar el mate.',
+            fail: 'Eso no es un jaque directo. ¡Intenta de nuevo!',
+            solved: '¡Mate de pasillo con la cortina del alfil protegiendo nuestro enroque!'
+          }
+        },
+        {
+          id: 'p24',
+          difficulty: 2,
+          title: 'El Relevo de Torres',
+          desc: 'El oponente defiende la octava fila con su torre. Sacrifica la tuya para desviar su defensa y rematar.',
+          fen: '4r1k1/5ppp/8/8/8/8/1Q3PPP/4R1K1 w - - 0 1',
+          solution: ['e1xe8', 'e8xe8', 'b2e8'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Hora de la táctica del relevo! Ataca en e8.',
+            success: '¡Perfecto! Capturó con su torre. Ahora tu dama entra al relevo.',
+            fail: 'No pierdas tu torre de esa manera. ¡Intenta de nuevo!',
+            solved: '¡Jaque mate! El relevo dama-torre ha sido impecable.'
+          }
+        },
+        {
+          id: 'p25',
+          difficulty: 2,
+          title: 'La Clavada del Defensor',
+          desc: 'El alfil negro protege la octava fila. Oblígalo a bloquear su propio rey y dale jaque mate.',
+          fen: '6k1/5ppp/2b5/8/8/8/PP3PPP/3R2K1 w - - 0 1',
+          solution: ['d1d8', 'c6e8', 'd8e8'],
+          character: 'alfil',
+          quotes: {
+            greeting: '¡Alfil contra alfil! Ataca en d8.',
+            success: '¡Excelente! El alfil tuvo que retroceder. ¡Remátalo!',
+            fail: 'No, no. Mantén la presión en d8. ¡Intenta otra vez!',
+            solved: '¡Brillante! El alfil enemigo no pudo resistir la presión.'
+          }
+        },
+        {
+          id: 'p26',
+          difficulty: 2,
+          title: 'El Escudo de la Dama',
+          desc: 'La dama oponente está lejos, pero puede volar a e8 para defender. Fuérzala a bloquear.',
+          fen: '6k1/5ppp/q7/8/8/8/PP3PPP/3R2K1 w - - 0 1',
+          solution: ['d1d8', 'q6e8', 'd8e8'],
+          character: 'martina',
+          quotes: {
+            greeting: '¡La octava fila está débil! Ataca con tu torre.',
+            success: '¡Eso es! La dama enemiga voló a defender. ¡Captúrala!',
+            fail: 'Esa jugada no pone en peligro la octava fila. ¡Prueba otra vez!',
+            solved: '¡Precioso mate! La dama oponente bloqueó el escape de su propio rey.'
+          }
+        },
+        {
+          id: 'p27',
+          difficulty: 2,
+          title: 'El Bloqueo del Caballo',
+          desc: 'El caballo negro intenta defender desde g6. Oblígalo a bloquear su propio rey.',
+          fen: 'r5k1/pp3ppp/6n1/3N4/8/8/PP3PPP/4R1K1 w - - 0 1',
+          solution: ['e1e8', 'g6f8', 'e8f8'],
+          character: 'caballo',
+          quotes: {
+            greeting: '¡Salto rápido! Lanza tu torre a la octava fila.',
+            success: '¡Perfecto! El caballo tuvo que retroceder a f8. ¡Captúralo!',
+            fail: 'Eso no obliga al caballo a bloquear. ¡Intenta de nuevo!',
+            solved: '¡Espectacular! El caballo oponente sirvió de obstáculo para su propio rey.'
+          }
+        },
+        {
+          id: 'p28',
+          difficulty: 2,
+          title: 'El Doblado en la Columna D',
+          desc: 'Tus dos torres dominan la columna D. Sacrifica la primera para abrir paso a la segunda.',
+          fen: 'r5k1/5ppp/8/8/8/8/PP1R1PPP/3R2K1 w - - 0 1',
+          solution: ['d1d8', 'a8d8', 'd2d8'],
+          character: 'peoncito',
+          quotes: {
+            greeting: '¡Torres alineadas y listas! Lanza el primer golpe en d8.',
+            success: '¡Excelente! Capturó con su torre. Ahora entra con la segunda.',
+            fail: 'Ese movimiento rompe la batería de torres. ¡Intenta de nuevo!',
+            solved: '¡Jaque mate! Las torres dobles en la columna D barrieron la octava fila.'
+          }
+        },
+        {
           id: 'p5',
           difficulty: 3,
           title: 'La Coz Completa',
@@ -262,6 +352,66 @@
           }
         },
         {
+          id: 'p29',
+          difficulty: 3,
+          title: 'La Infiltración de la Torre F',
+          desc: 'Sacrifica tu dama en f7 para forzar a la torre contraria a colocarse en una posición vulnerable.',
+          fen: '5r1k/5ppp/8/8/8/8/PP3QPP/4R2K w - - 0 1',
+          solution: ['f2xf7', 'f8xf7', 'e1e8', 'f7f8', 'e8xf8'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡La columna F es la clave! Sacrifica tu dama sin piedad.',
+            success: '¡Perfecto! Capturó con la torre. Ahora entra con jaque en e8.',
+            fail: 'Ese movimiento no abre la octava fila. ¡Prueba otra vez!',
+            solved: '¡Sublime! Has despejado el camino para el mate de torre perfecto.'
+          }
+        },
+        {
+          id: 'p30',
+          difficulty: 3,
+          title: 'La Maniobra de la Torre Ascendente',
+          desc: 'Eleva tu torre por la tercera fila para dar un hermoso mate coordinado con tu caballo en f6.',
+          fen: 'r4r1k/1p3p1p/2n2N2/8/8/8/PP4PP/4R1K1 w - - 0 1',
+          solution: ['e1e3', 'f8d8', 'e3h3', 'h8g7', 'h3h7'],
+          character: 'caballo',
+          quotes: {
+            greeting: '¡Eleva el juego! Sube la torre a la tercera fila.',
+            success: '¡Perfecto! El rival intentó abrir escape con su torre. Ahora amenaza h7.',
+            fail: 'Ese movimiento no eleva la torre para el ataque lateral. ¡Intenta de nuevo!',
+            solved: '¡Jaque mate lateral! La torre y el caballo en f6 coordinaron a la perfección.'
+          }
+        },
+        {
+          id: 'p31',
+          difficulty: 3,
+          title: 'El Sacrificio de la Dama y Torre en C8',
+          desc: 'Usa tus torres dobladas y dama para desviar todas las defensas del rival de la octava fila.',
+          fen: 'r1b1r1k1/pp3ppp/8/8/8/8/PP3PPP/Q1RR2K1 w - - 0 1',
+          solution: ['c1c8', 'e8xc8', 'a1xc8', 'a8xc8', 'd1d8'],
+          character: 'reinangra',
+          quotes: {
+            greeting: '¡Un asalto masivo en c8! Sacrifica la torre primero.',
+            success: '¡Excelente! Capturó con su primera torre. Ahora sacrifica tu dama en c8.',
+            fail: 'Eso no vacía la octava fila. ¡Prueba otra vez!',
+            solved: '¡Sublime! La octava fila quedó completamente desprotegida para el mate final.'
+          }
+        },
+        {
+          id: 'p32',
+          difficulty: 3,
+          title: 'La Deflexión del Alfil',
+          desc: 'El rival defiende d8 con su torre y alfil. Sacrifica ambas torres para desviar a sus defensores.',
+          fen: 'r1b1r1k1/pp3ppp/8/8/8/8/PP1R1PPP/Q2R2K1 w - - 0 1',
+          solution: ['d1d8', 'e8xd8', 'd2xd8', 'c8xd8', 'a1xd8'],
+          character: 'martina',
+          quotes: {
+            greeting: '¡A Judith Polgar le encantaba desviar defensores! Ataca d8.',
+            success: '¡Muy bien! Desviaste la torre. Ahora desvía al alfil.',
+            fail: 'Ese movimiento no mantiene la red de jaques. ¡Prueba otra vez!',
+            solved: '¡Impresionante! Has limpiado la octava fila para el jaque mate de la dama.'
+          }
+        },
+        {
           id: 'p7',
           difficulty: 4,
           title: 'El Dilema del Rey',
@@ -282,7 +432,7 @@
           title: 'El Sacrificio Celestial',
           desc: 'Usa la fuerza de tu dama y torre para acorralar al rey enemigo en el borde del tablero mediante un hermoso desvío.',
           fen: 'r1b2r1k/pp3ppp/8/3N1b2/8/3B1R2/PPQ3PP/7K w - - 0 1',
-          solution: ['c2h7', 'h8h7', 'f3h3', 'f5h3', 'h3h3', 'h7g8', 'd5e7'],
+          solution: ['c2h7', 'h8h7', 'f3h3', 'f5h3', 'd3h3', 'h7g8', 'd5e7'],
           character: 'reinangra',
           quotes: {
             greeting: 'La Reina Negra te desafía a un mate en cuatro. Sacrifica con elegancia celestial.',
@@ -319,6 +469,51 @@
             success: '¡Excelente! Capturó con torre. Ahora desvía a sus piezas con la dama.',
             fail: 'Ese no es el camino del torbellino. ¡Intenta de nuevo!',
             solved: '¡Asombroso! Has completado el torbellino en cuatro movimientos magistrales.'
+          }
+        },
+        {
+          id: 'p33',
+          difficulty: 4,
+          title: 'El Sacrificio de Desviación Triple',
+          desc: 'Una combinación de campeonato. Sacrifica tu dama y desvía al defensor de c8 con tus torres dobles.',
+          fen: '2r2rk1/pp3ppp/8/8/8/8/PP1R1QPP/3R2K1 w - - 0 1',
+          solution: ['f2xf7', 'f8xf7', 'd1d8', 'c8d8', 'd2d8', 'f7f8', 'd8xf8'],
+          character: 'martina',
+          quotes: {
+            greeting: '¡Esta es una combinación de nivel de campeonato! Sacrifica tu dama en f7 primero.',
+            success: '¡Sí! Ahora desvía a la torre de c8 con tu torre de d1.',
+            fail: 'Eso no mantiene la red de jaques. ¡Prueba otra vez!',
+            solved: '¡Soberbio! Has calculado todas las defensas del oponente y has dado mate en cuatro.'
+          }
+        },
+        {
+          id: 'p34',
+          difficulty: 4,
+          title: 'El Sacrificio de la Ópera en Cuatro',
+          desc: 'La Reina Negra te desafía a un mate en cuatro. Sacrifica la dama y abre la columna H con el alfil.',
+          fen: 'r1b2r1k/pp3ppp/8/3N1b2/8/3B1R2/PPQ3PP/6K1 w - - 0 1',
+          solution: ['c2h7', 'h8h7', 'f3h3', 'f5h3', 'd3h3', 'h7g8', 'd5e7'],
+          character: 'reinangra',
+          quotes: {
+            greeting: 'La Reina Negra te desafía a un mate en cuatro. Sacrifica con elegancia celestial.',
+            success: '¡Eso es! El sacrificio abrió la columna H. Eleva la torre.',
+            fail: 'Esa jugada no mantiene la red de jaques. ¡Vuelve a intentarlo!',
+            solved: '¡Increíble! Has resuelto el mate celestial en cuatro con total maestría.'
+          }
+        },
+        {
+          id: 'p35',
+          difficulty: 4,
+          title: 'La Invasión de la Octava Fila',
+          desc: 'Tres piezas mayores apuntan a la octava fila. Sacrifica tu dama y torre para desmantelar la defensa triple.',
+          fen: '2r2rk1/pp3ppp/8/8/8/8/PP3QPP/Q2RR1K1 w - - 0 1',
+          solution: ['f2xf7', 'f8xf7', 'd1d8', 'c8d8', 'e1e8', 'd8xe8', 'a1e8'],
+          character: 'martina',
+          quotes: {
+            greeting: '¡Alineación pesada! Comienza sacrificando tu dama en f7.',
+            success: '¡Bien! Ahora desvía a la primera torre con tu torre de d1.',
+            fail: 'Eso no mantiene la red de jaques. ¡Intenta de nuevo!',
+            solved: '¡Sublime! Tres sacrificios coordinados para un jaque mate impecable.'
           }
         }
       ];
@@ -796,7 +991,7 @@
             const successQuote = this.currentPuzzle.quotes.success;
             document.getElementById('char-bubble').textContent = successQuote;
             this.speak(successQuote, char.gender, char.pitch);
-          }, 7000 / 10); // 700ms delay
+          }, 700); // 700ms delay
         } else {
           // Solved completely!
           this.handleSolved();
