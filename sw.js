@@ -1,7 +1,7 @@
-// Martina PWA — Service Worker v8
+// Martina PWA — Service Worker v9
 // Network-first strategy. Cache is offline fallback only.
 // 3-tier caching: shell (auto) + images (auto) + videos (on-demand)
-const VERSION = '8';
+const VERSION = '9';
 const CACHE_SHELL = `martina-shell-v${VERSION}`;
 const CACHE_IMAGES = `martina-images-v${VERSION}`;
 const CACHE_VIDEOS = `martina-videos-v${VERSION}`;
@@ -34,6 +34,7 @@ const SHELL_URLS = [
   '/galeria.html',
   '/acerca-de.html',
   '/difundir.html',
+  '/problemas.html',
   ...CUENTOS.map(c => `/cuentos/${c}.html`),
   '/css/style.css',
   '/css/games.css',
@@ -57,6 +58,7 @@ const GAME_JS_URLS = [
   '/js/games/reina.js',
   '/js/games/sombra.js',
   '/js/games/torreta.js',
+  '/js/games/puzzles.js',
   '/js/chess-engine.js',
   '/js/chess-board.js',
   '/js/chess-replayer.js',
