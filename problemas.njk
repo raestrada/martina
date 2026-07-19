@@ -1,0 +1,450 @@
+---
+layout: base.njk
+permalink: /problemas.html
+title: Desafíos de Táctica — Martina · Cuentos de Ajedrez
+description: Entrena tu táctica de ajedrez resolviendo problemas de mate en 1, 2, 3 y 4. Escucha los divertidos comentarios de los personajes del Reino de las 64 Casillas.
+keywords: ajedrez, táctica ajedrez, puzzles de ajedrez, mate en 1, mate en 2, mate en 3, mate en 4, Martina, aprender ajedrez
+ogImage: /assets/img/juegos_banner_principal_1779376644977.png
+activeNav: problemas
+extraCss:
+  - /css/games.css
+extraJs:
+  - /js/chess-engine.js
+  - /js/chess-board.js
+  - /js/games/puzzles.js
+footerText: Desafíos de táctica originales para Martina, por papá.
+---
+
+<div class="puzzles-container fade-in">
+  <header class="puzzles-header">
+    <h1 style="color: var(--rose); margin-bottom: 0.5rem;">Desafíos de Táctica</h1>
+    <p style="color: var(--magic-dark); opacity: 0.8; max-width: 600px; margin: 0 auto 1.5rem auto;">
+      Resuelve problemas de jaque mate de distintas dificultades y gana puntos mágicos mientras escuchas los consejos de Martina y sus amigos.
+    </p>
+  </header>
+
+  <!-- DASHBOARD DE TÁCTICA -->
+  <div class="puzzles-dashboard">
+    <div class="puzzles-stat">
+      <span class="stat-icon">🏆</span>
+      <div class="stat-info">
+        <span class="stat-label">Puntaje Mágico</span>
+        <span class="stat-value" id="puzzle-score">0 pts</span>
+      </div>
+    </div>
+    <div class="puzzles-stat">
+      <span class="stat-icon">🔥</span>
+      <div class="stat-info">
+        <span class="stat-label">Racha Actual</span>
+        <span class="stat-value" id="puzzle-streak">0</span>
+      </div>
+    </div>
+    <div class="puzzles-stat">
+      <span class="stat-icon">🎯</span>
+      <div class="stat-info">
+        <span class="stat-label">Puzzles Resueltos</span>
+        <span class="stat-value" id="puzzle-solved-count">0 / 8</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="puzzles-grid">
+    <!-- PANEL IZQUIERDO: PERSONAJE Y DIÁLOGO -->
+    <div class="puzzles-sidebar-left">
+      <div class="character-card">
+        <div class="character-avatar-wrapper">
+          <span class="character-emoji" id="char-emoji">♟️</span>
+        </div>
+        <div class="character-details">
+          <h3 id="char-name">Peoncito</h3>
+          <span class="character-role">Guía del Desafío</span>
+        </div>
+      </div>
+
+      <div class="speech-bubble-container">
+        <div class="speech-bubble" id="char-bubble">
+          ¡Cargando el tablero mágico...!
+        </div>
+      </div>
+
+      <div class="voice-controls">
+        <button class="voice-btn" id="btn-play-voice" title="Escuchar audio">🔊 Hablar</button>
+        <button class="voice-btn" id="btn-toggle-sound" title="Sonidos de piezas">🎵 Sonido: Sí</button>
+      </div>
+
+      <div class="puzzle-instructions">
+        <h4 id="puzzle-title" style="color: var(--gold); margin-bottom: 0.5rem;">Cargando problema...</h4>
+        <p id="puzzle-desc" style="font-size: 0.9rem; line-height: 1.4; opacity: 0.9;">Selecciona una dificultad en el panel de la derecha para empezar.</p>
+      </div>
+
+      <div class="action-buttons">
+        <button class="action-btn btn-reset" id="btn-reset">🔄 Reiniciar</button>
+        <button class="action-btn btn-hint" id="btn-hint">💡 Pista</button>
+        <button class="action-btn btn-next" id="btn-next" disabled>Siguiente Desafío ➔</button>
+      </div>
+    </div>
+
+    <!-- PANEL CENTRAL: TABLERO DE AJEDREZ -->
+    <div class="puzzles-board-area">
+      <div id="puzzles-board-wrapper" class="chess-board-wrapper">
+        <div id="puzzles-board" class="chess-board"></div>
+      </div>
+      <div class="turn-indicator" id="turn-indicator">
+        Blancas Juegan y Dan Mate
+      </div>
+    </div>
+
+    <!-- PANEL DERECHO: SELECTOR DE PROBLEMAS -->
+    <div class="puzzles-sidebar-right">
+      <h3 style="color: var(--rose); margin-bottom: 1rem; border-bottom: 2px dashed rgba(255,255,255,0.1); padding-bottom: 0.5rem; text-align: center;">🎯 Elige tu Nivel</h3>
+      
+      <div class="difficulty-group">
+        <h4>Mate en 1 (Muy Fácil)</h4>
+        <div class="puzzles-list" id="list-mate-1"></div>
+      </div>
+
+      <div class="difficulty-group">
+        <h4>Mate en 2 (Fácil)</h4>
+        <div class="puzzles-list" id="list-mate-2"></div>
+      </div>
+
+      <div class="difficulty-group">
+        <h4>Mate en 3 (Intermedio)</h4>
+        <div class="puzzles-list" id="list-mate-3"></div>
+      </div>
+
+      <div class="difficulty-group">
+        <h4>Mate en 4 (Avanzado)</h4>
+        <div class="puzzles-list" id="list-mate-4"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* === ESTILOS ESPECÍFICOS DE PUZZLES === */
+.puzzles-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.puzzles-header {
+  text-align: center;
+}
+
+/* Dashboard de progreso */
+.puzzles-dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.puzzles-stat {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--game-radius);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--glass-shadow);
+}
+
+.stat-icon {
+  font-size: 2.2rem;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--game-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+/* Grilla principal */
+.puzzles-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr 280px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 992px) {
+  .puzzles-grid {
+    grid-template-columns: 1fr;
+  }
+  .puzzles-sidebar-left, .puzzles-sidebar-right {
+    max-width: 100%;
+  }
+}
+
+/* Panel Izquierdo: Diálogo */
+.puzzles-sidebar-left {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--game-radius);
+  padding: 1.25rem;
+  box-shadow: var(--glass-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.character-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding-bottom: 0.75rem;
+}
+
+.character-avatar-wrapper {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, var(--rose), var(--gold));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.character-emoji {
+  font-size: 1.8rem;
+}
+
+.character-details h3 {
+  font-family: var(--game-font);
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: #fff;
+  margin: 0;
+}
+
+.character-role {
+  font-size: 0.75rem;
+  color: var(--game-text-muted);
+}
+
+.speech-bubble-container {
+  position: relative;
+}
+
+.speech-bubble {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--game-radius);
+  padding: 1rem;
+  color: #fff;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  position: relative;
+}
+
+.speech-bubble::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  border-width: 0 10px 10px;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.08) transparent;
+  display: block;
+  width: 0;
+}
+
+.voice-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.voice-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.voice-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.puzzle-instructions {
+  background: rgba(0, 0, 0, 0.15);
+  padding: 0.85rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--rose);
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.btn-reset {
+  background: #475569;
+  color: white;
+}
+
+.btn-reset:hover {
+  background: #64748b;
+}
+
+.btn-hint {
+  background: #eab308;
+  color: #0f172a;
+}
+
+.btn-hint:hover {
+  background: #facc15;
+}
+
+.btn-next {
+  background: var(--rose);
+  color: white;
+}
+
+.btn-next:hover:not(:disabled) {
+  background: #ff5a79;
+}
+
+.btn-next:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Panel Central: Tablero */
+.puzzles-board-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.turn-indicator {
+  background: rgba(22, 163, 74, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  padding: 0.5rem 1.5rem;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+/* Panel Derecho: Selección de problemas */
+.puzzles-sidebar-right {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--game-radius);
+  padding: 1.25rem;
+  box-shadow: var(--glass-shadow);
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+.difficulty-group {
+  margin-bottom: 1.25rem;
+}
+
+.difficulty-group h4 {
+  font-size: 0.85rem;
+  color: var(--game-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+  border-left: 2.5px solid var(--rose);
+  padding-left: 0.4rem;
+}
+
+.puzzles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.puzzle-select-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 0.55rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.puzzle-select-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateX(3px);
+}
+
+.puzzle-select-item.active {
+  border-color: var(--rose);
+  background: rgba(231, 111, 81, 0.15);
+}
+
+.puzzle-status-icon {
+  font-size: 0.9rem;
+}
+
+/* Efecto de Sacudida en Error */
+.shake-element {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+/* Efecto Flotante para Festejar */
+.success-glow {
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.6) !important;
+  animation: successPulse 1.2s infinite ease-in-out;
+}
+
+@keyframes successPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.015); }
+}
+</style>
+
+{% include "disqus.njk" %}

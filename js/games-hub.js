@@ -331,8 +331,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const packsCount = parseInt(localStorage.getItem('martina_album_packs')) || 0;
 
-    // Magic Score: 100 per star + 50 per sticker
-    const magicScore = (totalStars * 100) + (stickersCount * 50);
+    // Magic Score: 100 per star + 50 per sticker + puzzleScore
+    const puzzleScore = parseInt(localStorage.getItem('martina_puzzle_score')) || 0;
+    const magicScore = (totalStars * 100) + (stickersCount * 50) + puzzleScore;
 
     // Update DOM if elements exist
     const scoreEl = document.getElementById('dash-magic-score');
