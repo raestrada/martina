@@ -9,12 +9,13 @@
       <button class="speed-btn" data-speed="1.25">1.25x</button>
       <button class="speed-btn" data-speed="1.5">1.5x</button>
     </div>
+    {% set finalVideoSrc = 'https://raw.githubusercontent.com/raestrada/martina/main' + videoSrc %}
     <video playsinline controls class="audiobook-video">
-      <source src="{{ videoSrc }}" type="video/mp4">
+      <source src="{{ finalVideoSrc }}" type="video/mp4">
       Tu navegador no soporta el elemento de video.
     </video>
     <div class="audiobook-download">
-      <a href="{{ videoSrc }}" download="{{ downloadName }}" class="btn video-offline-btn" data-video-src="{{ videoSrc }}" data-video-name="{{ downloadName }}">⬇️ Descargar Video (MP4)</a>
+      <a href="{{ finalVideoSrc }}" download="{{ downloadName }}" class="btn video-offline-btn" data-video-src="{{ finalVideoSrc }}" data-video-name="{{ downloadName }}">⬇️ Descargar Video (MP4)</a>
     </div>
   </div>
 </details>

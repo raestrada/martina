@@ -34,12 +34,18 @@
     '/assets/video/cuento_16_audiolibro.mp4': 41827877,
   };
 
+  function getVideoSize(src) {
+    if (!src) return undefined;
+    var path = src.indexOf('/assets/video/') !== -1 ? '/assets/video/' + src.split('/assets/video/')[1] : src;
+    return VIDEO_SIZES[path];
+  }
+
   function formatMB(bytes) {
     var mb = bytes / (1024 * 1024);
     return mb >= 1 ? Math.round(mb) + ' MB' : Math.round(mb * 10) / 10 + ' MB';
   }
 
-  var SHELL_KEY = 'martina-shell-cached-v7';
+  var SHELL_KEY = 'martina-shell-cached-v8';
   var isShellCached = localStorage.getItem(SHELL_KEY) === 'true';
 
   // ---- SW registration ----
@@ -186,7 +192,7 @@
         var src = btn.getAttribute('data-video-src');
         if (!src) return;
 
-        var size = VIDEO_SIZES[src];
+        var size = getVideoSize(src);
         if (size && isMobile()) {
           btn.innerHTML = '\u2B07\uFE0F Guardar offline (' + formatMB(size) + ')';
         }
@@ -230,7 +236,7 @@
       btn.innerHTML = '\u2705 Guardado';
     } else {
       var src = btn.getAttribute('data-video-src');
-      var size = VIDEO_SIZES[src];
+      var size = getVideoSize(src);
       if (size && isMobile()) {
         btn.innerHTML = '\u2B07\uFE0F Guardar offline (' + formatMB(size) + ')';
       } else {

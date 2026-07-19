@@ -1,7 +1,7 @@
-// Martina PWA — Service Worker v7
+// Martina PWA — Service Worker v8
 // Network-first strategy. Cache is offline fallback only.
 // 3-tier caching: shell (auto) + images (auto) + videos (on-demand)
-const VERSION = '7';
+const VERSION = '8';
 const CACHE_SHELL = `martina-shell-v${VERSION}`;
 const CACHE_IMAGES = `martina-images-v${VERSION}`;
 const CACHE_VIDEOS = `martina-videos-v${VERSION}`;
@@ -198,8 +198,12 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // Only handle same-origin requests
-  if (url.origin !== self.location.origin) return;
+  // Only handle same-origin requests or GitHub raw video assets
+  const isGithubVideo = url.hostname === 'raw.githubusercontent.com' &&
+                        url.pathname.startsWith('/raestrada/martina/main/assets/video/') &&
+                        url.pathname.endsWith('.mp4');
+
+  if (url.origin !== self.location.origin && !isGithubVideo) return;
 
   // Ignore Service Worker script itself and non-GET requests
   if (url.pathname === '/sw.js' || event.request.method !== 'GET') return;
@@ -207,7 +211,7 @@ self.addEventListener('fetch', event => {
   const path = url.pathname;
 
   // Videos: network-first with dedicated videos cache
-  if (path.startsWith('/assets/video/') && path.endsWith('.mp4')) {
+  if (isGithubVideo || (path.startsWith('/assets/video/') && path.endsWith('.mp4'))) {
     event.respondWith(networkFirst(event.request, CACHE_VIDEOS));
     return;
   }
