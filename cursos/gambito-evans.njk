@@ -1,0 +1,115 @@
+---
+layout: base.njk
+permalink: /cursos/gambito-evans.html
+title: "Curso: El Gambito Evans con Caballo de Ŋ — Martina · Cuentos of Ajedrez"
+description: Domina el Gambito Evans con Caballo de Ŋ. Lecciones interactivas sobre la jugada 4.b4!, el avance 6.d4!, la Defensa Lasker y la variante 7.Qb3 con voz y tablero dinámico.
+keywords: gambito evans, evans gambit, paul morphy, garry kasparov, caballo de n, curso ajedrez, apertura evans, ajedrez niños, ajedrez interactivo
+ogImage: /assets/img/caballo_l_equivocado_1779239565440.png
+activeNav: cursos
+extraCss:
+  - /css/cursos.css
+extraJs:
+  - /js/chess-engine.js
+  - /js/chess-board.js
+  - /js/cursos-gambito-evans.js
+  - /js/cursos.js
+footerText: Cursos interactivos de ajedrez por Caballo de Ŋ, Martina y su papá.
+---
+
+<!-- Layout del Curso (Columna Izquierda: Encabezado + Módulos + Narración | Columna Derecha: Tablero + Controles) -->
+<main class="course-main-layout fade-in">
+  
+  <!-- Columna Izquierda -->
+  <section class="course-narrative-col">
+    
+    <!-- Cabecera y Breadcrumb -->
+    <header class="course-app-header">
+      <div class="course-breadcrumb">
+        <a href="/">Inicio</a> / <a href="/cursos.html">Cursos</a> / <span>El Gambito Evans</span>
+      </div>
+      <div class="course-app-title-bar">
+        <h1>🐴 El Gambito Evans</h1>
+      </div>
+    </header>
+
+    <!-- Barra de Progreso y Selección de Módulos -->
+    <section class="course-stepper-wrap">
+      <div class="course-progress-bar">
+        <div class="course-progress-fill" id="course-progress-fill"></div>
+      </div>
+      <div class="course-step-pills" id="course-step-pills">
+        <!-- Generado dinámicamente por js/cursos.js -->
+      </div>
+    </section>
+
+    <!-- Tarjeta del Caballo de Ŋ con Voz y Diálogo -->
+    <article class="character-card">
+      <header class="character-header">
+        <div class="character-avatar-wrapper">
+          <img src="/assets/img/caballo_l_equivocado_1779239565440.png" alt="Caballo de Ŋ" class="character-avatar">
+          <span class="character-badge-icon" title="Instructor">♘</span>
+        </div>
+        <div class="character-info">
+          <h3>Caballo de Ŋ</h3>
+          <p class="character-role">Instructor & Maestro de Saltos Audaces</p>
+        </div>
+
+        <!-- Reproductor de Audio TTS -->
+        <div class="tts-player-bar">
+          <button class="btn-audio-speak" id="btn-audio-speak" aria-label="Escuchar la voz del Caballo de Ŋ">
+            <span class="sound-wave" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </span>
+            <span id="audio-btn-label">Escuchar</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Globo de Habla del Caballo de Ŋ -->
+      <div class="speech-bubble">
+        <span class="story-number" id="course-kicker" style="display: inline-block; margin-bottom: 0.5rem;">Módulo 1</span>
+        <h4 id="course-heading">Cargando lección...</h4>
+        <div id="course-speech-text">
+          <p>El Caballo de Ŋ está calculando saltos en L y en Ŋ para la jugada 4.b4!...</p>
+        </div>
+        <div class="martina-quote" id="course-quote" style="display: none;"></div>
+        <ul id="course-points-list" style="margin-top: 1rem;"></ul>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- Columna Derecha: Tablero Mágico + Reproductor de Jugadas + Navegación -->
+  <aside class="course-board-col">
+    <div class="course-board-card">
+      <header class="board-card-header">
+        <span class="board-title">♟️ Tablero Mágico</span>
+        <button class="board-flip-btn" id="board-flip-btn" title="Girar vista del tablero">🔄 Girar</button>
+      </header>
+      
+      <div class="course-board-wrapper">
+        <div id="course-board" class="course-board"></div>
+      </div>
+
+      <!-- Controles para Repetir Jugadas desde el Inicio (Paso a Paso) -->
+      <div class="board-step-controls" id="board-step-controls">
+        <button class="step-btn" id="btn-step-start" title="Ir a la posición inicial (Mover 0)">⏮</button>
+        <button class="step-btn" id="btn-step-prev" title="Jugada anterior">◀</button>
+        <button class="step-btn play-btn" id="btn-step-play" title="Reproducción automática">▶️</button>
+        <button class="step-btn" id="btn-step-next" title="Jugada siguiente">▶</button>
+        <button class="step-btn" id="btn-step-end" title="Ir a la posición final">⏭</button>
+      </div>
+
+      <!-- Navegación Entre Módulos del Curso -->
+      <div class="course-board-controls">
+        <button class="course-ctrl-btn" id="course-btn-prev" disabled>← Módulo</button>
+        <button class="course-ctrl-btn primary" id="course-btn-next">Siguiente →</button>
+      </div>
+
+      <div class="course-moves-box">
+        <ul class="course-moves-list" id="course-moves-list"></ul>
+      </div>
+    </div>
+  </aside>
+
+</main>
