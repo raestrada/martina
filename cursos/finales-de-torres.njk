@@ -1,0 +1,115 @@
+---
+layout: base.njk
+permalink: /cursos/finales-de-torres.html
+title: "Curso: Finales de Torres, Lucena y Philidor — Martina · Cuentos de Ajedrez"
+description: Domina el arte de los finales de torres con Torreta, La Reina Negra, Caballo de Ŋ y Martina. Aprende a Cortar al Rey, la Posición de Lucena (1697), la Defensa de Philidor (1777), el Mate de Torre, la Regla de Tarrasch y la partida inmortal de Fischer vs Spassky (1972).
+keywords: finales de torres, posicion de lucena, defensa de philidor, regla de tarrasch, fischer vs spassky 1972, torreta, reina negra, caballo de n, martina, ajedrez interactivo
+ogImage: /assets/img/torreta_alfil_empanadas_1778904556118.png
+activeNav: cursos
+extraCss:
+  - /css/cursos.css
+extraJs:
+  - /js/chess-engine.js
+  - /js/chess-board.js
+  - /js/cursos-finales-torres.js
+  - /js/cursos.js
+footerText: Cursos interactivos de ajedrez por Martina y su papá.
+---
+
+<!-- Layout del Curso (Columna Izquierda: Encabezado + Módulos + Narración | Columna Derecha: Tablero + Controles) -->
+<main class="course-main-layout fade-in">
+  
+  <!-- Columna Izquierda -->
+  <section class="course-narrative-col">
+    
+    <!-- Cabecera y Breadcrumb -->
+    <header class="course-app-header">
+      <div class="course-breadcrumb">
+        <a href="/">Inicio</a> / <a href="/cursos.html">Cursos</a> / <span>Finales de Torres: Lucena y Philidor</span>
+      </div>
+      <div class="course-app-title-bar">
+        <h1>🏆 Finales de Torres: Lucena y Philidor</h1>
+      </div>
+    </header>
+
+    <!-- Barra de Progreso y Selección de Módulos -->
+    <section class="course-stepper-wrap">
+      <div class="course-progress-bar">
+        <div class="course-progress-fill" id="course-progress-fill"></div>
+      </div>
+      <div class="course-step-pills" id="course-step-pills">
+        <!-- Generado dinámicamente por js/cursos.js -->
+      </div>
+    </section>
+
+    <!-- Tarjeta del Instructor -->
+    <article class="character-card">
+      <header class="character-header">
+        <div class="character-avatar-wrapper">
+          <img src="/assets/img/torreta_alfil_empanadas_1778904556118.png" alt="Torreta & La Reina Negra" class="character-avatar">
+          <span class="character-badge-icon" title="Instructora">🏰</span>
+        </div>
+        <div class="character-info">
+          <h3>Torreta & La Reina Negra</h3>
+          <p class="character-role">Maestras del Dominio de Columnas Abiertas</p>
+        </div>
+
+        <!-- Reproductor de Audio TTS -->
+        <div class="tts-player-bar">
+          <button class="btn-audio-speak" id="btn-audio-speak" aria-label="Escuchar la voz del instructor">
+            <span class="sound-wave" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </span>
+            <span id="audio-btn-label">Escuchar</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Globo de Habla del Instructor -->
+      <div class="speech-bubble">
+        <span class="story-number" id="course-kicker" style="display: inline-block; margin-bottom: 0.5rem;">Módulo 1</span>
+        <h4 id="course-heading">Cargando lección...</h4>
+        <div id="course-speech-text">
+          <p>Torreta despliega el mapa de los finales de torres...</p>
+        </div>
+        <div class="martina-quote" id="course-quote" style="display: none;"></div>
+        <ul id="course-points-list" style="margin-top: 1rem;"></ul>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- Columna Derecha: Tablero Mágico + Reproductor de Jugadas + Navegación -->
+  <aside class="course-board-col">
+    <div class="course-board-card">
+      <header class="board-card-header">
+        <span class="board-title">♟️ Tablero Mágico</span>
+        <button class="board-flip-btn" id="board-flip-btn" title="Girar vista del tablero">🔄 Girar</button>
+      </header>
+      
+      <div class="course-board-wrapper">
+        <div id="course-board" class="course-board"></div>
+      </div>
+
+      <!-- Controles para Repetir Jugadas desde el Inicio (Paso a Paso) -->
+      <div class="board-step-controls" id="board-step-controls">
+        <button class="step-btn" id="btn-step-start" title="Ir a la posición inicial (Mover 0)">⏮</button>
+        <button class="step-btn" id="btn-step-prev" title="Jugada anterior">◀</button>
+        <button class="step-btn play-btn" id="btn-step-play" title="Reproducción automática">▶️</button>
+        <button class="step-btn" id="btn-step-next" title="Jugada siguiente">▶</button>
+        <button class="step-btn" id="btn-step-end" title="Ir a la posición final">⏭</button>
+      </div>
+
+      <!-- Navegación Entre Módulos del Curso -->
+      <div class="course-board-controls">
+        <button class="course-ctrl-btn" id="course-btn-prev" disabled>← Módulo</button>
+        <button class="course-ctrl-btn primary" id="course-btn-next">Siguiente →</button>
+      </div>
+
+      <div class="course-moves-box">
+        <ul class="course-moves-list" id="course-moves-list"></ul>
+      </div>
+    </div>
+  </aside>
+
+</main>

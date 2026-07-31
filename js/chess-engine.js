@@ -197,8 +197,14 @@
           const from = String.fromCharCode(97 + c) + (8 - r);
           const toSq = String.fromCharCode(97 + to.c) + (8 - to.r);
           let m = from + toSq;
-          if (piece.toLowerCase() === 'p' && (to.r === 0 || to.r === 7)) m += 'q';
-          if (!CE.isKingInCheck(CE.executeMoveRaw(fen, m), color)) moves.push(m);
+          if (piece.toLowerCase() === 'p' && (to.r === 0 || to.r === 7)) {
+            ['q', 'n', 'r', 'b'].forEach(pChar => {
+              const mPromo = from + toSq + pChar;
+              if (!CE.isKingInCheck(CE.executeMoveRaw(fen, mPromo), color)) moves.push(mPromo);
+            });
+          } else {
+            if (!CE.isKingInCheck(CE.executeMoveRaw(fen, m), color)) moves.push(m);
+          }
         });
       }
     }
@@ -300,10 +306,14 @@
     // Identify destination square (last two characters, e.g. e4, f7, a1)
     let dest = '';
     let promo = '';
-    let match = cleanSan.match(/([a-h][1-8])(?:=?([QRNBRqnbr]))?$/);
+    let match = cleanSan.match(/([a-h][1-8])(?:=?([QRNBCDTArnbcdta]))?$/);
     if (match) {
       dest = match[1];
-      promo = match[2] ? match[2].toLowerCase() : '';
+      if (match[2]) {
+        const promoChar = match[2].toUpperCase();
+        const mapPromo = { 'Q': 'q', 'D': 'q', 'R': 'r', 'T': 'r', 'B': 'b', 'A': 'b', 'N': 'n', 'C': 'n' };
+        promo = mapPromo[promoChar] || promoChar.toLowerCase();
+      }
     } else {
       return null;
     }
