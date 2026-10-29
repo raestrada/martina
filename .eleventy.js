@@ -1,11 +1,11 @@
-const { EleventyHtmlBasePlugin } = require("@11ty/eleventy");
-
-module.exports = function (eleventyConfig) {
+module.exports = async function (eleventyConfig) {
+  const { EleventyHtmlBasePlugin } = await import("@11ty/eleventy");
   eleventyConfig.addPlugin(EleventyHtmlBasePlugin);
 
   eleventyConfig.addPassthroughCopy("css");
   eleventyConfig.addPassthroughCopy("js");
   eleventyConfig.addPassthroughCopy("assets/img");
+  eleventyConfig.addPassthroughCopy("assets/pdf");
   eleventyConfig.addPassthroughCopy("assets/books");
   eleventyConfig.addPassthroughCopy("assets/audio");
   eleventyConfig.addPassthroughCopy("manifest.json");

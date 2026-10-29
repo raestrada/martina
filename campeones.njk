@@ -1,0 +1,1691 @@
+---
+layout: base.njk
+permalink: /campeones.html
+title: Los 17 Campeones del Mundo — Martina · Cuentos de Ajedrez
+description: Conoce a los 17 Campeones del Mundo de ajedrez con sus cartas RPG coleccionables, estadísticas de combate, poderes especiales, cuentos con Martina y libros de actividades descargables.
+keywords: campeones del mundo ajedrez, cartas ajedrez, capablanca, tal, fischer, kasparov, carlsen, martina cuentos
+ogImage: /assets/img/campeones/scene_c_campeon_1921.png
+activeNav: campeones
+extraCss:
+  - /css/campeones.css
+---
+
+<div class="campeones-container">
+
+  <!-- HERO SECTION -->
+  <header class="campeones-hero">
+    <h1><span class="hero-crown">👑</span> El Salón de los 17 Campeones del Mundo</h1>
+    <p class="hero-subtitle">
+      Desde Wilhelm Steinitz en 1886 hasta Ding Liren en la actualidad: colecciona sus cartas legendarias de poder, descubre sus secretos tácticos y viaja a sus épocas con Martina.
+    </p>
+
+    <!-- MARTINA QUOTE BOX -->
+    <div class="martina-quote-box">
+      <div class="martina-avatar-badge">
+        <img src="/assets/img/martina_profile_1778904530237.png" alt="Martina">
+      </div>
+      <div class="martina-quote-content">
+        <p>
+          «En el tablero de 64 casillas no solo manda la Reina Negra. A lo largo de los siglos, 18 humanos consiguieron dominar el ajedrez con superpoderes únicos: algunos quemaban el tablero como mi ídolo Mikhail Tal, otros jugaban con la sencillez cristalina de Capablanca, y otros construían murallas indestructibles. ¡Aquí están ordenados del primero al último con sus cartas oficiales, sus fuerzas de combate y sus libros de actividades para colorear!»
+        </p>
+        <span class="martina-quote-author">— Martina, Pequeña Gran Maestra (9 años)</span>
+      </div>
+    </div>
+
+    <!-- ERA FILTER BUTTONS -->
+    <div class="era-filters" id="era-filters">
+      <button class="filter-btn active" data-filter="all" onclick="filterEra('all', this)">Todos los Reyes (18)</button>
+      <button class="filter-btn" data-filter="clasica" onclick="filterEra('clasica', this)">🏛️ Era Romántica & Clásica (1–5)</button>
+      <button class="filter-btn" data-filter="sovietica" onclick="filterEra('sovietica', this)">🚩 Era Soviética Dorada (6–10)</button>
+      <button class="filter-btn" data-filter="moderna" onclick="filterEra('moderna', this)">⚡ Guerra Fría & Dinamismo (11–13)</button>
+      <button class="filter-btn" data-filter="digital" onclick="filterEra('digital', this)">💻 Era Digital Contemporánea (14–18)</button>
+    </div>
+  </header>
+
+  <!-- CHAMPIONS GRID -->
+  <div class="champions-grid" id="champions-grid">
+
+    <!-- 1. WILHELM STEINITZ -->
+    <div class="champion-item" data-era="clasica">
+      <article class="champion-card card-featured-steinitz" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de Wilhelm Steinitz. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#1 · 1886 – 1894</span>
+              <span class="card-era-badge">🏛️ Era Clásica</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>Wilhelm Steinitz</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«El Arquitecto del Tablero»</span>
+                </div>
+                <div class="card-meta-line"><span>🇦🇹 / 🇺🇸 Austria / EE.UU.</span> • <span>3 Partidas Mundiales</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_steinitz.png" alt="Wilhelm Steinitz">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">El Rey Acorazado</span>
+              </div>
+              <p class="power-desc">Demostró que el Rey no es una flor de cristal, sino un guerrero capaz de defenderse en pleno centro sin temblar.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-1" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--rose)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,39.2 143.3,52.8 139.4,89 110,108 83,87.6 78.1,53.6" fill="url(#radar-grad-1)" class="radar-value-poly" />
+              <circle cx="110" cy="39.2" r="2.5" class="radar-dot" /><circle cx="143.3" cy="52.8" r="2.5" class="radar-dot" /><circle cx="139.4" cy="89" r="2.5" class="radar-dot" /><circle cx="110" cy="108" r="2.5" class="radar-dot" /><circle cx="83" cy="87.6" r="2.5" class="radar-dot" /><circle cx="78.1" cy="53.6" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">82</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">96</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">85</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">90</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">78</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">92</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#1</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">Wilhelm Steinitz</h3>
+                <span class="card-back-moniker">«El Arquitecto del Tablero»</span>
+              </div>
+              <span class="card-back-era">🏛️ Era Clásica</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Acumulación de ventajas microscópicas hasta derrumbar el enroque.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Steinitz vs. Von Bardeleben (Hastings, 1895). ¡La danza inmortal del Rey!</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«Don Wilhelm me dijo en el kiosco de Torreta que el Rey no necesita esconderse. Yo le contesté que mi Rey tiene zapatillas de vóley y que si sale a pasear a e2 en la jugada cuatro, ¡le clavan el caballo hasta el siglo siguiente! Refunfuñó, pero anotó la advertencia en su libreta».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <a onclick="event.stopPropagation()" href="/assets/pdf/steinitz_libro_colorear.pdf" download="Libro_Aventuras_Ajedrez_Steinitz.pdf" class="btn-card-action is-available"><span>⬇️ Descargar Libro de Actividades</span></a>
+      </div>
+    </div>
+
+    <!-- 2. EMANUEL LASKER -->
+    <div class="champion-item" data-era="clasica">
+      <article class="champion-card card-featured-lasker" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de Emanuel Lasker. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#2 · 1894 – 1921</span>
+              <span class="card-era-badge">🏛️ Era Clásica</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>Emanuel Lasker</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«El Filósofo Psicológico»</span>
+                </div>
+                <div class="card-meta-line"><span>🇩🇪 Alemania</span> • <span>27 Años de Campeón (Récord)</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_lasker.png" alt="Emanuel Lasker">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">La Duda Venenosa</span>
+              </div>
+              <p class="power-desc">Hacía jugadas extrañas que no eran las de la máquina, pero incomodaban tanto al rival que este terminaba colapsando.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-2" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--rose)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,36.8 143.9,52.4 141.9,90.4 110,110 78.8,90 75.4,52" fill="url(#radar-grad-2)" class="radar-value-poly" />
+              <circle cx="110" cy="36.8" r="2.5" class="radar-dot" /><circle cx="143.9" cy="52.4" r="2.5" class="radar-dot" /><circle cx="141.9" cy="90.4" r="2.5" class="radar-dot" /><circle cx="110" cy="110" r="2.5" class="radar-dot" /><circle cx="78.8" cy="90" r="2.5" class="radar-dot" /><circle cx="75.4" cy="52" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">88</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">98</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">92</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">95</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">90</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">100</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#2</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">Emanuel Lasker</h3>
+                <span class="card-back-moniker">«El Filósofo Psicológico»</span>
+              </div>
+              <span class="card-back-era">🏛️ Era Clásica</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Provocación de errores y contraataque feroz en posiciones complejas.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Lasker vs. Bauer (Ámsterdam, 1889). ¡El legendario doble sacrificio de alfiles!</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«Lasker me miraba con ojos de misterio diciendo: "Juego contra tu mente". Yo me comí una galleta y le contesté: "Don Emanuel, a mi mente no le entran dudas; si me hace una jugada fea a propósito, le sacrifico la torre en g2 y le pido a Torreta otra empanada picante"».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <a onclick="event.stopPropagation()" href="/assets/pdf/lasker_libro_colorear.pdf" download="Libro_Aventuras_Ajedrez_Lasker.pdf" class="btn-card-action is-available"><span>⬇️ Descargar Libro de Actividades</span></a>
+      </div>
+    </div>
+
+    <!-- 3. JOSÉ RAÚL CAPABLANCA (LIBRO DESCARGABLE DIRECTO) -->
+    <!-- 3. JOSÉ RAÚL CAPABLANCA -->
+    <div class="champion-item" data-era="clasica">
+      <article class="champion-card card-featured-capablanca" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de José Raúl Capablanca. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#3 · 1921 – 1927</span>
+              <span class="card-era-badge">🏛️ Años 1920</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>José Raúl Capablanca</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«La Máquina del Ajedrez»</span>
+                </div>
+                <div class="card-meta-line"><span>🇨🇺 Cuba</span> • <span>8 Años Invicto en el Mundo</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_capablanca.png" alt="José Raúl Capablanca">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">Visión de Manantial</span>
+              </div>
+              <p class="power-desc">Solo veía una jugada por adelantado: ¡la mejor! Jugaba con tal armonía que hacía que el ajedrez más difícil pareciera un juego de niños.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-3" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--rose)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,36.8 144.3,52.2 142.9,91 110,112 80.2,89.2 77.4,53.2" fill="url(#radar-grad-3)" class="radar-value-poly" />
+              <circle cx="110" cy="36.8" r="2.5" class="radar-dot" /><circle cx="144.3" cy="52.2" r="2.5" class="radar-dot" /><circle cx="142.9" cy="91" r="2.5" class="radar-dot" /><circle cx="110" cy="112" r="2.5" class="radar-dot" /><circle cx="80.2" cy="89.2" r="2.5" class="radar-dot" /><circle cx="77.4" cy="53.2" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">88</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">99</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">95</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">100</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">86</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">94</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#3</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">José Raúl Capablanca</h3>
+                <span class="card-back-moniker">«La Máquina del Ajedrez»</span>
+              </div>
+              <span class="card-back-era">🏛️ Años 1920</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Precisión quirúrgica en finales, simplificación lúcida y la marcha heroica del Rey.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Capablanca vs. Tartakower (Nueva York, 1924). ¡La marcha triunfal del Rey blanco!</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«Peoncito le preguntó con admiración si para estar 8 años invicto usaba un bigote postizo. Don José Raúl se rio con elegancia: "No, Peoncito, el secreto es no complicar lo que es simple". Le mostré cómo hice marchar a mi Rey blanco en la simultánea y me dijo: "Tienes el toque de La Habana"».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <a onclick="event.stopPropagation()" href="/assets/pdf/capablanca_libro_colorear.pdf" download="Libro_Aventuras_Ajedrez_Capablanca.pdf" class="btn-card-action is-available"><span>⬇️ Descargar Libro de Actividades</span></a>
+      </div>
+    </div>
+
+    <!-- 4. ALEXANDER ALEKHINE -->
+    <!-- 4. ALEXANDER ALEKHINE -->
+    <div class="champion-item" data-era="clasica">
+      <article class="champion-card" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de Alexander Alekhine. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#4 · 1927 – 1946</span>
+              <span class="card-era-badge">🏛️ Era Clásica</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>Alexander Alekhine</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«El Huracán Táctico»</span>
+                </div>
+                <div class="card-meta-line"><span>🇷🇺 / 🇫🇷 Rusia / Francia</span> • <span>Murió con Corona</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_alekhine.png" alt="Alexander Alekhine">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">Tormenta de Damas</span>
+              </div>
+              <p class="power-desc">Creaba ataques de tal violencia y profundidad geométrica que el tablero parecía quemarse en cada jugada.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-4" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--rose)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,32 139.1,55.2 144.3,91.8 110,109.2 76.1,91.6 77.1,53" fill="url(#radar-grad-4)" class="radar-value-poly" />
+              <circle cx="110" cy="32" r="2.5" class="radar-dot" /><circle cx="139.1" cy="55.2" r="2.5" class="radar-dot" /><circle cx="144.3" cy="91.8" r="2.5" class="radar-dot" /><circle cx="110" cy="109.2" r="2.5" class="radar-dot" /><circle cx="76.1" cy="91.6" r="2.5" class="radar-dot" /><circle cx="77.1" cy="53" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">100</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">84</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">99</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">93</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">98</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">95</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#4</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">Alexander Alekhine</h3>
+                <span class="card-back-moniker">«El Huracán Táctico»</span>
+              </div>
+              <span class="card-back-era">🏛️ Era Clásica</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Cañón de Alekhine (dos torres y dama en columna abierta) y sacrificios de demolición.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Réti vs. Alekhine (Baden-Baden, 1925). ¡La sinfonía táctica más asombrosa!</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«Llegó con su gato siamés en brazos diciendo que el ajedrez es una lucha a muerte con fuego. Le dije: "Don Alexander, no me queme las empanadas de c3, pero mire esta clavada triple en f7". El gato maulló y Alekhine me felicitó: "Tienes dinamismo de sobra, pequeña"».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <a onclick="event.stopPropagation()" href="/assets/pdf/alekhine_libro_colorear.pdf" download="Libro_Aventuras_Ajedrez_Alekhine.pdf" class="btn-card-action is-available"><span>⬇️ Descargar Libro de Actividades</span></a>
+      </div>
+    </div>
+
+    <!-- 5. MAX EUWE -->
+    <!-- 5. MAX EUWE -->
+    <div class="champion-item" data-era="clasica">
+      <article class="champion-card" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de Max Euwe. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#5 · 1935 – 1937</span>
+              <span class="card-era-badge">🏛️ Era Clásica</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>Max Euwe</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«El Matemático del Tablero»</span>
+                </div>
+                <div class="card-meta-line"><span>🇳🇱 Países Bajos</span> • <span>Profesor y Presidente FIDE</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_euwe.png" alt="Max Euwe">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">Lógica Geométrica</span>
+              </div>
+              <p class="power-desc">Aplicaba teoremas lógicos y preparación estricta para demostrar que ningún ataque desordenado puede contra el orden.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-5" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--rose)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,38.4 141.2,54 141.5,90.2 110,107.2 82.3,88 78.1,53.6" fill="url(#radar-grad-5)" class="radar-value-poly" />
+              <circle cx="110" cy="38.4" r="2.5" class="radar-dot" /><circle cx="141.2" cy="54" r="2.5" class="radar-dot" /><circle cx="141.5" cy="90.2" r="2.5" class="radar-dot" /><circle cx="110" cy="107.2" r="2.5" class="radar-dot" /><circle cx="82.3" cy="88" r="2.5" class="radar-dot" /><circle cx="78.1" cy="53.6" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">84</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">90</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">91</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">88</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">80</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">92</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#5</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">Max Euwe</h3>
+                <span class="card-back-moniker">«El Matemático del Tablero»</span>
+              </div>
+              <span class="card-back-era">🏛️ Era Clásica</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Claridad de cálculo y apertura ordenada de columnas y diagonales.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Euwe vs. Alekhine (Match 1935, Partida 26, «La Perla de Zandvoort»).</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«Me sacó una regla y me explicó que mi alfil tenía un ángulo perfecto de 45 grados. Le dibujé al Caballo de Ŋ saltando torcido y le dije: "Profesor, cuando el rival se asusta con una clavada, ¡dos más dos son cinco!". Se rio tanto que se le cayeron las tizas».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <a onclick="event.stopPropagation()" href="/assets/pdf/euwe_libro_colorear.pdf" download="Libro_Aventuras_Ajedrez_Euwe.pdf" class="btn-card-action is-available"><span>⬇️ Descargar Libro de Actividades</span></a>
+      </div>
+    </div>
+
+    <!-- 6. MIKHAIL BOTVINNIK -->
+    <!-- 6. MIKHAIL BOTVINNIK -->
+    <div class="champion-item" data-era="sovietica">
+      <article class="champion-card" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de Mikhail Botvinnik. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#6 · 1948 – 1963</span>
+              <span class="card-era-badge">🚩 Era Soviética</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>Mikhail Botvinnik</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«El Patriarca de Hierro»</span>
+                </div>
+                <div class="card-meta-line"><span>🇷🇺 Unión Soviética</span> • <span>Padre del Ajedrez Científico</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_botvinnik.png" alt="Mikhail Botvinnik">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">El Laboratorio Científico</span>
+              </div>
+              <p class="power-desc">Creó el método científico de entrenamiento: cuadernos de aperturas de 800 páginas y preparación física de hierro.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-6" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--rose)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,36.4 142.9,53 141.2,90 110,110.4 80.6,89 76.1,52.4" fill="url(#radar-grad-6)" class="radar-value-poly" />
+              <circle cx="110" cy="36.4" r="2.5" class="radar-dot" /><circle cx="142.9" cy="53" r="2.5" class="radar-dot" /><circle cx="141.2" cy="90" r="2.5" class="radar-dot" /><circle cx="110" cy="110.4" r="2.5" class="radar-dot" /><circle cx="80.6" cy="89" r="2.5" class="radar-dot" /><circle cx="76.1" cy="52.4" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">89</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">95</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">90</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">96</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">85</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">98</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#6</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">Mikhail Botvinnik</h3>
+                <span class="card-back-moniker">«El Patriarca de Hierro»</span>
+              </div>
+              <span class="card-back-era">🚩 Era Soviética</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Estrategia central férrea y castigo implacable de las debilidades del rival.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Botvinnik vs. Capablanca (AVRO, 1938). ¡El sacrificio legendario de alfil en a3!</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«Llegó con un termo de té y me dijo que debía estudiar 4 horas diarias y hacer gimnasia matutina. Le respondí que yo entreno jugando blitz en el patio en shorts de vóley. Cuando le jugué una novedad teórica en la Eslava, sonrió: "Rebelde pero metódica. Apruebo"».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <button class="btn-card-action is-upcoming" onclick="event.stopPropagation(); openBookModal('Mikhail Botvinnik', '1948-1963', 'El Laboratorio Soviético', 'Colorea los entrenamientos de alta disciplina, los cuadernos de secretos y la gran partida de AVRO.')"><span>⏳ Libro en Producción · Ver Avance</span></button>
+      </div>
+    </div>
+
+    <!-- 7. VASILY SMYSLOV -->
+    <!-- 7. VASILY SMYSLOV -->
+    <div class="champion-item" data-era="sovietica">
+      <article class="champion-card" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de Vasily Smyslov. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#7 · 1957 – 1958</span>
+              <span class="card-era-badge">🚩 Era Soviética</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>Vasily Smyslov</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«La Voz de la Armonía»</span>
+                </div>
+                <div class="card-meta-line"><span>🇷🇺 Unión Soviética</span> • <span>Barítono de Ópera y Maestro de Finales</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_smyslov.png" alt="Vasily Smyslov">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">Sinfonía de Finales</span>
+              </div>
+              <p class="power-desc">Manejaba las piezas con una melodía invisible. Nadie conducía los finales de torres con tanta elegancia musical.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-7" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--rose)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,37.6 142.9,53 141.2,90 110,112 79.5,89.6 78.5,53.8" fill="url(#radar-grad-7)" class="radar-value-poly" />
+              <circle cx="110" cy="37.6" r="2.5" class="radar-dot" /><circle cx="142.9" cy="53" r="2.5" class="radar-dot" /><circle cx="141.2" cy="90" r="2.5" class="radar-dot" /><circle cx="110" cy="112" r="2.5" class="radar-dot" /><circle cx="79.5" cy="89.6" r="2.5" class="radar-dot" /><circle cx="78.5" cy="53.8" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">86</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">95</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">90</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">100</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">88</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">91</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#7</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">Vasily Smyslov</h3>
+                <span class="card-back-moniker">«La Voz de la Armonía»</span>
+              </div>
+              <span class="card-back-era">🚩 Era Soviética</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Coordinación armónica y activación mágica de torres en la séptima fila.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Smyslov vs. Rudakovsky (Moscú, 1945). ¡La lección inmortal del caballo en d5!</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«Se puso a cantar una ópera diciendo que su torre era un violonchelo. Le dije: "Pues mi caballo en e4 es la batería de rock". Jugamos un final de torres y me preguntó: "¿Ves cómo respira el tablero?". Respondí: "Lo veo claro, y mi peón pasado de h va a dar la nota más alta"».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <button class="btn-card-action is-upcoming" onclick="event.stopPropagation(); openBookModal('Vasily Smyslov', '1957-1958', 'Música & Finales de Torres', 'Láminas con notas musicales, claves de sol ajedrecísticas y el arte de coordinar las torres con armonía.')"><span>⏳ Libro en Producción · Ver Avance</span></button>
+      </div>
+    </div>
+
+    <!-- 8. MIKHAIL TAL (ÍDOLO DE MARTINA) -->
+    <!-- 8. MIKHAIL TAL -->
+    <div class="champion-item" data-era="sovietica">
+      <article class="champion-card card-featured-tal" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de Mikhail Tal. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#8 · 1960 – 1961</span>
+              <span class="card-era-badge">🚩 Era Soviética</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>Mikhail Tal</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«El Mago de Riga»</span>
+                </div>
+                <div class="card-meta-line"><span>🇱🇻 Letonia / URSS</span> • <span>El Genio de la Imaginación Salvaje</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_tal.png" alt="Mikhail Tal">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">El Bosque Oscuro (2 + 2 = 5)</span>
+              </div>
+              <p class="power-desc">Llevaba a sus rivales a un bosque oscuro y espeso donde solo había un camino estrecho para escapar y donde dos más dos eran cinco.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-8" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--rose)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,32 137,56.4 144.6,92 110,106.4 75.4,92 75.7,52.2" fill="url(#radar-grad-8)" class="radar-value-poly" />
+              <circle cx="110" cy="32" r="2.5" class="radar-dot" /><circle cx="137" cy="56.4" r="2.5" class="radar-dot" /><circle cx="144.6" cy="92" r="2.5" class="radar-dot" /><circle cx="110" cy="106.4" r="2.5" class="radar-dot" /><circle cx="75.4" cy="92" r="2.5" class="radar-dot" /><circle cx="75.7" cy="52.2" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">100</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">78</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">100</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">86</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">100</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">99</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#8</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">Mikhail Tal</h3>
+                <span class="card-back-moniker">«El Mago de Riga»</span>
+              </div>
+              <span class="card-back-era">🚩 Era Soviética</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Sacrificios intuitivos de caballo y alfil que dinamitan la posición rival.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Tal vs. Botvinnik (Match 1960, Partida 6). ¡El sacrificio de caballo en f4 que cambió la historia!</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«¡Mi momento favorito del universo! Tal me miró con sus ojos brillantes: "Te invito a mi bosque oscuro, Martina". Le respondí: "¡Pues yo me traje linterna y tres clavadas de repuesto!". Sacrificó una torre, yo le sacrifiqué un caballo y el tablero parecía flotar en el aire entre risas».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <button class="btn-card-action is-upcoming" onclick="event.stopPropagation(); openBookModal('Mikhail Tal', '1960-1961', 'Magia, Sacrificios & El Bosque Oscuro', '¡El libro favorito de Martina! Láminas del bosque donde 2+2=5, dragones de fuego en el tablero y sacrificios electrizantes.')"><span>⏳ Libro en Producción · Ver Avance</span></button>
+      </div>
+    </div>
+
+    <!-- 9. TIGRAN PETROSIAN -->
+    <!-- 9. TIGRAN PETROSIAN -->
+    <div class="champion-item" data-era="sovietica">
+      <article class="champion-card" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de Tigran Petrosian. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#9 · 1963 – 1969</span>
+              <span class="card-era-badge">🚩 Era Soviética</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>Tigran Petrosian</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«La Muralla de Hierro»</span>
+                </div>
+                <div class="card-meta-line"><span>🇦🇲 Armenia / URSS</span> • <span>Maestro de la Profilaxis Absoluta</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_petrosian.png" alt="Tigran Petrosian">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">Profilaxis Fantasma</span>
+              </div>
+              <p class="power-desc">Adivinaba las ideas del rival tres jugadas antes de que nacieran y ponía candados invisibles a cada casilla.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-9" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--rose)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,40.4 144.6,52 141.2,90 110,109.2 79.9,89.4 76.7,52.8" fill="url(#radar-grad-9)" class="radar-value-poly" />
+              <circle cx="110" cy="40.4" r="2.5" class="radar-dot" /><circle cx="144.6" cy="52" r="2.5" class="radar-dot" /><circle cx="141.2" cy="90" r="2.5" class="radar-dot" /><circle cx="110" cy="109.2" r="2.5" class="radar-dot" /><circle cx="79.9" cy="89.4" r="2.5" class="radar-dot" /><circle cx="76.7" cy="52.8" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">79</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">100</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">90</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">93</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">87</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">96</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#9</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">Tigran Petrosian</h3>
+                <span class="card-back-moniker">«La Muralla de Hierro»</span>
+              </div>
+              <span class="card-back-era">🚩 Era Soviética</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Sacrificio posicional de calidad (torre por alfil o caballo) para crear fortalezas indestructibles.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Petrosian vs. Spassky (Mundial 1966, Partida 10). ¡El arte supremo de la profilaxis!</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«Me puso candado en e4, reja en c5 y foso con cocodrilos en f3. Le dije: "Don Tigran, ¡muévame algo que me duermo!". Me contestó: "La paciencia también es un arma". Respiré hondo, cambié damas y le clavé la torre rezagada. Me felicitó con una sonrisa pícara».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <button class="btn-card-action is-upcoming" onclick="event.stopPropagation(); openBookModal('Tigran Petrosian', '1963-1969', 'Fortalezas & Profilaxis', 'Aprende a poner candados a las piezas enemigas, laberintos de castillos impenetrables y láminas de armaduras.')"><span>⏳ Libro en Producción · Ver Avance</span></button>
+      </div>
+    </div>
+
+    <!-- 10. BORIS SPASSKY -->
+    <!-- 10. BORIS SPASSKY -->
+    <div class="champion-item" data-era="sovietica">
+      <article class="champion-card" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de Boris Spassky. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#10 · 1969 – 1972</span>
+              <span class="card-era-badge">🚩 Era Soviética</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>Boris Spassky</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«El Jugador Universal»</span>
+                </div>
+                <div class="card-meta-line"><span>🇷🇺 / 🇫🇷 URSS / Francia</span> • <span>Maestro de Todos los Estilos</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_spassky.png" alt="Boris Spassky">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">El Camaleón del Tablero</span>
+              </div>
+              <p class="power-desc">Podía transformarse en lo que la partida pidiera: un atacante salvaje del siglo XIX o un frío calculador de finales.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-10" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--rose)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,34.4 141.2,54 142.2,90.6 110,108.4 78.1,90.4 77.8,53.4" fill="url(#radar-grad-10)" class="radar-value-poly" />
+              <circle cx="110" cy="34.4" r="2.5" class="radar-dot" /><circle cx="141.2" cy="54" r="2.5" class="radar-dot" /><circle cx="142.2" cy="90.6" r="2.5" class="radar-dot" /><circle cx="110" cy="108.4" r="2.5" class="radar-dot" /><circle cx="78.1" cy="90.4" r="2.5" class="radar-dot" /><circle cx="77.8" cy="53.4" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">94</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">90</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">93</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">91</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">92</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">93</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#10</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">Boris Spassky</h3>
+                <span class="card-back-moniker">«El Jugador Universal»</span>
+              </div>
+              <span class="card-back-era">🚩 Era Soviética</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Gambito de Rey al estilo romántico y contraataques dinámicos impecables.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Spassky vs. Bronstein (Leningrado, 1960). ¡La inmortal del Gambito de Rey utilizada en el cine!</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«Se sentó con camisa elegante de los años 70: "¿Prefieres que te juegue un Gambito romántico o una defensa moderna?". Le dije: "Decídete rápido, Boris, que mi reloj parlante se va a poner a cantar la teoría de la relatividad". Jugó 1. e4 y nos dimos la mano con estilo».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <button class="btn-card-action is-upcoming" onclick="event.stopPropagation(); openBookModal('Boris Spassky', '1969-1972', 'El Estilo Universal & Años 70', 'Colorea partidas románticas del Gambito de Rey, carruseles de apertura y retos de adaptación táctica.')"><span>⏳ Libro en Producción · Ver Avance</span></button>
+      </div>
+    </div>
+
+    <!-- 11. BOBBY FISCHER -->
+    <!-- 11. BOBBY FISCHER -->
+    <div class="champion-item" data-era="moderna">
+      <article class="champion-card" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de Bobby Fischer. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#11 · 1972 – 1975</span>
+              <span class="card-era-badge">⚡ Guerra Fría</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>Bobby Fischer</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«El Rayo Láser de Brooklyn»</span>
+                </div>
+                <div class="card-meta-line"><span>🇺🇸 Estados Unidos</span> • <span>Match del Siglo en Reikiavik</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_fischer.png" alt="Bobby Fischer">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">La Verdad Pura (1. e4!)</span>
+              </div>
+              <p class="power-desc">Buscaba la verdad absoluta en cada jugada con una concentración sobrehumana. Cuando encontraba la línea correcta, no fallaba jamás.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-11" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--rose)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,32 141.9,53.6 144.3,91.8 110,111.6 77.1,91 76.4,52.6" fill="url(#radar-grad-11)" class="radar-value-poly" />
+              <circle cx="110" cy="32" r="2.5" class="radar-dot" /><circle cx="141.9" cy="53.6" r="2.5" class="radar-dot" /><circle cx="144.3" cy="91.8" r="2.5" class="radar-dot" /><circle cx="110" cy="111.6" r="2.5" class="radar-dot" /><circle cx="77.1" cy="91" r="2.5" class="radar-dot" /><circle cx="76.4" cy="52.6" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">100</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">92</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">99</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">99</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">95</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">97</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#11</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">Bobby Fischer</h3>
+                <span class="card-back-moniker">«El Rayo Láser de Brooklyn»</span>
+              </div>
+              <span class="card-back-era">⚡ Guerra Fría</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Claridad meridiana, ataque inglés en la Siciliana y finales técnicos implacables.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Donald Byrne vs. Bobby Fischer (1956, ¡La Partida del Siglo con 13 años!).</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«Entró revisando las luces de la sala y diciendo que la mesa temblaba. Me senté en mi silla: "Bobby, la luz la pongo yo en el tablero con mi Siciliana Najdorf". Me miró con ojos eléctricos: "1. e4, la mejor jugada por prueba". Le respondí: "1... c5, la jugada de las valientes"».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <button class="btn-card-action is-upcoming" onclick="event.stopPropagation(); openBookModal('Bobby Fischer', '1972-1975', 'Reikiavik 1972 & La Partida del Siglo', 'Revive el Match del Siglo, colorea la dama sacrificada con 13 años y entrena los finales más limpios.')"><span>⏳ Libro en Producción · Ver Avance</span></button>
+      </div>
+    </div>
+
+    <!-- 12. ANATOLY KARPOV -->
+    <!-- 12. ANATOLY KARPOV -->
+    <div class="champion-item" data-era="moderna">
+      <article class="champion-card" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de Anatoly Karpov. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#12 · 1975 – 1985</span>
+              <span class="card-era-badge">⚡ Guerra Fría</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>Anatoly Karpov</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«La Boa Constrictora»</span>
+                </div>
+                <div class="card-meta-line"><span>🇷🇺 Unión Soviética / Rusia</span> • <span>Más de 160 Torneos Ganados</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_karpov.png" alt="Anatoly Karpov">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">Asfixia Invisible</span>
+              </div>
+              <p class="power-desc">Te quitaba casillas poco a poco, con suavidad y paciencia de serpiente, hasta que no podías mover ni una sola pieza.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-12" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--rose)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,38 144.6,52 141.9,90.4 110,111.2 79.5,89.6 75.7,52.2" fill="url(#radar-grad-12)" class="radar-value-poly" />
+              <circle cx="110" cy="38" r="2.5" class="radar-dot" /><circle cx="144.6" cy="52" r="2.5" class="radar-dot" /><circle cx="141.9" cy="90.4" r="2.5" class="radar-dot" /><circle cx="110" cy="111.2" r="2.5" class="radar-dot" /><circle cx="79.5" cy="89.6" r="2.5" class="radar-dot" /><circle cx="75.7" cy="52.2" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">85</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">100</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">92</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">98</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">88</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">99</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#12</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">Anatoly Karpov</h3>
+                <span class="card-back-moniker">«La Boa Constrictora»</span>
+              </div>
+              <span class="card-back-era">⚡ Guerra Fría</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Dominación de casillas débiles (d5, c6) y asfixia en la Defensa Caro-Kann.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Karpov vs. Spassky (Candidatos 1974). ¡La lección cumbre de asfixia posicional!</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«Jugaba con cara de ángel y me quitó la casilla d5, luego la columna c, luego el aire de la sala. Le dije: "Don Anatoly, me está apretando demasiado". Sacrifiqué un peón en b5 para abrir fuego: "¡Las pequeñas ventajas se rompen con dinamita!". Abrió los ojos asombrado».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <button class="btn-card-action is-upcoming" onclick="event.stopPropagation(); openBookModal('Anatoly Karpov', '1975-1985', 'La Boa & La Defensa Caro-Kann', 'Descubre cómo dominar casillas débiles, laberintos de constricción y láminas con el estilo sutil de Tolya.')"><span>⏳ Libro en Producción · Ver Avance</span></button>
+      </div>
+    </div>
+
+    <!-- 13. GARRY KASPAROV -->
+    <!-- 13. GARRY KASPAROV -->
+    <div class="champion-item" data-era="moderna">
+      <article class="champion-card" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de Garry Kasparov. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#13 · 1985 – 2000</span>
+              <span class="card-era-badge">⚡ Guerra Fría & Moderna</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>Garry Kasparov</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«El Ogro de Bakú»</span>
+                </div>
+                <div class="card-meta-line"><span>🇷🇺 / 🇭🇷 Rusia / Croacia</span> • <span>Campeón Más Joven a los 22 Años</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_kasparov.png" alt="Garry Kasparov">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">Furia Dinámica</span>
+              </div>
+              <p class="power-desc">Una energía volcánica insuperable combinada con la preparación informática más profunda de la historia.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-13" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--rose)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,32 141.2,54 144.6,92 110,110 76.1,91.6 75.4,52" fill="url(#radar-grad-13)" class="radar-value-poly" />
+              <circle cx="110" cy="32" r="2.5" class="radar-dot" /><circle cx="141.2" cy="54" r="2.5" class="radar-dot" /><circle cx="144.6" cy="92" r="2.5" class="radar-dot" /><circle cx="110" cy="110" r="2.5" class="radar-dot" /><circle cx="76.1" cy="91.6" r="2.5" class="radar-dot" /><circle cx="75.4" cy="52" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">100</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">90</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">100</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">95</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">98</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">100</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#13</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">Garry Kasparov</h3>
+                <span class="card-back-moniker">«El Ogro de Bakú»</span>
+              </div>
+              <span class="card-back-era">⚡ Guerra Fría & Moderna</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Furia en la India de Rey y la Siciliana Najdorf; demolición total del centro rival.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Kasparov vs. Topalov (Wijk aan Zee, 1999). ¡La Inmortal de Kasparov!</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«Golpeó el reloj y me miró como un león hambriento. Me acomodé los lentes: "Garry, ruge lo que quieras, pero aquí no asustas a nadie. ¿Crees que tu ataque me impresiona? ¡Tengo a mi alfil en b7 clavándote la vida!". Sonrió con respeto: "¡Esa es la actitud de una campeona!"».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <button class="btn-card-action is-upcoming" onclick="event.stopPropagation(); openBookModal('Garry Kasparov', '1985-2000', 'Furia Dinámica & La Inmortal de 1999', 'Láminas con la legendaria partida de Wijk aan Zee, preparación de supercomputadoras y ataque de dragón.')"><span>⏳ Libro en Producción · Ver Avance</span></button>
+      </div>
+    </div>
+
+    <!-- 14. VLADIMIR KRAMNIK -->
+    <!-- 14. VLADIMIR KRAMNIK -->
+    <div class="champion-item" data-era="digital">
+      <article class="champion-card" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de Vladimir Kramnik. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#14 · 2000 – 2007</span>
+              <span class="card-era-badge">💻 Era Digital</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>Vladimir Kramnik</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«El Muro de Berlín»</span>
+                </div>
+                <div class="card-meta-line"><span>🇷🇺 Rusia</span> • <span>Derrocó a Kasparov en Londres 2000</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_kramnik.png" alt="Vladimir Kramnik">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">La Muralla Cuántica</span>
+              </div>
+              <p class="power-desc">Creó el Muro de Berlín en la Apertura Española: una defensa tan profunda y sin damas que desactivó los ataques de Kasparov.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-14" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--rose)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,37.6 144.6,52 141.9,90.4 110,110.4 80.2,89.2 76.7,52.8" fill="url(#radar-grad-14)" class="radar-value-poly" />
+              <circle cx="110" cy="37.6" r="2.5" class="radar-dot" /><circle cx="144.6" cy="52" r="2.5" class="radar-dot" /><circle cx="141.9" cy="90.4" r="2.5" class="radar-dot" /><circle cx="110" cy="110.4" r="2.5" class="radar-dot" /><circle cx="80.2" cy="89.2" r="2.5" class="radar-dot" /><circle cx="76.7" cy="52.8" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">86</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">100</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">92</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">96</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">86</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">96</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#14</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">Vladimir Kramnik</h3>
+                <span class="card-back-moniker">«El Muro de Berlín»</span>
+              </div>
+              <span class="card-back-era">💻 Era Digital</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Catalana letal y finales técnicos de doble alfil con ventaja de espacio.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Kasparov vs. Kramnik (Londres 2000, Partida 3). ¡El nacimiento del Muro de Berlín!</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«Mide casi dos metros y me dijo: "Nadie puede derribar mi Muro de Berlín". Saqué de mi bolsillo al Caballo de Ŋ: "Don Vladimir, este caballo no sabe física y salta por encima de cualquier muro porque no sabe que está prohibido". Calculó 30 variantes y se rio: "Contra la fantasía no hay muro que valga"».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <button class="btn-card-action is-upcoming" onclick="event.stopPropagation(); openBookModal('Vladimir Kramnik', '2000-2007', 'El Muro de Berlín & La Catalana', 'Descubre cómo desactivar ataques feroces, el misterio de la muralla sin damas y láminas de torres gemelas.')"><span>⏳ Libro en Producción · Ver Avance</span></button>
+      </div>
+    </div>
+
+    <!-- 15. VISWANATHAN ANAND -->
+    <!-- 15. VISWANATHAN ANAND -->
+    <div class="champion-item" data-era="digital">
+      <article class="champion-card" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de Viswanathan Anand. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#15 · 2007 – 2013</span>
+              <span class="card-era-badge">💻 Era Digital</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>Viswanathan Anand</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«El Relámpago de Madrás»</span>
+                </div>
+                <div class="card-meta-line"><span>🇮🇳 India</span> • <span>Inspirador de Millones de Niños</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_anand.png" alt="Viswanathan Anand">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">Velocidad Supersónica</span>
+              </div>
+              <p class="power-desc">Calcula variantes complicadísimas en décimas de segundo sin perder jamás su sonrisa amable y su caballerosidad.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-15" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--rose)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,34 141.5,53.8 143.9,91.6 110,108.8 77.8,90.6 77.4,53.2" fill="url(#radar-grad-15)" class="radar-value-poly" />
+              <circle cx="110" cy="34" r="2.5" class="radar-dot" /><circle cx="141.5" cy="53.8" r="2.5" class="radar-dot" /><circle cx="143.9" cy="91.6" r="2.5" class="radar-dot" /><circle cx="110" cy="108.8" r="2.5" class="radar-dot" /><circle cx="77.8" cy="90.6" r="2.5" class="radar-dot" /><circle cx="77.4" cy="53.2" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">95</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">91</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">98</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">92</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">93</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">94</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#15</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">Viswanathan Anand</h3>
+                <span class="card-back-moniker">«El Relámpago de Madrás»</span>
+              </div>
+              <span class="card-back-era">💻 Era Digital</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Rapidez relampagueante en el medio juego y ataques coordinados por ambos flancos.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Anand vs. Aronian (Wijk aan Zee, 2013). ¡Una de las obras maestras tácticas del siglo XXI!</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«Jugaba a la velocidad de la luz: clack, clack, clack. Le seguí el ritmo jugando con la izquierda mientras con la derecha comía galletas: "¡Vishi, si juegas tan rápido el reloj va a salir volando!". Le metí una clavada doble y se rió: "¡Bailar bajo la lluvia es divertido, pero tus clavadas son peligrosas!"».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <button class="btn-card-action is-upcoming" onclick="event.stopPropagation(); openBookModal('Viswanathan Anand', '2007-2013', 'El Relámpago de la India & Velocidad', 'Retos de cálculo relámpago, laberintos de caballos veloces y láminas con templos y elefantes del ajedrez.')"><span>⏳ Libro en Producción · Ver Avance</span></button>
+      </div>
+    </div>
+
+    <!-- 16. MAGNUS CARLSEN -->
+    <!-- 16. MAGNUS CARLSEN -->
+    <div class="champion-item" data-era="digital">
+      <article class="champion-card" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de Magnus Carlsen. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#16 · 2013 – 2023</span>
+              <span class="card-era-badge">💻 Era Digital</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>Magnus Carlsen</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«El Mozart del Ajedrez»</span>
+                </div>
+                <div class="card-meta-line"><span>🇳🇴 Noruega</span> • <span>Rating Récord Histórico de 2882 Elo</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_carlsen.png" alt="Magnus Carlsen">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">La Presión Infinita</span>
+              </div>
+              <p class="power-desc">Exprime agua de las piedras. Convierte posiciones igualadas en victorias tras 100 jugadas de presión implacable donde el rival se cansa.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-16" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--rose)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,33.2 143.9,52.4 143.9,91.6 110,112 76.7,91.2 75.4,52" fill="url(#radar-grad-16)" class="radar-value-poly" />
+              <circle cx="110" cy="33.2" r="2.5" class="radar-dot" /><circle cx="143.9" cy="52.4" r="2.5" class="radar-dot" /><circle cx="143.9" cy="91.6" r="2.5" class="radar-dot" /><circle cx="110" cy="112" r="2.5" class="radar-dot" /><circle cx="76.7" cy="91.2" r="2.5" class="radar-dot" /><circle cx="75.4" cy="52" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">97</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">98</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">98</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">100</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">96</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">100</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#16</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">Magnus Carlsen</h3>
+                <span class="card-back-moniker">«El Mozart del Ajedrez»</span>
+              </div>
+              <span class="card-back-era">💻 Era Digital</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Comprensión universal intuitiva; juego libre sin depender de la memorización de aperturas.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Carlsen vs. Caruana (Rápidas Mundial 2018) y Carlsen vs. Nepo (Mundial 2021, Partida 6, ¡136 jugadas!).</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«Se acomodó en la silla y siguió jugando un final con un peón doblado en la jugada 95: "Martina, la gente firma tablas; yo juego hasta que apaguen las luces". No bostecé ni una vez: "Magnus, yo tengo 9 años y energía para 200 jugadas más". Me sonrió: "Bienvenida al club de los que no se rinden"».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <button class="btn-card-action is-upcoming" onclick="event.stopPropagation(); openBookModal('Magnus Carlsen', '2013-2023', 'El Rey Vikingo & Los 2882 de Elo', 'Láminas modernas con auroras boreales, finales de 100 jugadas y el secreto de la perseverancia infinita.')"><span>⏳ Libro en Producción · Ver Avance</span></button>
+      </div>
+    </div>
+
+    <!-- 17. DING LIREN -->
+    <!-- 17. DING LIREN -->
+    <div class="champion-item" data-era="digital">
+      <article class="champion-card" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de Ding Liren. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#17 · 2023 – 2024</span>
+              <span class="card-era-badge">💻 Era Digital</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>Ding Liren</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«El Dragón Silencioso»</span>
+                </div>
+                <div class="card-meta-line"><span>🇨🇳 China</span> • <span>Primer Campeón Mundial Chino</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_ding.png" alt="Ding Liren">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">Resiliencia del Dragón</span>
+              </div>
+              <p class="power-desc">Soportar las tempestades psicológicas más duras y encontrar el coraje para rechazar las tablas y ganar con el corazón.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-17" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--rose)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,34.8 142.9,53 143.3,91.2 110,109.6 78.8,90 76.4,52.6" fill="url(#radar-grad-17)" class="radar-value-poly" />
+              <circle cx="110" cy="34.8" r="2.5" class="radar-dot" /><circle cx="142.9" cy="53" r="2.5" class="radar-dot" /><circle cx="143.3" cy="91.2" r="2.5" class="radar-dot" /><circle cx="110" cy="109.6" r="2.5" class="radar-dot" /><circle cx="78.8" cy="90" r="2.5" class="radar-dot" /><circle cx="76.4" cy="52.6" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">93</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">95</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">96</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">94</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">90</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">97</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#17</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">Ding Liren</h3>
+                <span class="card-back-moniker">«El Dragón Silencioso»</span>
+              </div>
+              <span class="card-back-era">💻 Era Digital</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Tenacidad defensiva extrema y clavadas fulgurantes en apuros de tiempo.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Ding Liren vs. Nepomniachtchi (Astana 2023, Desempate 4). ¡La inmortal 46... Tg6!! que le dio la corona!</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«Estaba en silencio con los nervios a flor de piel antes del desempate de Astana. Me acerqué y le dejé una nota: "No temas a la tormenta, Ding: el coraje es levantarse cuando todo parece difícil". Leyó la nota, jugó 46... Tg6!! rechazando las tablas y coronó campeón. Me dijo con gratitud: "La valentía es la mejor jugada"».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <button class="btn-card-action is-upcoming" onclick="event.stopPropagation(); openBookModal('Ding Liren', '2023-2024', 'El Dragón Silencioso & Astaná 2023', 'Colorea al dragón de la perseverancia, la mítica jugada 46...Tg6!! y los secretos para vencer los nervios de torneo.')"><span>⏳ Libro en Producción · Ver Avance</span></button>
+      </div>
+    </div>
+
+
+    <!-- 18. GUKESH D -->
+    <div class="champion-item" data-era="digital">
+      <article class="champion-card card-featured-gukesh" onclick="toggleCardFlip(this)" onkeydown="handleCardKeydown(this, event)" tabindex="0" role="button" aria-label="Carta coleccionable de Gukesh D. Haz clic para girar.">
+        <div class="card-inner">
+          
+          <!-- FRENTE: CARTA RPG POKÉMON -->
+          <div class="card-face card-front">
+            <div class="card-top">
+              <span class="card-number-badge">#18 · 2024 – Presente</span>
+              <span class="card-era-badge">💻 Era Digital</span>
+            </div>
+
+            <div class="card-hero-area">
+              <div class="card-title-group">
+                <h2>Gukesh D</h2>
+                <div class="card-subtitle-line">
+                  <span class="card-moniker">«El Prodigio de Madrás»</span>
+                </div>
+                <div class="card-meta-line"><span>🇮🇳 India</span> • <span>Campeón Mundial Más Joven (18 años)</span></div>
+              </div>
+              <div class="card-art-frame">
+                <img src="/assets/img/campeones/card_gukesh.png" alt="Gukesh D">
+              </div>
+            </div>
+
+            <div class="card-power-badge">
+              <div class="power-header-line">
+                <span class="power-label">✨ PODER:</span>
+                <span class="power-name">Concentración Diamante</span>
+              </div>
+              <p class="power-desc">Calma imperturbable y cálculo milimétrico que no parpadea ante la presión de los gigantes mundiales.</p>
+            </div>
+
+            <div class="card-radar-wrapper">
+            <svg class="radar-chart-svg" viewBox="0 0 220 145" aria-label="Estadísticas de combate estilo RPG">
+              <defs>
+                <radialGradient id="radar-grad-18" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="var(--magic-blue)" stop-opacity="0.5" />
+                </radialGradient>
+              </defs>
+              <polygon points="110,58.8 121.4,65.4 121.4,78.6 110,85.2 98.6,78.6 98.6,65.4" class="radar-grid-poly" /><polygon points="110,45.6 132.9,58.8 132.9,85.2 110,98.4 87.1,85.2 87.1,58.8" class="radar-grid-poly" /><polygon points="110,32 144.6,52 144.6,92 110,112 75.4,92 75.4,52" class="radar-grid-poly" />
+              <line x1="110" y1="72" x2="110" y2="32" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="52" class="radar-axis-line" /><line x1="110" y1="72" x2="144.6" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="110" y2="112" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="92" class="radar-axis-line" /><line x1="110" y1="72" x2="75.4" y2="52" class="radar-axis-line" />
+              <polygon points="110,33.5 143.5,52.5 144.5,91.5 110,110 77.5,90.5 75.8,52.2" fill="url(#radar-grad-18)" class="radar-value-poly" />
+              <circle cx="110" cy="33.5" r="2.5" class="radar-dot" /><circle cx="143.5" cy="52.5" r="2.5" class="radar-dot" /><circle cx="144.5" cy="91.5" r="2.5" class="radar-dot" /><circle cx="110" cy="110" r="2.5" class="radar-dot" /><circle cx="77.5" cy="90.5" r="2.5" class="radar-dot" /><circle cx="75.8" cy="52.2" r="2.5" class="radar-dot" />
+              <text x="110" y="16" text-anchor="middle" class="radar-label">⚔️ Atk <tspan class="radar-val">95</tspan></text><text x="156" y="50" text-anchor="start" class="radar-label">🛡️ Def <tspan class="radar-val">96</tspan></text><text x="156" y="98" text-anchor="start" class="radar-label">⚡ Tác <tspan class="radar-val">98</tspan></text><text x="110" y="136" text-anchor="middle" class="radar-label">♟️ Fin <tspan class="radar-val">95</tspan></text><text x="64" y="98" text-anchor="end" class="radar-label">🎨 Cre <tspan class="radar-val">92</tspan></text><text x="64" y="50" text-anchor="end" class="radar-label">🧠 Psi <tspan class="radar-val">99</tspan></text>
+            </svg>
+          </div>
+          </div>
+
+          <!-- REVERSO: CUADERNO DE MARTINA & TÁCTICAS -->
+          <div class="card-face card-back">
+            <div class="card-back-header">
+              <span class="card-number-badge-mini">#18</span>
+              <div class="card-back-title-wrap">
+                <h3 class="card-back-name">Gukesh D</h3>
+                <span class="card-back-moniker">«El Prodigio de Madrás»</span>
+              </div>
+              <span class="card-back-era">💻 Era Digital</span>
+            </div>
+
+            <div class="card-back-content">
+              <div class="card-tactics-brief">
+        <div class="tactics-item"><strong>Tipo de Ataque:</strong> Precisión dinámica implacable y nervios de acero en el remate final.</div>
+        <div class="tactics-item"><strong>Partida de Leyenda:</strong> Ding Liren vs. Gukesh D (Singapur, 2024). ¡La consagración del nuevo rey más joven de la historia!</div>
+      </div>
+              <div class="card-martina-story">
+        <div class="martina-story-header"><span>💬 Anécdota con Martina:</span></div>
+        <p>«Le pregunté a Gukesh si a los 18 años todavía le gustaba comer galletas antes de jugar. Me sonrió con timidez y me dijo: "Martina, la edad no importa si tu mente está tranquila y disfrutas cada jugada". Le mostré una clavada con mi alfil y me felicitó: "Tienes mirada de campeona"».</p>
+      </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ACCIÓN FUERA DE LA CARTA -->
+      <div class="champion-card-action">
+        <button class="btn-card-action is-upcoming" onclick="event.stopPropagation(); openBookModal('Gukesh D', '2024-Presente', 'El Prodigio de Singapur & Concentración de Diamante', 'Láminas para colorear del nuevo rey del ajedrez, cálculo prodigioso y la gran victoria en Singapur.')"><span>⏳ Libro en Producción · Ver Avance</span></button>
+      </div>
+    </div>
+
+  </div><!-- /champions-grid -->
+
+</div><!-- /campeones-container -->
+
+<!-- MODAL PREVIEW DE LIBROS DE ACTIVIDADES -->
+<div class="champion-modal" id="champion-modal" onclick="closeBookModal(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close-btn" onclick="closeBookModalDirect()" aria-label="Cerrar modal">✕</button>
+    <div id="modal-body">
+      <!-- Dynamic content injected by JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+  // Flip card toggle
+  function toggleCardFlip(card) {
+    if (!card) return;
+    card.classList.toggle('is-flipped');
+  }
+
+  function handleCardKeydown(card, event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      toggleCardFlip(card);
+    }
+  }
+
+  // Filter Era functionality
+  function filterEra(era, btn) {
+    const items = document.querySelectorAll('.champion-item');
+    const buttons = document.querySelectorAll('.filter-btn');
+
+    buttons.forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+
+    items.forEach(item => {
+      if (era === 'all' || item.getAttribute('data-era') === era) {
+        item.style.display = '';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+
+  // Modal Functionality
+  function openBookModal(name, years, theme, description) {
+    const modal = document.getElementById('champion-modal');
+    const modalBody = document.getElementById('modal-body');
+
+    modalBody.innerHTML = `
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <span style="font-size: 2.2rem;">👑</span>
+        <h2 style="font-size: 1.8rem; margin: 0.3rem 0; color: var(--heading-color);">Libro de Aventuras & Colorear</h2>
+        <h3 style="font-size: 1.25rem; color: var(--rose); margin-bottom: 0.2rem;">${name} (${years})</h3>
+        <p style="font-size: 0.9rem; font-weight: bold; color: var(--magic-blue); text-transform: uppercase; letter-spacing: 0.5px;">${theme}</p>
+      </div>
+      <div style="background: var(--paper); border: 2px dashed var(--gold); border-radius: 12px; padding: 1.2rem; margin-bottom: 1.5rem;">
+        <p style="font-size: 0.95rem; line-height: 1.6; margin: 0; color: var(--text-color);">
+          ${description}
+        </p>
+      </div>
+      <div style="font-size: 0.9rem; margin-bottom: 1.5rem;">
+        <h4 style="margin-bottom: 0.6rem; color: var(--heading-color);">🎨 Contenido de la Colección:</h4>
+        <ul style="padding-left: 1.2rem; line-height: 1.6; color: var(--text-color);">
+          <li><strong>Formato Carta (Letter):</strong> 100% en blanco y negro (line art puro) para imprimir y pintar con lápices.</li>
+          <li><strong>Orlas y Marcos Históricos:</strong> Diseño editorial personalizado a la época del campeón.</li>
+          <li><strong>Retos y Laberintos:</strong> Sopas de letras temáticas, laberintos de caballos y problemas tácticos de sus partidas reales.</li>
+          <li><strong>Diploma de Honor:</strong> Certificado de Gran Maestra para enmarcar.</li>
+        </ul>
+      </div>
+      <div style="text-align: center;">
+        ${(() => {
+          let pdfUrl = '';
+          let pdfName = '';
+          if (name.includes('Capablanca')) {
+            pdfUrl = '/assets/pdf/capablanca_libro_colorear.pdf';
+            pdfName = 'Libro_Aventuras_Ajedrez_Capablanca.pdf';
+          } else if (name.includes('Steinitz')) {
+            pdfUrl = '/assets/pdf/steinitz_libro_colorear.pdf';
+            pdfName = 'Libro_Aventuras_Ajedrez_Steinitz.pdf';
+          } else if (name.includes('Lasker')) {
+            pdfUrl = '/assets/pdf/lasker_libro_colorear.pdf';
+            pdfName = 'Libro_Aventuras_Ajedrez_Lasker.pdf';
+          } else if (name.includes('Alekhine')) {
+            pdfUrl = '/assets/pdf/alekhine_libro_colorear.pdf';
+            pdfName = 'Libro_Aventuras_Ajedrez_Alekhine.pdf';
+          } else if (name.includes('Euwe')) {
+            pdfUrl = '/assets/pdf/euwe_libro_colorear.pdf';
+            pdfName = 'Libro_Aventuras_Ajedrez_Euwe.pdf';
+          }
+
+          if (pdfUrl) {
+            return `
+              <div style="background: rgba(46, 139, 87, 0.1); border: 1.5px solid var(--forest); border-radius: 8px; padding: 0.8rem; margin-bottom: 1rem;">
+                <p style="margin: 0; font-size: 0.9rem; color: var(--forest); font-weight: bold;">
+                  🎉 ¡Libro oficial de ${name} 100% completo y listo para imprimir en tamaño Carta!
+                </p>
+              </div>
+              <a href="${pdfUrl}" download="${pdfName}" class="btn-download-book" style="display: inline-flex;">
+                ⬇️ Descargar Libro Completo de ${name} (PDF)
+              </a>
+            `;
+          } else {
+            return `
+              <div style="background: rgba(244, 162, 97, 0.12); border: 1.5px solid var(--gold); border-radius: 10px; padding: 0.9rem; margin-bottom: 1rem; text-align: left;">
+                <p style="margin: 0 0 0.35rem; font-size: 0.92rem; color: var(--heading-color); font-weight: 800;">
+                  ⏳ Libro de Aventuras de ${name} en producción
+                </p>
+                <p style="margin: 0; font-size: 0.85rem; color: var(--text-color); line-height: 1.5;">
+                  Estamos preparando e ilustrando las láminas y retos didácticos de <strong>${name}</strong> para mantener el mismo estándar de alta calidad en tamaño Carta.
+                </p>
+              </div>
+              <p style="margin: 0 0 0.5rem; font-size: 0.82rem; color: var(--muted-color); font-weight: 600;">
+                Muestras oficiales ya terminadas disponibles para descargar:
+              </p>
+              <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/assets/pdf/capablanca_libro_colorear.pdf" download="Libro_Aventuras_Ajedrez_Capablanca.pdf" class="btn-sample-download">
+                  📄 Libro de Capablanca
+                </a>
+                <a href="/assets/pdf/steinitz_libro_colorear.pdf" download="Libro_Aventuras_Ajedrez_Steinitz.pdf" class="btn-sample-download">
+                  📄 Libro de Steinitz
+                </a>
+                <a href="/assets/pdf/lasker_libro_colorear.pdf" download="Libro_Aventuras_Ajedrez_Lasker.pdf" class="btn-sample-download">
+                  📄 Libro de Lasker
+                </a>
+                <a href="/assets/pdf/alekhine_libro_colorear.pdf" download="Libro_Aventuras_Ajedrez_Alekhine.pdf" class="btn-sample-download">
+                  📄 Libro de Alekhine
+                </a>
+                <a href="/assets/pdf/euwe_libro_colorear.pdf" download="Libro_Aventuras_Ajedrez_Euwe.pdf" class="btn-sample-download">
+                  📄 Libro de Euwe
+                </a>
+              </div>
+            `;
+          }
+        })()}
+      </div>
+    `;
+
+    modal.classList.add('active');
+  }
+
+  function closeBookModal(e) {
+    if (e.target.id === 'champion-modal') {
+      document.getElementById('champion-modal').classList.remove('active');
+    }
+  }
+
+  function closeBookModalDirect() {
+    document.getElementById('champion-modal').classList.remove('active');
+  }
+</script>
