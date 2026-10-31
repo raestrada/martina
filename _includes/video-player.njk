@@ -11,11 +11,12 @@
     </div>
     {% set finalVideoSrc = 'https://raw.githubusercontent.com/raestrada/martina/main' + videoSrc %}
     <video playsinline controls class="audiobook-video">
+      <source src="{{ videoSrc }}" type="video/mp4">
       <source src="{{ finalVideoSrc }}" type="video/mp4">
       Tu navegador no soporta el elemento de video.
     </video>
     <div class="audiobook-download">
-      <a href="{{ finalVideoSrc }}" download="{{ downloadName }}" class="btn video-offline-btn" data-video-src="{{ finalVideoSrc }}" data-video-name="{{ downloadName }}">⬇️ Descargar Video (MP4)</a>
+      <a href="{{ videoSrc }}" download="{{ downloadName }}" class="btn video-offline-btn" data-video-src="{{ finalVideoSrc }}" data-video-name="{{ downloadName }}">⬇️ Descargar Video (MP4)</a>
     </div>
   </div>
 </details>

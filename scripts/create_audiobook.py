@@ -290,6 +290,13 @@ STORY_CONFIG = {
         "default_voice": "es-ES-ElviraNeural",
         "default_image": "cuento36_cara_a_cara.png",
         "mapping": {}
+    },
+    37: {
+        "html_file": "../_site/cuentos/37-el-rey-que-paseaba-en-pantuflas.html",
+        "output_video": "../assets/video/cuento_37_audiolibro.mp4",
+        "default_voice": "es-ES-AlvaroNeural",
+        "default_image": "cuento37_martina_steinitz.png",
+        "mapping": {}
     }
 }
 
