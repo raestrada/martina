@@ -304,6 +304,13 @@ STORY_CONFIG = {
         "default_voice": "es-ES-AlvaroNeural",
         "default_image": "cuento38_martina_lasker.png",
         "mapping": {}
+    },
+    39: {
+        "html_file": "../_site/cuentos/39-la-maquina-de-cristal-de-la-habana.html",
+        "output_video": "../assets/video/cuento_39_audiolibro.mp4",
+        "default_voice": "es-CU-BelkysNeural",
+        "default_image": "cuento39_martina_capablanca.png",
+        "mapping": {}
     }
 }
 
