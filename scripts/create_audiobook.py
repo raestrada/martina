@@ -297,6 +297,13 @@ STORY_CONFIG = {
         "default_voice": "es-ES-AlvaroNeural",
         "default_image": "cuento37_martina_steinitz.png",
         "mapping": {}
+    },
+    38: {
+        "html_file": "../_site/cuentos/38-el-filosofo-del-humo-y-los-dos-alfiles.html",
+        "output_video": "../assets/video/cuento_38_audiolibro.mp4",
+        "default_voice": "es-ES-AlvaroNeural",
+        "default_image": "cuento38_martina_lasker.png",
+        "mapping": {}
     }
 }
 
