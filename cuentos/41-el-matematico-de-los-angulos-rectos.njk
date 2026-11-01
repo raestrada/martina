@@ -1,0 +1,296 @@
+---
+layout: base.njk
+title: El Matemático de los Ángulos Rectos — Martina · Cuentos de Ajedrez
+description: "Martina viaja a la Ámsterdam de 1935 para enfrentarse a Max Euwe, el quinto Campeón del Mundo y doctor en matemáticas. Una lección de precisión, geometría de tablero y el asombroso poder de las clavadas."
+keywords: ajedrez, cuentos infantiles, Max Euwe, quinto campeon mundial, Gambito de Dama, Defensa Eslava, clavadas, torre en septima, matematicas en ajedrez, cuentos para dormir, Martina
+ogType: article
+ogImage: /assets/img/cuento41_martina_euwe.png
+ogTitle: El Matemático de los Ángulos Rectos — Martina · Cuentos de Ajedrez
+ogDescription: "Martina contra el metódico doctor Max Euwe. Cuando la fría geometría euclidiana choca contra la fantasía del ataque, el tablero se transforma en pura magia."
+activeNav: cuentos
+prevCuento:
+  url: /cuentos/40-el-huracan-del-dragon-y-el-gato-siames.html
+  title: "El Huracán del Dragón y el Gato Siamés"
+extraJs:
+  - /js/chess-board.js
+  - /js/chess-engine.js
+  - /js/chess-replayer.js
+---
+
+<article class="story-body">
+
+  <header class="story-header">
+    <span class="story-number">Cuento 41</span>
+    <h1>El Matemático de los Ángulos Rectos</h1>
+    <p class="story-subtitle">Donde el Reloj Parlante navega entre canales y bicicletas de 1935, Peoncito estrena un zueco como casco medieval, y Martina demuestra que la geometría pura solo cobra vida cuando le agregas una chispa de audacia</p>
+    <a href="#partida-real" class="jump-to-game fade-in stagger-3">♟️ Ver la partida de Euwe ↓</a>
+  </header>
+
+{% set videoSrc = '/assets/video/cuento_41_audiolibro.mp4' %}
+{% set downloadName = 'Cuento_41_El_Matematico_De_Los_Angulos_Rectos.mp4' %}
+{% include "video-player.njk" %}
+
+  <p class="dropcap">
+    La noche del lunes olía a lluvia tibia sobre el asfalto de Santiago.
+    En su mesa de noche, alineados con disciplina militar, brillaban los cuatro recuerdos
+    de su viaje por la historia: el botón de latón de Steinitz, la pluma de ave de Lasker,
+    el alfil de nácar de Capablanca y el cascabel de plata de Alekhine.
+  </p>
+
+  <p>
+    Martina hizo sonar el cascabel con un toque de uña: <em>¡Clin!</em>
+    El sonido limpio y cantarín despertó al Reloj Parlante en la casilla d4.
+  </p>
+
+  <p>
+    —¡Atención a los catetos y las hipotenusas! —bramó el reloj, haciendo oscilar sus agujas
+    como un compás enloquecido—. Si creías que el ajedrez era solo fuego y tormenta, niña insolente,
+    prepárate para la sorpresa de tu vida. Nos vamos a Ámsterdam en el otoño de 1935.
+    Allí te espera el doctor Max Euwe: profesor de matemáticas, boxeador aficionado, caballero impecable
+    y el único hombre que venció a Alekhine calculando las casillas como si fueran teoremas de álgebra.
+  </p>
+
+  <p>
+    Peoncito emergió de detrás de la torre blanca luciendo con orgullo un diminuto zueco
+    de madera sobre su cabeza redonda de cristal, sujeto con un elástico dental.
+    —Armadura holandesa de nogal pulido —anunció Peoncito con gravedad mientras golpeaba el zueco
+    con los nudillos—. Si ese profesor intenta resolverme con una ecuación de segundo grado,
+    la tiza rebotará en mi coraza. Además, traje un ábaco de colores para vigilar que nadie
+    nos robe un peón en las diagonales.
+  </p>
+
+  <p>
+    Martina sonrió, ajustándose los lentes con su habitual tranquilidad:
+    —No necesitamos ábacos, Peoncito. A mí me encantan las matemáticas... sobre todo cuando
+    las ecuaciones terminan en una torre en séptima fila.
+  </p>
+
+  <div class="story-divider">📐 🇳🇱 🚲</div>
+
+  <p>
+    El salto temporal los depositó en una tarde luminosa y fresca de octubre de 1935.
+    Estaban en el aula de estudios de una elegante escuela junto a los canales de Ámsterdam.
+    Por los altos ventanales de arco se veían hileras de casas de ladrillo rojo, sauces dorados
+    inclinándose sobre el agua y decenas de ciclistas pedaleando con sombreros de fieltro.
+  </p>
+
+  <p>
+    Al frente del salón, de espaldas a ellos, un hombre alto, atlético y de porte distinguido
+    escribía con tiza blanca en una pizarra verde gigante. Llevaba un chaleco de lana gris,
+    corbata sobria y unos lentes redondos que reflejaban la luz otoñal.
+    En la pizarra se leían fórmulas geométricas mezcladas con notación de ajedrez:
+    <em>d4 + c4 = control del centro</em>, vectores de fuerza y flechas diagonales.
+  </p>
+
+  <div class="story-image-wrapper fade-in">
+    <img src="/assets/img/cuento41_martina_euwe.png" alt="Martina y el doctor Max Euwe en Ámsterdam 1935" class="story-image" loading="lazy">
+    <p class="story-image-caption">Martina frente al distinguido Dr. Max Euwe en su aula de Ámsterdam, rodeados de pizarras con teoremas y el canal de fondo.</p>
+  </div>
+
+  <p>
+    El doctor Max Euwe bajó la tiza, se sacudió las solapas y se giró con una sonrisa cordial:
+    —Goedemiddag. Sean bienvenidos. ¿Buscan la clase de geometría analítica o el taller de lógica deductiva?
+  </p>
+
+  <p>
+    —Buscamos al quinto Campeón del Mundo —respondió Martina, dando un paso adelante con sus shorts
+    de vóley y su polera de ajedrez e inteligencia artificial—. Dicen que usted cree que el ajedrez
+    es solo una cuestión de ángulos rectos, cálculo sereno y fórmulas frías.
+  </p>
+
+  <p>
+    El doctor Euwe acomodó sus gafas con gesto apacible:
+    —El ajedrez es una ciencia pura, jovencita. La pasión sin método es como un barco sin timón;
+    puede verse imponente en la tormenta, pero termina estrellándose contra las rocas.
+    Si dominas las líneas geométricas del tablero, el desorden simplemente desaparece.
+  </p>
+
+  <p>
+    —El método es genial, doctor —replicó Martina con su inconfundible aire de serena certeza—,
+    pero la geometría es mucho más divertida cuando le agregas una pizca de dinamita.
+    Me pido las piezas blancas.
+  </p>
+
+  <p>
+    Euwe rió con elegancia británica y asintió:
+    —Veamos si tus axiomas resisten una partida seria.
+  </p>
+
+  <div class="story-divider">♟️ 📏 ⚡</div>
+
+  <p>
+    Martina tomó asiento frente al pulido tablero de nogal y abrió con paso seguro:
+    <strong>1. d4</strong>.
+  </p>
+
+  <p>
+    El matemático holandés respondió con clásica solidez:
+    <strong>1... d5 2. c4 c6 3. Cf3 Cf6 4. Cc3 dxc4 5. a4 Af5</strong>.
+    La Defensa Eslava. Euwe defendía el centro con la firmeza de un puente levadizo.
+  </p>
+
+  <p>
+    Pero Martina no venía a jugar pasivo. Recordando la precisión quirúrgica de Judith Polgar
+    y las enseñanzas de su aventura anterior, comenzó a coordinar sus piezas como engranajes de precisión:
+    <strong>6. Ce5 Cbd7 7. Cxc4 Qc7 8. g3 e5 9. dxe5 Nxe5</strong>.
+  </p>
+
+  <p>
+    Y entonces, en la jugada diez, Martina colocó su alfil negro en una casilla fulgurante:
+    <strong>10. Af4!</strong>
+  </p>
+
+  <p>
+    Peoncito dio un salto sobre la casilla c3, haciendo resonar su zueco de madera:
+    —¡Clavada! ¡Clavada en e5! ¡Ese caballo negro no puede ni pestañear porque la dama de c7
+    está en la misma línea visual! ¡Una clavada geométrica de alta graduación!
+  </p>
+
+  <p>
+    Euwe sonrió intrigado y movió:
+    <strong>10... Cfd7 11. Ag2 Be6 12. Cxe5 Nxe5 13. O-O Be7 14. Qc2! Rd8 15. Rfd1 O-O</strong>.
+    Ambos bandos habían enrocado y las piezas blancas se deslizaban como líneas vectoriales.
+  </p>
+
+  <p>
+    Martina atacó la dama rival con audacia:
+    <strong>16. Cb5! Txd1+ 17. Txd1 Qa5 18. Cd4 Bc8 19. b4! Qc7 20. b5 c5 21. Cf5 f6 22. Ce3 Be6</strong>.
+  </p>
+
+  <p>
+    El tablero era una red de tensiones invisibles. Fue en ese momento cuando Martina vio
+    la debilidad en el engranaje negro. Con los ojos brillantes detrás de sus lentes,
+    jugó el golpe central que desarmaba la geometría del profesor:
+    <strong>23. Ad5!</strong>
+  </p>
+
+  <p>
+    ¡Otra clavada! El alfil de e6 de Euwe estaba absolutamente inmovilizado contra su propio rey.
+    Euwe tuvo que ceder:
+    <strong>23... Axd5 24. Txd5! Qa5</strong>.
+  </p>
+
+  <p>
+    El doctor intentó un contraataque desesperado:
+    <strong>25. Cf5 De1+</strong>.
+    La dama negra se colaba en la primera fila buscando sembrar el pánico.
+    Cualquier aficionado se habría asustado con un jaque a su rey expuesto.
+    Pero Martina dio un paso sereno y seguro:
+    <strong>26. Rg2!</strong>
+  </p>
+
+  <p>
+    Euwe tuvo que retirar su alfil amenazado:
+    <strong>26... Ad8 27. Axe5 fxe5</strong>.
+  </p>
+
+  <p>
+    Y entonces, Martina desató la jugada que los libros de historia recordarían para siempre:
+    <strong>28. Td7!!</strong>
+  </p>
+
+  <div class="story-image-wrapper fade-in">
+    <img src="/assets/img/cuento41_torre_euwe.png" alt="Torre en séptima fila y salto de caballo táctico de Martina frente a Euwe" class="story-image" loading="lazy">
+    <p class="story-image-caption">¡La torre blanca en d7 y el caballo en h6 iluminan el tablero: una combinación matemática perfecta que desarma la defensa de Euwe.</p>
+  </div>
+
+  <p>
+    ¡La torre en séptima fila! No había pieza en el mundo más temible que una torre blanca
+    instalada en la séptima horizontal, barriendo peones como un huracán.
+    Euwe intentó tapar con su alfil en f6:
+    <strong>28... Af6</strong>.
+  </p>
+
+  <p>
+    Martina tocó el cascabel de plata en su bolsillo, respiró hondo y soltó el trueno final:
+    <strong>29. Ch6+!! Kh8</strong><br>
+    <strong>30. Qxc5!</strong>
+  </p>
+
+  <p>
+    La dama blanca saltaba a c5 como una reina victoriosa. Amenazaba mate en f8 con la torre
+    y amenazaba mate en g7 con el caballo y la torre. No había jugada legal en todo el universo
+    que pudiera salvar las dos amenazas al mismo tiempo.
+  </p>
+
+  <div class="story-divider">✨ 🏆 📐</div>
+
+  <p>
+    El salón quedó en un silencio reverencial. Solo se oía el tintineo suave de las bicicletas
+    afuera y el agua chocando contra las orillas de piedra del canal.
+  </p>
+
+  <p>
+    El doctor Max Euwe miró el tablero durante un largo minuto.
+    Luego tomó un trozo de tiza, caminó despacio hacia la pizarra verde y dibujó tres vectores
+    luminosos: de la dama en c5 a la casilla f8, de la torre en d7 al peón de g7, y del caballo
+    en h6 cruzando el rey negro. Las tres líneas formaban un triángulo dorado perfecto.
+  </p>
+
+  <p>
+    Euwe se dio vuelta, sonrió con sincera y noble admiración, y detuvo su reloj de madera:
+    —Rindo mi rey, señorita Martina.
+  </p>
+
+  <p>
+    El doctor extendió su mano grande y fuerte para estrechar la de Martina:
+    —He enseñado matemáticas durante veinte años y jamás había visto una demostración más hermosa.
+    Tenías razón: la lógica es el esqueleto del ajedrez, pero la imaginación y la valentía
+    son el corazón que lo hace latir.
+  </p>
+
+  <p>
+    De su bolsillo, el doctor Euwe extrajo una pequeña regla de cálculo de madera noble,
+    con números grabados en bronce y una dedicatoria escrita a mano con tinta indeleble:
+    <em>«Para Martina: que demostró que la distancia más corta entre dos puntos es un sacrificio audaz»</em>.
+  </p>
+
+  <p>
+    Peoncito se quitó el zueco de la cabeza con ceremonia y se inclinó hasta el suelo:
+    —Doctor Euwe, ha sido un honor matemático. Sus ecuaciones son formidables, aunque sugiero
+    que la próxima vez incluya un bigote en la fórmula. Aumenta la densidad del cálculo en un cuarenta por ciento.
+  </p>
+
+  <div class="story-divider">🌙 🛌 📐</div>
+
+  <p>
+    Cuando el Reloj Parlante cerró su espiral de coordenadas en d4, Martina abrió los ojos
+    en su habitación de Santiago. El sol de la mañana entraba tibio por la ventana.
+  </p>
+
+  <p>
+    Sobre su escritorio, en hilera perfecta, estaban ahora sus cinco tesoros legendarios:
+    el botón de Steinitz, la pluma de Lasker, el alfil de Capablanca, el cascabel de Alekhine...
+    y ahora, la hermosa regla de cálculo de Max Euwe, tibia al tacto como la madera recién cortada.
+  </p>
+
+  <p>
+    Martina se sentó en la cama y se colocó sus lentes con una gran sonrisa.
+    Había ganado jugando con orden, rigor y fuego. Porque cuando aprendes a combinar
+    la cabeza fría de un matemático con el corazón valiente de una ajedrecista,
+    no hay misterio en el tablero que no puedas descifrar.
+  </p>
+
+  <p style="text-align:center;font-style:italic;margin-top:4rem;color:var(--sage);">
+    Fin del cuadragésimo primer cuento.<br>
+    Continuará con el patriarca de acero y la escuela soviética…
+  </p>
+
+  <div id="partida-real" class="historical-epilogue fade-in">
+    <h3>🏛️ El Secreto detrás del Cuento</h3>
+    <p>
+      Este cuento rinde tributo a <strong>Dr. Max Euwe</strong> (1901–1981), quinto Campeón Mundial de Ajedrez
+      (1935–1937), doctor en matemáticas y posteriormente presidente de la FIDE. La partida reproducida recrea
+      la primera partida del célebre <strong>Match por el Campeonato del Mundo de 1935 en Ámsterdam</strong>,
+      donde las piezas blancas desarticularon la Defensa Eslava mediante una secuencia modélica de clavadas
+      (10. Bf4!, 23. Bd5!), una fulgurante torre en séptima fila (28. Rd7!!) y el demoledor jaque de caballo
+      (29. Nh6+! Kh8 30. Qxc5! 1-0) que forzó la rendición inmediata. ¡Una obra maestra de geometría y ataque!
+    </p>
+    <div class="chess-diagram-container" style="text-align: center;">
+      <div class="chess-replayer-container" data-story-id="41"></div>
+    </div>
+  </div>
+
+  {% include "story-footer.njk" %}
+
+</article>

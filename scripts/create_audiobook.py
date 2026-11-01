@@ -322,6 +322,18 @@ STORY_CONFIG = {
             "sacrificio": "cuento40_dragon_alekhine.png",
             "clavada": "cuento40_dragon_alekhine.png"
         }
+    },
+    41: {
+        "html_file": "../_site/cuentos/41-el-matematico-de-los-angulos-rectos.html",
+        "output_video": "../assets/video/cuento_41_audiolibro.mp4",
+        "default_voice": "es-MX-DaliaNeural",
+        "default_image": "cuento41_martina_euwe.png",
+        "mapping": {
+            "Td7": "cuento41_torre_euwe.png",
+            "séptima fila": "cuento41_torre_euwe.png",
+            "Ch6+": "cuento41_torre_euwe.png",
+            "Qxc5": "cuento41_torre_euwe.png"
+        }
     }
 }
 
