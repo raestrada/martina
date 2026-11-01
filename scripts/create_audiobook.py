@@ -393,6 +393,18 @@ STORY_CONFIG = {
             "Gambito": "cuento46_gambito_rey.png",
             "aplaudir": "cuento46_gambito_rey.png"
         }
+    },
+    47: {
+        "html_file": "../_site/cuentos/47-el-nino-de-brooklyn-y-la-partida-del-siglo.html",
+        "output_video": "../assets/video/cuento_47_audiolibro.mp4",
+        "default_voice": "es-US-AlonsoNeural",
+        "default_image": "cuento47_martina_fischer.png",
+        "mapping": {
+            "Ae6": "cuento47_sacrificio_del_siglo.png",
+            "molinillo": "cuento47_sacrificio_del_siglo.png",
+            "sacrificio": "cuento47_sacrificio_del_siglo.png",
+            "DAMA": "cuento47_sacrificio_del_siglo.png"
+        }
     }
 }
 
