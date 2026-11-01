@@ -369,6 +369,18 @@ STORY_CONFIG = {
             "chispas": "cuento44_bosque_sacrificio.png",
             "loco": "cuento44_bosque_sacrificio.png"
         }
+    },
+    45: {
+        "html_file": "../_site/cuentos/45-la-muralla-de-granito-y-el-audifono-magico.html",
+        "output_video": "../assets/video/cuento_45_audiolibro.mp4",
+        "default_voice": "es-UY-MateoNeural",
+        "default_image": "cuento45_martina_petrosian.png",
+        "mapping": {
+            "Te6": "cuento45_fortaleza_torre.png",
+            "sacrificio": "cuento45_fortaleza_torre.png",
+            "granito": "cuento45_fortaleza_torre.png",
+            "muralla": "cuento45_fortaleza_torre.png"
+        }
     }
 }
 
