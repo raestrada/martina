@@ -1,0 +1,268 @@
+---
+layout: base.njk
+title: El Barítono de la Gran Armonía — Martina · Cuentos de Ajedrez
+description: "Martina viaja a Moscú en 1957 para medirse con Vasily Smyslov, el séptimo Campeón del Mundo y célebre barítono de ópera. Una lección mágica sobre la armonía de las piezas, un electrizante sacrificio de dama en e4 y el canto del tablero."
+keywords: ajedrez, cuentos infantiles, Vasily Smyslov, septimo campeon mundial, Defensa Francesa, sacrificio de dama, armonia en ajedrez, musica y ajedrez, cuentos para dormir, Martina
+ogType: article
+ogImage: /assets/img/cuento43_martina_smyslov.png
+ogTitle: El Barítono de la Gran Armonía — Martina · Cuentos de Ajedrez
+ogDescription: "Martina frente al elegante Vasily Smyslov en el Teatro Bolshoi. Cuando las piezas juegan afinadas como una orquesta, un sacrificio de dama se convierte en la más hermosa sinfonía."
+activeNav: cuentos
+prevCuento:
+  url: /cuentos/42-el-patriarca-de-acero-y-el-cuaderno-secreto.html
+  title: "El Patriarca de Acero y el Cuaderno Secreto"
+extraJs:
+  - /js/chess-board.js
+  - /js/chess-engine.js
+  - /js/chess-replayer.js
+---
+
+<article class="story-body">
+
+  <header class="story-header">
+    <span class="story-number">Cuento 43</span>
+    <h1>El Barítono de la Gran Armonía</h1>
+    <p class="story-subtitle">Donde el Reloj Parlante resuena en un camerino del Teatro Bolshoi, Peoncito desafina en clave de sol con una corbata de moño, y Martina demuestra que el sacrificio de una dama puede ser el acorde más hermoso del universo</p>
+    <a href="#partida-real" class="jump-to-game fade-in stagger-3">♟️ Ver la partida de Smyslov ↓</a>
+  </header>
+
+{% set videoSrc = '/assets/video/cuento_43_audiolibro.mp4' %}
+{% set downloadName = 'Cuento_43_El_Baritono_De_La_Gran_Armonia.mp4' %}
+{% include "video-player.njk" %}
+
+  <p class="dropcap">
+    La noche del miércoles olía a madera tibia y a cuerdas de piano.
+    Sobre el escritorio de Martina, alineados como soldaditos de colección,
+    descansaban ya seis tesoros de sus viajes: el botón de latón de Steinitz,
+    la pluma de ave de Lasker, el alfil de nácar de Capablanca, el cascabel de Alekhine,
+    la regla de Euwe y el muelle de cobre de Botvinnik.
+  </p>
+
+  <p>
+    Martina hizo vibrar el muelle de cobre con la punta del dedo: <em>¡Boiing!</em>
+    La vibración metálica recorrió el aire hasta llegar a la casilla d4, donde el Reloj Parlante
+    comenzó a emitir un tono afinado y redondo, como un violonchelo afinando su cuerda más profunda.
+  </p>
+
+  <p>
+    —¡Do, re, mi, fa, soool! —entonó el reloj con un vibrato operático que casi descalabra
+    sus manecillas—. ¡Abran paso al arte mayor! Esta noche no vamos a laboratorios ni a cuarteles,
+    niña de los shorts de vóley. Nos vamos a Moscú en 1957. Al camerino privado del legendario
+    Teatro Bolshoi. Allí te espera Vasily Vasilievich Smyslov: séptimo Campeón del Mundo,
+    cantante de ópera de voz barítona y el hombre que descubrió que las piezas de ajedrez
+    no marchan por la fuerza... ¡sino que cantan en perfecta armonía!
+  </p>
+
+  <p>
+    Peoncito emergió de detrás de la torre blanca luciendo una corbatita de moño rojo
+    y sosteniendo un palillo de dientes como si fuera una batuta de director de orquesta.
+    —¡Fígaro, Fígaro, Fí-ga-rooo! —cantó Peoncito, con una voz tan aguda que su bigote
+    postizo vibró hasta despegarse por la punta izquierda—. He calentado mis cuerdas de cristal.
+    Si ese campeón intenta cantarme una escala menor, responderé con un solo de percusión
+    que hará temblar los palcos imperiales.
+  </p>
+
+  <p>
+    Martina sonrió mientras ajustaba sus lentes con tranquilidad:
+    —No vamos a desafinar, Peoncito. Vamos a jugar con blancas. Porque cuando el ataque
+    está bien afinado, hasta el sacrificio más salvaje suena como una sinfonía perfecta.
+  </p>
+
+  <div class="story-divider">🎻 🎭 🎹</div>
+
+  <p>
+    El salto temporal los dejó en una estancia elegante y luminosa de 1957, en los bastidores
+    del Teatro Bolshoi de Moscú. Por las ventanas caía la suave penumbra del atardecer.
+    El salón estaba decorado con pesadas cortinas de terciopelo granate, lámparas de cristal
+    dorado y, en el centro, un majestuoso piano de cola negro sobre el cual descansaban
+    partituras de Chaikovski y un pulido tablero de ajedrez de boj y ébano.
+  </p>
+
+  <p>
+    Junto al piano, vocalizando con voz profunda y aterciopelada que hacía vibrar las maderas,
+    estaba Vasily Smyslov. Era un hombre alto, corpulento y bondadoso, vestido con un esmoquin
+    impecable, cabellera castaña ondulada y unos ojos claros llenos de calidez y serenidad.
+  </p>
+
+  <div class="story-image-wrapper fade-in">
+    <img src="/assets/img/cuento43_martina_smyslov.png" alt="Martina y Vasily Smyslov en el piano del Teatro Bolshoi 1957" class="story-image" loading="lazy">
+    <p class="story-image-caption">Martina y el maestro Vasily Smyslov junto al piano de cola en Moscú 1957, rodeados de terciopelo rojo y partituras de ópera.</p>
+  </div>
+
+  <p>
+    Smyslov detuvo su canto, apoyó las manos sobre las teclas y sonrió con gentileza paternal:
+    —Dobryj vecher. Buenas tardes, pequeña amiga. Qué sorpresa tan singular.
+    ¿Vienes a escuchar el ensayo de la ópera o a buscar una lección de ajedrez?
+  </p>
+
+  <p>
+    —Vengo a desafiar al séptimo Campeón del Mundo —respondió Martina con su paso firme
+    y su habitual sonrisa cómplice—. Dicen que usted solo juega cuando las piezas están
+    en armonía absoluta y que detesta las jugadas ruidosas.
+  </p>
+
+  <p>
+    Smyslov rió con una carcajada melodiosa que llenó la habitación:
+    —El ajedrez es música para los ojos, jovencita. Las piezas son los instrumentos de una orquesta.
+    Si la dama grita a destiempo o un caballo desafina, la belleza se derrumba.
+    Cada jugada debe entrar en su compás exacto. ¿Estás lista para dirigir tu propia orquesta?
+  </p>
+
+  <p>
+    —Totalmente lista, maestro —dijo Martina—. Y le advierto que mi orquesta toca con volumen alto.
+  </p>
+
+  <div class="story-divider">🎼 ♟️ ✨</div>
+
+  <p>
+    Martina tomó asiento frente al tablero de boj y abrió con paso seguro:
+    <strong>1. e4</strong>.
+  </p>
+
+  <p>
+    El gran Vasily sonrió y contestó con la sólida Defensa Francesa:
+    <strong>1... e6 2. d4 d5 3. Cc3 Ab4 4. e5 c5 5. a3 Ba5 6. b4 cxd4</strong>.
+    La melodía comenzaba con una tensión creciente en los violines.
+  </p>
+
+  <p>
+    Martina lanzó su dama al ataque como una soprano entrando en escena:
+    <strong>7. Dg4! Ce7 8. bxa5 dxc3 9. Dxg7 Tg8 10. Dxh7 Cd7 11. Nf3 Nf8 12. Dd3 Dxa5 13. h4!</strong>
+  </p>
+
+  <p>
+    El peón h de Martina comenzaba a avanzar con el ritmo exacto de un metrónomo.
+    Smyslov coordinó sus piezas negras con magistral elegancia:
+    <strong>13... Bd7 14. Ag5 Tc8 15. Nd4 Nf5 16. Rb1 Rc4 17. Nxf5 exf5 18. Rxb7 Re4+!</strong>
+  </p>
+
+  <p>
+    La torre negra de Smyslov entraba en e4 dando jaque, con una amenaza furiosa sobre el rey blanco.
+    Cualquier jugador ordinario habría buscado tapar con el alfil o retroceder la dama en pánico.
+    Pero Martina recordó la lección de Judith Polgar y la audacia de Mikhail Tal:
+    el momento más alto de la música ocurre cuando el solista ejecuta lo imposible.
+  </p>
+
+  <p>
+    Sin dudar un solo segundo, Martina tomó su dama y la estrelló en e4:
+    <strong>19. Dxe4!!</strong>
+  </p>
+
+  <p>
+    ¡EL SACRIFICIO DE DAMA!
+    Peoncito soltó su batuta y abrió la boca en un silencio pasmado.
+    Martina había entregado a su pieza más poderosa a cambio de una torre activa y la armonía
+    absoluta del tablero. Smyslov no tuvo más remedio que aceptar:
+    <strong>19... dxe4</strong>.
+  </p>
+
+  <p>
+    Y entonces, como un acorde de trompetas doradas, Martina soltó la secuencia magistral:
+    <strong>20. Tb8+ Bc8 21. Bb5+!</strong>
+  </p>
+
+  <div class="story-image-wrapper fade-in">
+    <img src="/assets/img/cuento43_opera_smyslov.png" alt="Sacrificio de dama en e4 y jaque de alfil en b5 en el tablero de Martina y Smyslov" class="story-image" loading="lazy">
+    <p class="story-image-caption">¡El sacrificio de dama 19. Dxe4!! y el jaque 21. Ab5+! desatan una sinfonía de piezas blancas: el peón h marcha imparable hacia la gloria.</p>
+  </div>
+
+  <p>
+    ¡Una clavada y un jaque intermedio sublime!
+    La dama negra en a5 estaba obligada a inmolarse para salvar a su rey:
+    <strong>21... Dxb5 22. Txb5!</strong>
+    Martina recuperaba material con ventaja posicional demoledora.
+  </p>
+
+  <p>
+    Smyslov intentó una última defensa con sus caballos:
+    <strong>22... Ce6 23. Af6! Txg2 24. h5! Ba6 25. h6!</strong>
+  </p>
+
+  <p>
+    ¡El peón h era un cometa de luz! Nada en el tablero podía impedir que el peón avanzara
+    a h7 y coronara en h8 con una nueva dama triunfal.
+    Las piezas negras estaban completamente descoordinadas, atrapadas en su propio laberinto.
+  </p>
+
+  <div class="story-divider">✨ 👏 🎵</div>
+
+  <p>
+    Un silencio solemne se adueñó del camerino del Bolshoi.
+    Vasily Smyslov contempló el peón h en su casilla seis. Miró a sus piezas desarticuladas
+    y luego miró a Martina, cuyos lentes reflejaban la luz de las arañas de cristal.
+  </p>
+
+  <p>
+    De pronto, el gran barítono se puso de pie, abrió los brazos de par en par y entonó
+    un resonante y poderoso:
+    —¡BRA-VIS-SI-MOOO!
+  </p>
+
+  <p>
+    Su voz llenó el teatro como un trueno de alegría. Smyslov aplaudió con entusiasmo sincero
+    y extendió sus dos manos para estrechar la de Martina:
+    —¡Qué sinfonía, pequeña maga! Entregar la dama para que un peón avance cantando como un solista...
+    ¡Eso no es solo ajedrez, es arte puro! Has demostrado que cuando las piezas juegan
+    en perfecta armonía, no hay rey en el mundo que pueda resistir la melodía.
+  </p>
+
+  <p>
+    Smyslov sacó del bolsillo de su esmoquin un hermoso diapasón de plata fina,
+    con una pequeña clave de sol grabada en el mango:
+    —Toma mi diapasón. Cuando en una partida tus piezas parezcan sordas o desordenadas,
+    hazlo vibrar suavemente sobre el borde del tablero. Te recordará que para ganar una partida,
+    primero hay que aprender a escuchar su música.
+  </p>
+
+  <p>
+    Peoncito dio una reverencia teatral tan honda que su corbata de moño casi tocó el suelo:
+    —Maestro Smyslov, ha sido un honor cantar a dúo. Prometo que en la próxima ópera
+    afinaré mi bigote en la bemol mayor.
+  </p>
+
+  <div class="story-divider">🌙 🛌 🎼</div>
+
+  <p>
+    Cuando el Reloj Parlante cerró su acorde final en d4, Martina abrió los ojos
+    en su habitación de Santiago. Las cortinas dejaban entrar la luz dorada de la mañana.
+  </p>
+
+  <p>
+    Sobre su velador brillaban ya siete maravillas de la historia:
+    el botón de Steinitz, la pluma de Lasker, el alfil de Capablanca, el cascabel de Alekhine,
+    la regla de Euwe, el muelle de Botvinnik...
+    y ahora, el reluciente diapasón de plata de Vasily Smyslov, que emitía un zumbido limpio
+    y cantarín como una campana lejana.
+  </p>
+
+  <p>
+    Martina se calzó sus zapatillas con una sonrisa radiante.
+    Había aprendido que el ajedrez tiene la fuerza del acero, pero también la gracia de la música.
+    Y cuando una jugadora lleva la melodía correcta en el corazón,
+    cada casilla del tablero se convierte en un escenario esperando su mejor función.
+  </p>
+
+  <p style="text-align:center;font-style:italic;margin-top:4rem;color:var(--sage);">
+    Fin del cuadragésimo tercer cuento.<br>
+    Continuará con el Mago de Riga y el fuego de los sacrificios imposibles…
+  </p>
+
+  <div id="partida-real" class="historical-epilogue fade-in">
+    <h3>🏛️ El Secreto detrás del Cuento</h3>
+    <p>
+      Este cuento rinde tributo a <strong>Vasily Smyslov</strong> (1921–2010), séptimo Campeón Mundial de Ajedrez
+      (1957–1958) y célebre barítono operístico, famoso por su concepto de la armonía de piezas y su maestría
+      inigualable en los finales. La histórica partida mostrada corresponde a la <strong>Partida 9 del Match por el
+      Campeonato Mundial de 1954 en Moscú</strong> contra Mikhail Botvinnik. Tras una tensa lucha en la <em>Defensa Francesa</em>,
+      las blancas entregaron su dama de manera electrizante (19. Qxe4!!), encadenando un jaque intermedio con clavada
+      (21. Bb5+!) para lanzar su peón h hacia la coronación imparable (25. h6! 1-0) en solo 25 jugadas.
+      ¡Una de las victorias más melódicas y espectaculares en la historia de los duelos mundiales!
+    </p>
+    <div class="chess-diagram-container" style="text-align: center;">
+      <div class="chess-replayer-container" data-story-id="43"></div>
+    </div>
+  </div>
+
+  {% include "story-footer.njk" %}
+
+</article>

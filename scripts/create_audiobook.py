@@ -345,6 +345,18 @@ STORY_CONFIG = {
             "sacrificio": "cuento42_rayo_botvinnik.png",
             "rayo": "cuento42_rayo_botvinnik.png"
         }
+    },
+    43: {
+        "html_file": "../_site/cuentos/43-el-baritono-de-la-gran-armonia.html",
+        "output_video": "../assets/video/cuento_43_audiolibro.mp4",
+        "default_voice": "es-ES-ElviraNeural",
+        "default_image": "cuento43_martina_smyslov.png",
+        "mapping": {
+            "Dxe4": "cuento43_opera_smyslov.png",
+            "Ab5+": "cuento43_opera_smyslov.png",
+            "Bravissimo": "cuento43_opera_smyslov.png",
+            "diapasón": "cuento43_opera_smyslov.png"
+        }
     }
 }
 
