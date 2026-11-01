@@ -334,6 +334,17 @@ STORY_CONFIG = {
             "Ch6+": "cuento41_torre_euwe.png",
             "Qxc5": "cuento41_torre_euwe.png"
         }
+    },
+    42: {
+        "html_file": "../_site/cuentos/42-el-patriarca-de-acero-y-el-cuaderno-secreto.html",
+        "output_video": "../assets/video/cuento_42_audiolibro.mp4",
+        "default_voice": "es-CO-GonzaloNeural",
+        "default_image": "cuento42_martina_botvinnik.png",
+        "mapping": {
+            "Txf7": "cuento42_rayo_botvinnik.png",
+            "sacrificio": "cuento42_rayo_botvinnik.png",
+            "rayo": "cuento42_rayo_botvinnik.png"
+        }
     }
 }
 
