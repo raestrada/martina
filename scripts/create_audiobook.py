@@ -381,6 +381,18 @@ STORY_CONFIG = {
             "granito": "cuento45_fortaleza_torre.png",
             "muralla": "cuento45_fortaleza_torre.png"
         }
+    },
+    46: {
+        "html_file": "../_site/cuentos/46-el-caballero-del-aire-y-el-gambito-inmortal.html",
+        "output_video": "../assets/video/cuento_46_audiolibro.mp4",
+        "default_voice": "es-AR-ElenaNeural",
+        "default_image": "cuento46_martina_spassky.png",
+        "mapping": {
+            "Cxf7": "cuento46_gambito_rey.png",
+            "sacrificio": "cuento46_gambito_rey.png",
+            "Gambito": "cuento46_gambito_rey.png",
+            "aplaudir": "cuento46_gambito_rey.png"
+        }
     }
 }
 
