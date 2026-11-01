@@ -405,6 +405,18 @@ STORY_CONFIG = {
             "sacrificio": "cuento47_sacrificio_del_siglo.png",
             "DAMA": "cuento47_sacrificio_del_siglo.png"
         }
+    },
+    48: {
+        "html_file": "../_site/cuentos/48-la-boa-de-hielo-y-el-coleccionista-de-estampillas.html",
+        "output_video": "../assets/video/cuento_48_audiolibro.mp4",
+        "default_voice": "es-US-PalomaNeural",
+        "default_image": "cuento48_martina_karpov.png",
+        "mapping": {
+            "De4": "cuento48_boa_constrictora.png",
+            "Axg6": "cuento48_boa_constrictora.png",
+            "boa": "cuento48_boa_constrictora.png",
+            "mate": "cuento48_boa_constrictora.png"
+        }
     }
 }
 
