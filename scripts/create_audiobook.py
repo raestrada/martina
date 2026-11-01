@@ -357,6 +357,18 @@ STORY_CONFIG = {
             "Bravissimo": "cuento43_opera_smyslov.png",
             "diapasón": "cuento43_opera_smyslov.png"
         }
+    },
+    44: {
+        "html_file": "../_site/cuentos/44-el-mago-de-riga-y-el-bosque-de-dos-mas-dos-son-cinco.html",
+        "output_video": "../assets/video/cuento_44_audiolibro.mp4",
+        "default_voice": "es-MX-JorgeNeural",
+        "default_image": "cuento44_martina_tal.png",
+        "mapping": {
+            "Cf4": "cuento44_bosque_sacrificio.png",
+            "sacrificio": "cuento44_bosque_sacrificio.png",
+            "chispas": "cuento44_bosque_sacrificio.png",
+            "loco": "cuento44_bosque_sacrificio.png"
+        }
     }
 }
 
