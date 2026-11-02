@@ -376,6 +376,13 @@
       lightColor: '#dfd0b8',
       darkColor: '#3c5c4e',
       accentColor: '#fbbf24'
+    },
+    54: {
+      pgn: `1. Nf3 d5 2. g3 c5 3. Bg2 Nc6 4. d4 e6 5. O-O cxd4 6. Nxd4 Nge7 7. c4 Nxd4 8. Qxd4 Nc6 9. Qd1 d4 10. e3 Bc5 11. exd4 Bxd4 12. Nc3 O-O 13. Nb5 Bb6 14. b3 a6 15. Nc3 Bd4 16. Bb2 e5 17. Qd2 Be6 18. Nd5 b5 19. cxb5 axb5 20. Nf4 exf4 21. Bxc6 Bxb2 22. Qxb2 Rb8 23. Rfd1 Qb6 24. Bf3 fxg3 25. hxg3 b4 26. Rd4 Rfd8 27. Rad1 Rxd4 28. Rxd4 h6 29. Qd2 Qc7 30. Kg2 g5 31. Rd6 Qc3 32. Rd3 Qxd2 33. Rxd2 Kg7 34. Be4 Kf6 35. f4 Rc8 36. Kf2 Rc3 37. Rd4 Rc5 38. Rxb4 Ra5 39. Bb1 g4 40. Rd4 h5 41. Rd2 Rc5 42. b4 Rc3 43. Be4 Ra3 44. b5 Bxa2 45. b6 Be6 46. Rb2 Rb3 47. Rxb3 Bxb3 48. Ke3 Ke7 49. Kd4 Kd6 50. b7 Kc7 51. Ke5 Be6 52. Kf6 Bb3 53. Kg5 Ba2 54. Kxh5 Be6 55. f5 Bc4 56. Kxg4 f6 57. Kh5 Bf7+ 58. Kh6 0-1`,
+      startFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+      lightColor: '#fef3c7',
+      darkColor: '#0f766e',
+      accentColor: '#f59e0b'
     }
   };
 

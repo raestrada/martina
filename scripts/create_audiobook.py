@@ -492,6 +492,22 @@ STORY_CONFIG = {
             "inmortalidad": "cuento53_autoclavada_astana.png",
             "campeón": "cuento53_autoclavada_astana.png"
         }
+    },
+    54: {
+        "html_file": "../_site/cuentos/54-el-nino-del-loto-y-la-corona-de-singapur.html",
+        "output_video": "../assets/video/cuento_54_audiolibro.mp4",
+        "default_voice": "es-VE-PaolaNeural",
+        "default_image": "cuento54_martina_gukesh.png",
+        "mapping": {
+            "corona": "cuento54_corona_singapur.png",
+            "loto": "cuento54_corona_singapur.png",
+            "Singapur": "cuento54_corona_singapur.png",
+            "campeón": "cuento54_corona_singapur.png",
+            "Kh6": "cuento54_corona_singapur.png",
+            "Bf7": "cuento54_corona_singapur.png",
+            "lágrimas": "cuento54_corona_singapur.png",
+            "historia": "cuento54_corona_singapur.png"
+        }
     }
 }
 
