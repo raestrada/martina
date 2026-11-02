@@ -462,6 +462,21 @@ STORY_CONFIG = {
             "inmortal": "cuento51_relampago_madras.png",
             "Dxg2": "cuento51_relampago_madras.png"
         }
+    },
+    52: {
+        "html_file": "../_site/cuentos/52-el-mozart-del-ajedrez-y-el-vikingo-de-los-finales.html",
+        "output_video": "../assets/video/cuento_52_audiolibro.mp4",
+        "default_voice": "es-UY-ValentinaNeural",
+        "default_image": "cuento52_martina_carlsen.png",
+        "mapping": {
+            "sacrificio": "cuento52_sacrificio_dama_carlsen.png",
+            "dama": "cuento52_sacrificio_dama_carlsen.png",
+            "Dama": "cuento52_sacrificio_dama_carlsen.png",
+            "Dh6": "cuento52_sacrificio_dama_carlsen.png",
+            "Qh6": "cuento52_sacrificio_dama_carlsen.png",
+            "mate": "cuento52_sacrificio_dama_carlsen.png",
+            "corona": "cuento52_sacrificio_dama_carlsen.png"
+        }
     }
 }
 
