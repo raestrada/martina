@@ -477,6 +477,21 @@ STORY_CONFIG = {
             "mate": "cuento52_sacrificio_dama_carlsen.png",
             "corona": "cuento52_sacrificio_dama_carlsen.png"
         }
+    },
+    53: {
+        "html_file": "../_site/cuentos/53-el-dragon-silencioso-y-el-salto-en-la-niebla.html",
+        "output_video": "../assets/video/cuento_53_audiolibro.mp4",
+        "default_voice": "es-PA-MargaritaNeural",
+        "default_image": "cuento53_martina_ding.png",
+        "mapping": {
+            "clavada": "cuento53_autoclavada_astana.png",
+            "autoclavada": "cuento53_autoclavada_astana.png",
+            "Tg6": "cuento53_autoclavada_astana.png",
+            "Rg6": "cuento53_autoclavada_astana.png",
+            "dragón": "cuento53_autoclavada_astana.png",
+            "inmortalidad": "cuento53_autoclavada_astana.png",
+            "campeón": "cuento53_autoclavada_astana.png"
+        }
     }
 }
 
