@@ -445,6 +445,23 @@ STORY_CONFIG = {
             "piedra": "cuento50_muro_berlin.png",
             "castillo": "cuento50_muro_berlin.png"
         }
+    },
+    51: {
+        "html_file": "../_site/cuentos/51-el-tigre-de-madras-y-el-rayo-de-los-veinte-segundos.html",
+        "output_video": "../assets/video/cuento_51_audiolibro.mp4",
+        "default_voice": "es-CR-MariaNeural",
+        "default_image": "cuento51_martina_anand.png",
+        "mapping": {
+            "relámpago": "cuento51_relampago_madras.png",
+            "rayo": "cuento51_relampago_madras.png",
+            "Bc5": "cuento51_relampago_madras.png",
+            "Ac5": "cuento51_relampago_madras.png",
+            "Be3": "cuento51_relampago_madras.png",
+            "Ae3": "cuento51_relampago_madras.png",
+            "tigre": "cuento51_relampago_madras.png",
+            "inmortal": "cuento51_relampago_madras.png",
+            "Dxg2": "cuento51_relampago_madras.png"
+        }
     }
 }
 
