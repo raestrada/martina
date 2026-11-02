@@ -431,6 +431,20 @@ STORY_CONFIG = {
             "sacrificio": "cuento49_inmortal_kasparov.png",
             "Da7": "cuento49_inmortal_kasparov.png"
         }
+    },
+    50: {
+        "html_file": "../_site/cuentos/50-el-muro-de-berlin-y-la-ciudad-sin-damas.html",
+        "output_video": "../assets/video/cuento_50_audiolibro.mp4",
+        "default_voice": "es-EC-AndreaNeural",
+        "default_image": "cuento50_martina_kramnik.png",
+        "mapping": {
+            "muro": "cuento50_muro_berlin.png",
+            "Muro": "cuento50_muro_berlin.png",
+            "fortaleza": "cuento50_muro_berlin.png",
+            "Berlín": "cuento50_muro_berlin.png",
+            "piedra": "cuento50_muro_berlin.png",
+            "castillo": "cuento50_muro_berlin.png"
+        }
     }
 }
 

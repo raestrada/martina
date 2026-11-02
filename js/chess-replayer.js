@@ -348,6 +348,13 @@
       lightColor: '#dfd0b8',
       darkColor: '#3c5c4e',
       accentColor: '#fbbf24'
+    },
+    50: {
+      pgn: `1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O Nxe4 5. d4 Nd6 6. Bxc6 dxc6 7. dxe5 Nf5 8. Qxd8+ Kxd8 9. Nc3 h6 10. b3 Ke8 11. Bb2 Be6 12. h3 Be7 13. Rad1 Rd8 14. Ne2 c5 15. c4 g5 16. Nc3 c6 17. Ne4 b6 18. g4 Ng7 19. Rfe1 Rxd1 20. Rxd1 Kf8 21. Kg2 Ne8 22. Kg3 Rg8 23. Nf6 Rh8 24. Nd7+ Kg7 25. Nb8 h5 1/2-1/2`,
+      startFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+      lightColor: '#dfd0b8',
+      darkColor: '#3c5c4e',
+      accentColor: '#fbbf24'
     }
   };
 
