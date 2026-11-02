@@ -417,6 +417,20 @@ STORY_CONFIG = {
             "boa": "cuento48_boa_constrictora.png",
             "mate": "cuento48_boa_constrictora.png"
         }
+    },
+    49: {
+        "html_file": "../_site/cuentos/49-el-ogro-de-baku-y-el-volcan-de-las-dos-torres.html",
+        "output_video": "../assets/video/cuento_49_audiolibro.mp4",
+        "default_voice": "es-PE-CamilaNeural",
+        "default_image": "cuento49_martina_kasparov.png",
+        "mapping": {
+            "Txd4": "cuento49_inmortal_kasparov.png",
+            "Te7": "cuento49_inmortal_kasparov.png",
+            "volcán": "cuento49_inmortal_kasparov.png",
+            "inmortal": "cuento49_inmortal_kasparov.png",
+            "sacrificio": "cuento49_inmortal_kasparov.png",
+            "Da7": "cuento49_inmortal_kasparov.png"
+        }
     }
 }
 
